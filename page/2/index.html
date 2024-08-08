@@ -112,12 +112,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -134,6 +134,639 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/03/11/JS%E9%98%B2%E6%8A%96%EF%BC%88Debouncing%EF%BC%89%E8%88%87%E7%AF%80%E6%B5%81%EF%BC%88Throttling%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kyosora">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/03/11/JS%E9%98%B2%E6%8A%96%EF%BC%88Debouncing%EF%BC%89%E8%88%87%E7%AF%80%E6%B5%81%EF%BC%88Throttling%EF%BC%89/" class="post-title-link" itemprop="url">JS防抖（Debouncing）與節流（Throttling）</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2024-03-11 09:38:57 / 修改時間：09:51:02" itemprop="dateCreated datePublished" datetime="2024-03-11T09:38:57+08:00">2024-03-11</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="JS防抖與節流教學"><a href="#JS防抖與節流教學" class="headerlink" title="JS防抖與節流教學"></a>JS防抖與節流教學</h1><p>在Javascript開發過程中，我們經常需要處理一些高頻事件，比如滾動、窗口縮放、鍵盤輸入等。如果這些事件的處理函數直接綁定到事件上，可能會導致瀏覽器的性能問題。為了優化性能和用戶體驗，我們通常會使用兩種技術：防抖（Debouncing）和節流（Throttling）。接下來，我們將深入了解它們的差異、使用時機和實現方法。</p>
+<h2 id="防抖-Debouncing"><a href="#防抖-Debouncing" class="headerlink" title="防抖 (Debouncing)"></a>防抖 (Debouncing)</h2><p>防抖技術指的是觸發事件後，在指定時間內只執行一次事件處理函數。如果在指定時間內再次觸發了事件，則重新計算等待時間。這樣可以確保事件處理函數在一系列快速的事件觸發中只被執行一次。</p>
+<h3 id="使用時機"><a href="#使用時機" class="headerlink" title="使用時機"></a>使用時機</h3><p>防抖技術適用於那些觸發頻率高，但不需要立即響應每次觸發的場景。例如：</p>
+<p>搜索框輸入（用戶停止輸入後再進行搜索）<br>窗口大小調整（調整結束後再計算布局）</p>
+<p>範例</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">debounce</span>(<span class="params">func, wait</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> timeout;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">function</span>(<span class="params">...args</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> context = <span class="variable language_">this</span>;</span><br><span class="line">        <span class="built_in">clearTimeout</span>(timeout);</span><br><span class="line">        timeout = <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> func.<span class="title function_">apply</span>(context, args), wait);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用防抖</span></span><br><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;resize&#x27;</span>, <span class="title function_">debounce</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;窗口大小調整完成&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">500</span>));</span><br></pre></td></tr></table></figure>
+<h2 id="節流-Throttling"><a href="#節流-Throttling" class="headerlink" title="節流 (Throttling)"></a>節流 (Throttling)</h2><p>節流技術指的是在指定時間內最多只執行一次事件處理函數，即使在這段時間內觸發了多次事件，事件處理函數也只會被執行一次。</p>
+<h3 id="使用時機-1"><a href="#使用時機-1" class="headerlink" title="使用時機"></a>使用時機</h3><p>節流技術適用於那些需要實時控制事件處理頻率的場景。例如：</p>
+<p>滾動事件處理（比如無限滾動的加載更多）<br>游戲中的按鍵響應<br>範例</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">throttle</span>(<span class="params">func, wait</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> lastTime = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">function</span>(<span class="params">...args</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> now = <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getTime</span>();</span><br><span class="line">        <span class="keyword">if</span> (now - lastTime &gt; wait) &#123;</span><br><span class="line">            lastTime = now;</span><br><span class="line">            func.<span class="title function_">apply</span>(<span class="variable language_">this</span>, args);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用節流</span></span><br><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;scroll&#x27;</span>, <span class="title function_">throttle</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;滾動事件被觸發&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">1000</span>));</span><br></pre></td></tr></table></figure>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>防抖和節流都是優化Javascript性能的重要手段，選擇適合的策略可以大大提高應用程序的響應性和性能。總的來說，當你需要限制函數在短時間內被頻繁調用時，應該考慮使用這兩種技術。防抖適用於那些對響應時機要求不高的情況，而節流則適用於需要穩定控制調用頻率的場景。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/03/10/Vue%E4%B8%AD%E7%9A%84Pinia%E7%8B%80%E6%85%8B%E7%AE%A1%E7%90%86%EF%BC%9A%E5%85%A8%E9%9D%A2%E6%8C%87%E5%8D%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kyosora">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/03/10/Vue%E4%B8%AD%E7%9A%84Pinia%E7%8B%80%E6%85%8B%E7%AE%A1%E7%90%86%EF%BC%9A%E5%85%A8%E9%9D%A2%E6%8C%87%E5%8D%97/" class="post-title-link" itemprop="url">Vue中的Pinia狀態管理：全面指南</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-03-10 19:33:18" itemprop="dateCreated datePublished" datetime="2024-03-10T19:33:18+08:00">2024-03-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-08-06 14:03:39" itemprop="dateModified" datetime="2024-08-06T14:03:39+08:00">2024-08-06</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="Vue中的Pinia狀態管理：全面指南"><a href="#Vue中的Pinia狀態管理：全面指南" class="headerlink" title="Vue中的Pinia狀態管理：全面指南"></a>Vue中的Pinia狀態管理：全面指南</h1><h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>在Vue應用程序中管理狀態是一個重要的話題。隨著應用程序的增長，有效地管理和共享狀態變得越來越具有挑戰性。Pinia作為Vue的官方狀態管理庫，提供了一種簡單、直觀且類型安全的方式來管理全局狀態。本文將深入探討Pinia的核心概念、特性以及如何在Vue項目中有效地使用它。</p>
+<h2 id="什麼是Pinia"><a href="#什麼是Pinia" class="headerlink" title="什麼是Pinia?"></a>什麼是Pinia?</h2><p>Pinia是新一代的Vue狀態管理庫，設計用於替代Vuex。它由Vue核心團隊成員Eduardo San Martin Morote創建，並在Vue 3中成為官方推薦的狀態管理解決方案。</p>
+<h3 id="Pinia的主要特性"><a href="#Pinia的主要特性" class="headerlink" title="Pinia的主要特性:"></a>Pinia的主要特性:</h3><ol>
+<li>直觀且簡潔的API</li>
+<li>完整的TypeScript支持</li>
+<li>支持Vue 2和Vue 3</li>
+<li>極小的包大小</li>
+<li>支持多個Store</li>
+<li>支持熱模塊替換(HMR)</li>
+<li>支持Vue DevTools</li>
+<li>可擴展性強</li>
+</ol>
+<h2 id="安裝和設置"><a href="#安裝和設置" class="headerlink" title="安裝和設置"></a>安裝和設置</h2><p>首先，讓我們看看如何在Vue項目中安裝和設置Pinia。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install pinia</span><br></pre></td></tr></table></figure>
+
+<p>在Vue應用中引入Pinia:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createApp &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; createPinia &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">App</span> <span class="keyword">from</span> <span class="string">&#x27;./App.vue&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> pinia = <span class="title function_">createPinia</span>()</span><br><span class="line"><span class="keyword">const</span> app = <span class="title function_">createApp</span>(<span class="title class_">App</span>)</span><br><span class="line"></span><br><span class="line">app.<span class="title function_">use</span>(pinia)</span><br><span class="line">app.<span class="title function_">mount</span>(<span class="string">&#x27;#app&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="Pinia的核心概念"><a href="#Pinia的核心概念" class="headerlink" title="Pinia的核心概念"></a>Pinia的核心概念</h2><h3 id="Store"><a href="#Store" class="headerlink" title="Store"></a>Store</h3><p>Store是Pinia的核心概念，它包含了狀態(state)、getter和action。</p>
+<p>創建一個基本的Store:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; defineStore &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useCounterStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;counter&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">state</span>: <span class="function">() =&gt;</span> (&#123; <span class="attr">count</span>: <span class="number">0</span> &#125;),</span><br><span class="line">  <span class="attr">getters</span>: &#123;</span><br><span class="line">    <span class="attr">doubleCount</span>: <span class="function">(<span class="params">state</span>) =&gt;</span> state.<span class="property">count</span> * <span class="number">2</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">actions</span>: &#123;</span><br><span class="line">    <span class="title function_">increment</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">count</span>++</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="組合式API風格的Store"><a href="#組合式API風格的Store" class="headerlink" title="組合式API風格的Store"></a>組合式API風格的Store</h3><p>Pinia也支持使用組合式API風格定義Store:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; ref, computed &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; defineStore &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useCounterStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;counter&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> count = <span class="title function_">ref</span>(<span class="number">0</span>)</span><br><span class="line">  <span class="keyword">const</span> doubleCount = <span class="title function_">computed</span>(<span class="function">() =&gt;</span> count.<span class="property">value</span> * <span class="number">2</span>)</span><br><span class="line">  <span class="keyword">function</span> <span class="title function_">increment</span>(<span class="params"></span>) &#123;</span><br><span class="line">    count.<span class="property">value</span>++</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> &#123; count, doubleCount, increment &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="在組件中使用Store"><a href="#在組件中使用Store" class="headerlink" title="在組件中使用Store"></a>在組件中使用Store</h2><p>在Vue組件中使用Pinia Store非常簡單:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;Count: &#123;&#123; counter.count &#125;&#125;&lt;/p&gt;</span><br><span class="line">    &lt;p&gt;Double Count: &#123;&#123; counter.doubleCount &#125;&#125;&lt;/p&gt;</span><br><span class="line">    &lt;button @click=&quot;counter.increment&quot;&gt;Increment&lt;/button&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script setup&gt;</span><br><span class="line">import &#123; useCounterStore &#125; from &#x27;@/stores/counter&#x27;</span><br><span class="line"></span><br><span class="line">const counter = useCounterStore()</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Pinia的高級特性"><a href="#Pinia的高級特性" class="headerlink" title="Pinia的高級特性"></a>Pinia的高級特性</h2><h3 id="1-訂閱狀態變化"><a href="#1-訂閱狀態變化" class="headerlink" title="1. 訂閱狀態變化"></a>1. 訂閱狀態變化</h3><p>Pinia允許你訂閱store的變化:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> unsubscribe = someStore.$subscribe(<span class="function">(<span class="params">mutation, state</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 每次state變化時觸發</span></span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(mutation.<span class="property">type</span>)</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(mutation.<span class="property">storeId</span>)</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(mutation.<span class="property">payload</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-持久化"><a href="#2-持久化" class="headerlink" title="2. 持久化"></a>2. 持久化</h3><p>結合插件，可以輕鬆實現狀態持久化:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createPinia &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; createPersistedState &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia-plugin-persistedstate&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> pinia = <span class="title function_">createPinia</span>()</span><br><span class="line">pinia.<span class="title function_">use</span>(<span class="title function_">createPersistedState</span>())</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-插件系統"><a href="#3-插件系統" class="headerlink" title="3. 插件系統"></a>3. 插件系統</h3><p>Pinia提供了強大的插件系統，允許你擴展Store的功能:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pinia.<span class="title function_">use</span>(<span class="function">(<span class="params">&#123; store &#125;</span>) =&gt;</span> &#123;</span><br><span class="line">  store.<span class="property">customValue</span> = <span class="string">&#x27;Hello&#x27;</span></span><br><span class="line">  store.<span class="property">customMethod</span> = <span class="function">() =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Custom method&#x27;</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="與Vuex的比較"><a href="#與Vuex的比較" class="headerlink" title="與Vuex的比較"></a>與Vuex的比較</h2><p>Pinia相比Vuex有以下優勢:</p>
+<ol>
+<li>更簡潔的API</li>
+<li>更好的TypeScript支持</li>
+<li>不需要嵌套模塊</li>
+<li>更輕量級</li>
+</ol>
+<h2 id="最佳實踐"><a href="#最佳實踐" class="headerlink" title="最佳實踐"></a>最佳實踐</h2><ol>
+<li>將相關的狀態分組到不同的store中</li>
+<li>使用組合式API風格可以獲得更好的TypeScript推斷</li>
+<li>善用Pinia的插件系統擴展功能</li>
+<li>在大型應用中，考慮按功能模塊拆分store</li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>Pinia為Vue應用提供了一個強大、靈活且易於使用的狀態管理解決方案。它簡化了全局狀態的管理，同時保持了出色的開發體驗和性能。無論是小型項目還是大型應用，Pinia都是一個值得考慮的選擇。</p>
+<p>隨著Vue生態系統的不斷發展，Pinia很可能會成為未來Vue項目中狀態管理的首選方案。掌握Pinia不僅能提高你的Vue開發效率，還能為你的應用帶來更好的可維護性和擴展性。</p>
+<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://pinia.vuejs.org/">Pinia 官方文檔</a></li>
+<li><a target="_blank" rel="noopener" href="https://vuejs.org/">Vue 官方網站</a></li>
+<li><a target="_blank" rel="noopener" href="https://pinia.vuejs.org/introduction.html#comparison-with-vuex">Comparison with Vuex</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/03/07/Vue-3-%E8%B3%87%E6%96%99%E5%82%B3%E9%81%9E/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kyosora">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/03/07/Vue-3-%E8%B3%87%E6%96%99%E5%82%B3%E9%81%9E/" class="post-title-link" itemprop="url">Vue 3 資料傳遞</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-03-07 15:47:44" itemprop="dateCreated datePublished" datetime="2024-03-07T15:47:44+08:00">2024-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-03-08 16:39:57" itemprop="dateModified" datetime="2024-03-08T16:39:57+08:00">2024-03-08</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="Vue-3-資料傳遞"><a href="#Vue-3-資料傳遞" class="headerlink" title="Vue 3 資料傳遞"></a>Vue 3 資料傳遞</h1><p>Vue 3 為前端開發者提供了強大的功能來建構互動式網頁應用程序。在組件化的架構中,資料的傳遞是重要的一環。本文將介紹在 Vue 3 中,如何實現父元件與子元件之間的資料傳遞,包括父元件傳資料給子元件、子元件傳資料給父元件,以及子元件間的資料傳遞。</p>
+<blockquote>
+<ul>
+<li>Props: 用於父元件向子元件傳遞資料。</li>
+<li>Emit: 子元件可以通過發射事件來向父元件傳遞資料。</li>
+<li>Provide&#x2F;Inject: 這是一種跨越多個層級的元件間通信方法,特別適用於那些不是直接父子關係的元件間的資料傳輸。</li>
+</ul>
+</blockquote>
+<h2 id="1-父元件傳資料到子元件"><a href="#1-父元件傳資料到子元件" class="headerlink" title="1. 父元件傳資料到子元件"></a>1. 父元件傳資料到子元件</h2><p>在 Vue 3 中,父元件可以透過 props 向子元件傳遞資料。props 是子元件用來接收來自父元件資料的一種機制。</p>
+<h3 id="1-1-父元件"><a href="#1-1-父元件" class="headerlink" title="1.1 父元件"></a>1.1 父元件</h3><p>假設我們有一個父元件,想要傳遞一個名為 message 的資料到子元件。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;ChildComponent :message=&quot;messageFromParent&quot; /&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">import ChildComponent from &#x27;./ChildComponent.vue&#x27;;</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">  components: &#123;</span><br><span class="line">    ChildComponent</span><br><span class="line">  &#125;,</span><br><span class="line">  data() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      messageFromParent: &#x27;Hello from Parent&#x27;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="1-2-子元件"><a href="#1-2-子元件" class="headerlink" title="1.2 子元件"></a>1.2 子元件</h3><p>子元件需要定義一個 props 來接收來自父元件的資料。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;&#123;&#123; message &#125;&#125;&lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">export default &#123;</span><br><span class="line">  props: &#123;</span><br><span class="line">    message: &#123;</span><br><span class="line">      type: String,</span><br><span class="line">      required: true</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="2-子元件傳資料到父元件"><a href="#2-子元件傳資料到父元件" class="headerlink" title="2. 子元件傳資料到父元件"></a>2. 子元件傳資料到父元件</h2><p>子元件可以透過發射事件 (emit) 的方式將資料傳回父元件。</p>
+<h3 id="2-1-子元件"><a href="#2-1-子元件" class="headerlink" title="2.1 子元件"></a>2.1 子元件</h3><p>在子元件中,我們可以使用 $emit 方法發射一個自定義事件,並附帶需要傳遞的資料。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;button @click=&quot;sendMessageToParent&quot;&gt;Send to Parent&lt;/button&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">export default &#123;</span><br><span class="line">  methods: &#123;</span><br><span class="line">    sendMessageToParent() &#123;</span><br><span class="line">      this.$emit(&#x27;message-from-child&#x27;, &#x27;Hello from Child&#x27;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-父元件"><a href="#2-2-父元件" class="headerlink" title="2.2 父元件"></a>2.2 父元件</h3><p>父元件需要在使用子元件的標記上綁定一個事件監聽器來接收這個資料。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;ChildComponent @message-from-child=&quot;handleMessageFromChild&quot; /&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">import ChildComponent from &#x27;./ChildComponent.vue&#x27;;</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">  components: &#123;</span><br><span class="line">    ChildComponent</span><br><span class="line">  &#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    handleMessageFromChild(message) &#123;</span><br><span class="line">      console.log(&#x27;Received message from child:&#x27;, message);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="3-跨組件讀寫資料"><a href="#3-跨組件讀寫資料" class="headerlink" title="3. 跨組件讀寫資料"></a>3. 跨組件讀寫資料</h2><h3 id="3-1-使用-Provide-Inject-進行資料傳輸"><a href="#3-1-使用-Provide-Inject-進行資料傳輸" class="headerlink" title="3.1 使用 Provide&#x2F;Inject 進行資料傳輸"></a>3.1 使用 Provide&#x2F;Inject 進行資料傳輸</h3><p>provide 和 inject 的概念是,父元件可以 provide 一些資料(可以是任何東西:物件、數據、函數等),而任何子元件(不論是直接或間接的子元件)都可以選擇性地 inject 這些資料。這種方式適合於那些不是直接父子關係的組件傳遞數據的場景。</p>
+<p>需要注意的是,由於 provide&#x2F;inject 導致了組件實例的高度耦合,所以它們僅適合在較小型的項目中使用。對於大型項目來說,我們更推薦使用 Vuex 或 Pinia 等全局狀態管理工具。</p>
+<h4 id="3-1-1-父元件"><a href="#3-1-1-父元件" class="headerlink" title="3.1.1 父元件"></a>3.1.1 父元件</h4><p>首先,在父元件中使用 provide 來定義你想要共享的資料。在 Vue 3 中,provide 通常在 setup() 函數中使用。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">import &#123; provide, ref &#125; from &#x27;vue&#x27;;</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">  setup() &#123;</span><br><span class="line">    const sharedData = ref(&#x27;這是要共享的資料&#x27;);</span><br><span class="line"></span><br><span class="line">    provide(&#x27;sharedDataKey&#x27;, sharedData);</span><br><span class="line"></span><br><span class="line">    return &#123;&#125;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="3-1-2-子元件"><a href="#3-1-2-子元件" class="headerlink" title="3.1.2 子元件"></a>3.1.2 子元件</h4><p>然後,在任何子元件中,你可以使用 inject 來接收這些資料。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">import &#123; inject &#125; from &#x27;vue&#x27;;</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">  setup() &#123;</span><br><span class="line">    const sharedData = inject(&#x27;sharedDataKey&#x27;);</span><br><span class="line"></span><br><span class="line">    return &#123;</span><br><span class="line">      sharedData</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>這樣,子元件就可以訪問由父元件提供的資料了。需要注意的是,provide 和 inject 的鍵(在這個例子中是 sharedDataKey)必須匹配,才能正確地傳遞和接收資料。</p>
+<h3 id="3-2-Vuex-與-Pinia"><a href="#3-2-Vuex-與-Pinia" class="headerlink" title="3.2 Vuex 與 Pinia"></a>3.2 Vuex 與 Pinia</h3><p>當面對一個父元件底下有多個子元件,且需要在子元件之間進行資料傳輸的情況,我們可以採用 Vuex 或 Pinia 這樣的全局狀態管理解決方案。</p>
+<h4 id="3-2-1-Vuex"><a href="#3-2-1-Vuex" class="headerlink" title="3.2.1 Vuex"></a>3.2.1 Vuex</h4><p>Vuex 提供了一個集中管理應用的所有組件的狀態的機制。使用 Vuex,你可以在一個集中的地方定義全局狀態,然後讓任何組件根據需要讀取或修改這些狀態。</p>
+<p>步驟1: 安裝 Vuex</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install vuex@next --save</span><br><span class="line">步驟2: 創建 Vuex Store</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// store/index.js</span></span><br><span class="line"><span class="keyword">import</span> &#123; createStore &#125; <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title function_">createStore</span>(&#123;</span><br><span class="line">  <span class="title function_">state</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      <span class="attr">sharedData</span>: <span class="string">&#x27;&#x27;</span></span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">mutations</span>: &#123;</span><br><span class="line">    <span class="title function_">updateSharedData</span>(<span class="params">state, payload</span>) &#123;</span><br><span class="line">      state.<span class="property">sharedData</span> = payload;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">getters</span>: &#123;</span><br><span class="line">    <span class="attr">sharedData</span>: <span class="function"><span class="params">state</span> =&gt;</span> state.<span class="property">sharedData</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>步驟3: 在 Vue 應用中使用 Store</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"><span class="keyword">import</span> &#123; createApp &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">App</span> <span class="keyword">from</span> <span class="string">&#x27;./App.vue&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> store <span class="keyword">from</span> <span class="string">&#x27;./store&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="title function_">createApp</span>(<span class="title class_">App</span>).<span class="title function_">use</span>(store).<span class="title function_">mount</span>(<span class="string">&#x27;#app&#x27;</span>);</span><br></pre></td></tr></table></figure>
+<p>步驟4: 在組件中讀取和修改狀態<br>子元件可以通過 this.$store 訪問 store 中的狀態和 mutations。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 子元件</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="attr">computed</span>: &#123;</span><br><span class="line">    <span class="title function_">sharedData</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">$store</span>.<span class="property">getters</span>.<span class="property">sharedData</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">methods</span>: &#123;</span><br><span class="line">    <span class="title function_">updateData</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">$store</span>.<span class="title function_">commit</span>(<span class="string">&#x27;updateSharedData&#x27;</span>, <span class="string">&#x27;新的共享資料&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="3-2-2-Pinia"><a href="#3-2-2-Pinia" class="headerlink" title="3.2.2 Pinia"></a>3.2.2 Pinia</h4><p>Pinia 是 Vue 官方推薦的一種更現代化的狀態管理解決方案,相比 Vuex 而言,它具有更簡潔的 API 和更好的 TypeScript 支持。</p>
+<p>步驟1: 安裝 Pinia</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install pinia</span><br></pre></td></tr></table></figure>
+<p>步驟2: 創建 Pinia Store</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// stores/counterStore.js</span></span><br><span class="line"><span class="keyword">import</span> &#123; defineStore &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useCounterStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;counter&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">state</span>: <span class="function">() =&gt;</span> (&#123;</span><br><span class="line">    <span class="attr">count</span>: <span class="number">0</span></span><br><span class="line">  &#125;),</span><br><span class="line">  <span class="attr">actions</span>: &#123;</span><br><span class="line">    <span class="title function_">increment</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">count</span>++;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>步驟3: 在 Vue 應用中使用 Pinia Store</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"><span class="keyword">import</span> &#123; createApp &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; createPinia &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">App</span> <span class="keyword">from</span> <span class="string">&#x27;./App.vue&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> app = <span class="title function_">createApp</span>(<span class="title class_">App</span>);</span><br><span class="line"><span class="keyword">const</span> pinia = <span class="title function_">createPinia</span>();</span><br><span class="line"></span><br><span class="line">app.<span class="title function_">use</span>(pinia);</span><br><span class="line">app.<span class="title function_">mount</span>(<span class="string">&#x27;#app&#x27;</span>);</span><br></pre></td></tr></table></figure>
+<p>步驟4: 在組件中使用 Pinia Store</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 任何子元件</span></span><br><span class="line">&lt;script setup&gt;</span><br><span class="line"><span class="keyword">import</span> &#123; useCounterStore &#125; <span class="keyword">from</span> <span class="string">&#x27;./stores/counterStore&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> counterStore = <span class="title function_">useCounterStore</span>();</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>&#123;&#123; counterStore.count &#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">  <span class="tag">&lt;<span class="name">button</span> @<span class="attr">click</span>=<span class="string">&quot;counterStore.increment&quot;</span>&gt;</span>Increment<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<p>使用 Vuex 或 Pinia,子元件之間可以很容易地共享和修改狀態,因為所有的狀態都被集中管理了。當一個子元件修改了狀態,其他引用了這個狀態的子元件會自動更新,從而實現了跨元件的資料共享和通信。</p>
+<h2 id="4-最佳實踐建議"><a href="#4-最佳實踐建議" class="headerlink" title="4. 最佳實踐建議"></a>4. 最佳實踐建議</h2><p>保持單向數據流: 儘量使用 props 向下傳遞資料,避免直接修改 props,這樣可以防止子組件意外改變了父組件的狀態。<br>適當使用 provide&#x2F;inject: 雖然 provide&#x2F;inject 很方便,但它會增加組件實例之間的耦合性,使重構變得更加困難。對於大型項目,建議使用 Vuex 或 Pinia 進行狀態管理。<br>模塊化管理狀態: 當使用 Vuex 或 Pinia 時,建議按功能將應用程序狀態劃分為多個模塊,每個模塊管理與該功能相關的狀態。這樣可以更好地解耦和重用代碼。<br>在適當的層級傳遞數據:對於父子組件通信,請使用 props 和 events; 對於更深層級的通信,請考慮使用 provide&#x2F;inject 或者全局狀態管理。避免在應用程序的多個位置直接導入和修改狀態。<br>編寫單元測試: 不論你選擇使用哪種通信方式,都應該為這些功能編寫單元測試,以確保代碼的正確性和維護性。</p>
+<h1 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h1><p>選擇適合的組件間通信方式取決於你的具體需求:</p>
+<p>對於簡單的父子組件通信,props 和 emit 是最直接且常用的方法。<br>當需要在祖先和後代組件間共享資料時,provide 和 inject 提供了一個更為靈活的解決方案。<br>對於複雜的應用,需要全局狀態管理或跨多個組件共享狀態時,Vuex 或 Pinia 是更好的選擇,它們提供了集中管理和高度靈活的狀態管理方案。</p>
+<p>合理利用這些工具和概念,可以幫助你建立一個結構清晰、易於維護的 Vue 應用。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/02/23/Chrome%E5%A5%97%E4%BB%B6%E9%96%8B%E7%99%BC%E6%95%99%E5%AD%B8%EF%BC%9A%E8%87%AA%E5%8B%95%E6%95%B4%E7%90%86%E6%9B%B8%E7%B1%A4%E5%88%B0%E5%9F%9F%E5%90%8D%E8%B3%87%E6%96%99%E5%A4%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kyosora">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/02/23/Chrome%E5%A5%97%E4%BB%B6%E9%96%8B%E7%99%BC%E6%95%99%E5%AD%B8%EF%BC%9A%E8%87%AA%E5%8B%95%E6%95%B4%E7%90%86%E6%9B%B8%E7%B1%A4%E5%88%B0%E5%9F%9F%E5%90%8D%E8%B3%87%E6%96%99%E5%A4%BE/" class="post-title-link" itemprop="url">Chrome套件開發教學：自動整理書籤到域名資料夾</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2024-02-23 17:05:31 / 修改時間：17:43:10" itemprop="dateCreated datePublished" datetime="2024-02-23T17:05:31+08:00">2024-02-23</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>本教學將引導如何開發一個Chrome擴展套件，此套件能自動將新建的書籤按照其域名自動分類到對應的文件夾中。我們會使用background.js來實現這個功能。</p>
+<h1 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h1><p>擁有基本的JavaScript知識。<br>已安裝Chrome瀏覽器。</p>
+<h2 id="步驟1：創建擴展目錄"><a href="#步驟1：創建擴展目錄" class="headerlink" title="步驟1：創建擴展目錄"></a>步驟1：創建擴展目錄</h2><p>首先，在你的電腦上創建一個新的資料夾來存放擴展文件，例如命名為BookmarkOrganizer。</p>
+<h2 id="步驟2：撰寫manifest-json"><a href="#步驟2：撰寫manifest-json" class="headerlink" title="步驟2：撰寫manifest.json"></a>步驟2：撰寫manifest.json</h2><p>在BookmarkOrganizer資料夾內，創建一個名為manifest.json的文件，並加入以下內容：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;manifest_version&quot;</span><span class="punctuation">:</span> <span class="number">3</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;自動整理書籤到域名資料夾&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;將新建的書籤自動整理到以域名命名的資料夾中。&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;permissions&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;bookmarks&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;background&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;service_worker&quot;</span><span class="punctuation">:</span> <span class="string">&quot;background.js&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="步驟3：撰寫background-js"><a href="#步驟3：撰寫background-js" class="headerlink" title="步驟3：撰寫background.js"></a>步驟3：撰寫background.js</h2><p>在BookmarkOrganizer資料夾內，創建一個名為background.js的文件，並將提供的程式碼粘貼到這個文件中。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> folderCreationLocks = &#123;&#125;; <span class="comment">// 鎖定正在創建的文件夾</span></span><br><span class="line"><span class="keyword">let</span> domainFoldersCache = &#123;&#125;; <span class="comment">// 緩存已創建的域名文件夾ID</span></span><br><span class="line"></span><br><span class="line">chrome.<span class="property">bookmarks</span>.<span class="property">onCreated</span>.<span class="title function_">addListener</span>(<span class="keyword">function</span>(<span class="params">id, bookmark</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (!bookmark.<span class="property">url</span>) <span class="keyword">return</span>; <span class="comment">// 忽略非URL書簽（即文件夾）</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> mainFolderName = <span class="string">&quot;整理資料夾&quot;</span>;</span><br><span class="line">  <span class="keyword">const</span> url = <span class="keyword">new</span> <span class="title function_">URL</span>(bookmark.<span class="property">url</span>);</span><br><span class="line">  <span class="keyword">const</span> domain = url.<span class="property">hostname</span>;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">ensureMainFolderExists</span>(mainFolderName, <span class="keyword">function</span>(<span class="params">mainFolderId</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!mainFolderId) <span class="keyword">return</span>; <span class="comment">// 如果沒有找到或創建主文件夾，則退出</span></span><br><span class="line"></span><br><span class="line">    <span class="title function_">ensureDomainFolderExists</span>(mainFolderId, domain, <span class="keyword">function</span>(<span class="params">domainFolderId</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (domainFolderId) &#123;</span><br><span class="line">        <span class="comment">// 存在域名文件夾，移動書簽</span></span><br><span class="line">        chrome.<span class="property">bookmarks</span>.<span class="title function_">move</span>(id, &#123;<span class="attr">parentId</span>: domainFolderId&#125;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">ensureMainFolderExists</span>(<span class="params">mainFolderName, callback</span>) &#123;</span><br><span class="line">  <span class="comment">// 查找或創建主文件夾</span></span><br><span class="line">  chrome.<span class="property">bookmarks</span>.<span class="title function_">search</span>(&#123;<span class="attr">title</span>: mainFolderName&#125;, <span class="keyword">function</span>(<span class="params">results</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> mainFolder = results.<span class="title function_">find</span>(<span class="function"><span class="params">result</span> =&gt;</span> result.<span class="property">title</span> === mainFolderName &amp;&amp; !result.<span class="property">url</span>);</span><br><span class="line">    <span class="keyword">if</span> (!mainFolder) &#123;</span><br><span class="line">      chrome.<span class="property">bookmarks</span>.<span class="title function_">create</span>(&#123;<span class="attr">title</span>: mainFolderName&#125;, <span class="keyword">function</span>(<span class="params">newFolder</span>) &#123;</span><br><span class="line">        <span class="title function_">callback</span>(newFolder.<span class="property">id</span>);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="title function_">callback</span>(mainFolder.<span class="property">id</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">ensureDomainFolderExists</span>(<span class="params">mainFolderId, domain, callback</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (folderCreationLocks[domain]) &#123;</span><br><span class="line">    <span class="comment">// 如果域名文件夾正在創建中，則稍後重試</span></span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> <span class="title function_">ensureDomainFolderExists</span>(mainFolderId, domain, callback), <span class="number">100</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (domainFoldersCache[domain]) &#123;</span><br><span class="line">    <span class="comment">// 如果域名文件夾已存在於緩存中，直接使用</span></span><br><span class="line">    <span class="title function_">callback</span>(domainFoldersCache[domain]);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 鎖定域名文件夾創建操作</span></span><br><span class="line">  folderCreationLocks[domain] = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">  chrome.<span class="property">bookmarks</span>.<span class="title function_">getChildren</span>(mainFolderId, <span class="keyword">function</span>(<span class="params">children</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> domainFolder = children.<span class="title function_">find</span>(<span class="function"><span class="params">child</span> =&gt;</span> child.<span class="property">title</span> === domain &amp;&amp; !child.<span class="property">url</span>);</span><br><span class="line">    <span class="keyword">if</span> (!domainFolder) &#123;</span><br><span class="line">      <span class="comment">// 創建域名文件夾</span></span><br><span class="line">      chrome.<span class="property">bookmarks</span>.<span class="title function_">create</span>(&#123;<span class="attr">parentId</span>: mainFolderId, <span class="attr">title</span>: domain&#125;, <span class="keyword">function</span>(<span class="params">newFolder</span>) &#123;</span><br><span class="line">        domainFoldersCache[domain] = newFolder.<span class="property">id</span>; <span class="comment">// 緩存文件夾ID</span></span><br><span class="line">        <span class="keyword">delete</span> folderCreationLocks[domain]; <span class="comment">// 解鎖</span></span><br><span class="line">        <span class="title function_">callback</span>(newFolder.<span class="property">id</span>);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      domainFoldersCache[domain] = domainFolder.<span class="property">id</span>; <span class="comment">// 緩存文件夾ID</span></span><br><span class="line">      <span class="keyword">delete</span> folderCreationLocks[domain]; <span class="comment">// 解鎖</span></span><br><span class="line">      <span class="title function_">callback</span>(domainFolder.<span class="property">id</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="步驟4：加載擴展到Chrome"><a href="#步驟4：加載擴展到Chrome" class="headerlink" title="步驟4：加載擴展到Chrome"></a>步驟4：加載擴展到Chrome</h2><p>打開Chrome瀏覽器，進入chrome:&#x2F;&#x2F;extensions&#x2F;頁面。<br>開啟開發者模式。<br>點擊「加載已解壓的擴展」，選擇剛剛建立的BookmarkOrganizer資料夾。</p>
+<h2 id="步驟5：測試擴展"><a href="#步驟5：測試擴展" class="headerlink" title="步驟5：測試擴展"></a>步驟5：測試擴展</h2><p>現在，當你創建一個包含URL的書籤時，擴展會自動將該書籤移動到一個以該URL的域名命名的資料夾內。如果相應的域名資料夾不存在，擴展會自動創建一個。</p>
+<h2 id="解析background-js"><a href="#解析background-js" class="headerlink" title="解析background.js"></a>解析background.js</h2><p>監聽書籤創建事件：使用chrome.bookmarks.onCreated.addListener來監聽書籤的創建事件。<br>確保主資料夾存在：ensureMainFolderExists函數會檢查是否存在一個名為”整理資料夾”的資料夾，如果不存在則創建它。<br>確保域名資料夾存在：ensureDomainFolderExists函數負責創建和維護以域名命名的資料夾，並將新的書籤移動到相應的資料夾中。</p>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>通過上述步驟，成功創建了一個能夠自動整理書籤到域名資料夾的Chrome擴展套件。<br>會開發這個是因為日漸增加的書籤，書籤已經突破幾萬筆，看起來很亂，想了想有沒有解決方法，找了CHROME套件沒找到能解決這個問題的套件，最後決定寫個chrome套件來解決，其實是第一次開發chrome套件，此文章當作個筆記，沒做到上架的程度，開發中也遇到很多問題，例如一開始寫的時候，書籤一口氣複製進去，域名資料夾重複建立了，發現是異步原因，也發現根目錄資料夾新增刪除移動都沒反應，查文檔是根目錄不能做這些操作。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/02/07/%E6%B8%AC%E8%A9%A6%E9%A9%85%E5%8B%95%E9%96%8B%E7%99%BC-TDD-%E5%85%A5%E9%96%80%E8%88%87%E5%AF%A6%E4%BD%9C%E6%95%99%E5%AD%B8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kyosora">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/02/07/%E6%B8%AC%E8%A9%A6%E9%A9%85%E5%8B%95%E9%96%8B%E7%99%BC-TDD-%E5%85%A5%E9%96%80%E8%88%87%E5%AF%A6%E4%BD%9C%E6%95%99%E5%AD%B8/" class="post-title-link" itemprop="url">測試驅動開發(TDD)入門與實作教學</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-02-07 10:39:08" itemprop="dateCreated datePublished" datetime="2024-02-07T10:39:08+08:00">2024-02-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-02-15 14:00:09" itemprop="dateModified" datetime="2024-02-15T14:00:09+08:00">2024-02-15</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="測試驅動開發（TDD）入門與實作教學"><a href="#測試驅動開發（TDD）入門與實作教學" class="headerlink" title="測試驅動開發（TDD）入門與實作教學"></a>測試驅動開發（TDD）入門與實作教學</h1><p>測試驅動開發（Test-Driven Development，簡稱TDD）是一種軟體開發方法，其中開發人員先寫出失敗的測試案例，然後才撰寫能夠讓測試通過的代碼，最後進行代碼的重構。TDD 的目標是實現快速反饋、提高代碼質量和促進簡單設計。</p>
+<h2 id="TDD-的基本步驟"><a href="#TDD-的基本步驟" class="headerlink" title="TDD 的基本步驟"></a>TDD 的基本步驟</h2><p>TDD 的開發循環遵循「紅-綠-重構」的模式：</p>
+<ol>
+<li><strong>紅色階段（Red）</strong>：先寫一個失敗的測試。這個測試應該基於你希望程序執行的下一個功能。</li>
+<li><strong>綠色階段（Green）</strong>：撰寫足夠的代碼讓這個測試通過。這時候的代碼不追求完美，只需通過測試即可。</li>
+<li><strong>重構階段（Refactor）</strong>：重構代碼，改善結構與設計，同時保證所有測試仍然通過。</li>
+</ol>
+<h2 id="使用-C-實作-TDD"><a href="#使用-C-實作-TDD" class="headerlink" title="使用 C# 實作 TDD"></a>使用 C# 實作 TDD</h2><p>接下來，讓我們透過一個簡單的 C# 實例來看看 TDD 是如何在實際開發中運作的。</p>
+<h3 id="前提條件"><a href="#前提條件" class="headerlink" title="前提條件"></a>前提條件</h3><p>確保你的開發環境中安裝了 .NET Core SDK，並且你熟悉基本的 C# 編程和單元測試。</p>
+<h3 id="實作步驟"><a href="#實作步驟" class="headerlink" title="實作步驟"></a>實作步驟</h3><p>假設我們要開發一個簡單的函式庫，用於計算兩個數字的和。</p>
+<p><strong>步驟 1：創建一個新的解決方案</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dotnet new sln -n TDDExample</span><br></pre></td></tr></table></figure>
+
+<p><strong>步驟 2：添加一個類庫項目和一個測試項目</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dotnet new classlib -n CalculatorLibrary</span><br><span class="line">dotnet new xunit -n CalculatorLibrary.Tests</span><br><span class="line">dotnet sln add CalculatorLibrary</span><br><span class="line">dotnet sln add CalculatorLibrary.Tests</span><br><span class="line">dotnet add CalculatorLibrary.Tests reference CalculatorLibrary</span><br></pre></td></tr></table></figure>
+<p><strong>步驟 3：紅色階段</strong></p>
+<p>在 CalculatorLibrary.Tests 項目中添加一個測試案例，用於測試加法函數。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">using Xunit;</span><br><span class="line">using CalculatorLibrary;</span><br><span class="line"></span><br><span class="line">namespace CalculatorLibrary.Tests &#123;</span><br><span class="line">    public class CalculatorTests &#123;</span><br><span class="line">        [Fact]</span><br><span class="line">        public void Add_ShouldCalculateCorrectSum() &#123;</span><br><span class="line">            // Arrange</span><br><span class="line">            var calculator = new Calculator();</span><br><span class="line">            // Act</span><br><span class="line">            var result = calculator.Add(5, 5);</span><br><span class="line">            // Assert</span><br><span class="line">            Assert.Equal(10, result);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>步驟 4：綠色階段</strong></p>
+<p>在 CalculatorLibrary 項目中實現 Calculator 類和 Add 方法。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">CalculatorLibrary</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Calculator</span> &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="built_in">int</span> <span class="title">Add</span>(<span class="params"><span class="built_in">int</span> a, <span class="built_in">int</span> b</span>)</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> a + b;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>步驟 5：運行測試</strong></p>
+<p>使用以下命令運行測試，確認它通過。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dotnet <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+<p><strong>步驟 6：重構階段</strong></p>
+<p>這時候，如果有需要，可以對代碼進行重構，以改善代碼質量或結構。重要的是，重構後要確保所有測試仍然通過。</p>
+<h1 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h1><p>透過 TDD，你可以逐步建構出高質量的軟體，同時保證每一步開發都有明確的目標和反饋。雖然一開始可能會覺得這個過程有點繁瑣，但是隨著習慣，你會發現這是一種能夠提高開發效率和代碼質量的強大工具。</p>
+<p>這篇文章只是一個入門級別的示例，TDD 的世界遠遠不止這些。隨著你深入研究，會發現更多高級技巧和策略，能讓你的開發流程更加高效、代碼更加健壯。希望這篇文章能給你一個好的開始！</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/02/06/Git%E5%9F%BA%E7%A4%8E%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kyosora">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/02/06/Git%E5%9F%BA%E7%A4%8E%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">Git基礎使用與實務流程</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-02-06 16:10:15" itemprop="dateCreated datePublished" datetime="2024-02-06T16:10:15+08:00">2024-02-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-02-07 13:47:38" itemprop="dateModified" datetime="2024-02-07T13:47:38+08:00">2024-02-07</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="Git-基礎教學"><a href="#Git-基礎教學" class="headerlink" title="Git 基礎教學"></a>Git 基礎教學</h1><p>歡迎來到 Git 的世界！這篇文章將會帶領你快速了解 Git 的基礎使用方法，包括版本控制的概念、如何設置 Git、基本指令等。讓我們開始吧！</p>
+<h2 id="Git-是什麼？"><a href="#Git-是什麼？" class="headerlink" title="Git 是什麼？"></a>Git 是什麼？</h2><p>Git 是一個開源的分散式版本控制系統，可以有效、高效地處理從小到大的項目。Git 是為了優化提高效率的版本控制而設計的，它的許多概念在其他版本控制系統中都有所不同。</p>
+<h2 id="安裝-Git"><a href="#安裝-Git" class="headerlink" title="安裝 Git"></a>安裝 Git</h2><p>首先，你需要在你的機器上安裝 Git。Git 可以在各種操作系統上運行：</p>
+<ul>
+<li>對於 Windows，你可以從 <a target="_blank" rel="noopener" href="https://git-scm.com/">Git 官方網站</a> 下載安裝包。</li>
+<li>在 macOS 上，可以通過 Homebrew 命令 <code>brew install git</code> 安裝。</li>
+<li>對於 Linux 用戶，可以通過你的包管理器安裝，如 Ubuntu 的 <code>sudo apt-get install git</code> 命令。</li>
+</ul>
+<p>安裝過程中，基本上默認選項就很夠用了，一路Next到底就對了。</p>
+<h2 id="設置-Git"><a href="#設置-Git" class="headerlink" title="設置 Git"></a>設置 Git</h2><p>安裝完 Git 後，打開你的終端機（Terminal或Command Prompt），第一件事就是設置你的用戶名和電子郵件地址。這很重要，因為每次 Git 提交時都會使用這些信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name <span class="string">&quot;你的名字&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;you@example.com&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="基本-Git-指令"><a href="#基本-Git-指令" class="headerlink" title="基本 Git 指令"></a>基本 Git 指令</h1><h2 id="初始化一個新的倉庫"><a href="#初始化一個新的倉庫" class="headerlink" title="初始化一個新的倉庫"></a>初始化一個新的倉庫</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git init</span><br></pre></td></tr></table></figure>
+<h2 id="克隆一個現有的倉庫"><a href="#克隆一個現有的倉庫" class="headerlink" title="克隆一個現有的倉庫"></a>克隆一個現有的倉庫</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> &lt;url&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="添加文件到暫存區"><a href="#添加文件到暫存區" class="headerlink" title="添加文件到暫存區"></a>添加文件到暫存區</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line">或</span><br><span class="line">git add &lt;filename&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="提交你的更改"><a href="#提交你的更改" class="headerlink" title="提交你的更改"></a>提交你的更改</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit -m <span class="string">&quot;提交訊息&quot;</span></span><br></pre></td></tr></table></figure>
+<h2 id="查看狀態"><a href="#查看狀態" class="headerlink" title="查看狀態"></a>查看狀態</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git status</span><br></pre></td></tr></table></figure>
+<h2 id="查看歷史記錄"><a href="#查看歷史記錄" class="headerlink" title="查看歷史記錄"></a>查看歷史記錄</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span></span><br></pre></td></tr></table></figure>
+<h2 id="創建分支"><a href="#創建分支" class="headerlink" title="創建分支"></a>創建分支</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b 新分支名稱</span><br></pre></td></tr></table></figure>
+<h2 id="推送更改"><a href="#推送更改" class="headerlink" title="推送更改"></a>推送更改</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin 新分支名稱</span><br></pre></td></tr></table></figure>
+<p>恭喜你！現在已經掌握了 Git 的基礎指令。這些是每位開發者都應該了解的基本操作，接下來，來談談push可能會遇到的問題。</p>
+<h1 id="解決Git-Push失敗的方案"><a href="#解決Git-Push失敗的方案" class="headerlink" title="解決Git Push失敗的方案"></a>解決Git Push失敗的方案</h1><p>當你執行git push時遭遇失敗，可能會看到各種錯誤訊息。這裡列舉幾種常見原因和建議的解決辦法：</p>
+<h2 id="原因一：遠程倉庫有新的更改"><a href="#原因一：遠程倉庫有新的更改" class="headerlink" title="原因一：遠程倉庫有新的更改"></a>原因一：遠程倉庫有新的更改</h2><p>如果遠程倉庫（remote repository）有新的提交，而你的本地倉庫沒有這些更新，push可能會失敗。</p>
+<h2 id="解決方案："><a href="#解決方案：" class="headerlink" title="解決方案："></a>解決方案：</h2><p>先拉取（Pull）最新的更改：</p>
+<p>使用git pull命令先將遠程倉庫的更改拉取下來並合併到你的本地分支。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pull origin 分支名稱</span><br></pre></td></tr></table></figure>
+<h2 id="解決衝突（如果有的話）："><a href="#解決衝突（如果有的話）：" class="headerlink" title="解決衝突（如果有的話）："></a>解決衝突（如果有的話）：</h2><p>如果在合併（merge）過程中出現衝突，你需要手動解決這些衝突。解決後，再次提交更改。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;解決合併衝突&quot;</span></span><br></pre></td></tr></table></figure>
+<p>再次推送：</p>
+<p>解決衝突並提交後，你可以再次嘗試推送到遠程倉庫。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin 分支名稱</span><br></pre></td></tr></table></figure>
+<h2 id="原因二：沒有推送權限"><a href="#原因二：沒有推送權限" class="headerlink" title="原因二：沒有推送權限"></a>原因二：沒有推送權限</h2><p>如果你對遠程倉庫沒有寫入權限，你的push操作會被拒絕。</p>
+<h2 id="解決方案：-1"><a href="#解決方案：-1" class="headerlink" title="解決方案："></a>解決方案：</h2><p>請求存取權限：聯繫倉庫的擁有者或管理員，請求獲得推送的權限。</p>
+<h2 id="原因三：分支被鎖定"><a href="#原因三：分支被鎖定" class="headerlink" title="原因三：分支被鎖定"></a>原因三：分支被鎖定</h2><p>在一些專案中，特定的分支可能會被鎖定，防止直接推送。</p>
+<h2 id="解決方案：-2"><a href="#解決方案：-2" class="headerlink" title="解決方案："></a>解決方案：</h2><p>使用拉取請求（Pull Request）：創建一個拉取請求（Pull Request），通過代碼審查後，由有權限的人合併到目標分支。</p>
+<h2 id="原因四：推送到錯誤的分支"><a href="#原因四：推送到錯誤的分支" class="headerlink" title="原因四：推送到錯誤的分支"></a>原因四：推送到錯誤的分支</h2><p>有時候，你可能不小心嘗試推送到一個不存在或是你沒有權限的分支。</p>
+<h2 id="解決方案：-3"><a href="#解決方案：-3" class="headerlink" title="解決方案："></a>解決方案：</h2><p>檢查分支名稱：確保你推送到的分支名稱是正確的。你可以使用git branch -a查看所有本地和遠程分支。</p>
+<h1 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h1><p>就這樣！了解以上內容，就能使用Git來參與一個專案的開發了。記得，練習使完美，多使用Git來管理你的專案，你會發現它的強大之處。祝你在Git的世界裡冒險愉快！</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
