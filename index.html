@@ -112,12 +112,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -134,6 +134,278 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/20/SQL-%E6%9F%A5%E8%A9%A2%E5%84%AA%E5%8C%96%E6%A1%88%E4%BE%8B%E7%A0%94%E7%A9%B6%EF%BC%9A%E6%8F%90%E5%8D%87%E6%B0%B4%E4%BD%8D%E7%9B%A3%E6%B8%AC%E7%B3%BB%E7%B5%B1%E6%80%A7%E8%83%BD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kyosora">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/08/20/SQL-%E6%9F%A5%E8%A9%A2%E5%84%AA%E5%8C%96%E6%A1%88%E4%BE%8B%E7%A0%94%E7%A9%B6%EF%BC%9A%E6%8F%90%E5%8D%87%E6%B0%B4%E4%BD%8D%E7%9B%A3%E6%B8%AC%E7%B3%BB%E7%B5%B1%E6%80%A7%E8%83%BD/" class="post-title-link" itemprop="url">SQL 查詢優化案例研究：提升水位監測系統性能</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2024-08-20 15:38:16 / 修改時間：15:51:30" itemprop="dateCreated datePublished" datetime="2024-08-20T15:38:16+08:00">2024-08-20</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="SQL-查詢優化案例研究：提升水位監測系統性能"><a href="#SQL-查詢優化案例研究：提升水位監測系統性能" class="headerlink" title="SQL 查詢優化案例研究：提升水位監測系統性能"></a>SQL 查詢優化案例研究：提升水位監測系統性能</h1><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>我們的水位監測系統面臨著一個重要的挑戰：主要的數據查詢速度緩慢，造成了「執行逾時到期。在作業完成之前超過逾時等待的時間，或是伺服器未回應。」的問題，導致系統一直發送LINE通知錯誤。這個案例研究詳細介紹了我們如何通過優化 SQL 查詢來顯著提升系統性能。</p>
+<h2 id="初始情況"><a href="#初始情況" class="headerlink" title="初始情況"></a>初始情況</h2><h3 id="系統概況"><a href="#系統概況" class="headerlink" title="系統概況"></a>系統概況</h3><ul>
+<li>目前總共有 120 個監測站點（stt_no）</li>
+<li>每 10 分鐘向 WaterLevelGaugeHistory 表匯入一次數據</li>
+<li>需要查詢每個站點最近 24 小時的最新數據</li>
+</ul>
+<h3 id="原始查詢"><a href="#原始查詢" class="headerlink" title="原始查詢"></a>原始查詢</h3><p>初始查詢涉及多個表的聯接和子查詢，執行時間約為 1 分鐘以上。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> </span><br><span class="line">    WL.[ID], WL.[stt_name], <span class="comment">/* 其他欄位 ... */</span></span><br><span class="line">    WLH.[measure_time], WLH.[val], WLH.[Status], WLH.cstatus, WLH.[Epower], WLH.nodata</span><br><span class="line"><span class="keyword">FROM</span> [dbo].[WaterLevelGauge] WL</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> [dbo].[WaterLevelGauge_detailed_View] WLD </span><br><span class="line">    <span class="keyword">ON</span> WL.[stt_name] <span class="operator">=</span> WLD.[MonitoringStationNumber]</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> [ID], [stt_no], [dev_id], [measure_time], [val], [Status], [cstatus], [nodata], [power] <span class="keyword">AS</span> Epower, </span><br><span class="line">    <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> [stt_no] <span class="keyword">ORDER</span> <span class="keyword">BY</span> [measure_time] <span class="keyword">DESC</span>) <span class="keyword">AS</span> row_num </span><br><span class="line">    <span class="keyword">FROM</span> [dbo].[WaterLevelGaugeHistory] </span><br><span class="line">    <span class="keyword">WHERE</span> [dev_id] <span class="keyword">IS</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span></span><br><span class="line">) WLH <span class="keyword">ON</span> WL.[stt_no] <span class="operator">=</span> WLH.[stt_no] <span class="keyword">AND</span> WLH.row_num <span class="operator">=</span> <span class="number">1</span></span><br><span class="line"><span class="keyword">WHERE</span> WL.[memo2] <span class="operator">&lt;&gt;</span> <span class="string">&#x27;停用&#x27;</span> <span class="keyword">OR</span> WL.[memo2] <span class="keyword">IS</span> <span class="keyword">NULL</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="優化過程"><a href="#優化過程" class="headerlink" title="優化過程"></a>優化過程</h2><h3 id="步驟-1：分析查詢瓶頸"><a href="#步驟-1：分析查詢瓶頸" class="headerlink" title="步驟 1：分析查詢瓶頸"></a>步驟 1：分析查詢瓶頸</h3><p>我們發現 WaterLevelGaugeHistory 表的大量數據是造成查詢緩慢的主要原因，觀察的時候已經資料量已經來到了五百萬筆以上。</p>
+<h3 id="步驟-2：重構子查詢"><a href="#步驟-2：重構子查詢" class="headerlink" title="步驟 2：重構子查詢"></a>步驟 2：重構子查詢</h3><p>我們重新設計了子查詢，以更高效地過濾和排序數據：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    [ID], [stt_no], [dev_id], [measure_time], [val], [Status], </span><br><span class="line">    [cstatus], [nodata], [power] <span class="keyword">AS</span> Epower</span><br><span class="line"><span class="keyword">FROM</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> </span><br><span class="line">        [ID], [stt_no], [dev_id], [measure_time], [val], [Status], </span><br><span class="line">        [cstatus], [nodata], [power],</span><br><span class="line">        <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> [stt_no] <span class="keyword">ORDER</span> <span class="keyword">BY</span> [measure_time] <span class="keyword">DESC</span>) <span class="keyword">AS</span> row_num</span><br><span class="line">    <span class="keyword">FROM</span> [dbo].[WaterLevelGaugeHistory]</span><br><span class="line">    <span class="keyword">WHERE</span> [dev_id] <span class="keyword">IS</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span></span><br><span class="line">        <span class="keyword">AND</span> [measure_time] <span class="operator">&gt;=</span> DATEADD(<span class="keyword">HOUR</span>, <span class="number">-24</span>, GETDATE())  <span class="comment">-- 只查詢最近24小時的數據</span></span><br><span class="line">) ranked</span><br><span class="line"><span class="keyword">WHERE</span> row_num <span class="operator">=</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="步驟-3：添加時間過濾"><a href="#步驟-3：添加時間過濾" class="headerlink" title="步驟 3：添加時間過濾"></a>步驟 3：添加時間過濾</h3><p>我們添加了時間過濾條件，只查詢最近 24 小時的數據，這大大減少了需要處理的數據量。</p>
+<h3 id="步驟-4：索引優化"><a href="#步驟-4：索引優化" class="headerlink" title="步驟 4：索引優化"></a>步驟 4：索引優化</h3><p>我們創建了一個針對性的索引來支持查詢：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 在 WaterLevelGaugeHistory 表上創建優化的複合索引</span></span><br><span class="line"><span class="keyword">CREATE</span> NONCLUSTERED INDEX IX_WaterLevelGaugeHistory_stt_no_measure_time</span><br><span class="line"><span class="keyword">ON</span> [dbo].[WaterLevelGaugeHistory] ([stt_no], [measure_time] <span class="keyword">DESC</span>)</span><br><span class="line">INCLUDE ([val], [Status], [cstatus])</span><br><span class="line"><span class="keyword">WITH</span> (SORT_IN_TEMPDB <span class="operator">=</span> <span class="keyword">ON</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 在 WaterLevelGauge 表上創建索引</span></span><br><span class="line"><span class="keyword">CREATE</span> NONCLUSTERED INDEX IX_WaterLevelGauge_stt_name</span><br><span class="line"><span class="keyword">ON</span> [dbo].[WaterLevelGauge] ([stt_name])</span><br><span class="line"><span class="keyword">WITH</span> (SORT_IN_TEMPDB <span class="operator">=</span> <span class="keyword">ON</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 更新統計資訊</span></span><br><span class="line"><span class="keyword">UPDATE</span> STATISTICS [dbo].[WaterLevelGaugeHistory] </span><br><span class="line"><span class="keyword">WITH</span> FULLSCAN;</span><br><span class="line"></span><br><span class="line"><span class="keyword">UPDATE</span> STATISTICS [dbo].[WaterLevelGauge] </span><br><span class="line"><span class="keyword">WITH</span> FULLSCAN;</span><br></pre></td></tr></table></figure>
+
+<p>這個索引包含了所有需要的列，支持索引覆蓋查詢，進一步提高了性能。</p>
+<h2 id="優化結果"><a href="#優化結果" class="headerlink" title="優化結果"></a>優化結果</h2><p>經過優化後，我們取得了令人矚目的成果：</p>
+<ul>
+<li><strong>原始查詢時間</strong>：約 1 分鐘</li>
+<li><strong>優化後查詢時間</strong>：約 1 秒</li>
+<li><strong>性能提升</strong>：超過 98%</li>
+</ul>
+<p>這種程度的性能改進遠遠超出了我們最初的預期，幾乎達到了即時響應的水平。</p>
+<h2 id="深入分析顯著提升的原因"><a href="#深入分析顯著提升的原因" class="headerlink" title="深入分析顯著提升的原因"></a>深入分析顯著提升的原因</h2><ol>
+<li><p><strong>精確的數據過濾</strong>：通過限制查詢範圍到最近 24 小時，我們大幅減少了需要處理的數據量。考慮到我們的系統每 10 分鐘更新一次數據，這意味著每個站點最多只需處理 144 條記錄（24小時 * 6次&#x2F;小時）。</p>
+</li>
+<li><p><strong>高效的索引利用</strong>：我們創建的複合索引（stt_no, measure_time, dev_id）完美匹配了查詢模式。這使得 SQL Server 能夠快速定位到每個站點的最新記錄，而無需掃描大量數據。</p>
+</li>
+<li><p><strong>子查詢優化</strong>：重構後的子查詢使用了 ROW_NUMBER() 函數，配合 PARTITION BY 和高效索引，使得 SQL Server 能夠極快地識別每個站點的最新記錄。</p>
+</li>
+<li><p><strong>索引覆蓋</strong>：通過在索引中包含所有需要的列，我們實現了索引覆蓋查詢。這意味著 SQL Server 可以直接從索引中檢索所有所需的數據，而無需訪問實際的表數據頁，大大減少了 I&#x2F;O 操作。</p>
+</li>
+<li><p><strong>數據分布的優勢</strong>：由於我們只有 120 個監測站點，並且每個站點的數據都很規律（每 10 分鐘一條），這種數據分布特性非常有利於查詢優化和索引使用。</p>
+</li>
+<li><p><strong>減少了複雜的連接操作</strong>：優化後的查詢減少了對 WaterLevelGauge 和 WaterLevelGauge_detailed_View 的連接操作，這些操作在原始查詢中可能造成了額外的性能開銷。</p>
+</li>
+</ol>
+<h2 id="學到的經驗"><a href="#學到的經驗" class="headerlink" title="學到的經驗"></a>學到的經驗</h2><ol>
+<li><p><strong>了解數據特性的重要性</strong>：知道有 120 個站點和 10 分鐘的更新頻率，幫助我們做出更精確的優化決策。</p>
+</li>
+<li><p><strong>時間過濾的效果</strong>：通過只查詢最近 24 小時的數據，大幅減少了需要處理的數據量。</p>
+</li>
+<li><p><strong>索引設計的重要性</strong>：精心設計的索引可以顯著提升查詢性能。</p>
+</li>
+<li><p><strong>子查詢優化</strong>：重構子查詢可以更高效地過濾和排序數據。</p>
+</li>
+<li><p><strong>持續監控和維護的必要性</strong>：建議定期更新統計信息和重建索引，以維持優化效果。</p>
+</li>
+<li><p><strong>數據特性的重要性</strong>：了解數據的更新頻率、分布特性和查詢模式，對於實現極致的查詢優化至關重要。</p>
+</li>
+<li><p><strong>不要低估優化的潛力</strong>：有時，經過精心設計的優化可以帶來遠超預期的性能提升。</p>
+</li>
+<li><p><strong>測試和驗證的重要性</strong>：實際測試結果可能會與理論預期有很大差異，強調了在真實環境中進行全面測試的重要性。</p>
+</li>
+</ol>
+<h2 id="後續建議"><a href="#後續建議" class="headerlink" title="後續建議"></a>後續建議</h2><ol>
+<li><p><strong>實施數據保留策略</strong>：考慮只保留最近幾個月的詳細數據，將老數據歸檔或匯總。</p>
+</li>
+<li><p><strong>定期維護</strong>：設置定期任務來更新統計信息和重建索引。</p>
+</li>
+<li><p><strong>監控查詢性能</strong>：使用 SQL Server 的查詢存儲持續監控查詢性能，及時發現潛在問題。</p>
+</li>
+<li><p><strong>考慮進階技術</strong>：如果數據量繼續增長，可能需要考慮分區表或內存優化表等技術。</p>
+</li>
+<li><p><strong>性能基準測試</strong>：定期進行性能基準測試，以確保優化效果長期保持。</p>
+</li>
+<li><p><strong>擴展優化範圍</strong>：將類似的優化策略應用到系統中的其他查詢，可能會帶來整體性能的顯著提升。</p>
+</li>
+<li><p><strong>用戶體驗改進</strong>：利用查詢速度的顯著提升，考慮改進用戶界面，提供更多實時或近實時的數據展示功能。</p>
+</li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>這個案例研究展示了深入理解數據特性、精心設計查詢和索引如何帶來變革性的性能提升。將查詢時間從 1 分鐘減少到 1 秒不僅提高了系統效率，還為用戶體驗和未來功能擴展開闢了新的可能性。這種程度的優化證明，即使是看似複雜的性能問題，通過系統的分析和優化，也能夠取得驚人的改進。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/19/WebSocket%E6%95%99%E7%A8%8B%EF%BC%9A%E6%A7%8B%E5%BB%BA%E5%AF%A6%E6%99%82%E8%81%8A%E5%A4%A9%E6%87%89%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kyosora">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/08/19/WebSocket%E6%95%99%E7%A8%8B%EF%BC%9A%E6%A7%8B%E5%BB%BA%E5%AF%A6%E6%99%82%E8%81%8A%E5%A4%A9%E6%87%89%E7%94%A8/" class="post-title-link" itemprop="url">WebSocket教程：構建實時聊天應用</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2024-08-19 18:15:52 / 修改時間：18:21:02" itemprop="dateCreated datePublished" datetime="2024-08-19T18:15:52+08:00">2024-08-19</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="WebSocket教程：構建實時聊天應用"><a href="#WebSocket教程：構建實時聊天應用" class="headerlink" title="WebSocket教程：構建實時聊天應用"></a>WebSocket教程：構建實時聊天應用</h1><h2 id="目錄"><a href="#目錄" class="headerlink" title="目錄"></a>目錄</h2><ol>
+<li>介紹</li>
+<li>WebSocket基礎</li>
+<li>項目設置</li>
+<li>後端實現</li>
+<li>前端實現</li>
+<li>運行和測試</li>
+<li>進階主題</li>
+<li>結論</li>
+</ol>
+<h2 id="1-介紹"><a href="#1-介紹" class="headerlink" title="1. 介紹"></a>1. 介紹</h2><p>在當今的web應用中,實時通信已經成為一個常見需求。無論是聊天應用、協作工具還是實時遊戲,都需要服務器和客戶端之間快速、雙向的通信。WebSocket技術為此提供了完美的解決方案。</p>
+<p>在本教程中，我們將深入探討WebSocket技術，並通過構建一個簡單的實時聊天應用來學習如何使用它。我們將使用Python作為後端，JavaScript作為前端。</p>
+<h2 id="2-WebSocket基礎"><a href="#2-WebSocket基礎" class="headerlink" title="2. WebSocket基礎"></a>2. WebSocket基礎</h2><p>WebSocket是一種網絡通信協議，提供全雙工通信通道，運行在單個TCP連接上。與傳統的HTTP請求-響應模型不同，WebSocket允許服務器主動向客戶端推送數據。</p>
+<p>主要特點：</p>
+<ul>
+<li>雙向通信</li>
+<li>實時數據傳輸</li>
+<li>較低的延遲</li>
+<li>效率高（相比輪詢）</li>
+</ul>
+<h2 id="3-項目設置"><a href="#3-項目設置" class="headerlink" title="3. 項目設置"></a>3. 項目設置</h2><h3 id="後端設置"><a href="#後端設置" class="headerlink" title="後端設置"></a>後端設置</h3><ol>
+<li>確保已安裝Python (3.7+)</li>
+<li>安裝WebSocket庫：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install websockets</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="前端設置"><a href="#前端設置" class="headerlink" title="前端設置"></a>前端設置</h3><p>只需一個簡單的HTML文件和一些JavaScript代碼。</p>
+<h2 id="4-後端實現"><a href="#4-後端實現" class="headerlink" title="4. 後端實現"></a>4. 後端實現</h2><p>創建一個名為<code>server.py</code>的文件：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">import</span> websockets</span><br><span class="line"><span class="keyword">import</span> logging</span><br><span class="line"></span><br><span class="line">logging.basicConfig(level=logging.INFO)</span><br><span class="line"></span><br><span class="line">connected = <span class="built_in">set</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">chat</span>(<span class="params">websocket, path</span>):</span><br><span class="line">    client_id = <span class="built_in">id</span>(websocket)</span><br><span class="line">    connected.add(websocket)</span><br><span class="line">    logging.info(<span class="string">f&quot;新客戶端連接: <span class="subst">&#123;client_id&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">async</span> <span class="keyword">for</span> message <span class="keyword">in</span> websocket:</span><br><span class="line">            logging.info(<span class="string">f&quot;收到來自 <span class="subst">&#123;client_id&#125;</span> 的消息: <span class="subst">&#123;message&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">for</span> conn <span class="keyword">in</span> connected:</span><br><span class="line">                <span class="keyword">if</span> conn != websocket:</span><br><span class="line">                    <span class="keyword">await</span> conn.send(<span class="string">f&quot;用戶 <span class="subst">&#123;client_id&#125;</span>: <span class="subst">&#123;message&#125;</span>&quot;</span>)</span><br><span class="line">                    logging.info(<span class="string">f&quot;消息已發送給客戶端 <span class="subst">&#123;<span class="built_in">id</span>(conn)&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        connected.remove(websocket)</span><br><span class="line">        logging.info(<span class="string">f&quot;客戶端斷開連接: <span class="subst">&#123;client_id&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">start_server = websockets.serve(chat, <span class="string">&quot;localhost&quot;</span>, <span class="number">8765</span>)</span><br><span class="line"></span><br><span class="line">asyncio.get_event_loop().run_until_complete(start_server)</span><br><span class="line">asyncio.get_event_loop().run_forever()</span><br></pre></td></tr></table></figure>
+
+<p>代碼解釋：</p>
+<ul>
+<li>我們使用<code>asyncio</code>和<code>websockets</code>庫來創建一個異步WebSocket服務器。</li>
+<li><code>connected</code>集合用於存儲所有連接的客戶端。</li>
+<li><code>chat</code>函數處理每個WebSocket連接。</li>
+<li>當收到消息時，我們將其廣播給所有其他連接的客戶端。</li>
+<li>我們使用日志來跟蹤連接、斷開連接和消息傳輸。</li>
+</ul>
+<h2 id="5-前端實現"><a href="#5-前端實現" class="headerlink" title="5. 前端實現"></a>5. 前端實現</h2><p>創建一個名為<code>index.html</code>的文件：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>WebSocket聊天<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">        <span class="selector-id">#messages</span> &#123; <span class="attribute">height</span>: <span class="number">300px</span>; <span class="attribute">overflow-y</span>: scroll; <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#ccc</span>; <span class="attribute">padding</span>: <span class="number">10px</span>; &#125;</span></span><br><span class="line"><span class="language-css">        <span class="selector-class">.status</span> &#123; <span class="attribute">color</span>: <span class="number">#888</span>; <span class="attribute">font-style</span>: italic; &#125;</span></span><br><span class="line"><span class="language-css">        <span class="selector-class">.error</span> &#123; <span class="attribute">color</span>: red; &#125;</span></span><br><span class="line"><span class="language-css">    </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>WebSocket聊天<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;messages&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">id</span>=<span class="string">&quot;messageInput&quot;</span> <span class="attr">placeholder</span>=<span class="string">&quot;輸入消息...&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">onclick</span>=<span class="string">&quot;sendMessage()&quot;</span>&gt;</span>發送<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">const</span> socket = <span class="keyword">new</span> <span class="title class_">WebSocket</span>(<span class="string">&#x27;ws://localhost:8765&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">const</span> messagesDiv = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;messages&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">const</span> messageInput = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;messageInput&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        socket.<span class="property">onopen</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="title function_">addMessage</span>(<span class="string">&#x27;已連接到服務器&#x27;</span>, <span class="string">&#x27;status&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript">        &#125;;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        socket.<span class="property">onmessage</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="title function_">addMessage</span>(event.<span class="property">data</span>, <span class="string">&#x27;message&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript">        &#125;;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        socket.<span class="property">onclose</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="title function_">addMessage</span>(<span class="string">&#x27;與服務器斷開連接&#x27;</span>, <span class="string">&#x27;status&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript">        &#125;;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        socket.<span class="property">onerror</span> = <span class="keyword">function</span>(<span class="params">error</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="title function_">addMessage</span>(<span class="string">&#x27;WebSocket錯誤: &#x27;</span> + error.<span class="property">message</span>, <span class="string">&#x27;error&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript">        &#125;;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">function</span> <span class="title function_">sendMessage</span>(<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">const</span> message = messageInput.<span class="property">value</span>;</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">if</span> (message) &#123;</span></span><br><span class="line"><span class="language-javascript">                socket.<span class="title function_">send</span>(message);</span></span><br><span class="line"><span class="language-javascript">                <span class="title function_">addMessage</span>(<span class="string">&#x27;你: &#x27;</span> + message, <span class="string">&#x27;message&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript">                messageInput.<span class="property">value</span> = <span class="string">&#x27;&#x27;</span>;</span></span><br><span class="line"><span class="language-javascript">            &#125;</span></span><br><span class="line"><span class="language-javascript">        &#125;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">function</span> <span class="title function_">addMessage</span>(<span class="params">message, type</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">const</span> messageElement = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;p&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript">            messageElement.<span class="property">textContent</span> = message;</span></span><br><span class="line"><span class="language-javascript">            messageElement.<span class="property">className</span> = type;</span></span><br><span class="line"><span class="language-javascript">            messagesDiv.<span class="title function_">appendChild</span>(messageElement);</span></span><br><span class="line"><span class="language-javascript">            messagesDiv.<span class="property">scrollTop</span> = messagesDiv.<span class="property">scrollHeight</span>;</span></span><br><span class="line"><span class="language-javascript">        &#125;</span></span><br><span class="line"><span class="language-javascript">    </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>代碼解釋：</p>
+<ul>
+<li>我們創建一個WebSocket連接到我們的服務器。</li>
+<li><code>onopen</code>, <code>onmessage</code>, <code>onclose</code>, 和 <code>onerror</code>事件處理程序用於管理WebSocket的生命周期。</li>
+<li><code>sendMessage</code>函數用於發送消息到服務器。</li>
+<li><code>addMessage</code>函數用於在UI中顯示消息。</li>
+</ul>
+<h2 id="6-運行和測試"><a href="#6-運行和測試" class="headerlink" title="6. 運行和測試"></a>6. 運行和測試</h2><ol>
+<li>啟動服務器：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python server.py</span><br></pre></td></tr></table></figure></li>
+<li>在瀏覽器中打開<code>index.html</code>文件。</li>
+<li>打開多個瀏覽器窗口或標簽頁來模擬多個用戶。</li>
+<li>開始聊天並觀察實時通信！</li>
+</ol>
+<h2 id="7-進階主題"><a href="#7-進階主題" class="headerlink" title="7. 進階主題"></a>7. 進階主題</h2><ul>
+<li>安全性：在生產環境中,考慮使用WSS (WebSocket Secure)。</li>
+<li>身份驗證：實現用戶身份驗證系統。</li>
+<li>錯誤處理：增強錯誤處理和重連機制。</li>
+<li>消息格式：使用JSON等結構化格式傳輸覆雜數據。</li>
+<li>擴展性：考慮如何擴展應用以支持更多用戶。</li>
+</ul>
+<h2 id="8-結論"><a href="#8-結論" class="headerlink" title="8. 結論"></a>8. 結論</h2><p>通過本教程，我們學習了WebSocket的基礎知識，並成功構建了一個簡單的實時聊天應用。WebSocket為實時web應用開發提供了強大的工具，使得創建響應迅速、交互性強的應用成為可能。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -356,6 +628,188 @@
 <h2 id="6-結論"><a href="#6-結論" class="headerlink" title="6. 結論"></a>6. 結論</h2><p>這個Python程式提供了一個全面的市場風險監測解決方案。它不僅能夠及時評估多個市場的風險狀況，還提供了直觀的視覺化結果和詳細的解釋。這對於投資者、風險管理人員和市場分析師來說都是一個非常有價值的工具。</p>
 <p>然而，需要注意的是，任何模型都有其局限性。這個工具應該作為決策的輔助，而不是唯一依據。使用者仍需結合其他分析方法和專業判斷來做出投資決策。</p>
 <p>未來，這個工具還可以進一步擴展，例如風險預警系統、納入更多的市場指標，引入更復雜的機器學習模型，或者開發成為一個實時監測系統。隨著金融市場的不斷演變，持續優化和更新這樣的風險監測工具將變得越來越重要。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/06/26/%E4%BD%BF%E7%94%A8-NSSM-%E5%B0%87-EXE-%E5%8C%85%E8%A3%9D%E6%88%90-Windows-%E6%9C%8D%E5%8B%99/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kyosora">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/06/26/%E4%BD%BF%E7%94%A8-NSSM-%E5%B0%87-EXE-%E5%8C%85%E8%A3%9D%E6%88%90-Windows-%E6%9C%8D%E5%8B%99/" class="post-title-link" itemprop="url">使用 NSSM 將 EXE 包裝成 Windows 服務</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-06-26 10:35:36" itemprop="dateCreated datePublished" datetime="2024-06-26T10:35:36+08:00">2024-06-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-08-26 10:45:14" itemprop="dateModified" datetime="2024-08-26T10:45:14+08:00">2024-08-26</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="使用-NSSM-將-EXE-包裝成-Windows-服務"><a href="#使用-NSSM-將-EXE-包裝成-Windows-服務" class="headerlink" title="使用 NSSM 將 EXE 包裝成 Windows 服務"></a>使用 NSSM 將 EXE 包裝成 Windows 服務</h1><p>NSSM（Non-Sucking Service Manager）是一個強大的工具，可以輕鬆地將任何可執行文件（EXE）轉換為 Windows 服務。本教學將指導您完成整個過程，從安裝 NSSM 到配置和管理您的服務。</p>
+<h2 id="目錄"><a href="#目錄" class="headerlink" title="目錄"></a>目錄</h2><ol>
+<li>NSSM 簡介</li>
+<li>下載和安裝 NSSM</li>
+<li>基本使用：創建服務</li>
+<li>高級配置選項</li>
+<li>管理服務</li>
+<li>常見問題解決</li>
+<li>最佳實踐和注意事項</li>
+</ol>
+<h2 id="1-NSSM-簡介與SC命令的比較"><a href="#1-NSSM-簡介與SC命令的比較" class="headerlink" title="1. NSSM 簡介與SC命令的比較"></a>1. NSSM 簡介與SC命令的比較</h2><p>NSSM 是一個免費的開源工具，它允許您將幾乎任何應用程序作為 Windows 服務運行。與SC命令比較</p>
+<h2 id="SC命令的優點："><a href="#SC命令的優點：" class="headerlink" title="SC命令的優點："></a>SC命令的優點：</h2><h4 id="1-Windows-內建，無需額外安裝"><a href="#1-Windows-內建，無需額外安裝" class="headerlink" title="1. Windows 內建，無需額外安裝"></a>1. Windows 內建，無需額外安裝</h4><h4 id="2-命令簡單，適合基本需求"><a href="#2-命令簡單，適合基本需求" class="headerlink" title="2. 命令簡單，適合基本需求"></a>2. 命令簡單，適合基本需求</h4><h2 id="SC命令的限制："><a href="#SC命令的限制：" class="headerlink" title="SC命令的限制："></a>SC命令的限制：</h2><h4 id="1-功能相對簡單，缺乏高級選項"><a href="#1-功能相對簡單，缺乏高級選項" class="headerlink" title="1. 功能相對簡單，缺乏高級選項"></a>1. 功能相對簡單，缺乏高級選項</h4><h4 id="2-對於複雜的啟動參數或環境設置，可能需要額外的腳本"><a href="#2-對於複雜的啟動參數或環境設置，可能需要額外的腳本" class="headerlink" title="2. 對於複雜的啟動參數或環境設置，可能需要額外的腳本"></a>2. 對於複雜的啟動參數或環境設置，可能需要額外的腳本</h4><h4 id="3-錯誤處理和日誌記錄功能有限"><a href="#3-錯誤處理和日誌記錄功能有限" class="headerlink" title="3. 錯誤處理和日誌記錄功能有限"></a>3. 錯誤處理和日誌記錄功能有限</h4><h2 id="NSSM的優點："><a href="#NSSM的優點：" class="headerlink" title="NSSM的優點："></a>NSSM的優點：</h2><h4 id="1-圖形介面：易於使用，不需要記憶複雜的命令列語法"><a href="#1-圖形介面：易於使用，不需要記憶複雜的命令列語法" class="headerlink" title="1. 圖形介面：易於使用，不需要記憶複雜的命令列語法"></a>1. 圖形介面：易於使用，不需要記憶複雜的命令列語法</h4><h4 id="2-豐富的組態選項："><a href="#2-豐富的組態選項：" class="headerlink" title="2. 豐富的組態選項："></a>2. 豐富的組態選項：</h4><h4 id="可以設置啟動目錄、環境變量"><a href="#可以設置啟動目錄、環境變量" class="headerlink" title="- 可以設置啟動目錄、環境變量"></a>- 可以設置啟動目錄、環境變量</h4><h4 id="支援複雜的啟動參數"><a href="#支援複雜的啟動參數" class="headerlink" title="- 支援複雜的啟動參數"></a>- 支援複雜的啟動參數</h4><h4 id="可以組態服務依賴關係"><a href="#可以組態服務依賴關係" class="headerlink" title="- 可以組態服務依賴關係"></a>- 可以組態服務依賴關係</h4><h4 id="3-錯誤處理：可以設置在程序崩潰時自動重啟"><a href="#3-錯誤處理：可以設置在程序崩潰時自動重啟" class="headerlink" title="3. 錯誤處理：可以設置在程序崩潰時自動重啟"></a>3. 錯誤處理：可以設置在程序崩潰時自動重啟</h4><h4 id="4-日誌功能：可以捕獲並記錄標準輸出和錯誤輸出"><a href="#4-日誌功能：可以捕獲並記錄標準輸出和錯誤輸出" class="headerlink" title="4. 日誌功能：可以捕獲並記錄標準輸出和錯誤輸出"></a>4. 日誌功能：可以捕獲並記錄標準輸出和錯誤輸出</h4><h4 id="5-關機行為控制：可以設置如何優雅地關閉服務"><a href="#5-關機行為控制：可以設置如何優雅地關閉服務" class="headerlink" title="5. 關機行為控制：可以設置如何優雅地關閉服務"></a>5. 關機行為控制：可以設置如何優雅地關閉服務</h4><h4 id="6-I-O-重新導向：可以將輸入輸出重新導向到檔案"><a href="#6-I-O-重新導向：可以將輸入輸出重新導向到檔案" class="headerlink" title="6. I&#x2F;O 重新導向：可以將輸入輸出重新導向到檔案"></a>6. I&#x2F;O 重新導向：可以將輸入輸出重新導向到檔案</h4><h4 id="7-支援互動式程序：某些需要用戶輸入的程序也可以作為服務運行"><a href="#7-支援互動式程序：某些需要用戶輸入的程序也可以作為服務運行" class="headerlink" title="7. 支援互動式程序：某些需要用戶輸入的程序也可以作為服務運行"></a>7. 支援互動式程序：某些需要用戶輸入的程序也可以作為服務運行</h4><h4 id="8-服務監控：提供了更好的方式來監控服務狀態"><a href="#8-服務監控：提供了更好的方式來監控服務狀態" class="headerlink" title="8. 服務監控：提供了更好的方式來監控服務狀態"></a>8. 服務監控：提供了更好的方式來監控服務狀態</h4><p>總的來說，雖然 SC 命令對於簡單的需求來說已經足夠，但 NSSM 提供了更多的靈活性和功能，特別適合那些需要更精細控制的複雜場景。如果您的程序需要特殊的啟動條件、錯誤處理或日誌記錄，NSSM 可能是更好的選擇。</p>
+<h2 id="2-下載和安裝-NSSM"><a href="#2-下載和安裝-NSSM" class="headerlink" title="2. 下載和安裝 NSSM"></a>2. 下載和安裝 NSSM</h2><ol>
+<li>訪問 NSSM 官方網站：<a target="_blank" rel="noopener" href="https://nssm.cc/download">https://nssm.cc/download</a></li>
+<li>下載最新版本的 NSSM（選擇適合您系統的版本，32 位或 64 位）</li>
+<li>解壓下載的壓縮文件</li>
+<li>將 nssm.exe 放置在一個便於訪問的位置，如 <code>C:\Program Files\NSSM\</code></li>
+<li>可選：將 NSSM 的路徑添加到系統的 PATH 環境變量中</li>
+</ol>
+<h2 id="3-基本使用：創建服務"><a href="#3-基本使用：創建服務" class="headerlink" title="3. 基本使用：創建服務"></a>3. 基本使用：創建服務</h2><p>以管理員身份打開命令提示符，然後按照以下步驟操作：</p>
+<ol>
+<li><p>創建新服務：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nssm install &lt;服務名稱&gt;</span><br></pre></td></tr></table></figure>
+<p>這將打開 NSSM 的圖形界面。</p>
+</li>
+<li><p>在彈出的窗口中，設置以下內容：</p>
+<ul>
+<li>Path: 您的 EXE 文件的完整路徑</li>
+<li>Startup directory: EXE 文件所在的目錄</li>
+<li>Arguments: 如果需要，添加命令行參數</li>
+</ul>
+</li>
+<li><p>點擊 “Install service” 按鈕</p>
+</li>
+</ol>
+<p>您也可以使用命令行直接創建服務：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nssm install &lt;服務名稱&gt; &lt;EXE 路徑&gt; [參數]</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nssm install MyService C:\MyApp\MyProgram.exe -config C:\MyApp\config.ini</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-高級配置選項"><a href="#4-高級配置選項" class="headerlink" title="4. 高級配置選項"></a>4. 高級配置選項</h2><p>NSSM 提供了許多高級配置選項：</p>
+<ol>
+<li><p>設置服務顯示名稱和描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nssm set &lt;服務名稱&gt; DisplayName &quot;My Service Display Name&quot;</span><br><span class="line">nssm set &lt;服務名稱&gt; Description &quot;This is my service description&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置啟動類型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nssm set &lt;服務名稱&gt; Start SERVICE_AUTO_START</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>設置環境變量：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nssm set &lt;服務名稱&gt; AppEnvironment PATH=C:\MyApp;%PATH%</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置錯誤處理：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nssm set &lt;服務名稱&gt; AppExit Default Restart</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>設置日誌文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nssm set &lt;服務名稱&gt; AppStdout C:\Logs\MyService.log</span><br><span class="line">nssm set &lt;服務名稱&gt; AppStderr C:\Logs\MyService.err</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="5-管理服務"><a href="#5-管理服務" class="headerlink" title="5. 管理服務"></a>5. 管理服務</h2><ol>
+<li><p>啟動服務：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nssm start &lt;服務名稱&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>停止服務：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nssm stop &lt;服務名稱&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重啟服務：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nssm restart &lt;服務名稱&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看服務狀態：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nssm status &lt;服務名稱&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>編輯現有服務：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nssm edit &lt;服務名稱&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>刪除服務：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nssm remove &lt;服務名稱&gt; confirm</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="6-常見問題解決"><a href="#6-常見問題解決" class="headerlink" title="6. 常見問題解決"></a>6. 常見問題解決</h2><ol>
+<li><p>服務無法啟動</p>
+<ul>
+<li>檢查 EXE 路徑是否正確</li>
+<li>確保 NSSM 和您的應用程序有足夠的權限</li>
+<li>查看 Windows 事件日誌和 NSSM 日誌文件</li>
+</ul>
+</li>
+<li><p>服務啟動後立即停止</p>
+<ul>
+<li>檢查您的應用程序是否設計為長時間運行</li>
+<li>確保所有必要的依賴項都可用</li>
+</ul>
+</li>
+<li><p>無法與服務通信</p>
+<ul>
+<li>檢查防火牆設置</li>
+<li>確保服務帳戶有適當的網絡權限</li>
+</ul>
+</li>
+</ol>
+<h2 id="7-最佳實踐和注意事項"><a href="#7-最佳實踐和注意事項" class="headerlink" title="7. 最佳實踐和注意事項"></a>7. 最佳實踐和注意事項</h2><ol>
+<li>始終使用管理員權限運行 NSSM 命令</li>
+<li>為您的服務使用描述性的名稱</li>
+<li>定期檢查服務日誌以確保正常運行</li>
+<li>考慮使用服務帳戶而不是系統帳戶來運行服務</li>
+<li>定期更新 NSSM 到最新版本</li>
+<li>在生產環境中部署之前，在測試環境中徹底測試您的服務配置</li>
+</ol>
+<p>通過遵循本教學，您應該能夠成功地使用 NSSM 將您的 EXE 文件包裝成 Windows 服務，並有效地管理它。NSSM 提供了一種靈活且強大的方式來確保您的應用程序作為服務持續運行，無需用戶干預。</p>
 
       
     </div>
@@ -843,7 +1297,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/05/06/JavaScript%E5%AD%97%E4%B8%B2%E6%90%9C%E7%B4%A2%E6%96%B9%E6%B3%95%E6%AF%94%E8%BC%83%EF%BC%9AindexOf-vs-includes-vs-filter/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/05/15/%E4%BD%BF%E7%94%A8-IndexedDB-%E7%B7%A9%E5%AD%98%E5%A4%A7%E9%87%8F%E8%B3%87%E6%96%99/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -861,7 +1315,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/05/06/JavaScript%E5%AD%97%E4%B8%B2%E6%90%9C%E7%B4%A2%E6%96%B9%E6%B3%95%E6%AF%94%E8%BC%83%EF%BC%9AindexOf-vs-includes-vs-filter/" class="post-title-link" itemprop="url">JavaScript字串搜索方法比較：indexOf vs includes vs filter</a>
+          <a href="/2024/05/15/%E4%BD%BF%E7%94%A8-IndexedDB-%E7%B7%A9%E5%AD%98%E5%A4%A7%E9%87%8F%E8%B3%87%E6%96%99/" class="post-title-link" itemprop="url">使用 IndexedDB 緩存大量資料</a>
         </h2>
 
         <div class="post-meta-container">
@@ -872,14 +1326,14 @@
       </span>
       <span class="post-meta-item-text">發表於</span>
 
-      <time title="創建時間：2024-05-06 13:43:00" itemprop="dateCreated datePublished" datetime="2024-05-06T13:43:00+08:00">2024-05-06</time>
+      <time title="創建時間：2024-05-15 10:52:48" itemprop="dateCreated datePublished" datetime="2024-05-15T10:52:48+08:00">2024-05-15</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2024-08-06 14:02:51" itemprop="dateModified" datetime="2024-08-06T14:02:51+08:00">2024-08-06</time>
+      <time title="修改時間：2024-08-26 13:46:41" itemprop="dateModified" datetime="2024-08-26T13:46:41+08:00">2024-08-26</time>
     </span>
 
   
@@ -892,423 +1346,45 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="JavaScript字串搜索方法比較：indexOf-vs-includes-vs-filter"><a href="#JavaScript字串搜索方法比較：indexOf-vs-includes-vs-filter" class="headerlink" title="JavaScript字串搜索方法比較：indexOf vs includes vs filter"></a>JavaScript字串搜索方法比較：indexOf vs includes vs filter</h1><p>在JavaScript中，我們經常需要檢查一個字串是否包含某個特定的字元或子字串。本文將深入比較三種常用的方法：<code>indexOf()</code>， <code>includes()</code>， 和<code>filter()</code>。我們將探討它們的語法、用法、優缺點，以及性能考慮。</p>
-<h2 id="1-indexOf-方法"><a href="#1-indexOf-方法" class="headerlink" title="1. indexOf() 方法"></a>1. indexOf() 方法</h2><p><code>indexOf()</code>是最古老和最廣泛支持的方法之一。</p>
-<h3 id="語法"><a href="#語法" class="headerlink" title="語法"></a>語法</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">string.<span class="title function_">indexOf</span>(searchValue[, fromIndex])</span><br></pre></td></tr></table></figure>
-
-<h3 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> str = <span class="string">&quot;Hello, World!&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> hasO = str.<span class="title function_">indexOf</span>(<span class="string">&#x27;o&#x27;</span>) !== -<span class="number">1</span>; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">const</span> hasZ = str.<span class="title function_">indexOf</span>(<span class="string">&#x27;z&#x27;</span>) !== -<span class="number">1</span>; <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="優點"><a href="#優點" class="headerlink" title="優點"></a>優點</h3><ul>
-<li>兼容性好，支持舊版瀏覽器</li>
-<li>可以指定開始搜索的位置</li>
-</ul>
-<h3 id="缺點"><a href="#缺點" class="headerlink" title="缺點"></a>缺點</h3><ul>
-<li>返回值不是布爾型，需要與-1比較</li>
-<li>代碼可讀性較差</li>
-</ul>
-<h2 id="2-includes-方法"><a href="#2-includes-方法" class="headerlink" title="2. includes() 方法"></a>2. includes() 方法</h2><p><code>includes()</code>是ES6引入的新方法，專門用於檢查字串是否包含特定子字串。</p>
-<h3 id="語法-1"><a href="#語法-1" class="headerlink" title="語法"></a>語法</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">string.<span class="title function_">includes</span>(searchString[, position])</span><br></pre></td></tr></table></figure>
-
-<h3 id="用法-1"><a href="#用法-1" class="headerlink" title="用法"></a>用法</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> str = <span class="string">&quot;Hello, World!&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> hasO = str.<span class="title function_">includes</span>(<span class="string">&#x27;o&#x27;</span>); <span class="comment">// true</span></span><br><span class="line"><span class="keyword">const</span> hasZ = str.<span class="title function_">includes</span>(<span class="string">&#x27;z&#x27;</span>); <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="優點-1"><a href="#優點-1" class="headerlink" title="優點"></a>優點</h3><ul>
-<li>直接返回布爾值，更直觀</li>
-<li>代碼更簡潔，可讀性強</li>
-<li>可以指定開始搜索的位置</li>
-</ul>
-<h3 id="缺點-1"><a href="#缺點-1" class="headerlink" title="缺點"></a>缺點</h3><ul>
-<li>不支持正則表達式</li>
-<li>在舊版瀏覽器中可能需要polyfill</li>
-</ul>
-<h2 id="3-filter-方法"><a href="#3-filter-方法" class="headerlink" title="3. filter() 方法"></a>3. filter() 方法</h2><p><code>filter()</code>主要用於數組，但也可以用於字串搜索。</p>
-<h3 id="語法-2"><a href="#語法-2" class="headerlink" title="語法"></a>語法</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Array</span>.<span class="title function_">from</span>(string).<span class="title function_">filter</span>(<span class="function"><span class="params">char</span> =&gt;</span> char === searchChar).<span class="property">length</span> &gt; <span class="number">0</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="用法-2"><a href="#用法-2" class="headerlink" title="用法"></a>用法</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> str = <span class="string">&quot;Hello, World!&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> hasO = <span class="title class_">Array</span>.<span class="title function_">from</span>(str).<span class="title function_">filter</span>(<span class="function"><span class="params">char</span> =&gt;</span> char === <span class="string">&#x27;o&#x27;</span>).<span class="property">length</span> &gt; <span class="number">0</span>; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">const</span> hasZ = <span class="title class_">Array</span>.<span class="title function_">from</span>(str).<span class="title function_">filter</span>(<span class="function"><span class="params">char</span> =&gt;</span> char === <span class="string">&#x27;z&#x27;</span>).<span class="property">length</span> &gt; <span class="number">0</span>; <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="優點-2"><a href="#優點-2" class="headerlink" title="優點"></a>優點</h3><ul>
-<li>靈活性高，可以進行複雜的條件篩選</li>
-<li>可以同時查找多個字元</li>
-</ul>
-<h3 id="缺點-2"><a href="#缺點-2" class="headerlink" title="缺點"></a>缺點</h3><ul>
-<li>語法較為複雜</li>
-<li>性能較差，特別是對於長字串</li>
-</ul>
-<h2 id="性能比較"><a href="#性能比較" class="headerlink" title="性能比較"></a>性能比較</h2><p>為了比較這三種方法的性能，我們可以進行一個簡單的基準測試：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> str = <span class="string">&quot;Hello, World!&quot;</span>.<span class="title function_">repeat</span>(<span class="number">1000000</span>); <span class="comment">// 創建一個長字串</span></span><br><span class="line"><span class="keyword">const</span> searchChar = <span class="string">&#x27;!&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">time</span>(<span class="string">&#x27;indexOf&#x27;</span>);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">    str.<span class="title function_">indexOf</span>(searchChar) !== -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">timeEnd</span>(<span class="string">&#x27;indexOf&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">time</span>(<span class="string">&#x27;includes&#x27;</span>);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">    str.<span class="title function_">includes</span>(searchChar);</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">timeEnd</span>(<span class="string">&#x27;includes&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">time</span>(<span class="string">&#x27;filter&#x27;</span>);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">    <span class="title class_">Array</span>.<span class="title function_">from</span>(str).<span class="title function_">filter</span>(<span class="function"><span class="params">char</span> =&gt;</span> char === searchChar).<span class="property">length</span> &gt; <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">timeEnd</span>(<span class="string">&#x27;filter&#x27;</span>);</span><br></pre></td></tr></table></figure>
-
-<p>在我的測試中，得到了以下結果（結果可能因設備而異）：</p>
-<ul>
-<li>indexOf: 約 5ms</li>
-<li>includes: 約 7ms</li>
-<li>filter: 約 15000ms</li>
-</ul>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><ol>
-<li><strong>最佳性能</strong>: <code>indexOf()</code>略優於<code>includes()</code>，但差異通常可以忽略不計。</li>
-<li><strong>最佳可讀性</strong>: <code>includes()</code>提供了最清晰和直觀的語法。</li>
-<li><strong>最大靈活性</strong>: <code>filter()</code>允許更複雜的搜索邏輯，但性能較差。</li>
+          <h1 id="使用-IndexedDB-緩存大量資料"><a href="#使用-IndexedDB-緩存大量資料" class="headerlink" title="使用 IndexedDB 緩存大量資料"></a>使用 IndexedDB 緩存大量資料</h1><p>起因是撰寫的油猴腳本使用localStorage存資料，到某一天發現資料怎麼存不進去了，排查才發現資料大於5MB了，然後就開始找有沒有其他更好的存資料方式，然後就發現了瀏覽器資料庫 API - IndexedDB。如果你正在開發需要在前端儲存大量資料的網頁應用程式，那麼這篇文章絕對不能錯過!</p>
+<h2 id="什麼是-IndexedDB"><a href="#什麼是-IndexedDB" class="headerlink" title="什麼是 IndexedDB?"></a>什麼是 IndexedDB?</h2><p>IndexedDB 是一個低階的 API，用於在瀏覽器中儲存大量結構化資料。它允許你在使用者的瀏覽器中儲存幾乎無限量的資料，而且速度超快!與 localStorage 不同，IndexedDB 可以處理更複雜的資料結構，還支援索引搜尋，簡直是前端開發者的好朋友啊!</p>
+<h2 id="為什麼要學-IndexedDB"><a href="#為什麼要學-IndexedDB" class="headerlink" title="為什麼要學 IndexedDB?"></a>為什麼要學 IndexedDB?</h2><ol>
+<li>儲存大量資料：相較於 localStorage 的 5MB 限制，IndexedDB 幾乎沒有儲存上限。</li>
+<li>支援複雜資料結構：可以儲存和查詢 JavaScript 物件。</li>
+<li>非同步操作：不會阻塞主執行緒，讓你的應用程式更流暢。</li>
+<li>支援交易(Transactions)：確保資料操作的一致性和可靠性。</li>
 </ol>
-<h3 id="建議"><a href="#建議" class="headerlink" title="建議"></a>建議</h3><ul>
-<li>對於簡單的字元或子字串搜索，優先使用<code>includes()</code>。它提供了良好的平衡：易讀性好，性能也不錯。</li>
-<li>如果需要支持舊版瀏覽器或需要知道字元的位置，使用<code>indexOf()</code>。</li>
-<li>只在需要複雜搜索邏輯時使用<code>filter()</code>。</li>
-</ul>
-<p>記住，在大多數實際應用中，這些方法之間的性能差異是微不足道的。選擇最適合你的用例和代碼風格的方法才是最重要的。</p>
-<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf">MDN Web Docs: String.prototype.indexOf()</a></li>
-<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes">MDN Web Docs: String.prototype.includes()</a></li>
-<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter">MDN Web Docs: Array.prototype.filter()</a></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/05/02/win-acme-Windows%E4%B8%8A%E7%9A%84%E8%87%AA%E5%8B%95%E5%8C%96SSL-TLS%E8%AD%89%E6%9B%B8%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="John Doe">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kyosora">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | kyosora">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/05/02/win-acme-Windows%E4%B8%8A%E7%9A%84%E8%87%AA%E5%8B%95%E5%8C%96SSL-TLS%E8%AD%89%E6%9B%B8%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/" class="post-title-link" itemprop="url">win-acme： Windows上的自動化SSL/TLS證書管理工具</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">發表於</span>
-
-      <time title="創建時間：2024-05-02 16:17:31" itemprop="dateCreated datePublished" datetime="2024-05-02T16:17:31+08:00">2024-05-02</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2024-08-08 15:29:25" itemprop="dateModified" datetime="2024-08-08T15:29:25+08:00">2024-08-08</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="win-acme-Windows上的自動化SSL-TLS證書管理工具"><a href="#win-acme-Windows上的自動化SSL-TLS證書管理工具" class="headerlink" title="win-acme: Windows上的自動化SSL&#x2F;TLS證書管理工具"></a>win-acme: Windows上的自動化SSL&#x2F;TLS證書管理工具</h1><p>在當今的網路世界中，HTTPS已經成為保護網站安全的標準。然而，對於Windows服務器管理員來說，管理SSL&#x2F;TLS證書可能是一項繁瑣的任務。這就是win-acme發揮作用的地方 - 它為Windows用戶提供了一個簡單而強大的工具來自動化SSL&#x2F;TLS證書的獲取和更新過程。</p>
-<h2 id="什麼是win-acme"><a href="#什麼是win-acme" class="headerlink" title="什麼是win-acme?"></a>什麼是win-acme?</h2><p>win-acme (Windows ACME Simple Client) 是一個開源的ACME客戶端，專為Windows環境設計。它允許用戶從Let’s Encrypt等ACME兼容的證書頒發機構自動獲取、安裝和更新SSL&#x2F;TLS證書。</p>
-<p><strong>專案網址</strong>: <a target="_blank" rel="noopener" href="https://github.com/win-acme/win-acme/tree/v2.2.9.1701">https://github.com/win-acme/win-acme/tree/v2.2.9.1701</a></p>
-<h2 id="win-acme的主要特點"><a href="#win-acme的主要特點" class="headerlink" title="win-acme的主要特點"></a>win-acme的主要特點</h2><ol>
-<li><p><strong>自動化</strong>: 自動處理證書的獲取、安裝和更新過程。</p>
-</li>
-<li><p><strong>Windows集成</strong>: 專為Windows環境設計，支持IIS、Exchange、RDP等多種Windows服務。</p>
-</li>
-<li><p><strong>多種驗證方式</strong>: 支持HTTP驗證、DNS驗證等多種域名所有權驗證方式。</p>
-</li>
-<li><p><strong>靈活配置</strong>: 提供命令行界面和圖形用戶界面，滿足不同用戶的需求。</p>
-</li>
-<li><p><strong>插件系統</strong>: 支持自定義插件，可以擴展功能以滿足特定需求。</p>
-</li>
-<li><p><strong>全面文檔</strong>: 提供詳細的文檔和示例，幫助用戶快速上手。</p>
-</li>
-<li><p><strong>開源免費</strong>: 基於Apache License 2.0開源協議，完全免費使用。</p>
-</li>
+<h2 id="IndexedDB-基本概念"><a href="#IndexedDB-基本概念" class="headerlink" title="IndexedDB 基本概念"></a>IndexedDB 基本概念</h2><p>在開始寫程式之前，我們先來了解一下 IndexedDB 的幾個重要概念：</p>
+<ol>
+<li>資料庫(Database)：就像一個大容器，裡面可以存放多個物件儲存區。</li>
+<li>物件儲存區(Object Store)：類似資料表，用來儲存資料。</li>
+<li>索引(Index)：用來加速搜尋特定欄位的值。</li>
+<li>交易(Transaction)：確保一系列操作全部成功或全部失敗。</li>
+<li>游標(Cursor)：用來遍歷資料集合的機制。</li>
 </ol>
-<h2 id="如何使用win-acme"><a href="#如何使用win-acme" class="headerlink" title="如何使用win-acme"></a>如何使用win-acme</h2><h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><ol>
-<li>從GitHub releases頁面下載最新版本的win-acme。</li>
-<li>解壓下載的ZIP文件到你選擇的目錄。</li>
-</ol>
-<h3 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h3><ol>
-<li>以管理員身份運行 <code>wacs.exe</code>。</li>
-<li>選擇 “N” 創建新證書。</li>
-<li>按照提示輸入域名和其他必要信息。</li>
-<li>win-acme會自動完成驗證、獲取和安裝證書的過程。</li>
-</ol>
-<h3 id="高級配置"><a href="#高級配置" class="headerlink" title="高級配置"></a>高級配置</h3><p>win-acme支持通過命令行參數或配置文件進行高級配置。例如:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wacs.exe --target manual --host example.com --installation iis --websiteroot C:\inetpub\wwwroot</span><br></pre></td></tr></table></figure>
+<h2 id="實作教學"><a href="#實作教學" class="headerlink" title="實作教學"></a>實作教學</h2><p>好啦，廢話不多說，我們直接來寫程式吧!</p>
+<h3 id="1-開啟資料庫連線"><a href="#1-開啟資料庫連線" class="headerlink" title="1. 開啟資料庫連線"></a>1. 開啟資料庫連線</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> db;</span><br><span class="line"><span class="keyword">const</span> dbName = <span class="string">&quot;MyAwesomeDB&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> request = indexedDB.<span class="title function_">open</span>(dbName, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">request.<span class="property">onerror</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&quot;哎呀!開啟資料庫時發生錯誤:&quot;</span>, event.<span class="property">target</span>.<span class="property">error</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">request.<span class="property">onsuccess</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">  db = event.<span class="property">target</span>.<span class="property">result</span>;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;耶!成功連線到資料庫&quot;</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">request.<span class="property">onupgradeneeded</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">  db = event.<span class="property">target</span>.<span class="property">result</span>;</span><br><span class="line">  <span class="keyword">const</span> objectStore = db.<span class="title function_">createObjectStore</span>(<span class="string">&quot;users&quot;</span>, &#123; <span class="attr">keyPath</span>: <span class="string">&quot;id&quot;</span> &#125;);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;資料庫結構升級完成&quot;</span>);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-<p>這條命令會為 example.com 獲取證書，並將其安裝到IIS中。</p>
-<h2 id="主要用例"><a href="#主要用例" class="headerlink" title="主要用例"></a>主要用例</h2><ol>
-<li><p><strong>IIS網站</strong>: 自動為IIS託管的網站安裝和更新SSL證書。</p>
-</li>
-<li><p><strong>Exchange服務器</strong>: 為Exchange服務器配置SSL證書，提高郵件傳輸的安全性。</p>
-</li>
-<li><p><strong>遠程桌面服務</strong>: 為RDP服務配置SSL證書，增強遠程連接的安全性。</p>
-</li>
-<li><p><strong>其他Windows服務</strong>: 如FTP、SMTP等服務的SSL證書管理。</p>
-</li>
-</ol>
-<h2 id="win-acme的優勢"><a href="#win-acme的優勢" class="headerlink" title="win-acme的優勢"></a>win-acme的優勢</h2><ol>
-<li><p><strong>簡化證書管理</strong>: 大大減少了手動管理SSL證書的工作量。</p>
-</li>
-<li><p><strong>降低成本</strong>: 通過使用免費的Let’s Encrypt證書，降低了SSL證書的成本。</p>
-</li>
-<li><p><strong>提高安全性</strong>: 自動更新確保了證書始終是最新的，減少了過期風險。</p>
-</li>
-<li><p><strong>靈活性</strong>: 適應各種Windows服務器環境和配置需求。</p>
-</li>
-</ol>
+<p>這段程式碼會開啟一個名為 “MyAwesomeDB” 的資料庫，版本為 1。如果資料庫不存在或版本需要升級，就會觸發 <code>onupgradeneeded</code> 事件,在這裡我們創建了一個名為 “users” 的物件儲存區。</p>
+<h3 id="2-新增資料"><a href="#2-新增資料" class="headerlink" title="2. 新增資料"></a>2. 新增資料</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">addUser</span>(<span class="params">user</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> transaction = db.<span class="title function_">transaction</span>([<span class="string">&quot;users&quot;</span>], <span class="string">&quot;readwrite&quot;</span>);</span><br><span class="line">  <span class="keyword">const</span> objectStore = transaction.<span class="title function_">objectStore</span>(<span class="string">&quot;users&quot;</span>);</span><br><span class="line">  <span class="keyword">const</span> request = objectStore.<span class="title function_">add</span>(user);</span><br><span class="line">  </span><br><span class="line">  request.<span class="property">onerror</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&quot;新增資料失敗:&quot;</span>, event.<span class="property">target</span>.<span class="property">error</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">  </span><br><span class="line">  request.<span class="property">onsuccess</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;讚啦!新增資料成功&quot;</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用範例</span></span><br><span class="line"><span class="title function_">addUser</span>(&#123; <span class="attr">id</span>: <span class="number">1</span>, <span class="attr">name</span>: <span class="string">&quot;小明&quot;</span>, <span class="attr">email</span>: <span class="string">&quot;xiaoming@example.com&quot;</span> &#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-讀取資料"><a href="#3-讀取資料" class="headerlink" title="3. 讀取資料"></a>3. 讀取資料</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">getUser</span>(<span class="params">id</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> transaction = db.<span class="title function_">transaction</span>([<span class="string">&quot;users&quot;</span>]);</span><br><span class="line">  <span class="keyword">const</span> objectStore = transaction.<span class="title function_">objectStore</span>(<span class="string">&quot;users&quot;</span>);</span><br><span class="line">  <span class="keyword">const</span> request = objectStore.<span class="title function_">get</span>(id);</span><br><span class="line">  </span><br><span class="line">  request.<span class="property">onerror</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&quot;讀取資料失敗:&quot;</span>, event.<span class="property">target</span>.<span class="property">error</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">  </span><br><span class="line">  request.<span class="property">onsuccess</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (request.<span class="property">result</span>) &#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;找到使用者:&quot;</span>, request.<span class="property">result</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;哎呀!找不到這個使用者&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用範例</span></span><br><span class="line"><span class="title function_">getUser</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-更新資料"><a href="#4-更新資料" class="headerlink" title="4. 更新資料"></a>4. 更新資料</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">updateUser</span>(<span class="params">user</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> transaction = db.<span class="title function_">transaction</span>([<span class="string">&quot;users&quot;</span>], <span class="string">&quot;readwrite&quot;</span>);</span><br><span class="line">  <span class="keyword">const</span> objectStore = transaction.<span class="title function_">objectStore</span>(<span class="string">&quot;users&quot;</span>);</span><br><span class="line">  <span class="keyword">const</span> request = objectStore.<span class="title function_">put</span>(user);</span><br><span class="line">  </span><br><span class="line">  request.<span class="property">onerror</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&quot;更新資料失敗:&quot;</span>, event.<span class="property">target</span>.<span class="property">error</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">  </span><br><span class="line">  request.<span class="property">onsuccess</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;讚啦!更新資料成功&quot;</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用範例</span></span><br><span class="line"><span class="title function_">updateUser</span>(&#123; <span class="attr">id</span>: <span class="number">1</span>, <span class="attr">name</span>: <span class="string">&quot;小明&quot;</span>, <span class="attr">email</span>: <span class="string">&quot;xiaoming_new@example.com&quot;</span> &#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-刪除資料"><a href="#5-刪除資料" class="headerlink" title="5. 刪除資料"></a>5. 刪除資料</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">deleteUser</span>(<span class="params">id</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> transaction = db.<span class="title function_">transaction</span>([<span class="string">&quot;users&quot;</span>], <span class="string">&quot;readwrite&quot;</span>);</span><br><span class="line">  <span class="keyword">const</span> objectStore = transaction.<span class="title function_">objectStore</span>(<span class="string">&quot;users&quot;</span>);</span><br><span class="line">  <span class="keyword">const</span> request = objectStore.<span class="title function_">delete</span>(id);</span><br><span class="line">  </span><br><span class="line">  request.<span class="property">onerror</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&quot;刪除資料失敗:&quot;</span>, event.<span class="property">target</span>.<span class="property">error</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">  </span><br><span class="line">  request.<span class="property">onsuccess</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;掰掰!刪除資料成功&quot;</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用範例</span></span><br><span class="line"><span class="title function_">deleteUser</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="進階技巧"><a href="#進階技巧" class="headerlink" title="進階技巧"></a>進階技巧</h2><h3 id="1-使用索引加速搜尋"><a href="#1-使用索引加速搜尋" class="headerlink" title="1. 使用索引加速搜尋"></a>1. 使用索引加速搜尋</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在 onupgradeneeded 中創建索引</span></span><br><span class="line">objectStore.<span class="title function_">createIndex</span>(<span class="string">&quot;nameIndex&quot;</span>, <span class="string">&quot;name&quot;</span>, &#123; <span class="attr">unique</span>: <span class="literal">false</span> &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用索引搜尋</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getUserByName</span>(<span class="params">name</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> transaction = db.<span class="title function_">transaction</span>([<span class="string">&quot;users&quot;</span>]);</span><br><span class="line">  <span class="keyword">const</span> objectStore = transaction.<span class="title function_">objectStore</span>(<span class="string">&quot;users&quot;</span>);</span><br><span class="line">  <span class="keyword">const</span> index = objectStore.<span class="title function_">index</span>(<span class="string">&quot;nameIndex&quot;</span>);</span><br><span class="line">  <span class="keyword">const</span> request = index.<span class="title function_">get</span>(name);</span><br><span class="line">  </span><br><span class="line">  request.<span class="property">onsuccess</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (request.<span class="property">result</span>) &#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;找到使用者:&quot;</span>, request.<span class="property">result</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;哎呀!找不到這個使用者&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-使用游標遍歷資料"><a href="#2-使用游標遍歷資料" class="headerlink" title="2. 使用游標遍歷資料"></a>2. 使用游標遍歷資料</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">getAllUsers</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> users = [];</span><br><span class="line">  <span class="keyword">const</span> transaction = db.<span class="title function_">transaction</span>([<span class="string">&quot;users&quot;</span>]);</span><br><span class="line">  <span class="keyword">const</span> objectStore = transaction.<span class="title function_">objectStore</span>(<span class="string">&quot;users&quot;</span>);</span><br><span class="line">  <span class="keyword">const</span> request = objectStore.<span class="title function_">openCursor</span>();</span><br><span class="line">  </span><br><span class="line">  request.<span class="property">onsuccess</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> cursor = event.<span class="property">target</span>.<span class="property">result</span>;</span><br><span class="line">    <span class="keyword">if</span> (cursor) &#123;</span><br><span class="line">      users.<span class="title function_">push</span>(cursor.<span class="property">value</span>);</span><br><span class="line">      cursor.<span class="title function_">continue</span>();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;所有使用者:&quot;</span>, users);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h2><ol>
-<li><p><strong>定期檢查</strong>: 雖然過程是自動化的，但定期檢查證書狀態仍然是好習慣。</p>
-</li>
-<li><p><strong>防火牆設置</strong>: 確保必要的端口(如80和443)是開放的，以便進行驗證。</p>
-</li>
-<li><p><strong>備份</strong>: 在首次使用前，建議備份現有的SSL配置。</p>
-</li>
-<li><p><strong>權限</strong>: 確保win-acme有足夠的權限來修改必要的系統設置。</p>
-</li>
+<li>記得處理錯誤：IndexedDB 的操作可能會失敗，一定要好好處理錯誤狀況。</li>
+<li>使用交易：盡可能將相關的操作放在同一個交易中，以確保資料一致性。</li>
+<li>非同步思維：所有操作都是非同步的，要小心處理回調函式或使用 Promise。</li>
+<li>版本控制：當需要修改資料庫結構時，要記得更新版本號碼。</li>
 </ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>win-acme為Windows服務器管理員提供了一個強大而簡單的工具，以自動化SSL&#x2F;TLS證書的管理過程。通過簡化證書獲取、安裝和更新的流程，它不僅節省了時間和資源，還提高了網站和服務的安全性。無論您是管理單個網站還是複雜的Windows服務器環境，win-acme都能夠滿足您的SSL證書管理需求。</p>
-<p>如果您正在尋找一個可靠的方法來簡化Windows環境中的SSL證書管理，win-acme絕對值得一試。它不僅能夠節省您的時間和精力，還能確保您的網站和服務始終受到最新SSL&#x2F;TLS證書的保護。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/04/17/GO%E8%AA%9E%E8%A8%80%E5%AD%B8%E7%BF%92%E8%B7%AF%E5%BE%91/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="John Doe">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kyosora">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | kyosora">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/04/17/GO%E8%AA%9E%E8%A8%80%E5%AD%B8%E7%BF%92%E8%B7%AF%E5%BE%91/" class="post-title-link" itemprop="url">GO語言學習路徑</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">發表於</span>
-
-      <time title="創建時間：2024-04-17 09:29:42" itemprop="dateCreated datePublished" datetime="2024-04-17T09:29:42+08:00">2024-04-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2024-04-24 09:58:25" itemprop="dateModified" datetime="2024-04-24T09:58:25+08:00">2024-04-24</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="GO語言學習路徑"><a href="#GO語言學習路徑" class="headerlink" title="GO語言學習路徑"></a>GO語言學習路徑</h1><p>GO是一種開源的編程語言,由Google公司於2009年開發。它的設計目標是提高程式開發的效率,能夠輕鬆地構建簡單、可靠且高效的軟件。GO語言綜合了靜態語言的安全性和動態語言的高效性，非常適合用於開發Web服務、系統編程和大規模分佈式系統等。</p>
-<h2 id="基礎知識"><a href="#基礎知識" class="headerlink" title="基礎知識"></a>基礎知識</h2><p>開始學習GO語言之前，需要具備一定的編程基礎知識,了解基本的編程概念和邏輯思維。如果你是編程新手,可以先學習Python或JavaScript等入門語言。</p>
-<h2 id="安裝GO環境"><a href="#安裝GO環境" class="headerlink" title="安裝GO環境"></a>安裝GO環境</h2><p>前往官方網站 <a target="_blank" rel="noopener" href="https://golang.org/">https://golang.org/</a> 下載GO語言安裝包<br>按照安裝說明完成GO環境的安裝<br>設置GOPATH環境變數,用於存放GO代碼</p>
-<h2 id="學習GO語言基礎"><a href="#學習GO語言基礎" class="headerlink" title="學習GO語言基礎"></a>學習GO語言基礎</h2><p>語法基礎<br>變量、常量<br>基本數據類型<br>運算符<br>流程控制(if、switch、for)<br>數組、切片<br>Map<br>函數<br>函數定義與調用<br>匿名函數<br>閉包<br>可變參數<br>defer語句<br>結構體<br>結構體定義<br>構造函數<br>方法<br>接口<br>接口定義<br>接口實現<br>空接口<br>並發編程<br>goroutine<br>channel<br>select<br>sync包<br>併發模式<br>標準庫<br>fmt<br>os<br>io<br>net<br>http<br>推薦閱讀經典書籍《GO語言編程》(The Go Programming Language)和《GO程序設計語言》(Programming in Go)。</p>
-<p>GO Web開發<br>Go Web基礎<br>http包<br>Web服務器<br>路由<br>模板<br>靜態文件處理<br>數據庫操作<br>database&#x2F;sql<br>ORM框架(gorm、xorm)<br>常用Web框架<br>Gin<br>Beego<br>Echo<br>中間件<br>日誌記錄<br>請求處理 -身份驗證<br>任務調度<br>定時任務<br>延時任務<br>微服務<br>gRPC<br>Go-kit<br>Go-micro<br>學習GO Web開發時,可以參考項目 <a target="_blank" rel="noopener" href="https://github.com/golang/go">https://github.com/golang/go</a> 和書籍《Go Web編程》。</p>
-<h2 id="項目實戰"><a href="#項目實戰" class="headerlink" title="項目實戰"></a>項目實戰</h2><p>在學習GO語言基礎和Web開發知識後,最好通過實戰項目來鞏固所學知識。可以選擇自己感興趣的領域,例如開發Web服務、命令行工具、系統編程等。也可以參與開源項目,從實際項目中學習。</p>
-<h2 id="持續學習"><a href="#持續學習" class="headerlink" title="持續學習"></a>持續學習</h2><p>GO語言生態圈發展迅速,需要持續關注GO語言的最新動態,學習新特性和新工具。可以關注官方博客 <a target="_blank" rel="noopener" href="https://blog.golang.org/">https://blog.golang.org/</a> 和相關技術社區。</p>
-<p>編程之路漫漫,GO語言只是其中的一部分。保持熱情,持續學習,才能在這條路上越走越遠。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/04/10/NET-Core-%E4%B8%AD%E7%9A%84%E4%B8%AD%E9%96%93%E4%BB%B6%EF%BC%88Middleware%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="John Doe">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kyosora">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | kyosora">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/04/10/NET-Core-%E4%B8%AD%E7%9A%84%E4%B8%AD%E9%96%93%E4%BB%B6%EF%BC%88Middleware%EF%BC%89/" class="post-title-link" itemprop="url">.NET Core 中的中間件（Middleware）</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">發表於</span>
-
-      <time title="創建時間：2024-04-10 16:33:08" itemprop="dateCreated datePublished" datetime="2024-04-10T16:33:08+08:00">2024-04-10</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2024-08-05 18:25:19" itemprop="dateModified" datetime="2024-08-05T18:25:19+08:00">2024-08-05</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="NET-Core-中的中間件（Middleware）詳解"><a href="#NET-Core-中的中間件（Middleware）詳解" class="headerlink" title=".NET Core 中的中間件（Middleware）詳解"></a>.NET Core 中的中間件（Middleware）詳解</h1><h2 id="什麼是中間件？"><a href="#什麼是中間件？" class="headerlink" title="什麼是中間件？"></a>什麼是中間件？</h2><p>在 .NET Core 應用程序中，中間件是一系列組件，它們形成了一個請求處理管道。每個中間件都可以:</p>
-<ol>
-<li>處理傳入的 HTTP 請求</li>
-<li>處理傳出的 HTTP 響應</li>
-<li>呼叫管道中的下一個中間件</li>
-<li>在管道中的下一個中間件完成處理後執行某些操作</li>
-</ol>
-<p>中間件的概念類似於一條組裝線，每個工人（中間件）都對產品（請求&#x2F;響應）進行某些操作。</p>
-<h2 id="中間件的工作原理"><a href="#中間件的工作原理" class="headerlink" title="中間件的工作原理"></a>中間件的工作原理</h2><p>中間件在 .NET Core 應用程序中按照特定的順序執行。這個順序很重要，因為它決定了哪個中間件先處理請求，以及響應如何被處理。</p>
-<p>工作流程如下：</p>
-<ol>
-<li>當應用程序接收到 HTTP 請求時，請求進入中間件管道。</li>
-<li>每個中間件組件可以:<ul>
-<li>執行一些操作</li>
-<li>將請求傳遞給下一個中間件</li>
-<li>或者短路請求（不再傳遞給後續中間件）</li>
-</ul>
-</li>
-<li>一旦請求到達管道的末端，它會開始返回。</li>
-<li>響應會再次通過所有中間件，讓每個中間件有機會處理或修改響應。</li>
-</ol>
-<p>這個過程可以用下面的示意圖來表示：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Request → Middleware 1 → Middleware 2 → Middleware 3 → Application Logic</span><br><span class="line">Response ← Middleware 1 ← Middleware 2 ← Middleware 3 ← Application Logic</span><br></pre></td></tr></table></figure>
-
-<h2 id="常見的中間件"><a href="#常見的中間件" class="headerlink" title="常見的中間件"></a>常見的中間件</h2><p>.NET Core 提供了許多內建的中間件，以下是一些常見的例子：</p>
-<ol>
-<li><p><strong>認證中間件</strong>: 處理用戶認證，確保只有授權的用戶可以訪問某些資源。</p>
-</li>
-<li><p><strong>CORS中間件</strong>: 處理跨源資源共享（CORS），允許或限制來自不同域的請求。</p>
-</li>
-<li><p><strong>靜態文件中間件</strong>: 處理靜態文件的請求，如 HTML、CSS、JavaScript 和圖片等。</p>
-</li>
-<li><p><strong>路由中間件</strong>: 根據 URL 將請求導向正確的控制器和操作。</p>
-</li>
-<li><p><strong>異常處理中間件</strong>: 捕獲並處理應用程序中發生的異常。</p>
-</li>
-<li><p><strong>響應壓縮中間件</strong>: 壓縮響應以減少傳輸的數據量，提高性能。</p>
-</li>
-</ol>
-<h2 id="如何使用中間件"><a href="#如何使用中間件" class="headerlink" title="如何使用中間件"></a>如何使用中間件</h2><p>在 .NET Core 應用程序中，中間件通常在 <code>Startup.cs</code> 文件的 <code>Configure</code> 方法中配置。以下是一個簡單的例子：</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Configure</span>(<span class="params">IApplicationBuilder app, IWebHostEnvironment env</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (env.IsDevelopment())</span><br><span class="line">    &#123;</span><br><span class="line">        app.UseDeveloperExceptionPage();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    app.UseHttpsRedirection();</span><br><span class="line">    app.UseStaticFiles();</span><br><span class="line">    app.UseRouting();</span><br><span class="line">    app.UseAuthorization();</span><br><span class="line"></span><br><span class="line">    app.UseEndpoints(endpoints =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        endpoints.MapControllers();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在這個例子中，我們可以看到幾個常見中間件的使用，它們按照特定的順序添加到請求處理管道中。</p>
-<h2 id="自定義中間件"><a href="#自定義中間件" class="headerlink" title="自定義中間件"></a>自定義中間件</h2><p>除了使用內建的中間件，開發者還可以創建自定義的中間件來滿足特定的需求。自定義中間件通常包含：</p>
-<ol>
-<li>一個公共構造函數，帶有一個類型為 <code>RequestDelegate</code> 的參數。</li>
-<li>一個名為 <code>Invoke</code> 或 <code>InvokeAsync</code> 的公共方法，返回一個 <code>Task</code>。</li>
-</ol>
-<p>以下是一個簡單的自定義中間件示例：</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">SimpleMiddleware</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> RequestDelegate _next;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SimpleMiddleware</span>(<span class="params">RequestDelegate next</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _next = next;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task <span class="title">InvokeAsync</span>(<span class="params">HttpContext context</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 在請求處理之前的邏輯</span></span><br><span class="line">        <span class="keyword">await</span> _next(context);</span><br><span class="line">        <span class="comment">// 在請求處理之後的邏輯</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>中間件是 .NET Core 應用程序中非常強大和靈活的組件。通過理解和正確使用中間件，開發者可以更好地控制請求處理流程，實現諸如認證、日誌記錄、異常處理等功能，從而構建更加健壯和高效的應用程序。</p>
-<p>在設計 .NET Core 應用程序時，合理安排中間件的順序和選擇適當的中間件組合是非常重要的。這不僅會影響應用程序的功能，還會影響其性能和可維護性。</p>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>IndexedDB 雖然一開始看起來有點複雜，但是只要掌握了基本概念和用法，就能夠輕鬆地在前端儲存和管理大量資料，不過一般儲存使用localStorage還是夠用，畢竟我腳本是用了好幾年才到達5MB不得不換，資料少用localStorage還是很方便的，不過如果是持續增長的資料還是早換IndexedDB。</p>
 
       
     </div>
@@ -1328,7 +1404,7 @@
 
 
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" title="下一頁" aria-label="下一頁" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" title="下一頁" aria-label="下一頁" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
