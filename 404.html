@@ -1,0 +1,25 @@
+extends includes/layout.pug
+
+block content
+    #error-wrap
+        .error-content
+            .error-img(style=`background-image: url(${url_for(theme.errorpage.img)})`)
+            .error-info
+                h1.error_title 404
+                .error_subtitle= theme.errorpage.text
+                a.button--animated(href=url_for("/"))
+                    i.solitude.fa-solid.fa-arrow-up-right-from-square
+                    =_p('404.button')
+
+    if theme.errorpage.recommendList
+        .aside-list
+            .aside-list-group
+                each post, index in site.posts.sort('-date').data.slice(0, 6)
+                    if index >= 5
+                        break
+                    .aside-list-item
+                        a.thumbnail(href=url_for(post.path), title=post.title)
+                            img(src=url_for(post.cover), alt=post.title)
+                        .content
+                            a.title(href=url_for(post.path), title=post.title)= post.title
+<script>const posts=["2024/01/25/Hexo — 用於快速建立個人博客的強大工具/","2024/02/23/Chrome套件開發教學：自動整理書籤到域名資料夾/","2024/06/18/DuckDNS-免費且簡單的動態DNS服務/","2024/04/17/GO語言學習路徑/","2024/03/11/JS防抖（Debouncing）與節流（Throttling）/","2024/02/06/Git基礎使用/","2024/08/20/SQL-查詢優化案例研究：提升水位監測系統性能/","2024/04/10/NET-Core-中的中間件（Middleware）/","2024/04/05/NET-Core-中的依賴注入和控制反轉/","2024/05/06/JavaScript字串搜索方法比較：indexOf-vs-includes-vs-filter/","2024/03/07/Vue-3-資料傳遞/","2024/03/10/Vue中的Pinia狀態管理：全面指南/","2024/08/19/WebSocket教程：構建實時聊天應用/","2024/05/15/使用-IndexedDB-緩存大量資料/","2024/05/02/win-acme-Windows上的自動化SSL-TLS證書管理工具/","2024/06/06/Windows工作排程器沒有正常運作/","2024/06/26/使用-NSSM-將-EXE-包裝成-Windows-服務/","2024/08/08/使用-SQL-Server-Resource-Governor-限制特定資料庫的資源使用/","2024/06/25/從Newtonsoft.Json遷移到System.Text.Json的經驗分享/","2024/08/06/深入解析-使用Python構建全面的市場風險監測工具/","2024/06/13/深入解析：處理中文數字的自訂排序函數/","2024/04/08/快速排序法：輕鬆理解的演算法指南/","2024/02/07/測試驅動開發-TDD-入門與實作教學/","2024/04/01/為甚麼應該從-Net-Framework跳到-Net-Core/"];function toRandomPost(){ pjax.loadUrl(GLOBAL_CONFIG.root+posts[Math.floor(Math.random()*posts.length)]); }</script>
