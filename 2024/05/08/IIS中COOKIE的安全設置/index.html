@@ -1,0 +1,195 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>IIS中COOKIE的安全設置 | kyosora</title><noscript>開啟JavaScript才能訪問本站哦~</noscript><link rel="icon" href="/img/pwa/favicon.ico"><!-- index.css--><link rel="stylesheet" href="/css/index.css?v=2.0.10"><!-- inject head--><link rel="canonical" href="http://example.com/2024/05/08/IIS%E4%B8%ADCOOKIE%E7%9A%84%E5%AE%89%E5%85%A8%E8%A8%AD%E7%BD%AE/"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"><!-- aplayer--><!-- swiper--><!-- fancybox ui--><!-- katex--><!-- Open Graph--><meta name="description" content="IIS中COOKIE的安全設置在當今的網絡安全環境中，保護使用者連線和敏感資料變得越來越重要。作為開發人員和系統管理員，我們必須采取一切必要的措施來確保我們網站的安全性。本文將深入探討IIS(Internet Information Services)中COOKIE的兩個關鍵安全設置:httpOnl"><!-- pwa--><meta name="apple-mobile-web-app-capable" content="kyosora"><meta name="theme-color" content="var(--efu-main)"><meta name="apple-mobile-web-app-status-bar-style" content="var(--efu-main)"><link rel="bookmark" href="/img/pwa/favicon.ico"><link rel="apple-touch-icon" href="/img/pwa/favicon.ico" sizes="180x180"><script>console.log(' %c Solitude %c ' + '2.0.10' + ' %c https://github.com/everfu/hexo-theme-solitude',
+    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
+    'background:#ff9a9a ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
+    'background:unset ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff')
+</script><script src="https://cdn.bootcdn.net/ajax/libs/pace/1.2.4/pace.min.js"></script><script>(()=>{
+        const saveToLocal = {
+            set: function setWithExpiry(key, value, ttl) {
+                if (ttl === 0)
+                    return
+                const now = new Date()
+                const expiryDay = ttl * 86400000
+                const item = {
+                    value: value,
+                    expiry: now.getTime() + expiryDay
+                }
+                localStorage.setItem(key, JSON.stringify(item))
+            },
+            get: function getWithExpiry(key) {
+                const itemStr = localStorage.getItem(key)
+
+                if (!itemStr) {
+                    return undefined
+                }
+                const item = JSON.parse(itemStr)
+                const now = new Date()
+
+                if (now.getTime() > item.expiry) {
+                    localStorage.removeItem(key)
+                    return undefined
+                }
+                return item.value
+            }
+        };
+        window.utils = {
+            saveToLocal: saveToLocal,
+            getCSS: (url, id = false) => new Promise((resolve, reject) => {
+              const link = document.createElement('link')
+              link.rel = 'stylesheet'
+              link.href = url
+              if (id) link.id = id
+              link.onerror = reject
+              link.onload = link.onreadystatechange = function() {
+                const loadState = this.readyState
+                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+                link.onload = link.onreadystatechange = null
+                resolve()
+              }
+              document.head.appendChild(link)
+            }),
+            getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+              const script = document.createElement('script')
+              script.src = url
+              script.async = true
+              script.onerror = reject
+              script.onload = script.onreadystatechange = function() {
+                const loadState = this.readyState
+                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+                script.onload = script.onreadystatechange = null
+                resolve()
+              }
+
+              Object.keys(attr).forEach(key => {
+                script.setAttribute(key, attr[key])
+              })
+
+              document.head.appendChild(script)
+            }),
+            addGlobalFn: (key, fn, name = false, parent = window) => {
+                const globalFn = parent.globalFn || {}
+                const keyObj = globalFn[key] || {}
+
+                if (name && keyObj[name]) return
+
+                name = name || Object.keys(keyObj).length
+                keyObj[name] = fn
+                globalFn[key] = keyObj
+                parent.globalFn = globalFn
+            },
+            addEventListenerPjax: (ele, event, fn, option = false) => {
+              ele.addEventListener(event, fn, option)
+              utils.addGlobalFn('pjax', () => {
+                  ele.removeEventListener(event, fn, option)
+              })
+          },
+        }
+    })()</script><!-- global head--><script>const GLOBAL_CONFIG = {
+    root: '/',
+    algolia: undefined,
+    localsearch: undefined,
+    runtime: '2024-01-01 00:00:00',
+    lazyload: {
+        enable: false,
+        error: '/img/error_load.avif'
+    },
+    copyright: false,
+    highlight: {"limit":200,"expand":true,"copy":true,"syntax":"highlight.js"},
+    randomlink: false,
+    lang: {"theme":{"dark":"已切換至深色模式","light":"已切換至淺色模式"},"copy":{"success":"複製成功","error":"複製失敗"},"backtop":"返回頂部","time":{"day":"天前","hour":"小時前","just":"剛剛","min":"分鐘前","month":"個月前"},"day":" 天","f12":"開發者模式已打開，請遵循GPL協定。","totalk":"無需刪除空行，直接輸入評論即可"},
+    aside: {
+        sayhello: {
+            morning: "✨ Good morning. It's a new day",
+            noon: "It's time for a midday break",
+            afternoon: "Tea time. 🍵",
+            night: "early bedtime",
+            goodnight: "Good night 😴",
+        },
+        sayhello2: [],
+        sayhello3: {
+            prefix: '好久不見，',
+            back: '歡迎再次回來，',
+        },
+    },
+    covercolor: {
+        enable: false
+    },
+    comment: false,
+    lightbox: 'null',
+    post_ai: false,
+    right_menu: false,
+    lure: false,
+    expire: false,
+};</script><!-- page-config head--><script id="config-diff">var PAGE_CONFIG = {
+    is_post: true,
+    is_page: false,
+    is_home: false,
+    page: '',
+    toc: true,
+    comment: false,
+    ai_text: false
+}</script><meta name="generator" content="Hexo 7.1.1"></head><body id="body"><!-- universe--><!-- background img--><!-- loading--><!-- console--><!-- sidebar--><div id="sidebar" style="zoom: 1;"><div id="menu-mask" style="display: none;"></div><div id="sidebar-menus"><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分類</div><div class="length-num">0</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">標籤</div><div class="length-num">20</div></a></div></div></div><span class="sidebar-menu-item-title">功能</span><div class="sidebar-menu-item"><span class="darkmode_switchbutton menu-child" onclick="sco.switchDarkMode()"><i class="solitude fa-solid fa-circle-half-stroke"></i><span>顯示模式</span></span></div><span class="sidebar-menu-item-title">標籤</span><div class="card-widget card-tags card-archives card-webinfo card-allinfo"><div class="card-tag-cloud"><a href="/tags/Git/">Git<sup>1</sup></a><a href="/tags/DNS/">DNS<sup>1</sup></a><a href="/tags/%E5%BC%B1%E9%BB%9E%E6%8E%83%E6%8F%8F-Cookie/">弱點掃描,Cookie<sup>1</sup></a><a href="/tags/Hexo/">Hexo<sup>1</sup></a><a href="/tags/NET-Core-%E4%B8%AD%E9%96%93%E4%BB%B6/">.NET Core,中間件<sup>1</sup></a><a href="/tags/JavaScript/">JavaScript<sup>1</sup></a><a href="/tags/NET-Core-%E4%BE%9D%E8%B3%B4%E6%B3%A8%E5%85%A5-%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%89/">.NET Core,依賴注入,控制反轉<sup>1</sup></a><a href="/tags/Vue-Pinia/">Vue,Pinia<sup>1</sup></a><a href="/tags/SQL%E5%84%AA%E5%8C%96/">SQL優化<sup>1</sup></a><a href="/tags/Windows-%E5%B7%A5%E4%BD%9C%E6%8E%92%E7%A8%8B%E5%99%A8/">Windows,工作排程器<sup>1</sup></a><a href="/tags/NSSM-%E6%9C%8D%E5%8B%99/">NSSM,服務<sup>1</sup></a><a href="/tags/%E5%BC%B1%E9%BB%9E%E6%8E%83%E6%8F%8F-HSTS/">弱點掃描,HSTS<sup>1</sup></a><a href="/tags/WebSocket/">WebSocket<sup>1</sup></a><a href="/tags/SQL-Server/">SQL Server<sup>1</sup></a><a href="/tags/SSL-%E9%96%8B%E6%BA%90/">SSL,開源<sup>1</sup></a><a href="/tags/js-%E6%8E%92%E5%BA%8F-%E6%BC%94%E7%AE%97%E6%B3%95/">js,排序,演算法<sup>1</sup></a><a href="/tags/NET-Core/">.NET Core<sup>1</sup></a><a href="/tags/TDD/">TDD<sup>1</sup></a><a href="/tags/C-Net/">C#,Net<sup>1</sup></a><a href="/tags/js/">js<sup>1</sup></a></div></div></div></div><!-- keyboard--><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav class="show" id="nav"><div id="nav-group"><div id="blog_name"><a id="site-name" href="/" title="返回博客主頁"><span class="title">Solitude</span><i class="solitude fa-solid fa-home"></i></a></div><div id="page-name-mask"><div id="page-name"><a id="page-name-text" onclick="sco.toTop()">IIS中COOKIE的安全設置</a></div></div><div id="menus"></div><div id="nav-left"></div><div id="nav-right"><div class="nav-button" id="nav-totop" onclick="sco.toTop()"><a class="totopbtn"><i class="solitude fa-solid fa-arrow-up"></i><span id="percent">0</span></a></div><div id="toggle-menu"><a class="site-page"><i class="solitude fa-solid fa-bars"></i></a></div></div></div></nav><div class="coverdiv" id="coverdiv"><img class="nolazyload" id="post-cover" src="/img/10002.jpg" alt="IIS中COOKIE的安全設置"></div><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original" title="該文章為原創文章，注意版權協議">原創</a><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%BC%B1%E9%BB%9E%E6%8E%83%E6%8F%8F-Cookie/"><span class="tags-name tags-punctuation"><i class="solitude fa-solid fa-hashtag"></i>弱點掃描,Cookie</span></a></div></div></div></div><h1 class="post-title">IIS中COOKIE的安全設置</h1><div id="post-meta"><div class="meta-secondline"></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="IIS中COOKIE的安全設置"><a href="#IIS中COOKIE的安全設置" class="headerlink" title="IIS中COOKIE的安全設置"></a>IIS中COOKIE的安全設置</h1><p>在當今的網絡安全環境中，保護使用者連線和敏感資料變得越來越重要。作為開發人員和系統管理員，我們必須采取一切必要的措施來確保我們網站的安全性。本文將深入探討IIS(Internet Information Services)中COOKIE的兩個關鍵安全設置:httpOnlyCookies和requireSSL。</p>
+<h2 id="問題背景"><a href="#問題背景" class="headerlink" title="問題背景"></a>問題背景</h2><p>最近，專案在進行弱點掃描時發現了一個與ASP.NET_SessionId有關的弱點。掃描結果顯示，這個重要的Session ID缺少必要的安全Flag。這個問題不僅影響了網站，也讓我意識到許多開發者可能都面臨著類似的挑戰。因此，我決定深入研究IIS中COOKIE的安全設置，特別是httpOnlyCookies和requireSSL這兩個選項。</p>
+<h2 id="httpOnlyCookies"><a href="#httpOnlyCookies" class="headerlink" title="httpOnlyCookies"></a>httpOnlyCookies</h2><h3 id="什麽是httpOnlyCookies"><a href="#什麽是httpOnlyCookies" class="headerlink" title="什麽是httpOnlyCookies?"></a>什麽是httpOnlyCookies?</h3><p>httpOnlyCookies是一個安全特性，用於防止客戶端腳本訪問受保護的cookie。當啟用此選項時，cookie只能通過HTTP(S)協議傳輸，而不能被客戶端腳本(如JavaScript)訪問。</p>
+<h3 id="為什麽重要"><a href="#為什麽重要" class="headerlink" title="為什麽重要?"></a>為什麽重要?</h3><p>啟用httpOnlyCookies可以顯著降低跨站腳本(XSS)攻擊的風險。攻擊者即使成功注入惡意腳本，也無法直接讀取或操作受保護的cookie，從而保護了敏感信息，如Session ID。</p>
+<h3 id="在web-config中的配置"><a href="#在web-config中的配置" class="headerlink" title="在web.config中的配置:"></a>在web.config中的配置:</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpCookies</span> <span class="attr">httpOnlyCookies</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="requireSSL"><a href="#requireSSL" class="headerlink" title="requireSSL"></a>requireSSL</h2><h3 id="什麽是requireSSL"><a href="#什麽是requireSSL" class="headerlink" title="什麽是requireSSL?"></a>什麽是requireSSL?</h3><p>requireSSL是一個強制cookie只能通過加密的HTTPS連接傳輸的安全設置。當啟用此選項時，瀏覽器將拒絕通過不安全的HTTP連接發送cookie。</p>
+<h3 id="為什麽重要-1"><a href="#為什麽重要-1" class="headerlink" title="為什麽重要?"></a>為什麽重要?</h3><p>啟用requireSSL可以防止中間人攻擊和cookie劫持。它確保包含敏感信息(如Session ID)的cookie只能在加密連接上傳輸，大大提高了資料傳輸的安全性。</p>
+<h3 id="在web-config中的配置-1"><a href="#在web-config中的配置-1" class="headerlink" title="在web.config中的配置:"></a>在web.config中的配置:</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpCookies</span> <span class="attr">requireSSL</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="最佳實踐"><a href="#最佳實踐" class="headerlink" title="最佳實踐"></a>最佳實踐</h2><ol>
+<li>始終在生產環境中啟用httpOnlyCookies和requireSSL。</li>
+<li>使用HTTPS加密所有通信，特別是涉及敏感資料的頁面。</li>
+<li>定期進行安全審計和滲透測試，以發現潛在的漏洞。</li>
+<li>保持您的IIS和.NET Framework版本更新，以獲得最新的安全補丁。</li>
+<li>實施其他安全措施，如內容安全策略(CSP)和適當的會話管理。</li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>通過正確配置IIS中的httpOnlyCookies和requireSSL選項，可以顯著提高系統的安全性。這些設置有助於防止常見的Web攻擊，如XSS和連線劫持，從而保護使用者資料和連線資料，不過要注意這兩個選項並不是強綁定，如果網站有很多使用JS取得Cookie的話，httpOnlyCookies可以不使用。</p>
+</article><div class="post-copyright"><div class="post-copyright__author_group"><a class="post-copyright__author_img" href="/about/"><img class="post-copyright__author_img_front" src="/img/pwa/favicon.ico"></a><div class="post-copyright__author_name">kyosora</div><div class="post-copyright__author_desc"></div></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div id="quit-box" onclick="RemoveRewardMask()"></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">本文是原创文章，采用<a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a>协议，完整转载请注明来自<a href="/">kyosora</a></span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%BC%B1%E9%BB%9E%E6%8E%83%E6%8F%8F-Cookie/"><span class="tags-punctuation"><i class="solitude fa-solid fa-hashtag"></i>弱點掃描,Cookie<span class="tagsPageCount">1</span></span></a></div></div></div><nav class="needEndHide pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/05/15/%E4%BD%BF%E7%94%A8-IndexedDB-%E7%B7%A9%E5%AD%98%E5%A4%A7%E9%87%8F%E8%B3%87%E6%96%99/"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">使用 IndexedDB 緩存大量資料</div></div></a></div><div class="next-post pull-right"><a href="/2024/05/06/JavaScript%E5%AD%97%E4%B8%B2%E6%90%9C%E7%B4%A2%E6%96%B9%E6%B3%95%E6%AF%94%E8%BC%83%EF%BC%9AindexOf-vs-includes-vs-filter/"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">JavaScript字串搜索方法比較：indexOf vs includes vs filter</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><div class="author-info__top-group"><div class="author-info__sayhi" id="author-info__sayhi" onclick="sco.changeSayHelloText()">sayhello.morning</div></div></div><div class="avatar-img-group"><img class="avatar-img" alt="头像" src="/img/avatar.avif"></div><div class="author-info__description_group"><div class="author-info__description">撰寫一些日常與工作的文章</div><div class="author-info__description2">尋找生活與工作的平衡</div></div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/about/"><div class="author-info__name">kyosora</div><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="solitude fa-solid fa-bars"></i><span>文章目錄</span></div><div class="toc-content" id="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#IIS%E4%B8%ADCOOKIE%E7%9A%84%E5%AE%89%E5%85%A8%E8%A8%AD%E7%BD%AE"><span class="toc-text">IIS中COOKIE的安全設置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%95%8F%E9%A1%8C%E8%83%8C%E6%99%AF"><span class="toc-text">問題背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#httpOnlyCookies"><span class="toc-text">httpOnlyCookies</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E9%BA%BD%E6%98%AFhttpOnlyCookies"><span class="toc-text">什麽是httpOnlyCookies?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BD%E9%87%8D%E8%A6%81"><span class="toc-text">為什麽重要?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8web-config%E4%B8%AD%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="toc-text">在web.config中的配置:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#requireSSL"><span class="toc-text">requireSSL</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E9%BA%BD%E6%98%AFrequireSSL"><span class="toc-text">什麽是requireSSL?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BD%E9%87%8D%E8%A6%81-1"><span class="toc-text">為什麽重要?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8web-config%E4%B8%AD%E7%9A%84%E9%85%8D%E7%BD%AE-1"><span class="toc-text">在web.config中的配置:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E4%BD%B3%E5%AF%A6%E8%B8%90"><span class="toc-text">最佳實踐</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B5%90%E8%AB%96"><span class="toc-text">結論</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="solitude fa-solid fa-map"></i><span>最近发布</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/08/20/SQL-%E6%9F%A5%E8%A9%A2%E5%84%AA%E5%8C%96%E6%A1%88%E4%BE%8B%E7%A0%94%E7%A9%B6%EF%BC%9A%E6%8F%90%E5%8D%87%E6%B0%B4%E4%BD%8D%E7%9B%A3%E6%B8%AC%E7%B3%BB%E7%B5%B1%E6%80%A7%E8%83%BD/" title="SQL 查詢優化案例研究：提升水位監測系統性能"><img alt="SQL 查詢優化案例研究：提升水位監測系統性能" src="/img/10002.jpg"></a><div class="content"><span class="title" href="/2024/08/20/SQL-%E6%9F%A5%E8%A9%A2%E5%84%AA%E5%8C%96%E6%A1%88%E4%BE%8B%E7%A0%94%E7%A9%B6%EF%BC%9A%E6%8F%90%E5%8D%87%E6%B0%B4%E4%BD%8D%E7%9B%A3%E6%B8%AC%E7%B3%BB%E7%B5%B1%E6%80%A7%E8%83%BD/" title="SQL 查詢優化案例研究：提升水位監測系統性能">SQL 查詢優化案例研究：提升水位監測系統性能</span></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/08/19/WebSocket%E6%95%99%E7%A8%8B%EF%BC%9A%E6%A7%8B%E5%BB%BA%E5%AF%A6%E6%99%82%E8%81%8A%E5%A4%A9%E6%87%89%E7%94%A8/" title="WebSocket教程：構建實時聊天應用"><img alt="WebSocket教程：構建實時聊天應用" src="/img/10002.jpg"></a><div class="content"><span class="title" href="/2024/08/19/WebSocket%E6%95%99%E7%A8%8B%EF%BC%9A%E6%A7%8B%E5%BB%BA%E5%AF%A6%E6%99%82%E8%81%8A%E5%A4%A9%E6%87%89%E7%94%A8/" title="WebSocket教程：構建實時聊天應用">WebSocket教程：構建實時聊天應用</span></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/08/08/%E4%BD%BF%E7%94%A8-SQL-Server-Resource-Governor-%E9%99%90%E5%88%B6%E7%89%B9%E5%AE%9A%E8%B3%87%E6%96%99%E5%BA%AB%E7%9A%84%E8%B3%87%E6%BA%90%E4%BD%BF%E7%94%A8/" title="使用 SQL Server Resource Governor 限制特定資料庫的資源使用"><img alt="使用 SQL Server Resource Governor 限制特定資料庫的資源使用" src="/img/10002.jpg"></a><div class="content"><span class="title" href="/2024/08/08/%E4%BD%BF%E7%94%A8-SQL-Server-Resource-Governor-%E9%99%90%E5%88%B6%E7%89%B9%E5%AE%9A%E8%B3%87%E6%96%99%E5%BA%AB%E7%9A%84%E8%B3%87%E6%BA%90%E4%BD%BF%E7%94%A8/" title="使用 SQL Server Resource Governor 限制特定資料庫的資源使用">使用 SQL Server Resource Governor 限制特定資料庫的資源使用</span></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/08/06/%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90-%E4%BD%BF%E7%94%A8Python%E6%A7%8B%E5%BB%BA%E5%85%A8%E9%9D%A2%E7%9A%84%E5%B8%82%E5%A0%B4%E9%A2%A8%E9%9A%AA%E7%9B%A3%E6%B8%AC%E5%B7%A5%E5%85%B7/" title="深入解析:使用Python構建全面的市場風險監測工具"><img alt="深入解析:使用Python構建全面的市場風險監測工具" src="/img/10002.jpg"></a><div class="content"><span class="title" href="/2024/08/06/%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90-%E4%BD%BF%E7%94%A8Python%E6%A7%8B%E5%BB%BA%E5%85%A8%E9%9D%A2%E7%9A%84%E5%B8%82%E5%A0%B4%E9%A2%A8%E9%9A%AA%E7%9B%A3%E6%B8%AC%E5%B7%A5%E5%85%B7/" title="深入解析:使用Python構建全面的市場風險監測工具">深入解析:使用Python構建全面的市場風險監測工具</span></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/26/%E5%A6%82%E4%BD%95%E5%9C%A8-IIS-%E4%B8%8A%E8%A8%AD%E5%AE%9A-HSTS---%E6%8F%90%E9%AB%98%E7%B6%B2%E7%AB%99%E5%AE%89%E5%85%A8%E6%80%A7/" title="如何在 IIS 上設定 HSTS - 提高網站安全性"><img alt="如何在 IIS 上設定 HSTS - 提高網站安全性" src="/img/10002.jpg"></a><div class="content"><span class="title" href="/2024/06/26/%E5%A6%82%E4%BD%95%E5%9C%A8-IIS-%E4%B8%8A%E8%A8%AD%E5%AE%9A-HSTS---%E6%8F%90%E9%AB%98%E7%B6%B2%E7%AB%99%E5%AE%89%E5%85%A8%E6%80%A7/" title="如何在 IIS 上設定 HSTS - 提高網站安全性">如何在 IIS 上設定 HSTS - 提高網站安全性</span></div></div></div></div></div></div></main><footer id="footer"><div id="footer_deal"></div><div id="st-footer"></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div class="copyright">© 2024 By&nbsp;<a class="footer-bar-link" href="/">kyosora</a></div></div><div class="footer-bar-right"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude" alt="Theme">Theme</a></div></div></div></footer></div><!-- right_menu--><!-- inject body--><div><script src="/js/utils.js?v=2.0.10"></script><script src="/js/main.js?v=2.0.10"></script><script src="/js/third_party/waterfall.min.js?v=2.0.10"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/node-snackbar/0.1.16/snackbar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/pace/1.2.4/pace.min.js"></script><div class="js-pjax"></div></div><!-- pjax--><script>const pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: ['title','#body-wrap','#site-config','meta[name="description"]','.js-pjax','meta[property^="og:"]','#config-diff'],
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+})
+
+document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+})
+
+document.addEventListener('pjax:complete', () => {
+    window.refreshFn()
+
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+        const newScript = document.createElement('script')
+        const content = item.text || item.textContent || item.innerHTML || ""
+        Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+        newScript.appendChild(document.createTextNode(content))
+        item.parentNode.replaceChild(newScript, item)
+    })
+
+    GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+})
+
+document.addEventListener('pjax:error', (e) => {
+    if (e.request.status === 404) {
+        pjax.loadUrl('/404.html')
+    }
+})</script><!-- theme--><script>initTheme = () => {
+    let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const cachedMode = utils.saveToLocal.get('theme');
+    if (cachedMode === undefined) {
+        const nowMode =
+            isDarkMode ? 'dark' : 'light'
+        document.documentElement.setAttribute('data-theme', nowMode);
+    } else {
+        document.documentElement.setAttribute('data-theme', cachedMode);
+    }
+    typeof rm === 'object' && rm.mode(cachedMode === 'dark' && isDarkMode)
+}
+initTheme()</script><!-- google adsense--><!-- search--><!-- Tianli-Talk--><!-- music--></body></html><script>const posts=["2024/08/20/SQL-查詢優化案例研究：提升水位監測系統性能/","2024/08/19/WebSocket教程：構建實時聊天應用/","2024/08/08/使用-SQL-Server-Resource-Governor-限制特定資料庫的資源使用/","2024/08/06/深入解析-使用Python構建全面的市場風險監測工具/","2024/06/26/如何在-IIS-上設定-HSTS---提高網站安全性/","2024/06/26/使用-NSSM-將-EXE-包裝成-Windows-服務/","2024/06/25/從Newtonsoft.Json遷移到System.Text.Json的經驗分享/","2024/06/18/DuckDNS-免費且簡單的動態DNS服務/","2024/06/13/深入解析：處理中文數字的自訂排序函數/","2024/06/06/Windows工作排程器沒有正常運作/","2024/05/15/使用-IndexedDB-緩存大量資料/","2024/05/08/IIS中COOKIE的安全設置/","2024/05/06/JavaScript字串搜索方法比較：indexOf-vs-includes-vs-filter/","2024/05/02/win-acme-Windows上的自動化SSL-TLS證書管理工具/","2024/04/17/GO語言學習路徑/","2024/04/10/NET-Core-中的中間件（Middleware）/","2024/04/08/快速排序法：輕鬆理解的演算法指南/","2024/04/05/NET-Core-中的依賴注入和控制反轉/","2024/04/01/為甚麼應該從-Net-Framework跳到-Net-Core/","2024/03/11/JS防抖（Debouncing）與節流（Throttling）/","2024/03/10/Vue中的Pinia狀態管理：全面指南/","2024/03/07/Vue-3-資料傳遞/","2024/02/23/Chrome套件開發教學：自動整理書籤到域名資料夾/","2024/02/07/測試驅動開發-TDD-入門與實作教學/","2024/02/06/Git基礎使用/","2024/01/25/Hexo — 用於快速建立個人博客的強大工具/"];function toRandomPost(){ pjax.loadUrl(GLOBAL_CONFIG.root+posts[Math.floor(Math.random()*posts.length)]); }</script>
