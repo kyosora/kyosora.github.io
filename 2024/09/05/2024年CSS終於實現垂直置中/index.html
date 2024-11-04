@@ -1,308 +1,35 @@
-<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2024年CSS終於實現垂直置中 | kyosora</title><noscript>開啟JavaScript才能訪問本站哦~</noscript><link rel="icon" href="/img/pwa/favicon.ico"><!-- index.css--><link rel="stylesheet" href="/css/index.css?v=2.0.10"><!-- inject head--><link rel="canonical" href="http://example.com/2024/09/05/2024%E5%B9%B4CSS%E7%B5%82%E6%96%BC%E5%AF%A6%E7%8F%BE%E5%9E%82%E7%9B%B4%E7%BD%AE%E4%B8%AD/"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"><!-- aplayer--><!-- swiper--><!-- fancybox ui--><!-- katex--><!-- Open Graph--><meta name="description" content="2024年CSS終於實現垂直置中在2024年，align-content終於可以在塊級佈局中運作了。只需一個CSS屬性就能實現垂直置中，而不需使用Flexbox或Grid。 123&amp;lt;div style&amp;#x3D;&amp;quot;align-content: center; height: 100px;&amp;amp;qu"><!-- pwa--><meta name="apple-mobile-web-app-capable" content="kyosora"><meta name="theme-color" content="var(--efu-main)"><meta name="apple-mobile-web-app-status-bar-style" content="var(--efu-main)"><link rel="bookmark" href="/img/pwa/favicon.ico"><link rel="apple-touch-icon" href="/img/pwa/favicon.ico" sizes="180x180"><script>console.log(' %c Solitude %c ' + '2.0.10' + ' %c https://github.com/everfu/hexo-theme-solitude',
-    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
-    'background:#ff9a9a ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
-    'background:unset ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff')
-</script><script src="https://cdn.bootcdn.net/ajax/libs/pace/1.2.4/pace.min.js"></script><script>(()=>{
-        const saveToLocal = {
-            set: function setWithExpiry(key, value, ttl) {
-                if (ttl === 0)
-                    return
-                const now = new Date()
-                const expiryDay = ttl * 86400000
-                const item = {
-                    value: value,
-                    expiry: now.getTime() + expiryDay
-                }
-                localStorage.setItem(key, JSON.stringify(item))
-            },
-            get: function getWithExpiry(key) {
-                const itemStr = localStorage.getItem(key)
+extends includes/layout.pug
 
-                if (!itemStr) {
-                    return undefined
-                }
-                const item = JSON.parse(itemStr)
-                const now = new Date()
-
-                if (now.getTime() > item.expiry) {
-                    localStorage.removeItem(key)
-                    return undefined
-                }
-                return item.value
-            }
-        };
-        window.utils = {
-            saveToLocal: saveToLocal,
-            getCSS: (url, id = false) => new Promise((resolve, reject) => {
-              const link = document.createElement('link')
-              link.rel = 'stylesheet'
-              link.href = url
-              if (id) link.id = id
-              link.onerror = reject
-              link.onload = link.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                link.onload = link.onreadystatechange = null
-                resolve()
-              }
-              document.head.appendChild(link)
-            }),
-            getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-              const script = document.createElement('script')
-              script.src = url
-              script.async = true
-              script.onerror = reject
-              script.onload = script.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                script.onload = script.onreadystatechange = null
-                resolve()
-              }
-
-              Object.keys(attr).forEach(key => {
-                script.setAttribute(key, attr[key])
-              })
-
-              document.head.appendChild(script)
-            }),
-            addGlobalFn: (key, fn, name = false, parent = window) => {
-                const globalFn = parent.globalFn || {}
-                const keyObj = globalFn[key] || {}
-
-                if (name && keyObj[name]) return
-
-                name = name || Object.keys(keyObj).length
-                keyObj[name] = fn
-                globalFn[key] = keyObj
-                parent.globalFn = globalFn
-            },
-            addEventListenerPjax: (ele, event, fn, option = false) => {
-              ele.addEventListener(event, fn, option)
-              utils.addGlobalFn('pjax', () => {
-                  ele.removeEventListener(event, fn, option)
-              })
-          },
-        }
-    })()</script><!-- global head--><script>const GLOBAL_CONFIG = {
-    root: '/',
-    algolia: undefined,
-    localsearch: undefined,
-    runtime: '2024-01-01 00:00:00',
-    lazyload: {
-        enable: false,
-        error: '/img/error_load.avif'
-    },
-    copyright: false,
-    highlight: {"limit":200,"expand":true,"copy":true,"syntax":"highlight.js"},
-    randomlink: false,
-    lang: {"theme":{"dark":"已切換至深色模式","light":"已切換至淺色模式"},"copy":{"success":"複製成功","error":"複製失敗"},"backtop":"返回頂部","time":{"day":"天前","hour":"小時前","just":"剛剛","min":"分鐘前","month":"個月前"},"day":" 天","f12":"開發者模式已打開，請遵循GPL協定。","totalk":"無需刪除空行，直接輸入評論即可"},
-    aside: {
-        sayhello: {
-            morning: "✨ Good morning. It's a new day",
-            noon: "It's time for a midday break",
-            afternoon: "Tea time. 🍵",
-            night: "early bedtime",
-            goodnight: "Good night 😴",
-        },
-        sayhello2: [],
-        sayhello3: {
-            prefix: '好久不見，',
-            back: '歡迎再次回來，',
-        },
-    },
-    covercolor: {
-        enable: false
-    },
-    comment: false,
-    lightbox: 'null',
-    post_ai: false,
-    right_menu: false,
-    lure: false,
-    expire: false,
-};</script><!-- page-config head--><script id="config-diff">var PAGE_CONFIG = {
-    is_post: true,
-    is_page: false,
-    is_home: false,
-    page: '',
-    toc: true,
-    comment: false,
-    ai_text: false
-}</script><meta name="generator" content="Hexo 7.1.1"></head><body id="body"><!-- universe--><!-- background img--><!-- loading--><!-- console--><!-- sidebar--><div id="sidebar" style="zoom: 1;"><div id="menu-mask" style="display: none;"></div><div id="sidebar-menus"><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">47</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分類</div><div class="length-num">0</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">標籤</div><div class="length-num">32</div></a></div></div></div><span class="sidebar-menu-item-title">功能</span><div class="sidebar-menu-item"><span class="darkmode_switchbutton menu-child" onclick="sco.switchDarkMode()"><i class="solitude fa-solid fa-circle-half-stroke"></i><span>顯示模式</span></span></div><span class="sidebar-menu-item-title">標籤</span><div class="card-widget card-tags card-archives card-webinfo card-allinfo"><div class="card-tag-cloud"><a href="/tags/CORS/">CORS<sup>1</sup></a><a href="/tags/CSS/">CSS<sup>4</sup></a><a href="/tags/%E8%BB%9F%E9%AB%94/">軟體<sup>1</sup></a><a href="/tags/DNS/">DNS<sup>1</sup></a><a href="/tags/Git/">Git<sup>2</sup></a><a href="/tags/Hexo/">Hexo<sup>1</sup></a><a href="/tags/%E5%BC%B1%E9%BB%9E%E6%8E%83%E6%8F%8F-Cookie/">弱點掃描,Cookie<sup>1</sup></a><a href="/tags/Pinia/">Pinia<sup>1</sup></a><a href="/tags/JavaScript/">JavaScript<sup>1</sup></a><a href="/tags/NET-Core-%E4%BE%9D%E8%B3%B4%E6%B3%A8%E5%85%A5-%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%89/">.NET Core,依賴注入,控制反轉<sup>1</sup></a><a href="/tags/Pinia-Vuex/">Pinia,Vuex<sup>1</sup></a><a href="/tags/js/">js<sup>4</sup></a><a href="/tags/NET-Core-%E4%B8%AD%E9%96%93%E4%BB%B6/">.NET Core,中間件<sup>1</sup></a><a href="/tags/SQL%E5%84%AA%E5%8C%96/">SQL優化<sup>1</sup></a><a href="/tags/Redis/">Redis<sup>1</sup></a><a href="/tags/Vue3/">Vue3<sup>1</sup></a><a href="/tags/Vue/">Vue<sup>1</sup></a><a href="/tags/WebSocket/">WebSocket<sup>2</sup></a><a href="/tags/Vue-Pinia/">Vue,Pinia<sup>1</sup></a><a href="/tags/Windows-%E5%B7%A5%E4%BD%9C%E6%8E%92%E7%A8%8B%E5%99%A8/">Windows,工作排程器<sup>1</sup></a><a href="/tags/SQL/">SQL<sup>1</sup></a><a href="/tags/SSL-%E9%96%8B%E6%BA%90/">SSL,開源<sup>1</sup></a><a href="/tags/NSSM-%E6%9C%8D%E5%8B%99/">NSSM,服務<sup>1</sup></a><a href="/tags/bat/">bat<sup>1</sup></a><a href="/tags/%E5%BC%B1%E9%BB%9E%E6%8E%83%E6%8F%8F-HSTS/">弱點掃描,HSTS<sup>1</sup></a><a href="/tags/NET-Core/">.NET Core<sup>1</sup></a><a href="/tags/js-%E6%8E%92%E5%BA%8F-%E6%BC%94%E7%AE%97%E6%B3%95/">js,排序,演算法<sup>1</sup></a><a href="/tags/Docker/">Docker<sup>1</sup></a><a href="/tags/TDD/">TDD<sup>1</sup></a><a href="/tags/C-Net/">C#,Net<sup>1</sup></a><a href="/tags/Thread/">Thread<sup>1</sup></a><a href="/tags/SQL-Server/">SQL Server<sup>1</sup></a></div></div></div></div><!-- keyboard--><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav class="show" id="nav"><div id="nav-group"><div id="blog_name"><a id="site-name" href="/" title="返回博客主頁"><span class="title">Solitude</span><i class="solitude fa-solid fa-home"></i></a></div><div id="page-name-mask"><div id="page-name"><a id="page-name-text" onclick="sco.toTop()">2024年CSS終於實現垂直置中</a></div></div><div id="menus"></div><div id="nav-left"></div><div id="nav-right"><div class="nav-button" id="nav-totop" onclick="sco.toTop()"><a class="totopbtn"><i class="solitude fa-solid fa-arrow-up"></i><span id="percent">0</span></a></div><div id="toggle-menu"><a class="site-page"><i class="solitude fa-solid fa-bars"></i></a></div></div></div></nav><div class="coverdiv" id="coverdiv"><img class="nolazyload" id="post-cover" src="/img/10002.jpg" alt="2024年CSS終於實現垂直置中"></div><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original" title="該文章為原創文章，注意版權協議">原創</a><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/CSS/"><span class="tags-name tags-punctuation"><i class="solitude fa-solid fa-hashtag"></i>CSS</span></a></div></div></div></div><h1 class="post-title">2024年CSS終於實現垂直置中</h1><div id="post-meta"><div class="meta-secondline"></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="2024年CSS終於實現垂直置中"><a href="#2024年CSS終於實現垂直置中" class="headerlink" title="2024年CSS終於實現垂直置中"></a>2024年CSS終於實現垂直置中</h1><p>在2024年，<code>align-content</code>終於可以在塊級佈局中運作了。只需<strong>一個CSS屬性</strong>就能實現垂直置中，而不需使用Flexbox或Grid。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;align-content: center; height: 100px;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">code</span>&gt;</span>align-content<span class="tag">&lt;/<span class="name">code</span>&gt;</span> 現在可以直接使用了!</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p><a target="_blank" rel="noopener" href="https://caniuse.com/mdn-css_properties_align-content_block_context">支援情況</a>:<br>Chrome: 123 | Firefox: 125 | Safari: 17.4</p>
-<p>可以看到只支援比較新的瀏覽器版本，所以使用上還是得考慮一下，總的來說，雖然我們會很興奮地看到新的 CSS 特性出現，但在實際開發中，我們需要平衡新特性的使用和對舊版瀏覽器的支援。通常，我們會採用漸進式增強的策略，確保基本功能在所有環境中都能正常運作，同時為支援新特性的瀏覽器提供更好的體驗。。</p>
-<h2 id="有什麼新變化"><a href="#有什麼新變化" class="headerlink" title="有什麼新變化?"></a>有什麼新變化?</h2><p>CSS對齊的現況是需要切換到<em>flexbox</em>或<em>grid</em>佈局，因為<code>align-content</code>在預設佈局(<em>flow</em>)中不起作用。在2024年，瀏覽器<a target="_blank" rel="noopener" href="https://web.dev/blog/align-content-block">實作了</a>流式佈局的<code>align-content</code>。這帶來一些好處:</p>
-<ul>
-<li>你不需要使用flexbox或grid，只需要一個CSS屬性就能實現對齊。</li>
-<li>因此，內容不需要包裝在一個div中。</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 可以運作 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid; align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  內容。</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 失敗! --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid; align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  包含<span class="tag">&lt;<span class="name">em</span>&gt;</span>多個<span class="tag">&lt;/<span class="name">em</span>&gt;</span>節點的內容。</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 使用內容包裝器可以運作 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid; align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>  <span class="comment">&lt;!-- 額外的包裝器 --&gt;</span></span><br><span class="line">    包含<span class="tag">&lt;<span class="name">em</span>&gt;</span>多個<span class="tag">&lt;/<span class="name">em</span>&gt;</span>節點的內容。</span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 不需要內容包裝器就可以運作 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  包含<span class="tag">&lt;<span class="name">em</span>&gt;</span>多個<span class="tag">&lt;/<span class="name">em</span>&gt;</span>節點的內容。</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>經過幾十年的進步，CSS終於有了一個<strong>單一屬性</strong>來控制垂直對齊，這真是太棒了!</p>
-<h2 id="垂直置中-歷史回顧"><a href="#垂直置中-歷史回顧" class="headerlink" title="垂直置中 - 歷史回顧"></a>垂直置中 - 歷史回顧</h2><p>瀏覽器很有趣，像對齊這樣的基本需求在很長一段時間內都沒有簡單的解決方案。以下是如何置中內容:</p>
-<p>以下是在瀏覽器中如何<em>垂直</em>置中(<em>水平</em>置中是另一個話題):</p>
-<h3 id="方法1-表格單元格"><a href="#方法1-表格單元格" class="headerlink" title="方法1:表格單元格"></a>方法1:表格單元格</h3><p>有4種主要佈局:flow(預設)、table、flexbox、grid。如何對齊內容取決於容器的佈局。flexbox和grid是後來才加入的，所以table是最早的選擇。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: table;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: table-cell; vertical-align: middle;&quot;</span>&gt;</span></span><br><span class="line">    內容。</span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>可以僅透過CSS召喚出一個表格，但需要這樣一個間接方法實在是一種恥辱。</p>
-<h3 id="方法2-絕對定位"><a href="#方法2-絕對定位" class="headerlink" title="方法2:絕對定位"></a>方法2:絕對定位</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;position: relative;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;position: absolute; top: 50%; transform: translateY(-50%);&quot;</span>&gt;</span></span><br><span class="line">    內容。</span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>這種方法使用絕對定位來繞過佈局，因為流式佈局無法幫助我們:</p>
-<ol>
-<li>用<code>position: relative</code>標記參考容器。</li>
-<li>用<code>position: absolute; top: 50%</code>將內容邊緣放在中心。</li>
-<li>用<code>transform: translateY(-50%)</code>將內容中心偏移到邊緣。</li>
-</ol>
-<p>此方法的缺點有：</p>
-<ol>
-<li>複雜性：這個方法需要多個 CSS 屬性組合，不夠直觀。</li>
-<li>破壞文檔流：使用絕對定位會將元素從正常文檔流中移除，可能導致佈局問題。</li>
-<li>需要額外的包裝元素：這個方法通常需要一個額外的容器元素。</li>
-<li>不靈活：在某些情況下，這種方法可能不適用，特別是當容器高度不固定時。</li>
-<li>性能考慮：使用 transform 可能在某些情況下引起性能問題。</li>
-<li>不符合語義：這種方法使用了與內容語義無關的 CSS 技巧來實現佈局。</li>
-</ol>
-<p>不過這個方法還是很多開發者在使用，因為</p>
-<ol>
-<li>廣泛支援：這個方法在絕大多數瀏覽器中都能正常工作，包括較舊的版本。</li>
-<li>可靠性：一旦掌握，這個方法在大多數情況下都能可靠地工作。</li>
-<li>靈活性：可以輕易調整以適應不同的情況，如水平置中。</li>
-<li>習慣：許多開發者已經習慣了這種方法，並能快速實現。</li>
-<li>相容性好：不依賴於新的 CSS 特性，因此在各種環境中都能使用。</li>
-<li>問題解決：儘管不完美，但它解決了一個常見的佈局問題。</li>
-</ol>
-<h3 id="方法3-行內內容"><a href="#方法3-行內內容" class="headerlink" title="方法3:行內內容"></a>方法3:行內內容</h3><p>雖然流式佈局不能幫助內容對齊，但它允許在行內進行垂直對齊。那麼為什麼不讓一行和容器一樣高呢?</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;container&quot;</span>&gt;</span></span><br><span class="line">  ::before</span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;content&quot;</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.container</span><span class="selector-pseudo">::before</span> &#123;</span><br><span class="line">  <span class="attribute">content</span>: <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">100%</span>;</span><br><span class="line">  <span class="attribute">display</span>: inline-block;</span><br><span class="line">  <span class="attribute">vertical-align</span>: middle;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.content</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: inline-block;</span><br><span class="line">  <span class="attribute">vertical-align</span>: middle;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>這有一些缺陷:除了犧牲一個偽元素外，開頭還有一個零寬度的<a target="_blank" rel="noopener" href="https://christopheraue.net/design/vertical-align#:~:text=strut">“支柱”字元</a>可能會搞亂東西。</p>
-<h3 id="方法4-單行flexbox"><a href="#方法4-單行flexbox" class="headerlink" title="方法4:單行flexbox"></a>方法4:單行flexbox</h3><p>flexbox在Web出現20年後才廣泛可用。它有兩種模式:單行和多行。在單行模式(預設)下，該行填滿垂直空間，<code>align-items</code>在行內對齊內容。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: flex; align-items: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>或者，讓行變成列，用<code>justify-content</code>對齊項目。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: flex; flex-flow: column; justify-content: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="方法5-多行flexbox"><a href="#方法5-多行flexbox" class="headerlink" title="方法5:多行flexbox"></a>方法5:多行flexbox</h3><p>在多行flexbox中，行不再填滿垂直空間，所以可以用<code>align-content</code>對齊只有1個項目的行。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: flex; flex-flow: row wrap; align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="方法6-網格內容"><a href="#方法6-網格內容" class="headerlink" title="方法6:網格內容"></a>方法6:網格內容</h3><p>網格出現得更晚。對齊變得更簡單。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid; align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="方法7-網格單元格"><a href="#方法7-網格單元格" class="headerlink" title="方法7:網格單元格"></a>方法7:網格單元格</h3><p>注意與前一種方法的細微差別:</p>
-<ul>
-<li><code>align-content</code>將<em>單元格</em>相對於<em>容器</em>置中。</li>
-<li><code>align-items</code>將<em>內容</em>相對於<em>單元格</em>置中，而<em>單元格</em>會拉伸以適應<em>容器</em>。</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid; align-items: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>似乎有很多方法可以做同樣的事情。</p>
-<h3 id="方法8-自動外邊距"><a href="#方法8-自動外邊距" class="headerlink" title="方法8:自動外邊距"></a>方法8:自動外邊距</h3><p>在流式佈局中，<code>margin:auto</code>可以水平置中，但不能垂直置中。flexbox和Grid沒有這個問題。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;margin-block: auto;&quot;</span>&gt;</span></span><br><span class="line">    內容。</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>不過，我還是很困惑為什麼要設計邊距來控制對齊。</p>
-<h3 id="方法9-2024年的這篇文章"><a href="#方法9-2024年的這篇文章" class="headerlink" title="方法9:2024年的這篇文章"></a>方法9:2024年的這篇文章</h3><p>為什麼瀏覽器一開始就不加入這個功能呢?</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">code</span>&gt;</span>align-content<span class="tag">&lt;/<span class="name">code</span>&gt;</span> 現在可以直接使用了!</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>方法1中的表格單元格，像這種方法一樣，也不需要內容包裝器(儘管它需要一個表格包裝器)。我們又回到了起點!</p>
-<p>不過使用上要看瀏覽器是否支援，可以使用以下策略：</p>
-<ol>
-<li>使用特性檢測：<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="string">&#x27;alignContent&#x27;</span> <span class="keyword">in</span> <span class="variable language_">document</span>.<span class="property">documentElement</span>.<span class="property">style</span>) &#123;</span><br><span class="line">  <span class="comment">// 使用新的 align-content 方法</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  <span class="comment">// 使用備用方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>使用 CSS @supports：<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">@supports</span> (<span class="attribute">align-content</span>: center) &#123;</span><br><span class="line">  <span class="selector-class">.container</span> &#123;</span><br><span class="line">    <span class="attribute">align-content</span>: center;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@supports</span> <span class="keyword">not</span> (<span class="attribute">align-content</span>: center) &#123;</span><br><span class="line">  <span class="comment">/* 當樣式不被瀏覽器所支援就套用此處的樣式 */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h3 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h3><p>以下是所有垂直置中方法</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="selector-tag">p</span>&gt;Various methods for vertical centering. Yellow is container and green is <span class="attribute">content</span> wrapper. Note that the first and last methods do not require <span class="selector-tag">a</span> <span class="attribute">content</span> wrapper.&lt;/<span class="selector-tag">p</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;container&quot; style=&quot;<span class="attribute">display</span>: table;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> style=&quot;<span class="attribute">display</span>: table-cell; <span class="attribute">vertical-align</span>: middle;&quot;&gt;</span><br><span class="line">    <span class="selector-tag">Table</span> cell with &lt;<span class="selector-tag">code</span>&gt;<span class="attribute">vertical-align</span>&lt;/<span class="selector-tag">code</span>&gt;.</span><br><span class="line">  &lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;container&quot; style=&quot;<span class="attribute">position</span>: relative;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot; style=&quot;<span class="attribute">position</span>: absolute; <span class="attribute">top</span>: <span class="number">50%</span>; <span class="attribute">transform</span>: <span class="built_in">translateY</span>(-<span class="number">50%</span>);&quot;&gt;</span><br><span class="line">    &lt;<span class="selector-tag">b</span>&gt;Absolute&lt;/<span class="selector-tag">b</span>&gt; positioning.</span><br><span class="line">  &lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;container&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">span</span> style=&quot;<span class="attribute">display</span>: inline-block; <span class="attribute">vertical-align</span>: middle; <span class="attribute">height</span>: <span class="number">100%</span>;&quot;&gt;&lt;/<span class="selector-tag">span</span>&gt;&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot; style=&quot;<span class="attribute">display</span>: inline-block; <span class="attribute">vertical-align</span>: middle;&quot;&gt;</span><br><span class="line">    &lt;<span class="selector-tag">b</span>&gt;Inline&lt;/<span class="selector-tag">b</span>&gt; <span class="attribute">content</span>.</span><br><span class="line">  &lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;container&quot; style=&quot;<span class="attribute">display</span>: flex; <span class="attribute">align-items</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot;&gt;Single-line &lt;<span class="selector-tag">b</span>&gt;flexbox&lt;/<span class="selector-tag">b</span>&gt; (cross axis).&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;container&quot; style=&quot;<span class="attribute">display</span>: flex; <span class="attribute">flex-flow</span>: column; <span class="attribute">justify-content</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot;&gt;Single-line &lt;<span class="selector-tag">b</span>&gt;flexbox&lt;/<span class="selector-tag">b</span>&gt; (<span class="selector-tag">main</span> axis).&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;container&quot; style=&quot;<span class="attribute">display</span>: flex; <span class="attribute">flex-flow</span>: row wrap; <span class="attribute">align-content</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot;&gt;Multi-line &lt;<span class="selector-tag">b</span>&gt;flexbox&lt;/<span class="selector-tag">b</span>&gt; (cross axis).&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;container&quot; style=&quot;<span class="attribute">display</span>: grid; <span class="attribute">align-content</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot;&gt;&lt;<span class="selector-tag">b</span>&gt;<span class="attribute">Grid</span>&lt;/<span class="selector-tag">b</span>&gt; <span class="attribute">content</span>.&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;container&quot; style=&quot;<span class="attribute">display</span>: grid; <span class="attribute">align-items</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot;&gt;&lt;<span class="selector-tag">b</span>&gt;<span class="attribute">Grid</span>&lt;/<span class="selector-tag">b</span>&gt; cell.&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;container&quot; style=&quot;<span class="attribute">display</span>: grid;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot; style=&quot;<span class="attribute">margin-block</span>: auto;&quot;&gt;</span><br><span class="line">    Auto-&lt;<span class="selector-tag">b</span>&gt;<span class="attribute">margin</span>&lt;/<span class="selector-tag">b</span>&gt;.</span><br><span class="line">  &lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;container&quot; style=&quot;<span class="attribute">align-content</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">code</span>&gt;<span class="attribute">align-content</span>&lt;/<span class="selector-tag">code</span>&gt; just works in <span class="number">2024</span>!</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="實現二維對齊"><a href="#實現二維對齊" class="headerlink" title="實現二維對齊"></a>實現二維對齊</h2><p>有沒有一個<em>水平</em>對齊的<strong>單一屬性</strong>?<code>align-content</code>的對應屬性是什麼?讓我們看看各種對齊屬性:</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>flow</th>
-<th>flexbox</th>
-<th>grid</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>  align-content</code></td>
-<td>block軸</td>
-<td>交叉軸(行)</td>
-<td>block軸(網格)</td>
-</tr>
-<tr>
-<td><code>justify-content</code></td>
-<td>無效果</td>
-<td>主軸</td>
-<td>inline軸(網格)</td>
-</tr>
-<tr>
-<td><code>  align-items</code></td>
-<td>無效果</td>
-<td>交叉軸(項目)</td>
-<td>block軸(單元格)</td>
-</tr>
-<tr>
-<td><code>justify-items</code></td>
-<td>無效果</td>
-<td>無效果</td>
-<td>inline軸(單元格)</td>
-</tr>
-</tbody></table>
-<p>表:不同佈局中的對齊屬性</p>
-<h3 id="背景-CSS軸術語"><a href="#背景-CSS軸術語" class="headerlink" title="背景:CSS軸術語"></a>背景:CSS軸術語</h3><p><em>block軸</em>通常是<em>垂直的</em>，<em>inline軸</em>是<em>水平的</em>。需要這些術語是因為<a target="_blank" rel="noopener" href="https://build-your-own.org/visual_css/2p40_box_model.html#:~:text=Logical%20properties">垂直<code>writing-mode</code></a>是存在的,所以<strong>block軸和inline軸是相對於文字方向的</strong>。這類似於<em>主軸</em>和<em>交叉軸</em>是相對於flexbox項目方向的。</p>
-<p><strong>結論</strong>: “items”用於可以<em>單獨</em>對齊的內容。在主軸上,flex項目不能單獨對齊,所以是”content”。</p>
-</article><div class="post-copyright"><div class="post-copyright__author_group"><a class="post-copyright__author_img" href="/about/"><img class="post-copyright__author_img_front" src="/img/pwa/favicon.ico"></a><div class="post-copyright__author_name">kyosora</div><div class="post-copyright__author_desc"></div></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div id="quit-box" onclick="RemoveRewardMask()"></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">本文是原创文章，采用<a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a>协议，完整转载请注明来自<a href="/">kyosora</a></span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/CSS/"><span class="tags-punctuation"><i class="solitude fa-solid fa-hashtag"></i>CSS<span class="tagsPageCount">4</span></span></a></div></div></div><nav class="needEndHide pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/09/11/Vue3-SFC-Loader-%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90%EF%BC%9A%E8%BC%95%E9%AC%86%E5%8A%A0%E8%BC%89/"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Vue3 SFC Loader 深入解析：輕鬆加載</div></div></a></div><div class="next-post pull-right"><a href="/2024/08/20/SQL-%E6%9F%A5%E8%A9%A2%E5%84%AA%E5%8C%96%E6%A1%88%E4%BE%8B%E7%A0%94%E7%A9%B6%EF%BC%9A%E6%8F%90%E5%8D%87%E6%B0%B4%E4%BD%8D%E7%9B%A3%E6%B8%AC%E7%B3%BB%E7%B5%B1%E6%80%A7%E8%83%BD/"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">SQL 查詢優化案例研究：提升水位監測系統性能</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><div class="author-info__top-group"><div class="author-info__sayhi" id="author-info__sayhi" onclick="sco.changeSayHelloText()">sayhello.morning</div></div></div><div class="avatar-img-group"><img class="avatar-img" alt="头像" src="/img/avatar.avif"></div><div class="author-info__description_group"><div class="author-info__description">撰寫一些日常與工作的文章</div><div class="author-info__description2">尋找生活與工作的平衡</div></div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/about/"><div class="author-info__name">kyosora</div><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="solitude fa-solid fa-bars"></i><span>文章目錄</span></div><div class="toc-content" id="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#2024%E5%B9%B4CSS%E7%B5%82%E6%96%BC%E5%AF%A6%E7%8F%BE%E5%9E%82%E7%9B%B4%E7%BD%AE%E4%B8%AD"><span class="toc-text">2024年CSS終於實現垂直置中</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%89%E4%BB%80%E9%BA%BC%E6%96%B0%E8%AE%8A%E5%8C%96"><span class="toc-text">有什麼新變化?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9E%82%E7%9B%B4%E7%BD%AE%E4%B8%AD-%E6%AD%B7%E5%8F%B2%E5%9B%9E%E9%A1%A7"><span class="toc-text">垂直置中 - 歷史回顧</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%951-%E8%A1%A8%E6%A0%BC%E5%96%AE%E5%85%83%E6%A0%BC"><span class="toc-text">方法1:表格單元格</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%952-%E7%B5%95%E5%B0%8D%E5%AE%9A%E4%BD%8D"><span class="toc-text">方法2:絕對定位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%953-%E8%A1%8C%E5%85%A7%E5%85%A7%E5%AE%B9"><span class="toc-text">方法3:行內內容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%954-%E5%96%AE%E8%A1%8Cflexbox"><span class="toc-text">方法4:單行flexbox</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%955-%E5%A4%9A%E8%A1%8Cflexbox"><span class="toc-text">方法5:多行flexbox</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%956-%E7%B6%B2%E6%A0%BC%E5%85%A7%E5%AE%B9"><span class="toc-text">方法6:網格內容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%957-%E7%B6%B2%E6%A0%BC%E5%96%AE%E5%85%83%E6%A0%BC"><span class="toc-text">方法7:網格單元格</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%958-%E8%87%AA%E5%8B%95%E5%A4%96%E9%82%8A%E8%B7%9D"><span class="toc-text">方法8:自動外邊距</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%959-2024%E5%B9%B4%E7%9A%84%E9%80%99%E7%AF%87%E6%96%87%E7%AB%A0"><span class="toc-text">方法9:2024年的這篇文章</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B8%BD%E7%B5%90"><span class="toc-text">總結</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%A6%E7%8F%BE%E4%BA%8C%E7%B6%AD%E5%B0%8D%E9%BD%8A"><span class="toc-text">實現二維對齊</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%83%8C%E6%99%AF-CSS%E8%BB%B8%E8%A1%93%E8%AA%9E"><span class="toc-text">背景:CSS軸術語</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="solitude fa-solid fa-map"></i><span>最近发布</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/09/19/%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%88%AA%E9%99%A4%E5%8C%85%E5%90%AB%E6%95%B8%E7%99%BE%E8%90%AC%E6%96%87%E4%BB%B6%E7%9A%84%E8%B3%87%E6%96%99%E5%A4%BE%EF%BC%9AWindows-%E6%89%B9%E6%AC%A1%E6%AA%94%E6%A1%88%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88/" title="如何快速刪除包含數百萬文件的資料夾：Windows 批次檔案解決方案"><img alt="如何快速刪除包含數百萬文件的資料夾：Windows 批次檔案解決方案" src="/img/10002.jpg"></a><div class="content"><span class="title" href="/2024/09/19/%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%88%AA%E9%99%A4%E5%8C%85%E5%90%AB%E6%95%B8%E7%99%BE%E8%90%AC%E6%96%87%E4%BB%B6%E7%9A%84%E8%B3%87%E6%96%99%E5%A4%BE%EF%BC%9AWindows-%E6%89%B9%E6%AC%A1%E6%AA%94%E6%A1%88%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88/" title="如何快速刪除包含數百萬文件的資料夾：Windows 批次檔案解決方案">如何快速刪除包含數百萬文件的資料夾：Windows 批次檔案解決方案</span></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/19/SQL%E4%B8%AD%E7%9A%84CASE%E8%AA%9E%E6%B3%95%EF%BC%9A%E5%BC%B7%E5%A4%A7%E8%80%8C%E9%9D%88%E6%B4%BB%E7%9A%84%E6%A2%9D%E4%BB%B6%E8%A1%A8%E9%81%94%E5%BC%8F/" title="SQL中的CASE語法：強大而靈活的條件表達式"><img alt="SQL中的CASE語法：強大而靈活的條件表達式" src="/img/10002.jpg"></a><div class="content"><span class="title" href="/2024/09/19/SQL%E4%B8%AD%E7%9A%84CASE%E8%AA%9E%E6%B3%95%EF%BC%9A%E5%BC%B7%E5%A4%A7%E8%80%8C%E9%9D%88%E6%B4%BB%E7%9A%84%E6%A2%9D%E4%BB%B6%E8%A1%A8%E9%81%94%E5%BC%8F/" title="SQL中的CASE語法：強大而靈活的條件表達式">SQL中的CASE語法：強大而靈活的條件表達式</span></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/18/Redis%E8%A9%B3%E7%B4%B0%E4%BB%8B%E7%B4%B9%E8%88%87%E4%BD%BF%E7%94%A8%E5%A0%B4%E6%99%AF/" title="Redis詳細介紹、使用場景及與SQL Server的結合"><img alt="Redis詳細介紹、使用場景及與SQL Server的結合" src="/img/10002.jpg"></a><div class="content"><span class="title" href="/2024/09/18/Redis%E8%A9%B3%E7%B4%B0%E4%BB%8B%E7%B4%B9%E8%88%87%E4%BD%BF%E7%94%A8%E5%A0%B4%E6%99%AF/" title="Redis詳細介紹、使用場景及與SQL Server的結合">Redis詳細介紹、使用場景及與SQL Server的結合</span></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/12/EmEditor-%E4%BB%8B%E7%B4%B9%E8%88%87-JSON-%E5%A3%93%E7%B8%AE-%E8%A7%A3%E5%A3%93%E7%B8%AE%E6%95%99%E7%A8%8B/" title="EmEditor 介紹與 JSON 壓縮/解壓縮教程"><img alt="EmEditor 介紹與 JSON 壓縮/解壓縮教程" src="/img/10002.jpg"></a><div class="content"><span class="title" href="/2024/09/12/EmEditor-%E4%BB%8B%E7%B4%B9%E8%88%87-JSON-%E5%A3%93%E7%B8%AE-%E8%A7%A3%E5%A3%93%E7%B8%AE%E6%95%99%E7%A8%8B/" title="EmEditor 介紹與 JSON 壓縮/解壓縮教程">EmEditor 介紹與 JSON 壓縮/解壓縮教程</span></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/11/Vue3-SFC-Loader-%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90%EF%BC%9A%E8%BC%95%E9%AC%86%E5%8A%A0%E8%BC%89/" title="Vue3 SFC Loader 深入解析：輕鬆加載"><img alt="Vue3 SFC Loader 深入解析：輕鬆加載" src="/img/10002.jpg"></a><div class="content"><span class="title" href="/2024/09/11/Vue3-SFC-Loader-%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90%EF%BC%9A%E8%BC%95%E9%AC%86%E5%8A%A0%E8%BC%89/" title="Vue3 SFC Loader 深入解析：輕鬆加載">Vue3 SFC Loader 深入解析：輕鬆加載</span></div></div></div></div></div></div></main><footer id="footer"><div id="footer_deal"></div><div id="st-footer"></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div class="copyright">© 2024 By&nbsp;<a class="footer-bar-link" href="/">kyosora</a></div></div><div class="footer-bar-right"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude" alt="Theme">Theme</a></div></div></div></footer></div><!-- right_menu--><!-- inject body--><div><script src="/js/utils.js?v=2.0.10"></script><script src="/js/main.js?v=2.0.10"></script><script src="/js/third_party/waterfall.min.js?v=2.0.10"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/node-snackbar/0.1.16/snackbar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/pace/1.2.4/pace.min.js"></script><div class="js-pjax"></div></div><!-- pjax--><script>const pjax = new Pjax({
-    elements: 'a:not([target="_blank"])',
-    selectors: ['title','#body-wrap','#site-config','meta[name="description"]','.js-pjax','meta[property^="og:"]','#config-diff'],
-    cacheBust: false,
-    analytics: false,
-    scrollRestoration: false
-})
-
-document.querySelectorAll('script[data-pjax]').forEach(item => {
-    const newScript = document.createElement('script')
-    const content = item.text || item.textContent || item.innerHTML || ""
-    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-    newScript.appendChild(document.createTextNode(content))
-    item.parentNode.replaceChild(newScript, item)
-})
-
-document.addEventListener('pjax:complete', () => {
-    window.refreshFn()
-
-    document.querySelectorAll('script[data-pjax]').forEach(item => {
-        const newScript = document.createElement('script')
-        const content = item.text || item.textContent || item.innerHTML || ""
-        Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-        newScript.appendChild(document.createTextNode(content))
-        item.parentNode.replaceChild(newScript, item)
-    })
-
-    GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
-
-})
-
-document.addEventListener('pjax:error', (e) => {
-    if (e.request.status === 404) {
-        pjax.loadUrl('/404.html')
-    }
-})</script><!-- theme--><script>initTheme = () => {
-    let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const cachedMode = utils.saveToLocal.get('theme');
-    if (cachedMode === undefined) {
-        const nowMode =
-            isDarkMode ? 'dark' : 'light'
-        document.documentElement.setAttribute('data-theme', nowMode);
-    } else {
-        document.documentElement.setAttribute('data-theme', cachedMode);
-    }
-    typeof rm === 'object' && rm.mode(cachedMode === 'dark' && isDarkMode)
-}
-initTheme()</script><!-- google adsense--><!-- search--><!-- Tianli-Talk--><!-- music--></body></html><script>const posts=["2024/09/19/如何快速刪除包含數百萬文件的資料夾：Windows-批次檔案解決方案/","2024/09/19/SQL中的CASE語法：強大而靈活的條件表達式/","2024/09/18/Redis詳細介紹與使用場景/","2024/09/12/EmEditor-介紹與-JSON-壓縮-解壓縮教程/","2024/09/11/Vue3-SFC-Loader-深入解析：輕鬆加載/","2024/09/05/2024年CSS終於實現垂直置中/","2024/08/20/SQL-查詢優化案例研究：提升水位監測系統性能/","2024/08/19/WebSocket教程：構建實時聊天應用/","2024/08/08/使用-SQL-Server-Resource-Governor-限制特定資料庫的資源使用/","2024/08/06/深入解析-使用Python構建全面的市場風險監測工具/","2024/07/13/為什麼你應該使用Docker-詳細解析其優勢/","2024/06/26/如何在-IIS-上設定-HSTS---提高網站安全性/","2024/06/26/使用-NSSM-將-EXE-包裝成-Windows-服務/","2024/06/25/從Newtonsoft.Json遷移到System.Text.Json的經驗分享/","2024/06/25/WebSocket通訊過程詳解/","2024/06/18/DuckDNS-免費且簡單的動態DNS服務/","2024/06/13/深入解析：處理中文數字的自訂排序函數/","2024/06/09/CSS-偽元素指南/","2024/06/06/Windows工作排程器沒有正常運作/","2024/05/15/使用-IndexedDB-緩存大量資料/","2024/05/09/處理程序與執行緒-從日常生活理解多執行緒/","2024/05/08/IIS中COOKIE的安全設置/","2024/05/06/JavaScript字串搜索方法比較：indexOf-vs-includes-vs-filter/","2024/05/02/win-acme-Windows上的自動化SSL-TLS證書管理工具/","2024/04/17/GO語言學習路徑/","2024/04/10/NET-Core-中的中間件（Middleware）/","2024/04/08/快速排序法：輕鬆理解的演算法指南/","2024/04/05/NET-Core-中的依賴注入和控制反轉/","2024/04/01/為甚麼應該從-Net-Framework跳到-Net-Core/","2024/03/18/CSS實現DOM節點水平居中的多種方式/","2024/03/17/Pinia的資料儲存機制：深入探討/","2024/03/15/Pinia與Vuex的區別-詳細比較/","2024/03/14/Promise-和-setTimeout-的深入解析/","2024/03/11/JS防抖（Debouncing）與節流（Throttling）/","2024/03/10/Vue中的Pinia狀態管理：全面指南/","2024/03/10/圖片懶加載技術：提升網站效能的七大方法/","2024/03/09/深入理解-JavaScript-的-async-await/","2024/03/08/setTimeout-和-JavaScript-的-Event-Loop-運作原理/","2024/03/07/Vue-3-資料傳遞/","2024/02/23/Chrome套件開發教學：自動整理書籤到域名資料夾/","2024/02/20/CORS-都有哪些解決方法-/","2024/02/17/Git分支管理規範：提升團隊協作效率/","2024/02/13/Vue響應式系統的演進-從defineProperty到Proxy/","2024/02/08/實現左右佈局的多種CSS方法/","2024/02/07/測試驅動開發-TDD-入門與實作教學/","2024/02/06/Git基礎使用/","2024/01/25/Hexo — 用於快速建立個人博客的強大工具/"];function toRandomPost(){ pjax.loadUrl(GLOBAL_CONFIG.root+posts[Math.floor(Math.random()*posts.length)]); }</script>
+block content
+    main.layout#content-inner
+        #post
+            if page.not_cover
+                include includes/widgets/post/postInfo
+            article.post-content#article-container
+                if theme.post_ai.enable && page.ai
+                    include includes/widgets/post/post-ai
+                != page.content
+            include includes/widgets/post/copyright
+            .post-tools-right
+                .tag_share
+                    .post-meta__tag-list
+                        each data in page.tags.data
+                            a(href=url_for(data.path)).post-meta__tags
+                                span.tags-punctuation
+                                    i.solitude.fa-solid.fa-hashtag
+                                    =data.name
+                                    span.tagsPageCount=data.length
+            if theme.google_adsense.enable && !theme.google_adsense.auto_ads && theme.google_adsense.post_content
+                div.google-ads-warp
+                    ins.adsbygoogle(style="display:block; text-align:center; height:284px", data-ad-layout="in-article", data-ad-format="fluid", hide-unfilled="true", data-ad-client=theme.google_adsense.client, data-ad-slot=theme.google_adsense.slot)
+                    script.
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+            if site.posts.length > 1
+                include includes/widgets/post/postNav
+            if theme.related_post.enable
+                != related_posts(page, site.posts)
+            if page.comment
+                - var comment_js = true
+                include includes/widgets/third-party/comments/comment
+        if page.aside
+            include includes/widgets/aside/aside<script>const posts=["2024/09/05/C#-常用命名空間參考指南/","2024/02/20/CORS-都有哪些解決方法-/","2024/09/05/2024年CSS終於實現垂直置中/","2024/06/18/DuckDNS-免費且簡單的動態DNS服務/","2024/06/09/CSS-偽元素指南/","2024/02/23/Chrome套件開發教學：自動整理書籤到域名資料夾/","2024/02/17/Git分支管理規範：提升團隊協作效率/","2024/02/06/Git基礎使用/","2024/09/12/EmEditor-介紹與-JSON-壓縮-解壓縮教程/","2024/01/25/Hexo — 用於快速建立個人博客的強大工具/","2024/03/18/CSS實現DOM節點水平居中的多種方式/","2024/04/17/GO語言學習路徑/","2024/05/08/IIS中COOKIE的安全設置/","2024/05/06/JavaScript字串搜索方法比較：indexOf-vs-includes-vs-filter/","2024/04/10/NET-Core-中的中間件（Middleware）/","2024/04/05/NET-Core-中的依賴注入和控制反轉/","2024/03/15/Pinia與Vuex的區別-詳細比較/","2024/03/17/Pinia的資料儲存機制：深入探討/","2024/03/11/JS防抖（Debouncing）與節流（Throttling）/","2024/10/22/SQL-Server-備份檔案異常增長的排查指南/","2024/09/18/Redis詳細介紹與使用場景/","2024/03/14/Promise-和-setTimeout-的深入解析/","2024/08/20/SQL-查詢優化案例研究：提升水位監測系統性能/","2024/06/22/SQL查詢重複資料指南/","2024/09/19/SQL中的CASE語法：強大而靈活的條件表達式/","2024/06/26/System.Text.Json-與-Newtonsoft.Json-的深入比較/","2024/11/01/SQL-Server-空間查詢操作指南/","2024/09/12/Vue-組件緩存問題與解決方案/","2024/09/27/SQL優化：處理百萬級資料表的結構修改/","2024/10/02/Visual-Studio-ReSharper-擴充套件完整介紹/","2024/03/07/Vue-3-資料傳遞/","2024/09/11/Vue3-SFC-Loader-深入解析：輕鬆加載/","2024/02/13/Vue響應式系統的演進-從defineProperty到Proxy/","2024/03/10/Vue中的Pinia狀態管理：全面指南/","2024/08/19/WebSocket教程：構建實時聊天應用/","2024/03/08/setTimeout-和-JavaScript-的-Event-Loop-運作原理/","2024/06/25/WebSocket通訊過程詳解/","2024/06/26/使用-NSSM-將-EXE-包裝成-Windows-服務/","2024/05/15/使用-IndexedDB-緩存大量資料/","2024/05/02/win-acme-Windows上的自動化SSL-TLS證書管理工具/","2024/06/06/Windows工作排程器沒有正常運作/","2024/08/08/使用-SQL-Server-Resource-Governor-限制特定資料庫的資源使用/","2024/11/01/在-IIS-環境下使用-C#-操作-LibreOffice-進行檔案轉換/","2024/06/26/如何在-IIS-上設定-HSTS---提高網站安全性/","2024/09/26/使用-Python-和-FFmpeg-打造簡易視頻轉換器/","2024/05/23/在-SQL-Server-中尋找忘記的欄位位置/","2024/03/10/圖片懶加載技術：提升網站效能的七大方法/","2024/09/19/如何快速刪除包含數百萬文件的資料夾：Windows-批次檔案解決方案/","2024/10/23/如何快速查詢資料庫檢視表(View)的欄位資訊/","2024/06/25/從Newtonsoft.Json遷移到System.Text.Json的經驗分享/","2024/06/11/提升網頁表單驗證：從簡單檢查到全面優化/","2024/02/08/實現左右佈局的多種CSS方法/","2024/04/08/快速排序法：輕鬆理解的演算法指南/","2024/08/06/深入解析-使用Python構建全面的市場風險監測工具/","2024/03/09/深入理解-JavaScript-的-async-await/","2024/02/07/測試驅動開發-TDD-入門與實作教學/","2024/06/13/深入解析：處理中文數字的自訂排序函數/","2024/04/01/為甚麼應該從-Net-Framework跳到-Net-Core/","2024/07/13/為什麼你應該使用Docker-詳細解析其優勢/","2024/05/09/處理程序與執行緒-從日常生活理解多執行緒/"];function toRandomPost(){ pjax.loadUrl(GLOBAL_CONFIG.root+posts[Math.floor(Math.random()*posts.length)]); }</script>

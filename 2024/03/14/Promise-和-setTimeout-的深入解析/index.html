@@ -1,221 +1,35 @@
-<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Promise 和 setTimeout 的深入解析 | kyosora</title><noscript>開啟JavaScript才能訪問本站哦~</noscript><link rel="icon" href="/img/pwa/favicon.ico"><!-- index.css--><link rel="stylesheet" href="/css/index.css?v=2.0.10"><!-- inject head--><link rel="canonical" href="http://example.com/2024/03/14/Promise-%E5%92%8C-setTimeout-%E7%9A%84%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90/"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"><!-- aplayer--><!-- swiper--><!-- fancybox ui--><!-- katex--><!-- Open Graph--><meta name="description" content="Promise 和 setTimeout 的深入解析在 JavaScript 中，Promise 和 setTimeout 是處理非同步操作的兩個重要工具。雖然它們都用於處理非同步事件，但它們的工作方式和使用場景有所不同。讓我們深入探討這兩個概念。 PromisePromise 是 JavaScri"><!-- pwa--><meta name="apple-mobile-web-app-capable" content="kyosora"><meta name="theme-color" content="var(--efu-main)"><meta name="apple-mobile-web-app-status-bar-style" content="var(--efu-main)"><link rel="bookmark" href="/img/pwa/favicon.ico"><link rel="apple-touch-icon" href="/img/pwa/favicon.ico" sizes="180x180"><script>console.log(' %c Solitude %c ' + '2.0.10' + ' %c https://github.com/everfu/hexo-theme-solitude',
-    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
-    'background:#ff9a9a ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
-    'background:unset ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff')
-</script><script src="https://cdn.bootcdn.net/ajax/libs/pace/1.2.4/pace.min.js"></script><script>(()=>{
-        const saveToLocal = {
-            set: function setWithExpiry(key, value, ttl) {
-                if (ttl === 0)
-                    return
-                const now = new Date()
-                const expiryDay = ttl * 86400000
-                const item = {
-                    value: value,
-                    expiry: now.getTime() + expiryDay
-                }
-                localStorage.setItem(key, JSON.stringify(item))
-            },
-            get: function getWithExpiry(key) {
-                const itemStr = localStorage.getItem(key)
+extends includes/layout.pug
 
-                if (!itemStr) {
-                    return undefined
-                }
-                const item = JSON.parse(itemStr)
-                const now = new Date()
-
-                if (now.getTime() > item.expiry) {
-                    localStorage.removeItem(key)
-                    return undefined
-                }
-                return item.value
-            }
-        };
-        window.utils = {
-            saveToLocal: saveToLocal,
-            getCSS: (url, id = false) => new Promise((resolve, reject) => {
-              const link = document.createElement('link')
-              link.rel = 'stylesheet'
-              link.href = url
-              if (id) link.id = id
-              link.onerror = reject
-              link.onload = link.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                link.onload = link.onreadystatechange = null
-                resolve()
-              }
-              document.head.appendChild(link)
-            }),
-            getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-              const script = document.createElement('script')
-              script.src = url
-              script.async = true
-              script.onerror = reject
-              script.onload = script.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                script.onload = script.onreadystatechange = null
-                resolve()
-              }
-
-              Object.keys(attr).forEach(key => {
-                script.setAttribute(key, attr[key])
-              })
-
-              document.head.appendChild(script)
-            }),
-            addGlobalFn: (key, fn, name = false, parent = window) => {
-                const globalFn = parent.globalFn || {}
-                const keyObj = globalFn[key] || {}
-
-                if (name && keyObj[name]) return
-
-                name = name || Object.keys(keyObj).length
-                keyObj[name] = fn
-                globalFn[key] = keyObj
-                parent.globalFn = globalFn
-            },
-            addEventListenerPjax: (ele, event, fn, option = false) => {
-              ele.addEventListener(event, fn, option)
-              utils.addGlobalFn('pjax', () => {
-                  ele.removeEventListener(event, fn, option)
-              })
-          },
-        }
-    })()</script><!-- global head--><script>const GLOBAL_CONFIG = {
-    root: '/',
-    algolia: undefined,
-    localsearch: undefined,
-    runtime: '2024-01-01 00:00:00',
-    lazyload: {
-        enable: false,
-        error: '/img/error_load.avif'
-    },
-    copyright: false,
-    highlight: {"limit":200,"expand":true,"copy":true,"syntax":"highlight.js"},
-    randomlink: false,
-    lang: {"theme":{"dark":"已切換至深色模式","light":"已切換至淺色模式"},"copy":{"success":"複製成功","error":"複製失敗"},"backtop":"返回頂部","time":{"day":"天前","hour":"小時前","just":"剛剛","min":"分鐘前","month":"個月前"},"day":" 天","f12":"開發者模式已打開，請遵循GPL協定。","totalk":"無需刪除空行，直接輸入評論即可"},
-    aside: {
-        sayhello: {
-            morning: "✨ Good morning. It's a new day",
-            noon: "It's time for a midday break",
-            afternoon: "Tea time. 🍵",
-            night: "early bedtime",
-            goodnight: "Good night 😴",
-        },
-        sayhello2: [],
-        sayhello3: {
-            prefix: '好久不見，',
-            back: '歡迎再次回來，',
-        },
-    },
-    covercolor: {
-        enable: false
-    },
-    comment: false,
-    lightbox: 'null',
-    post_ai: false,
-    right_menu: false,
-    lure: false,
-    expire: false,
-};</script><!-- page-config head--><script id="config-diff">var PAGE_CONFIG = {
-    is_post: true,
-    is_page: false,
-    is_home: false,
-    page: '',
-    toc: true,
-    comment: false,
-    ai_text: false
-}</script><meta name="generator" content="Hexo 7.1.1"></head><body id="body"><!-- universe--><!-- background img--><!-- loading--><!-- console--><!-- sidebar--><div id="sidebar" style="zoom: 1;"><div id="menu-mask" style="display: none;"></div><div id="sidebar-menus"><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">47</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分類</div><div class="length-num">0</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">標籤</div><div class="length-num">32</div></a></div></div></div><span class="sidebar-menu-item-title">功能</span><div class="sidebar-menu-item"><span class="darkmode_switchbutton menu-child" onclick="sco.switchDarkMode()"><i class="solitude fa-solid fa-circle-half-stroke"></i><span>顯示模式</span></span></div><span class="sidebar-menu-item-title">標籤</span><div class="card-widget card-tags card-archives card-webinfo card-allinfo"><div class="card-tag-cloud"><a href="/tags/CORS/">CORS<sup>1</sup></a><a href="/tags/CSS/">CSS<sup>4</sup></a><a href="/tags/%E8%BB%9F%E9%AB%94/">軟體<sup>1</sup></a><a href="/tags/DNS/">DNS<sup>1</sup></a><a href="/tags/Git/">Git<sup>2</sup></a><a href="/tags/Hexo/">Hexo<sup>1</sup></a><a href="/tags/%E5%BC%B1%E9%BB%9E%E6%8E%83%E6%8F%8F-Cookie/">弱點掃描,Cookie<sup>1</sup></a><a href="/tags/Pinia/">Pinia<sup>1</sup></a><a href="/tags/JavaScript/">JavaScript<sup>1</sup></a><a href="/tags/NET-Core-%E4%BE%9D%E8%B3%B4%E6%B3%A8%E5%85%A5-%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%89/">.NET Core,依賴注入,控制反轉<sup>1</sup></a><a href="/tags/Pinia-Vuex/">Pinia,Vuex<sup>1</sup></a><a href="/tags/js/">js<sup>4</sup></a><a href="/tags/NET-Core-%E4%B8%AD%E9%96%93%E4%BB%B6/">.NET Core,中間件<sup>1</sup></a><a href="/tags/SQL%E5%84%AA%E5%8C%96/">SQL優化<sup>1</sup></a><a href="/tags/Redis/">Redis<sup>1</sup></a><a href="/tags/Vue3/">Vue3<sup>1</sup></a><a href="/tags/Vue/">Vue<sup>1</sup></a><a href="/tags/WebSocket/">WebSocket<sup>2</sup></a><a href="/tags/Vue-Pinia/">Vue,Pinia<sup>1</sup></a><a href="/tags/Windows-%E5%B7%A5%E4%BD%9C%E6%8E%92%E7%A8%8B%E5%99%A8/">Windows,工作排程器<sup>1</sup></a><a href="/tags/SQL/">SQL<sup>1</sup></a><a href="/tags/SSL-%E9%96%8B%E6%BA%90/">SSL,開源<sup>1</sup></a><a href="/tags/NSSM-%E6%9C%8D%E5%8B%99/">NSSM,服務<sup>1</sup></a><a href="/tags/bat/">bat<sup>1</sup></a><a href="/tags/%E5%BC%B1%E9%BB%9E%E6%8E%83%E6%8F%8F-HSTS/">弱點掃描,HSTS<sup>1</sup></a><a href="/tags/NET-Core/">.NET Core<sup>1</sup></a><a href="/tags/js-%E6%8E%92%E5%BA%8F-%E6%BC%94%E7%AE%97%E6%B3%95/">js,排序,演算法<sup>1</sup></a><a href="/tags/Docker/">Docker<sup>1</sup></a><a href="/tags/TDD/">TDD<sup>1</sup></a><a href="/tags/C-Net/">C#,Net<sup>1</sup></a><a href="/tags/Thread/">Thread<sup>1</sup></a><a href="/tags/SQL-Server/">SQL Server<sup>1</sup></a></div></div></div></div><!-- keyboard--><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav class="show" id="nav"><div id="nav-group"><div id="blog_name"><a id="site-name" href="/" title="返回博客主頁"><span class="title">Solitude</span><i class="solitude fa-solid fa-home"></i></a></div><div id="page-name-mask"><div id="page-name"><a id="page-name-text" onclick="sco.toTop()">Promise 和 setTimeout 的深入解析</a></div></div><div id="menus"></div><div id="nav-left"></div><div id="nav-right"><div class="nav-button" id="nav-totop" onclick="sco.toTop()"><a class="totopbtn"><i class="solitude fa-solid fa-arrow-up"></i><span id="percent">0</span></a></div><div id="toggle-menu"><a class="site-page"><i class="solitude fa-solid fa-bars"></i></a></div></div></div></nav><div class="coverdiv" id="coverdiv"><img class="nolazyload" id="post-cover" src="/img/10002.jpg" alt="Promise 和 setTimeout 的深入解析"></div><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original" title="該文章為原創文章，注意版權協議">原創</a><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/js/"><span class="tags-name tags-punctuation"><i class="solitude fa-solid fa-hashtag"></i>js</span></a></div></div></div></div><h1 class="post-title">Promise 和 setTimeout 的深入解析</h1><div id="post-meta"><div class="meta-secondline"></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Promise-和-setTimeout-的深入解析"><a href="#Promise-和-setTimeout-的深入解析" class="headerlink" title="Promise 和 setTimeout 的深入解析"></a>Promise 和 setTimeout 的深入解析</h1><p>在 JavaScript 中，Promise 和 setTimeout 是處理非同步操作的兩個重要工具。雖然它們都用於處理非同步事件，但它們的工作方式和使用場景有所不同。讓我們深入探討這兩個概念。</p>
-<h2 id="Promise"><a href="#Promise" class="headerlink" title="Promise"></a>Promise</h2><p>Promise 是 JavaScript 中用於處理非同步操作的對象。它代表了一個可能尚未完成的操作，但在未來的某個時間點會完成。Promise 有三種狀態：</p>
-<ol>
-<li>Pending（進行中）：初始狀態，既未完成也未拒絕。</li>
-<li>Fulfilled（已完成）：操作成功完成。</li>
-<li>Rejected（已拒絕）：操作失敗。</li>
-</ol>
-<p>Promise 的優點包括：</p>
-<ul>
-<li>可以將非同步操作以同步操作的流程表達出來，避免了回調地獄。</li>
-<li>提供了 <code>.then()</code>、<code>.catch()</code> 和 <code>.finally()</code> 方法，使得處理非同步操作的結果更加直觀。</li>
-</ul>
-<h3 id="Promise-的基本用法"><a href="#Promise-的基本用法" class="headerlink" title="Promise 的基本用法"></a>Promise 的基本用法</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> myPromise = <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 非同步操作</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="comment">/* 操作成功 */</span>) &#123;</span><br><span class="line">    <span class="title function_">resolve</span>(result);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="title function_">reject</span>(error);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">myPromise.<span class="title function_">then</span>(<span class="function"><span class="params">result</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 處理成功的結果</span></span><br><span class="line">&#125;).<span class="title function_">catch</span>(<span class="function"><span class="params">error</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 處理錯誤</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<h2 id="setTimeout"><a href="#setTimeout" class="headerlink" title="setTimeout"></a>setTimeout</h2><p>setTimeout 是一個全局函數，用於在指定的毫秒數後執行一段代碼。它是 JavaScript 非同步編程的基礎之一。</p>
-<p>setTimeout 的基本語法如下：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">setTimeout</span>(callback, delay);</span><br></pre></td></tr></table></figure>
-
-<p>其中，<code>callback</code> 是要執行的函數，<code>delay</code> 是延遲的毫秒數。</p>
-<h3 id="setTimeout-的特性"><a href="#setTimeout-的特性" class="headerlink" title="setTimeout 的特性"></a>setTimeout 的特性</h3><ol>
-<li>非阻塞：setTimeout 不會阻塞代碼的執行。它會將回調函數加入到事件佇列中，等待執行。</li>
-<li>最小延遲：即使設置延遲為 0，回調函數也不會立即執行。它會在當前執行棧清空後才執行。</li>
-<li>計時器精度：由於 JavaScript 的單執行緒特性和事件循環機制，setTimeout 的實際延遲可能會比指定的時間長。</li>
-</ol>
-<h2 id="Promise-和-setTimeout-的結合使用"><a href="#Promise-和-setTimeout-的結合使用" class="headerlink" title="Promise 和 setTimeout 的結合使用"></a>Promise 和 setTimeout 的結合使用</h2><p>Promise 和 setTimeout 可以結合使用，創建一個在指定時間後解決的 Promise：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">delay</span>(<span class="params">ms</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> <span class="built_in">setTimeout</span>(resolve, ms));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">delay</span>(<span class="number">2000</span>).<span class="title function_">then</span>(<span class="function">() =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;2 秒後執行&#x27;</span>));</span><br></pre></td></tr></table></figure>
-
-<h2 id="事件循環和執行順序"><a href="#事件循環和執行順序" class="headerlink" title="事件循環和執行順序"></a>事件循環和執行順序</h2><p>理解 Promise 和 setTimeout 的執行順序，需要了解 JavaScript 的事件循環機制：</p>
-<ol>
-<li>同步代碼優先執行。</li>
-<li>微任務（如 Promise 的 then&#x2F;catch&#x2F;finally）在當前任務結束後立即執行。</li>
-<li>宏任務（如 setTimeout、setInterval）在下一次事件循環中執行。</li>
-</ol>
-<p>以下面的代碼為例：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;1&#x27;</span>);</span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;2&#x27;</span>), <span class="number">0</span>);</span><br><span class="line"><span class="title class_">Promise</span>.<span class="title function_">resolve</span>().<span class="title function_">then</span>(<span class="function">() =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;3&#x27;</span>));</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;4&#x27;</span>);</span><br></pre></td></tr></table></figure>
-
-<p>輸出順序將會是：1, 4, 3, 2</p>
-<p>這是因為：</p>
-<ul>
-<li>‘1’ 和 ‘4’ 是同步代碼，立即執行。</li>
-<li>Promise.then 是微任務，在同步代碼執行完後立即執行。</li>
-<li>setTimeout 是宏任務，在下一次事件循環中執行。</li>
-</ul>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>Promise 和 setTimeout 都是處理 JavaScript 非同步操作的重要工具。Promise 提供了更強大和靈活的方式來處理非同步操作的結果，而 setTimeout 則用於延遲執行代碼。理解這兩個概念以及它們在事件循環中的行為，對於編寫高效且可靠的 JavaScript 代碼至關重要。</p>
-</article><div class="post-copyright"><div class="post-copyright__author_group"><a class="post-copyright__author_img" href="/about/"><img class="post-copyright__author_img_front" src="/img/pwa/favicon.ico"></a><div class="post-copyright__author_name">kyosora</div><div class="post-copyright__author_desc"></div></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div id="quit-box" onclick="RemoveRewardMask()"></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">本文是原创文章，采用<a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a>协议，完整转载请注明来自<a href="/">kyosora</a></span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/js/"><span class="tags-punctuation"><i class="solitude fa-solid fa-hashtag"></i>js<span class="tagsPageCount">4</span></span></a></div></div></div><nav class="needEndHide pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/03/15/Pinia%E8%88%87Vuex%E7%9A%84%E5%8D%80%E5%88%A5-%E8%A9%B3%E7%B4%B0%E6%AF%94%E8%BC%83/"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Pinia與Vuex的區別:詳細比較</div></div></a></div><div class="next-post pull-right"><a href="/2024/03/11/JS%E9%98%B2%E6%8A%96%EF%BC%88Debouncing%EF%BC%89%E8%88%87%E7%AF%80%E6%B5%81%EF%BC%88Throttling%EF%BC%89/"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">JS防抖（Debouncing）與節流（Throttling）</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><div class="author-info__top-group"><div class="author-info__sayhi" id="author-info__sayhi" onclick="sco.changeSayHelloText()">sayhello.morning</div></div></div><div class="avatar-img-group"><img class="avatar-img" alt="头像" src="/img/avatar.avif"></div><div class="author-info__description_group"><div class="author-info__description">撰寫一些日常與工作的文章</div><div class="author-info__description2">尋找生活與工作的平衡</div></div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/about/"><div class="author-info__name">kyosora</div><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="solitude fa-solid fa-bars"></i><span>文章目錄</span></div><div class="toc-content" id="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Promise-%E5%92%8C-setTimeout-%E7%9A%84%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90"><span class="toc-text">Promise 和 setTimeout 的深入解析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Promise"><span class="toc-text">Promise</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Promise-%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="toc-text">Promise 的基本用法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#setTimeout"><span class="toc-text">setTimeout</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#setTimeout-%E7%9A%84%E7%89%B9%E6%80%A7"><span class="toc-text">setTimeout 的特性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Promise-%E5%92%8C-setTimeout-%E7%9A%84%E7%B5%90%E5%90%88%E4%BD%BF%E7%94%A8"><span class="toc-text">Promise 和 setTimeout 的結合使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%92%B0%E5%92%8C%E5%9F%B7%E8%A1%8C%E9%A0%86%E5%BA%8F"><span class="toc-text">事件循環和執行順序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B5%90%E8%AB%96"><span class="toc-text">結論</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="solitude fa-solid fa-map"></i><span>最近发布</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/09/19/%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%88%AA%E9%99%A4%E5%8C%85%E5%90%AB%E6%95%B8%E7%99%BE%E8%90%AC%E6%96%87%E4%BB%B6%E7%9A%84%E8%B3%87%E6%96%99%E5%A4%BE%EF%BC%9AWindows-%E6%89%B9%E6%AC%A1%E6%AA%94%E6%A1%88%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88/" title="如何快速刪除包含數百萬文件的資料夾：Windows 批次檔案解決方案"><img alt="如何快速刪除包含數百萬文件的資料夾：Windows 批次檔案解決方案" src="/img/10002.jpg"></a><div class="content"><span class="title" href="/2024/09/19/%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%88%AA%E9%99%A4%E5%8C%85%E5%90%AB%E6%95%B8%E7%99%BE%E8%90%AC%E6%96%87%E4%BB%B6%E7%9A%84%E8%B3%87%E6%96%99%E5%A4%BE%EF%BC%9AWindows-%E6%89%B9%E6%AC%A1%E6%AA%94%E6%A1%88%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88/" title="如何快速刪除包含數百萬文件的資料夾：Windows 批次檔案解決方案">如何快速刪除包含數百萬文件的資料夾：Windows 批次檔案解決方案</span></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/19/SQL%E4%B8%AD%E7%9A%84CASE%E8%AA%9E%E6%B3%95%EF%BC%9A%E5%BC%B7%E5%A4%A7%E8%80%8C%E9%9D%88%E6%B4%BB%E7%9A%84%E6%A2%9D%E4%BB%B6%E8%A1%A8%E9%81%94%E5%BC%8F/" title="SQL中的CASE語法：強大而靈活的條件表達式"><img alt="SQL中的CASE語法：強大而靈活的條件表達式" src="/img/10002.jpg"></a><div class="content"><span class="title" href="/2024/09/19/SQL%E4%B8%AD%E7%9A%84CASE%E8%AA%9E%E6%B3%95%EF%BC%9A%E5%BC%B7%E5%A4%A7%E8%80%8C%E9%9D%88%E6%B4%BB%E7%9A%84%E6%A2%9D%E4%BB%B6%E8%A1%A8%E9%81%94%E5%BC%8F/" title="SQL中的CASE語法：強大而靈活的條件表達式">SQL中的CASE語法：強大而靈活的條件表達式</span></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/18/Redis%E8%A9%B3%E7%B4%B0%E4%BB%8B%E7%B4%B9%E8%88%87%E4%BD%BF%E7%94%A8%E5%A0%B4%E6%99%AF/" title="Redis詳細介紹、使用場景及與SQL Server的結合"><img alt="Redis詳細介紹、使用場景及與SQL Server的結合" src="/img/10002.jpg"></a><div class="content"><span class="title" href="/2024/09/18/Redis%E8%A9%B3%E7%B4%B0%E4%BB%8B%E7%B4%B9%E8%88%87%E4%BD%BF%E7%94%A8%E5%A0%B4%E6%99%AF/" title="Redis詳細介紹、使用場景及與SQL Server的結合">Redis詳細介紹、使用場景及與SQL Server的結合</span></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/12/EmEditor-%E4%BB%8B%E7%B4%B9%E8%88%87-JSON-%E5%A3%93%E7%B8%AE-%E8%A7%A3%E5%A3%93%E7%B8%AE%E6%95%99%E7%A8%8B/" title="EmEditor 介紹與 JSON 壓縮/解壓縮教程"><img alt="EmEditor 介紹與 JSON 壓縮/解壓縮教程" src="/img/10002.jpg"></a><div class="content"><span class="title" href="/2024/09/12/EmEditor-%E4%BB%8B%E7%B4%B9%E8%88%87-JSON-%E5%A3%93%E7%B8%AE-%E8%A7%A3%E5%A3%93%E7%B8%AE%E6%95%99%E7%A8%8B/" title="EmEditor 介紹與 JSON 壓縮/解壓縮教程">EmEditor 介紹與 JSON 壓縮/解壓縮教程</span></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/11/Vue3-SFC-Loader-%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90%EF%BC%9A%E8%BC%95%E9%AC%86%E5%8A%A0%E8%BC%89/" title="Vue3 SFC Loader 深入解析：輕鬆加載"><img alt="Vue3 SFC Loader 深入解析：輕鬆加載" src="/img/10002.jpg"></a><div class="content"><span class="title" href="/2024/09/11/Vue3-SFC-Loader-%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90%EF%BC%9A%E8%BC%95%E9%AC%86%E5%8A%A0%E8%BC%89/" title="Vue3 SFC Loader 深入解析：輕鬆加載">Vue3 SFC Loader 深入解析：輕鬆加載</span></div></div></div></div></div></div></main><footer id="footer"><div id="footer_deal"></div><div id="st-footer"></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div class="copyright">© 2024 By&nbsp;<a class="footer-bar-link" href="/">kyosora</a></div></div><div class="footer-bar-right"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude" alt="Theme">Theme</a></div></div></div></footer></div><!-- right_menu--><!-- inject body--><div><script src="/js/utils.js?v=2.0.10"></script><script src="/js/main.js?v=2.0.10"></script><script src="/js/third_party/waterfall.min.js?v=2.0.10"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/node-snackbar/0.1.16/snackbar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/pace/1.2.4/pace.min.js"></script><div class="js-pjax"></div></div><!-- pjax--><script>const pjax = new Pjax({
-    elements: 'a:not([target="_blank"])',
-    selectors: ['title','#body-wrap','#site-config','meta[name="description"]','.js-pjax','meta[property^="og:"]','#config-diff'],
-    cacheBust: false,
-    analytics: false,
-    scrollRestoration: false
-})
-
-document.querySelectorAll('script[data-pjax]').forEach(item => {
-    const newScript = document.createElement('script')
-    const content = item.text || item.textContent || item.innerHTML || ""
-    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-    newScript.appendChild(document.createTextNode(content))
-    item.parentNode.replaceChild(newScript, item)
-})
-
-document.addEventListener('pjax:complete', () => {
-    window.refreshFn()
-
-    document.querySelectorAll('script[data-pjax]').forEach(item => {
-        const newScript = document.createElement('script')
-        const content = item.text || item.textContent || item.innerHTML || ""
-        Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-        newScript.appendChild(document.createTextNode(content))
-        item.parentNode.replaceChild(newScript, item)
-    })
-
-    GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
-
-})
-
-document.addEventListener('pjax:error', (e) => {
-    if (e.request.status === 404) {
-        pjax.loadUrl('/404.html')
-    }
-})</script><!-- theme--><script>initTheme = () => {
-    let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const cachedMode = utils.saveToLocal.get('theme');
-    if (cachedMode === undefined) {
-        const nowMode =
-            isDarkMode ? 'dark' : 'light'
-        document.documentElement.setAttribute('data-theme', nowMode);
-    } else {
-        document.documentElement.setAttribute('data-theme', cachedMode);
-    }
-    typeof rm === 'object' && rm.mode(cachedMode === 'dark' && isDarkMode)
-}
-initTheme()</script><!-- google adsense--><!-- search--><!-- Tianli-Talk--><!-- music--></body></html><script>const posts=["2024/09/19/如何快速刪除包含數百萬文件的資料夾：Windows-批次檔案解決方案/","2024/09/19/SQL中的CASE語法：強大而靈活的條件表達式/","2024/09/18/Redis詳細介紹與使用場景/","2024/09/12/EmEditor-介紹與-JSON-壓縮-解壓縮教程/","2024/09/11/Vue3-SFC-Loader-深入解析：輕鬆加載/","2024/09/05/2024年CSS終於實現垂直置中/","2024/08/20/SQL-查詢優化案例研究：提升水位監測系統性能/","2024/08/19/WebSocket教程：構建實時聊天應用/","2024/08/08/使用-SQL-Server-Resource-Governor-限制特定資料庫的資源使用/","2024/08/06/深入解析-使用Python構建全面的市場風險監測工具/","2024/07/13/為什麼你應該使用Docker-詳細解析其優勢/","2024/06/26/如何在-IIS-上設定-HSTS---提高網站安全性/","2024/06/26/使用-NSSM-將-EXE-包裝成-Windows-服務/","2024/06/25/從Newtonsoft.Json遷移到System.Text.Json的經驗分享/","2024/06/25/WebSocket通訊過程詳解/","2024/06/18/DuckDNS-免費且簡單的動態DNS服務/","2024/06/13/深入解析：處理中文數字的自訂排序函數/","2024/06/09/CSS-偽元素指南/","2024/06/06/Windows工作排程器沒有正常運作/","2024/05/15/使用-IndexedDB-緩存大量資料/","2024/05/09/處理程序與執行緒-從日常生活理解多執行緒/","2024/05/08/IIS中COOKIE的安全設置/","2024/05/06/JavaScript字串搜索方法比較：indexOf-vs-includes-vs-filter/","2024/05/02/win-acme-Windows上的自動化SSL-TLS證書管理工具/","2024/04/17/GO語言學習路徑/","2024/04/10/NET-Core-中的中間件（Middleware）/","2024/04/08/快速排序法：輕鬆理解的演算法指南/","2024/04/05/NET-Core-中的依賴注入和控制反轉/","2024/04/01/為甚麼應該從-Net-Framework跳到-Net-Core/","2024/03/18/CSS實現DOM節點水平居中的多種方式/","2024/03/17/Pinia的資料儲存機制：深入探討/","2024/03/15/Pinia與Vuex的區別-詳細比較/","2024/03/14/Promise-和-setTimeout-的深入解析/","2024/03/11/JS防抖（Debouncing）與節流（Throttling）/","2024/03/10/Vue中的Pinia狀態管理：全面指南/","2024/03/10/圖片懶加載技術：提升網站效能的七大方法/","2024/03/09/深入理解-JavaScript-的-async-await/","2024/03/08/setTimeout-和-JavaScript-的-Event-Loop-運作原理/","2024/03/07/Vue-3-資料傳遞/","2024/02/23/Chrome套件開發教學：自動整理書籤到域名資料夾/","2024/02/20/CORS-都有哪些解決方法-/","2024/02/17/Git分支管理規範：提升團隊協作效率/","2024/02/13/Vue響應式系統的演進-從defineProperty到Proxy/","2024/02/08/實現左右佈局的多種CSS方法/","2024/02/07/測試驅動開發-TDD-入門與實作教學/","2024/02/06/Git基礎使用/","2024/01/25/Hexo — 用於快速建立個人博客的強大工具/"];function toRandomPost(){ pjax.loadUrl(GLOBAL_CONFIG.root+posts[Math.floor(Math.random()*posts.length)]); }</script>
+block content
+    main.layout#content-inner
+        #post
+            if page.not_cover
+                include includes/widgets/post/postInfo
+            article.post-content#article-container
+                if theme.post_ai.enable && page.ai
+                    include includes/widgets/post/post-ai
+                != page.content
+            include includes/widgets/post/copyright
+            .post-tools-right
+                .tag_share
+                    .post-meta__tag-list
+                        each data in page.tags.data
+                            a(href=url_for(data.path)).post-meta__tags
+                                span.tags-punctuation
+                                    i.solitude.fa-solid.fa-hashtag
+                                    =data.name
+                                    span.tagsPageCount=data.length
+            if theme.google_adsense.enable && !theme.google_adsense.auto_ads && theme.google_adsense.post_content
+                div.google-ads-warp
+                    ins.adsbygoogle(style="display:block; text-align:center; height:284px", data-ad-layout="in-article", data-ad-format="fluid", hide-unfilled="true", data-ad-client=theme.google_adsense.client, data-ad-slot=theme.google_adsense.slot)
+                    script.
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+            if site.posts.length > 1
+                include includes/widgets/post/postNav
+            if theme.related_post.enable
+                != related_posts(page, site.posts)
+            if page.comment
+                - var comment_js = true
+                include includes/widgets/third-party/comments/comment
+        if page.aside
+            include includes/widgets/aside/aside<script>const posts=["2024/09/05/C#-常用命名空間參考指南/","2024/02/20/CORS-都有哪些解決方法-/","2024/09/05/2024年CSS終於實現垂直置中/","2024/06/18/DuckDNS-免費且簡單的動態DNS服務/","2024/06/09/CSS-偽元素指南/","2024/02/23/Chrome套件開發教學：自動整理書籤到域名資料夾/","2024/02/17/Git分支管理規範：提升團隊協作效率/","2024/02/06/Git基礎使用/","2024/09/12/EmEditor-介紹與-JSON-壓縮-解壓縮教程/","2024/01/25/Hexo — 用於快速建立個人博客的強大工具/","2024/03/18/CSS實現DOM節點水平居中的多種方式/","2024/04/17/GO語言學習路徑/","2024/05/08/IIS中COOKIE的安全設置/","2024/05/06/JavaScript字串搜索方法比較：indexOf-vs-includes-vs-filter/","2024/04/10/NET-Core-中的中間件（Middleware）/","2024/04/05/NET-Core-中的依賴注入和控制反轉/","2024/03/15/Pinia與Vuex的區別-詳細比較/","2024/03/17/Pinia的資料儲存機制：深入探討/","2024/03/11/JS防抖（Debouncing）與節流（Throttling）/","2024/10/22/SQL-Server-備份檔案異常增長的排查指南/","2024/09/18/Redis詳細介紹與使用場景/","2024/03/14/Promise-和-setTimeout-的深入解析/","2024/08/20/SQL-查詢優化案例研究：提升水位監測系統性能/","2024/06/22/SQL查詢重複資料指南/","2024/09/19/SQL中的CASE語法：強大而靈活的條件表達式/","2024/06/26/System.Text.Json-與-Newtonsoft.Json-的深入比較/","2024/11/01/SQL-Server-空間查詢操作指南/","2024/09/12/Vue-組件緩存問題與解決方案/","2024/09/27/SQL優化：處理百萬級資料表的結構修改/","2024/10/02/Visual-Studio-ReSharper-擴充套件完整介紹/","2024/03/07/Vue-3-資料傳遞/","2024/09/11/Vue3-SFC-Loader-深入解析：輕鬆加載/","2024/02/13/Vue響應式系統的演進-從defineProperty到Proxy/","2024/03/10/Vue中的Pinia狀態管理：全面指南/","2024/08/19/WebSocket教程：構建實時聊天應用/","2024/03/08/setTimeout-和-JavaScript-的-Event-Loop-運作原理/","2024/06/25/WebSocket通訊過程詳解/","2024/06/26/使用-NSSM-將-EXE-包裝成-Windows-服務/","2024/05/15/使用-IndexedDB-緩存大量資料/","2024/05/02/win-acme-Windows上的自動化SSL-TLS證書管理工具/","2024/06/06/Windows工作排程器沒有正常運作/","2024/08/08/使用-SQL-Server-Resource-Governor-限制特定資料庫的資源使用/","2024/11/01/在-IIS-環境下使用-C#-操作-LibreOffice-進行檔案轉換/","2024/06/26/如何在-IIS-上設定-HSTS---提高網站安全性/","2024/09/26/使用-Python-和-FFmpeg-打造簡易視頻轉換器/","2024/05/23/在-SQL-Server-中尋找忘記的欄位位置/","2024/03/10/圖片懶加載技術：提升網站效能的七大方法/","2024/09/19/如何快速刪除包含數百萬文件的資料夾：Windows-批次檔案解決方案/","2024/10/23/如何快速查詢資料庫檢視表(View)的欄位資訊/","2024/06/25/從Newtonsoft.Json遷移到System.Text.Json的經驗分享/","2024/06/11/提升網頁表單驗證：從簡單檢查到全面優化/","2024/02/08/實現左右佈局的多種CSS方法/","2024/04/08/快速排序法：輕鬆理解的演算法指南/","2024/08/06/深入解析-使用Python構建全面的市場風險監測工具/","2024/03/09/深入理解-JavaScript-的-async-await/","2024/02/07/測試驅動開發-TDD-入門與實作教學/","2024/06/13/深入解析：處理中文數字的自訂排序函數/","2024/04/01/為甚麼應該從-Net-Framework跳到-Net-Core/","2024/07/13/為什麼你應該使用Docker-詳細解析其優勢/","2024/05/09/處理程序與執行緒-從日常生活理解多執行緒/"];function toRandomPost(){ pjax.loadUrl(GLOBAL_CONFIG.root+posts[Math.floor(Math.random()*posts.length)]); }</script>
