@@ -1,0 +1,211 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>使用 Python 和 FFmpeg 打造簡易視頻轉換器 | kyo</title><noscript>開啟JavaScript才能訪問本站哦~</noscript><link rel="icon" href="/img/pwa/favicon.ico"><!-- index.css--><link rel="stylesheet" href="/css/index.css?v=2.1.5"><!-- inject head--><link rel="canonical" href="http://example.com/2024/09/26/%E4%BD%BF%E7%94%A8-Python-%E5%92%8C-FFmpeg-%E6%89%93%E9%80%A0%E7%B0%A1%E6%98%93%E8%A6%96%E9%A0%BB%E8%BD%89%E6%8F%9B%E5%99%A8/"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"><!-- aplayer--><!-- swiper--><!-- fancybox ui--><!-- katex--><!-- Open Graph--><meta name="description" content="使用 Python 和 FFmpeg 打造簡易視頻轉換器今天我要跟各位分享一個有趣的小專案 - 使用 Python 和 FFmpeg 製作的簡易視頻轉換器。這個應用程式不僅實用，還能讓我們學習到如何結合 Python 的圖形使用者介面（GUI）與強大的視頻處理工具。 專案概述這個視頻轉換器具有以下特"><!-- pwa--><meta name="apple-mobile-web-app-capable" content="kyo"><meta name="theme-color" content="var(--efu-main)"><meta name="apple-mobile-web-app-status-bar-style" content="var(--efu-main)"><link rel="bookmark" href="/img/pwa/favicon.ico"><link rel="apple-touch-icon" href="/img/pwa/favicon.ico" sizes="180x180"><script>console.log(' %c Solitude %c ' + '2.1.5' + ' %c https://github.com/everfu/hexo-theme-solitude',
+    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
+    'background:#ff9a9a ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
+    'background:unset ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff')
+</script><script>(()=>{
+        const saveToLocal = {
+            set: function setWithExpiry(key, value, ttl) {
+                if (ttl === 0)
+                    return
+                const now = new Date()
+                const expiryDay = ttl * 86400000
+                const item = {
+                    value: value,
+                    expiry: now.getTime() + expiryDay
+                }
+                localStorage.setItem(key, JSON.stringify(item))
+            },
+            get: function getWithExpiry(key) {
+                const itemStr = localStorage.getItem(key)
+
+                if (!itemStr) {
+                    return undefined
+                }
+                const item = JSON.parse(itemStr)
+                const now = new Date()
+
+                if (now.getTime() > item.expiry) {
+                    localStorage.removeItem(key)
+                    return undefined
+                }
+                return item.value
+            }
+        };
+        window.utils = {
+            saveToLocal: saveToLocal,
+            getCSS: (url, id = false) => new Promise((resolve, reject) => {
+              const link = document.createElement('link')
+              link.rel = 'stylesheet'
+              link.href = url
+              if (id) link.id = id
+              link.onerror = reject
+              link.onload = link.onreadystatechange = function() {
+                const loadState = this.readyState
+                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+                link.onload = link.onreadystatechange = null
+                resolve()
+              }
+              document.head.appendChild(link)
+            }),
+            getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+              const script = document.createElement('script')
+              script.src = url
+              script.async = true
+              script.onerror = reject
+              script.onload = script.onreadystatechange = function() {
+                const loadState = this.readyState
+                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+                script.onload = script.onreadystatechange = null
+                resolve()
+              }
+
+              Object.keys(attr).forEach(key => {
+                script.setAttribute(key, attr[key])
+              })
+
+              document.head.appendChild(script)
+            }),
+            addGlobalFn: (key, fn, name = false, parent = window) => {
+                const globalFn = parent.globalFn || {}
+                const keyObj = globalFn[key] || {}
+
+                if (name && keyObj[name]) return
+
+                name = name || Object.keys(keyObj).length
+                keyObj[name] = fn
+                globalFn[key] = keyObj
+                parent.globalFn = globalFn
+            },
+            addEventListenerPjax: (ele, event, fn, option = false) => {
+              ele.addEventListener(event, fn, option)
+              utils.addGlobalFn('pjax', () => {
+                  ele.removeEventListener(event, fn, option)
+              })
+          },
+        }
+    })()</script><!-- theme--><script>initTheme = () => {
+    let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const cachedMode = utils.saveToLocal.get('theme');
+    if (cachedMode === undefined) {
+        const nowMode =
+            isDarkMode ? 'dark' : 'light'
+        document.documentElement.setAttribute('data-theme', nowMode);
+    } else {
+        document.documentElement.setAttribute('data-theme', cachedMode);
+    }
+    typeof rm === 'object' && rm.mode(cachedMode === 'dark' && isDarkMode)
+}
+initTheme()</script><!-- global head--><script>const GLOBAL_CONFIG = {
+    root: '/',
+    algolia: undefined,
+    localsearch: undefined,
+    runtime: '2023-04-20 00:00:00',
+    lazyload: {
+        enable: false,
+        error: '/img/error_load.avif'
+    },
+    copyright: false,
+    highlight: {"limit":200,"expand":true,"copy":true,"syntax":"highlight.js"},
+    randomlink: false,
+    lang: {"theme":{"dark":"已切換至深色模式","light":"已切換至淺色模式"},"copy":{"success":"複製成功","error":"複製失敗"},"backtop":"返回頂部","time":{"day":"天前","hour":"小時前","just":"剛剛","min":"分鐘前","month":"個月前"},"day":" 天","f12":"開發者模式已打開，請遵循GPL協定。","totalk":"無需刪除空行，直接輸入評論即可"},
+    aside: {
+        sayhello: {
+            morning: "✨ 早上好，新的一天开始了",
+            noon: "🍲 午餐时间",
+            afternoon: "🌞 下午好",
+            night: "早点休息",
+            goodnight: "晚安 😴",
+        },
+        sayhello2: [],
+        sayhello3: {
+            prefix: '好久不見，',
+            back: '歡迎再次回來，',
+        },
+    },
+    covercolor: {
+        enable: true
+    },
+    comment: false,
+    lightbox: 'null',
+    post_ai: false,
+    right_menu: false,
+    translate: {"translateDelay":0,"defaultEncoding":1},
+    lure: false,
+    expire: false,
+};</script><!-- page-config head--><script id="config-diff">var PAGE_CONFIG = {
+    is_post: true,
+    is_page: false,
+    is_home: false,
+    page: '',
+    toc: true,
+    comment: false,
+    ai_text: false,
+    color: false,
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body id="body"><!-- universe--><!-- background img--><!-- loading--><!-- console--><!-- sidebar--><div id="sidebar" style="zoom: 1;"><div id="menu-mask" style="display: none;"></div><div id="sidebar-menus"><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">60</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分類</div><div class="length-num">0</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">標籤</div><div class="length-num">37</div></a></div></div></div><span class="sidebar-menu-item-title">功能</span><div class="sidebar-menu-item"><span class="darkmode_switchbutton menu-child" onclick="sco.switchDarkMode()"><i class="solitude fa-solid fa-circle-half-stroke"></i><span>顯示模式</span></span></div><div class="back-menu-list-groups"><div class="back-menu-list-group"><div class="back-menu-list-title">我的</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://github.com/kyosora" title="GITHUB"><img class="nolazyload back-menu-item-icon" src="https://i.imgur.com/uHDTTL2.png" alt="GITHUB"><span class="back-menu-item-text">GITHUB</span></a></div></div></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span>文庫</span></a><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="solitude  fas fa-folder-closed"></i><span>全部文章</span></a></li><li><a class="site-page child" href="/categories/"><i class="solitude  fas fa-clone"></i><span>分類列表</span></a></li><li><a class="site-page child" href="/tags/"><i class="solitude  fas fa-tags"></i><span>標籤列表</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span>我的</span></a><ul class="menus_item_child"><li><a class="site-page child" href="/about/"><i class="solitude  fas fa-user"></i><span>關於本站</span></a></li></ul></div></div><span class="sidebar-menu-item-title">標籤</span><div class="card-widget card-tags card-archives card-webinfo card-allinfo"><div class="card-tag-cloud"><a href="/tags/CORS/">CORS<sup>1</sup></a><a href="/tags/C/">C#<sup>2</sup></a><a href="/tags/CSS/">CSS<sup>4</sup></a><a href="/tags/DNS/">DNS<sup>1</sup></a><a href="/tags/%E8%BB%9F%E9%AB%94/">軟體<sup>1</sup></a><a href="/tags/Git/">Git<sup>2</sup></a><a href="/tags/Hexo/">Hexo<sup>1</sup></a><a href="/tags/JavaScript/">JavaScript<sup>1</sup></a><a href="/tags/%E5%BC%B1%E9%BB%9E%E6%8E%83%E6%8F%8F-Cookie/">弱點掃描,Cookie<sup>1</sup></a><a href="/tags/NET-Core-%E4%B8%AD%E9%96%93%E4%BB%B6/">.NET Core,中間件<sup>1</sup></a><a href="/tags/NET-Core-%E4%BE%9D%E8%B3%B4%E6%B3%A8%E5%85%A5-%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%89/">.NET Core,依賴注入,控制反轉<sup>1</sup></a><a href="/tags/Pinia/">Pinia<sup>1</sup></a><a href="/tags/js/">js<sup>4</sup></a><a href="/tags/Pinia-Vuex/">Pinia,Vuex<sup>1</sup></a><a href="/tags/Redis/">Redis<sup>1</sup></a><a href="/tags/SQL/">SQL<sup>7</sup></a><a href="/tags/SQL%E5%84%AA%E5%8C%96/">SQL優化<sup>1</sup></a><a href="/tags/Visual-Studio/">Visual Studio<sup>1</sup></a><a href="/tags/Vue/">Vue<sup>2</sup></a><a href="/tags/Vue3/">Vue3<sup>1</sup></a><a href="/tags/Vue-Pinia/">Vue,Pinia<sup>1</sup></a><a href="/tags/WebSocket/">WebSocket<sup>2</sup></a><a href="/tags/Windows-%E5%B7%A5%E4%BD%9C%E6%8E%92%E7%A8%8B%E5%99%A8/">Windows,工作排程器<sup>1</sup></a><a href="/tags/SSL-%E9%96%8B%E6%BA%90/">SSL,開源<sup>1</sup></a><a href="/tags/Python-FFmpeg/">Python,FFmpeg<sup>1</sup></a><a href="/tags/NSSM-%E6%9C%8D%E5%8B%99/">NSSM,服務<sup>1</sup></a><a href="/tags/SQL-Server/">SQL Server<sup>1</sup></a><a href="/tags/LibreOffice-C-IIS/">LibreOffice,C#,IIS<sup>1</sup></a><a href="/tags/bat/">bat<sup>1</sup></a><a href="/tags/%E5%BC%B1%E9%BB%9E%E6%8E%83%E6%8F%8F-HSTS/">弱點掃描,HSTS<sup>1</sup></a><a href="/tags/NET-Core/">.NET Core<sup>1</sup></a><a href="/tags/js-%E6%8E%92%E5%BA%8F-%E6%BC%94%E7%AE%97%E6%B3%95/">js,排序,演算法<sup>1</sup></a><a href="/tags/html/">html<sup>1</sup></a><a href="/tags/TDD/">TDD<sup>1</sup></a><a href="/tags/C-Net/">C#,Net<sup>1</sup></a><a href="/tags/Docker/">Docker<sup>1</sup></a><a href="/tags/Thread/">Thread<sup>1</sup></a></div></div></div></div><!-- keyboard--><!-- righhtside--><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav class="show" id="nav"><div id="nav-group"><div id="blog_name"><div class="back-home-button" tabindex="-1"><i class="back-home-button-icon solitude fas fa-bars-progress"></i><div class="back-menu-list-groups"><div class="back-menu-list-group"><div class="back-menu-list-title">我的</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://github.com/kyosora" title="GITHUB"><img class="nolazyload back-menu-item-icon" src="https://i.imgur.com/uHDTTL2.png" alt="GITHUB"><span class="back-menu-item-text">GITHUB</span></a></div></div></div></div><a id="site-name" href="/" title="返回博客主頁"><span class="title">Solitude</span><i class="solitude fa-solid fa-home"></i></a></div><div id="page-name-mask"><div id="page-name"><a id="page-name-text" onclick="sco.toTop()">使用 Python 和 FFmpeg 打造簡易視頻轉換器</a></div></div><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span>文庫</span></a><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="solitude  fas fa-folder-closed"></i><span>全部文章</span></a></li><li><a class="site-page child" href="/categories/"><i class="solitude  fas fa-clone"></i><span>分類列表</span></a></li><li><a class="site-page child" href="/tags/"><i class="solitude  fas fa-tags"></i><span>標籤列表</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span>我的</span></a><ul class="menus_item_child"><li><a class="site-page child" href="/about/"><i class="solitude  fas fa-user"></i><span>關於本站</span></a></li></ul></div></div></div><div id="nav-left"></div><div id="nav-right"><div class="nav-button" id="nav-totop" onclick="sco.toTop()"><a class="totopbtn"><i class="solitude fa-solid fa-arrow-up"></i><span id="percent">0</span></a></div><div id="toggle-menu"><a class="site-page"><i class="solitude fa-solid fa-bars"></i></a></div></div></div></nav><div class="coverdiv" id="coverdiv"><img class="nolazyload" id="post-cover" src="/img/default.avif" alt="使用 Python 和 FFmpeg 打造簡易視頻轉換器"></div><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original" title="該文章為原創文章，注意版權協議">原創</a><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Python-FFmpeg/"><span class="tags-name tags-punctuation"><i class="solitude fa-solid fa-hashtag"></i>Python,FFmpeg</span></a></div></div></div></div><h1 class="post-title">使用 Python 和 FFmpeg 打造簡易視頻轉換器</h1><div id="post-meta"><div class="meta-secondline"><span class="post-meta-date" title="發布於 2024-09-26 17:56:07"><i class="post-meta-icon solitude fas fa-calendar-days"></i><time datetime="2024-09-26T09:56:07.000Z">2024-09-26T09:56:07.000Z</time></span><span class="post-meta-date" title="最後更新於 2024-09-26 18:01:03"><i class="post-meta-icon solitude fa-solid fa-arrows-rotate"></i><time datetime="2024-09-26T10:01:03.881Z">2024-09-26T10:01:03.881Z</time></span><span class="post-meta-position" title="作者IP歸屬地為南昌"><i class="post-meta-icon solitude fas fa-location-dot"></i><span>南昌</span></span><a class="post-meta-pv" href="/2024/09/26/%E4%BD%BF%E7%94%A8-Python-%E5%92%8C-FFmpeg-%E6%89%93%E9%80%A0%E7%B0%A1%E6%98%93%E8%A6%96%E9%A0%BB%E8%BD%89%E6%8F%9B%E5%99%A8/" title="文章熱度"><i class="post-meta-icon solitude fa-solid fa-fire-flame-curved"></i></a></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="使用-Python-和-FFmpeg-打造簡易視頻轉換器"><a href="#使用-Python-和-FFmpeg-打造簡易視頻轉換器" class="headerlink" title="使用 Python 和 FFmpeg 打造簡易視頻轉換器"></a>使用 Python 和 FFmpeg 打造簡易視頻轉換器</h1><p>今天我要跟各位分享一個有趣的小專案 - 使用 Python 和 FFmpeg 製作的簡易視頻轉換器。這個應用程式不僅實用，還能讓我們學習到如何結合 Python 的圖形使用者介面（GUI）與強大的視頻處理工具。</p>
+<h2 id="專案概述"><a href="#專案概述" class="headerlink" title="專案概述"></a>專案概述</h2><p><img src="/%E4%BD%BF%E7%94%A8-Python-%E5%92%8C-FFmpeg-%E6%89%93%E9%80%A0%E7%B0%A1%E6%98%93%E8%A6%96%E9%A0%BB%E8%BD%89%E6%8F%9B%E5%99%A8/20240926060101745.png"><br>這個視頻轉換器具有以下特點：</p>
+<ol>
+<li>簡潔的圖形使用者介面</li>
+<li>可以選擇輸入檔案和指定輸出檔案</li>
+<li>使用 FFmpeg 進行視頻轉換</li>
+<li>顯示轉換狀態和錯誤訊息</li>
+</ol>
+<h2 id="使用的技術"><a href="#使用的技術" class="headerlink" title="使用的技術"></a>使用的技術</h2><ul>
+<li>Python：程式的主要語言</li>
+<li>tkinter：Python 的標準 GUI 函式庫</li>
+<li>ffmpeg-python：FFmpeg 的 Python 綁定，用於視頻處理</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 導入必要的模組</span></span><br><span class="line"><span class="keyword">import</span> ffmpeg  <span class="comment"># 用於處理視頻轉換</span></span><br><span class="line"><span class="keyword">import</span> tkinter <span class="keyword">as</span> tk  <span class="comment"># 用於創建圖形使用者介面 (GUI)</span></span><br><span class="line"><span class="keyword">from</span> tkinter <span class="keyword">import</span> filedialog, messagebox  <span class="comment"># 用於檔案選擇和顯示訊息框</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 定義選擇檔案的函數</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">select_file</span>():</span><br><span class="line">    <span class="comment"># 開啟檔案選擇對話框</span></span><br><span class="line">    filename = filedialog.askopenfilename()</span><br><span class="line">    <span class="comment"># 清除輸入框的現有內容</span></span><br><span class="line">    input_entry.delete(<span class="number">0</span>, tk.END)</span><br><span class="line">    <span class="comment"># 將選擇的檔案路徑插入輸入框</span></span><br><span class="line">    input_entry.insert(<span class="number">0</span>, filename)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定義視頻轉換的函數</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">convert_video</span>():</span><br><span class="line">    <span class="comment"># 獲取輸入和輸出檔案路徑</span></span><br><span class="line">    input_file = input_entry.get()</span><br><span class="line">    output_file = output_entry.get()</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="comment"># 讀取輸入檔案</span></span><br><span class="line">        stream = ffmpeg.<span class="built_in">input</span>(input_file)</span><br><span class="line">        <span class="comment"># 設置輸出參數（這裡使用預設參數）</span></span><br><span class="line">        stream = ffmpeg.output(stream, output_file)</span><br><span class="line">        <span class="comment"># 執行 FFmpeg 指令</span></span><br><span class="line">        ffmpeg.run(stream)</span><br><span class="line">        <span class="comment"># 更新狀態標籤，顯示成功訊息</span></span><br><span class="line">        status_label.config(text=<span class="string">&quot;轉換成功!&quot;</span>)</span><br><span class="line">    <span class="keyword">except</span> ffmpeg.Error <span class="keyword">as</span> e:</span><br><span class="line">        <span class="comment"># 如果發生錯誤，更新狀態標籤顯示錯誤訊息</span></span><br><span class="line">        status_label.config(text=<span class="string">&quot;轉換失敗。錯誤: &quot;</span> + <span class="built_in">str</span>(e))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 創建主視窗</span></span><br><span class="line">root = tk.Tk()</span><br><span class="line">root.title(<span class="string">&quot;視頻轉換器 (使用 ffmpeg-python)&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 創建和放置控制項</span></span><br><span class="line"><span class="comment"># 輸入檔案部分</span></span><br><span class="line">tk.Label(root, text=<span class="string">&quot;輸入檔案:&quot;</span>).grid(row=<span class="number">0</span>, column=<span class="number">0</span>, sticky=<span class="string">&quot;e&quot;</span>)</span><br><span class="line">input_entry = tk.Entry(root, width=<span class="number">50</span>)</span><br><span class="line">input_entry.grid(row=<span class="number">0</span>, column=<span class="number">1</span>)</span><br><span class="line">tk.Button(root, text=<span class="string">&quot;瀏覽&quot;</span>, command=select_file).grid(row=<span class="number">0</span>, column=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 輸出檔案部分</span></span><br><span class="line">tk.Label(root, text=<span class="string">&quot;輸出檔案:&quot;</span>).grid(row=<span class="number">1</span>, column=<span class="number">0</span>, sticky=<span class="string">&quot;e&quot;</span>)</span><br><span class="line">output_entry = tk.Entry(root, width=<span class="number">50</span>)</span><br><span class="line">output_entry.grid(row=<span class="number">1</span>, column=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 轉換按鈕</span></span><br><span class="line">convert_button = tk.Button(root, text=<span class="string">&quot;轉換&quot;</span>, command=convert_video)</span><br><span class="line">convert_button.grid(row=<span class="number">2</span>, column=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 狀態標籤</span></span><br><span class="line">status_label = tk.Label(root, text=<span class="string">&quot;&quot;</span>)</span><br><span class="line">status_label.grid(row=<span class="number">3</span>, column=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 啟動主循環</span></span><br><span class="line">root.mainloop()</span><br></pre></td></tr></table></figure>
+<h2 id="程式碼解析"><a href="#程式碼解析" class="headerlink" title="程式碼解析"></a>程式碼解析</h2><p>讓我們來看看這個應用程式的主要組成部分：</p>
+<ol>
+<li>導入必要模組：<br>我們導入了 ffmpeg、tkinter 以及 filedialog 和 messagebox。這些模組分別用於視頻處理、創建 GUI 和處理檔案選擇。</li>
+<li>檔案選擇功能：<br>select_file() 函數使用 filedialog.askopenfilename() 來開啟檔案選擇對話框，讓使用者可以輕鬆選擇要轉換的視頻檔案。</li>
+<li>視頻轉換功能：<br>convert_video() 函數是這個應用程式的核心。它使用 ffmpeg-python 來讀取輸入檔案、設定輸出參數並執行轉換。如果轉換成功，會顯示成功訊息；如果失敗，則顯示錯誤訊息。</li>
+<li>創建 GUI：<br>我們使用 tkinter 創建了一個簡單的視窗，包含輸入檔案和輸出檔案的輸入框、瀏覽按鈕、轉換按鈕和狀態標籤。</li>
+</ol>
+<h2 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h2><ol>
+<li>啟動應用程式後，你會看到一個簡單的視窗。</li>
+<li>點擊「瀏覽」按鈕選擇要轉換的視頻檔案。</li>
+<li>在「輸出檔案」欄位中輸入想要的輸出檔案名稱（記得加上副檔名）。</li>
+<li>點擊「轉換」按鈕開始轉換過程。</li>
+<li>轉換完成後，狀態標籤會顯示成功或失敗的訊息。</li>
+</ol>
+<h2 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h2><p>請確保你的系統上已安裝 FFmpeg。<br>這個程式使用了 FFmpeg 的預設參數進行轉換。如果你需要更多自訂選項，可以修改 convert_video() 函數中的 ffmpeg.output() 部分。</p>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>這個簡單的視頻轉換器展示了如何將強大的命令列工具（FFmpeg）與用戶友善的圖形介面結合。雖然這只是一個基礎版本，但你可以根據自己的需求進行擴展，例如增加更多的轉換選項、支援批次處理等。</p>
+</article><div class="post-copyright"><div class="post-copyright__author_group"><a class="post-copyright__author_img" target="_blank" rel="noopener" href="https://github.com/kyosora"><img class="post-copyright__author_img_front" src="https://i.imgur.com/BCI5KAc.png"></a><div class="post-copyright__author_name">kyo</div><div class="post-copyright__author_desc"></div></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div id="quit-box" onclick="RemoveRewardMask()"></div><div class="reward-link mode"><a class="reward-link-button" href="/atom.xml"><i class="solitude fa-solid fa-seedling"></i>訂閱</a></div></div></div><div class="social-share"><a class="social-share-ico icon-twitter" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url=http%3A%2F%2Fexample.com%2F2024%2F09%2F26%2F%25E4%25BD%25BF%25E7%2594%25A8-Python-%25E5%2592%258C-FFmpeg-%25E6%2589%2593%25E9%2580%25A0%25E7%25B0%25A1%25E6%2598%2593%25E8%25A6%2596%25E9%25A0%25BB%25E8%25BD%2589%25E6%258F%259B%25E5%2599%25A8%2F&amp;text=%E4%BD%BF%E7%94%A8%20Python%20%E5%92%8C%20FFmpeg%20%E6%89%93%E9%80%A0%E7%B0%A1%E6%98%93%E8%A6%96%E9%A0%BB%E8%BD%89%E6%8F%9B%E5%99%A8" title="分享到Twitter"><i class="solitude fab fa-twitter"></i></a><a class="social-share-ico icon-facebook" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fexample.com%2F2024%2F09%2F26%2F%25E4%25BD%25BF%25E7%2594%25A8-Python-%25E5%2592%258C-FFmpeg-%25E6%2589%2593%25E9%2580%25A0%25E7%25B0%25A1%25E6%2598%2593%25E8%25A6%2596%25E9%25A0%25BB%25E8%25BD%2589%25E6%258F%259B%25E5%2599%25A8%2F" title="分享到Facebook"><i class="solitude fab fa-facebook"></i></a><a class="social-share-ico icon-telegram" target="_blank" rel="noopener" href="https://t.me/share/url?url=http%3A%2F%2Fexample.com%2F2024%2F09%2F26%2F%25E4%25BD%25BF%25E7%2594%25A8-Python-%25E5%2592%258C-FFmpeg-%25E6%2589%2593%25E9%2580%25A0%25E7%25B0%25A1%25E6%2598%2593%25E8%25A6%2596%25E9%25A0%25BB%25E8%25BD%2589%25E6%258F%259B%25E5%2599%25A8%2F&amp;text=%E4%BD%BF%E7%94%A8%20Python%20%E5%92%8C%20FFmpeg%20%E6%89%93%E9%80%A0%E7%B0%A1%E6%98%93%E8%A6%96%E9%A0%BB%E8%BD%89%E6%8F%9B%E5%99%A8" title="分享到Telegram"><i class="solitude fab fa-telegram"></i></a><div class="social-share-ico icon-link" onclick="utils.copy(&quot;http://example.com/2024/09/26/%E4%BD%BF%E7%94%A8-Python-%E5%92%8C-FFmpeg-%E6%89%93%E9%80%A0%E7%B0%A1%E6%98%93%E8%A6%96%E9%A0%BB%E8%BD%89%E6%8F%9B%E5%99%A8/&quot;)" title="複製文章鏈接"><i class="solitude fas fa-link"></i></div></div><div class="post-copyright__notice"><span class="post-copyright-info">本文是原創文章，採用<a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a>協議，完整轉載請註明來自<a href="/">kyo</a></span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Python-FFmpeg/"><span class="tags-punctuation"><i class="solitude fa-solid fa-hashtag"></i>Python,FFmpeg<span class="tagsPageCount">1</span></span></a></div></div></div><nav class="needEndHide pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/09/27/SQL%E5%84%AA%E5%8C%96%EF%BC%9A%E8%99%95%E7%90%86%E7%99%BE%E8%90%AC%E7%B4%9A%E8%B3%87%E6%96%99%E8%A1%A8%E7%9A%84%E7%B5%90%E6%A7%8B%E4%BF%AE%E6%94%B9/"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">SQL優化：處理百萬級資料表的結構修改</div></div></a></div><div class="next-post pull-right"><a href="/2024/09/19/%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%88%AA%E9%99%A4%E5%8C%85%E5%90%AB%E6%95%B8%E7%99%BE%E8%90%AC%E6%96%87%E4%BB%B6%E7%9A%84%E8%B3%87%E6%96%99%E5%A4%BE%EF%BC%9AWindows-%E6%89%B9%E6%AC%A1%E6%AA%94%E6%A1%88%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88/"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">如何快速刪除包含數百萬文件的資料夾：Windows 批次檔案解決方案</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><div class="author-info__top-group"><div class="author-info__sayhi" id="author-info__sayhi" onclick="sco.changeSayHelloText()">sayhello.morning</div></div></div><div class="avatar-img-group"><img class="avatar-img" alt="頭像" src="/img/avatar.avif"></div><div class="author-info__description_group"><div class="author-info__description"></div><div class="author-info__description2"></div></div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/about/"><div class="author-info__name">kyo</div><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="solitude fa-solid fa-bars"></i><span>文章目錄</span></div><div class="toc-content" id="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-Python-%E5%92%8C-FFmpeg-%E6%89%93%E9%80%A0%E7%B0%A1%E6%98%93%E8%A6%96%E9%A0%BB%E8%BD%89%E6%8F%9B%E5%99%A8"><span class="toc-text">使用 Python 和 FFmpeg 打造簡易視頻轉換器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%88%E6%A1%88%E6%A6%82%E8%BF%B0"><span class="toc-text">專案概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E7%9A%84%E6%8A%80%E8%A1%93"><span class="toc-text">使用的技術</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%8B%E5%BC%8F%E7%A2%BC%E8%A7%A3%E6%9E%90"><span class="toc-text">程式碼解析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8"><span class="toc-text">如何使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85"><span class="toc-text">注意事項</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B5%90%E8%AA%9E"><span class="toc-text">結語</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="solitude fa-solid fa-map"></i><span>最近發佈</span></div><div class="aside-list"><a class="aside-list-item" href="/2024/11/01/%E5%9C%A8-IIS-%E7%92%B0%E5%A2%83%E4%B8%8B%E4%BD%BF%E7%94%A8-C#-%E6%93%8D%E4%BD%9C-LibreOffice-%E9%80%B2%E8%A1%8C%E6%AA%94%E6%A1%88%E8%BD%89%E6%8F%9B/" title="在 IIS 環境下使用 C# 操作 LibreOffice 進行檔案轉換"><div class="thumbnail"><img alt="在 IIS 環境下使用 C# 操作 LibreOffice 進行檔案轉換" src="/img/default.avif"></div><div class="content"><span class="title" href="/2024/11/01/%E5%9C%A8-IIS-%E7%92%B0%E5%A2%83%E4%B8%8B%E4%BD%BF%E7%94%A8-C#-%E6%93%8D%E4%BD%9C-LibreOffice-%E9%80%B2%E8%A1%8C%E6%AA%94%E6%A1%88%E8%BD%89%E6%8F%9B/" title="在 IIS 環境下使用 C# 操作 LibreOffice 進行檔案轉換">在 IIS 環境下使用 C# 操作 LibreOffice 進行檔案轉換</span></div></a><a class="aside-list-item" href="/2024/11/01/SQL-Server-%E7%A9%BA%E9%96%93%E6%9F%A5%E8%A9%A2%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97/" title="SQL Server 空間查詢操作指南"><div class="thumbnail"><img alt="SQL Server 空間查詢操作指南" src="/img/default.avif"></div><div class="content"><span class="title" href="/2024/11/01/SQL-Server-%E7%A9%BA%E9%96%93%E6%9F%A5%E8%A9%A2%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97/" title="SQL Server 空間查詢操作指南">SQL Server 空間查詢操作指南</span></div></a><a class="aside-list-item" href="/2024/10/23/%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E6%9F%A5%E8%A9%A2%E8%B3%87%E6%96%99%E5%BA%AB%E6%AA%A2%E8%A6%96%E8%A1%A8(View)%E7%9A%84%E6%AC%84%E4%BD%8D%E8%B3%87%E8%A8%8A/" title="如何快速查詢資料庫檢視表(View)的欄位資訊"><div class="thumbnail"><img alt="如何快速查詢資料庫檢視表(View)的欄位資訊" src="/img/default.avif"></div><div class="content"><span class="title" href="/2024/10/23/%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E6%9F%A5%E8%A9%A2%E8%B3%87%E6%96%99%E5%BA%AB%E6%AA%A2%E8%A6%96%E8%A1%A8(View)%E7%9A%84%E6%AC%84%E4%BD%8D%E8%B3%87%E8%A8%8A/" title="如何快速查詢資料庫檢視表(View)的欄位資訊">如何快速查詢資料庫檢視表(View)的欄位資訊</span></div></a><a class="aside-list-item" href="/2024/10/22/SQL-Server-%E5%82%99%E4%BB%BD%E6%AA%94%E6%A1%88%E7%95%B0%E5%B8%B8%E5%A2%9E%E9%95%B7%E7%9A%84%E6%8E%92%E6%9F%A5%E6%8C%87%E5%8D%97/" title="SQL Server 備份檔案異常增長的排查指南"><div class="thumbnail"><img alt="SQL Server 備份檔案異常增長的排查指南" src="/img/default.avif"></div><div class="content"><span class="title" href="/2024/10/22/SQL-Server-%E5%82%99%E4%BB%BD%E6%AA%94%E6%A1%88%E7%95%B0%E5%B8%B8%E5%A2%9E%E9%95%B7%E7%9A%84%E6%8E%92%E6%9F%A5%E6%8C%87%E5%8D%97/" title="SQL Server 備份檔案異常增長的排查指南">SQL Server 備份檔案異常增長的排查指南</span></div></a><a class="aside-list-item" href="/2024/10/02/Visual-Studio-ReSharper-%E6%93%B4%E5%85%85%E5%A5%97%E4%BB%B6%E5%AE%8C%E6%95%B4%E4%BB%8B%E7%B4%B9/" title="Visual Studio ReSharper 擴充套件完整介紹"><div class="thumbnail"><img alt="Visual Studio ReSharper 擴充套件完整介紹" src="/img/default.avif"></div><div class="content"><span class="title" href="/2024/10/02/Visual-Studio-ReSharper-%E6%93%B4%E5%85%85%E5%A5%97%E4%BB%B6%E5%AE%8C%E6%95%B4%E4%BB%8B%E7%B4%B9/" title="Visual Studio ReSharper 擴充套件完整介紹">Visual Studio ReSharper 擴充套件完整介紹</span></div></a></div></div></div></div></main><footer id="footer"><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div class="copyright">© 2023 - 2024 By&nbsp;<a class="footer-bar-link" href="/">kyo</a></div></div><div class="footer-bar-right"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude" alt="Theme">Theme</a></div></div></div></footer></div><!-- right_menu--><!-- inject body--><div><script src="/js/utils.js?v=2.1.5"></script><script src="/js/main.js?v=2.1.5"></script><script src="/js/third_party/waterfall.min.js?v=2.1.5"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script src="/js/tw_cn.js?v=2.1.5"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/node-snackbar/0.1.16/snackbar.min.js"></script><script>const coverColorConfig = {
+  time: 43200000
+}</script><script src="/js/covercolor/ave.js?v=2.1.5"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js"></script><div class="js-pjax"></div></div><!-- pjax--><script>const pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: ['title','#body-wrap','#site-config','meta[name="description"]','.js-pjax','meta[property^="og:"]','#config-diff', '.rs_show', '.rs_hide'],
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+})
+
+document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+})
+
+document.addEventListener('pjax:complete', () => {
+    window.refreshFn()
+
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+        const newScript = document.createElement('script')
+        const content = item.text || item.textContent || item.innerHTML || ""
+        Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+        newScript.appendChild(document.createTextNode(content))
+        item.parentNode.replaceChild(newScript, item)
+    })
+
+    GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+})
+
+document.addEventListener('pjax:error', (e) => {
+    if (e.request.status === 404) {
+        pjax.loadUrl('/404.html')
+    }
+})</script><!-- google adsense--><!-- search--><!-- Tianli-Talk--><!-- music--></body></html><script>const posts=["2024/11/01/在-IIS-環境下使用-C#-操作-LibreOffice-進行檔案轉換/","2024/11/01/SQL-Server-空間查詢操作指南/","2024/10/23/如何快速查詢資料庫檢視表(View)的欄位資訊/","2024/10/22/SQL-Server-備份檔案異常增長的排查指南/","2024/10/02/Visual-Studio-ReSharper-擴充套件完整介紹/","2024/09/27/SQL優化：處理百萬級資料表的結構修改/","2024/09/26/使用-Python-和-FFmpeg-打造簡易視頻轉換器/","2024/09/19/如何快速刪除包含數百萬文件的資料夾：Windows-批次檔案解決方案/","2024/09/19/SQL中的CASE語法：強大而靈活的條件表達式/","2024/09/18/Redis詳細介紹與使用場景/","2024/09/12/Vue-組件緩存問題與解決方案/","2024/09/12/EmEditor-介紹與-JSON-壓縮-解壓縮教程/","2024/09/11/Vue3-SFC-Loader-深入解析：輕鬆加載/","2024/09/05/C#-常用命名空間參考指南/","2024/09/05/2024年CSS終於實現垂直置中/","2024/08/20/SQL-查詢優化案例研究：提升水位監測系統性能/","2024/08/19/WebSocket教程：構建實時聊天應用/","2024/08/08/使用-SQL-Server-Resource-Governor-限制特定資料庫的資源使用/","2024/08/06/深入解析-使用Python構建全面的市場風險監測工具/","2024/07/13/為什麼你應該使用Docker-詳細解析其優勢/","2024/06/26/System.Text.Json-與-Newtonsoft.Json-的深入比較/","2024/06/26/如何在-IIS-上設定-HSTS---提高網站安全性/","2024/06/26/使用-NSSM-將-EXE-包裝成-Windows-服務/","2024/06/25/從Newtonsoft.Json遷移到System.Text.Json的經驗分享/","2024/06/25/WebSocket通訊過程詳解/","2024/06/22/SQL查詢重複資料指南/","2024/06/18/DuckDNS-免費且簡單的動態DNS服務/","2024/06/13/深入解析：處理中文數字的自訂排序函數/","2024/06/11/提升網頁表單驗證：從簡單檢查到全面優化/","2024/06/09/CSS-偽元素指南/","2024/06/06/Windows工作排程器沒有正常運作/","2024/05/23/在-SQL-Server-中尋找忘記的欄位位置/","2024/05/15/使用-IndexedDB-緩存大量資料/","2024/05/09/處理程序與執行緒-從日常生活理解多執行緒/","2024/05/08/IIS中COOKIE的安全設置/","2024/05/06/JavaScript字串搜索方法比較：indexOf-vs-includes-vs-filter/","2024/05/02/win-acme-Windows上的自動化SSL-TLS證書管理工具/","2024/04/17/GO語言學習路徑/","2024/04/10/NET-Core-中的中間件（Middleware）/","2024/04/08/快速排序法：輕鬆理解的演算法指南/","2024/04/05/NET-Core-中的依賴注入和控制反轉/","2024/04/01/為甚麼應該從-Net-Framework跳到-Net-Core/","2024/03/18/CSS實現DOM節點水平居中的多種方式/","2024/03/17/Pinia的資料儲存機制：深入探討/","2024/03/15/Pinia與Vuex的區別-詳細比較/","2024/03/14/Promise-和-setTimeout-的深入解析/","2024/03/11/JS防抖（Debouncing）與節流（Throttling）/","2024/03/10/Vue中的Pinia狀態管理：全面指南/","2024/03/10/圖片懶加載技術：提升網站效能的七大方法/","2024/03/09/深入理解-JavaScript-的-async-await/","2024/03/08/setTimeout-和-JavaScript-的-Event-Loop-運作原理/","2024/03/07/Vue-3-資料傳遞/","2024/02/23/Chrome套件開發教學：自動整理書籤到域名資料夾/","2024/02/20/CORS-都有哪些解決方法-/","2024/02/17/Git分支管理規範：提升團隊協作效率/","2024/02/13/Vue響應式系統的演進-從defineProperty到Proxy/","2024/02/08/實現左右佈局的多種CSS方法/","2024/02/07/測試驅動開發-TDD-入門與實作教學/","2024/02/06/Git基礎使用/","2024/01/25/Hexo — 用於快速建立個人博客的強大工具/"];function toRandomPost(){ pjax.loadUrl(GLOBAL_CONFIG.root+posts[Math.floor(Math.random()*posts.length)]); }</script>
