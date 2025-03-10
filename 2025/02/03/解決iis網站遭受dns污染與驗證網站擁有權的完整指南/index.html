@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kyosora.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Google Search Console簡介什麼是Google Search Console?Google Search Console(前身為Google網站管理員工具)是Google提供的免費網站監控與管理工具。它能協助網站管理員:  監控網站在Google搜尋中的表現 接收網站問題的警示通知 確認網站的擁有權 提交網站地圖(Sitemap) 查看網站的爬蟲數據  為什麼需要使用Search">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Google Search Console驗證與修復遭受DNS污染的IIS網站">
+<meta property="og:url" content="https://kyosora.github.io/2025/02/03/%E8%A7%A3%E6%B1%BAiis%E7%B6%B2%E7%AB%99%E9%81%AD%E5%8F%97dns%E6%B1%A1%E6%9F%93%E8%88%87%E9%A9%97%E8%AD%89%E7%B6%B2%E7%AB%99%E6%93%81%E6%9C%89%E6%AC%8A%E7%9A%84%E5%AE%8C%E6%95%B4%E6%8C%87%E5%8D%97/index.html">
+<meta property="og:site_name" content="kyosora 虛空筆記">
+<meta property="og:description" content="Google Search Console簡介什麼是Google Search Console?Google Search Console(前身為Google網站管理員工具)是Google提供的免費網站監控與管理工具。它能協助網站管理員:  監控網站在Google搜尋中的表現 接收網站問題的警示通知 確認網站的擁有權 提交網站地圖(Sitemap) 查看網站的爬蟲數據  為什麼需要使用Search">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2025-02-03T10:30:10.000Z">
+<meta property="article:modified_time" content="2025-02-03T08:27:26.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="IIS">
+<meta property="article:tag" content="資安">
+<meta property="article:tag" content="DNS污染">
+<meta property="article:tag" content="Google Search Console">
+<meta property="article:tag" content="網站驗證">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://kyosora.github.io/2025/02/03/%E8%A7%A3%E6%B1%BAiis%E7%B6%B2%E7%AB%99%E9%81%AD%E5%8F%97dns%E6%B1%A1%E6%9F%93%E8%88%87%E9%A9%97%E8%AD%89%E7%B6%B2%E7%AB%99%E6%93%81%E6%9C%89%E6%AC%8A%E7%9A%84%E5%AE%8C%E6%95%B4%E6%8C%87%E5%8D%97/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>使用Google Search Console驗證與修復遭受DNS污染的IIS網站 | kyosora 虛空筆記</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kyosora 虛空筆記</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/2025/02/03/%E8%A7%A3%E6%B1%BAiis%E7%B6%B2%E7%AB%99%E9%81%AD%E5%8F%97dns%E6%B1%A1%E6%9F%93%E8%88%87%E9%A9%97%E8%AD%89%E7%B6%B2%E7%AB%99%E6%93%81%E6%9C%89%E6%AC%8A%E7%9A%84%E5%AE%8C%E6%95%B4%E6%8C%87%E5%8D%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 虛空筆記">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用Google Search Console驗證與修復遭受DNS污染的IIS網站
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2025-02-03 18:30:10 / 修改時間：16:27:26" itemprop="dateCreated datePublished" datetime="2025-02-03T18:30:10+08:00">2025-02-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%B6%B2%E8%B7%AF%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">網路安全</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%B6%B2%E8%B7%AF%E5%AE%89%E5%85%A8/%E7%B3%BB%E7%B5%B1%E7%B6%AD%E8%AD%B7/" itemprop="url" rel="index"><span itemprop="name">系統維護</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Google-Search-Console簡介"><a href="#Google-Search-Console簡介" class="headerlink" title="Google Search Console簡介"></a>Google Search Console簡介</h2><h3 id="什麼是Google-Search-Console"><a href="#什麼是Google-Search-Console" class="headerlink" title="什麼是Google Search Console?"></a>什麼是Google Search Console?</h3><p>Google Search Console(前身為Google網站管理員工具)是Google提供的免費網站監控與管理工具。它能協助網站管理員:</p>
+<ul>
+<li>監控網站在Google搜尋中的表現</li>
+<li>接收網站問題的警示通知</li>
+<li>確認網站的擁有權</li>
+<li>提交網站地圖(Sitemap)</li>
+<li>查看網站的爬蟲數據</li>
+</ul>
+<h3 id="為什麼需要使用Search-Console"><a href="#為什麼需要使用Search-Console" class="headerlink" title="為什麼需要使用Search Console?"></a>為什麼需要使用Search Console?</h3><p>當網站遭受攻擊時,Search Console特別重要:</p>
+<ul>
+<li>及時接收安全性警示</li>
+<li>確認網站的真實擁有者</li>
+<li>要求Google重新檢索網站內容</li>
+<li>監控異常的搜尋結果</li>
+</ul>
+<h3 id="如何開始使用"><a href="#如何開始使用" class="headerlink" title="如何開始使用?"></a>如何開始使用?</h3><ol>
+<li>前往<a target="_blank" rel="noopener" href="https://search.google.com/search-console">Google Search Console</a></li>
+<li>使用Google帳號登入</li>
+<li>點選「新增資源」</li>
+<li>輸入您的網站網址</li>
+<li>選擇驗證方式</li>
+<li>本文章採用HTML 標記 驗證方式</li>
+</ol>
+<h2 id="DNS污染攻擊說明"><a href="#DNS污染攻擊說明" class="headerlink" title="DNS污染攻擊說明"></a>DNS污染攻擊說明</h2><h3 id="什麼是DNS污染"><a href="#什麼是DNS污染" class="headerlink" title="什麼是DNS污染?"></a>什麼是DNS污染?</h3><p>DNS(Domain Name System)污染是一種網路攻擊手法,攻擊者會:</p>
+<ul>
+<li>修改DNS伺服器的設定</li>
+<li>將使用者導向惡意網站</li>
+<li>植入廣告或惡意程式碼</li>
+</ul>
+<svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+    <!-- 背景 -->
+    <rect width="800" height="500" fill="#f8f9fa"/>
+    <!-- 標題 -->
+    <text x="400" y="30" text-anchor="middle" font-size="20" font-weight="bold">DNS污染攻擊運作機制說明</text>
+    <!-- 正常流程 -->
+    <g transform="translate(50,50)">
+        <rect x="10" y="10" width="120" height="60" rx="5" fill="#4299e1" />
+        <text x="70" y="45" text-anchor="middle" fill="white">使用者瀏覽器</text>
+        <rect x="250" y="10" width="120" height="60" rx="5" fill="#48bb78" />
+        <text x="310" y="45" text-anchor="middle" fill="white">DNS伺服器</text>
+        <rect x="490" y="10" width="120" height="60" rx="5" fill="#ecc94b" />
+        <text x="550" y="45" text-anchor="middle">您的網站</text>
+        <!-- 步驟說明 -->
+        <text x="70" y="100" text-anchor="middle" class="small">1. 查詢網址</text>
+        <text x="310" y="100" text-anchor="middle" class="small">2. 回傳IP位址</text>
+        <text x="550" y="100" text-anchor="middle" class="small">3. 連線到正確網站</text>
+        <!-- 正常連線箭頭 -->
+        <path d="M130 40 H250" stroke="#000" fill="none" marker-end="url(#arrowhead)" />
+        <path d="M370 40 H490" stroke="#000" fill="none" marker-end="url(#arrowhead)" />
+    </g>
+    <text x="400" y="200" text-anchor="middle" font-size="16">正常的DNS查詢流程</text>
+    <!-- 遭受攻擊流程 -->
+    <g transform="translate(50,250)">
+        <rect x="10" y="10" width="120" height="60" rx="5" fill="#4299e1" />
+        <text x="70" y="45" text-anchor="middle" fill="white">使用者瀏覽器</text>
+        <rect x="250" y="10" width="120" height="60" rx="5" fill="#f56565" />
+        <text x="310" y="45" text-anchor="middle" fill="white">被污染的DNS</text>
+        <rect x="490" y="10" width="120" height="60" rx="5" fill="#ed8936" />
+        <text x="550" y="45" text-anchor="middle">惡意廣告網站</text>
+        <!-- 攻擊步驟說明 -->
+        <text x="70" y="100" text-anchor="middle" class="small">1. 查詢網址</text>
+        <text x="310" y="100" text-anchor="middle" class="small">2. 回傳錯誤IP</text>
+        <text x="550" y="100" text-anchor="middle" class="small">3. 導向惡意網站</text>
+        <!-- 受污染連線箭頭 -->
+        <path d="M130 40 H250" stroke="#f56565" fill="none" marker-end="url(#arrowhead)" />
+        <path d="M370 40 H490" stroke="#f56565" fill="none" marker-end="url(#arrowhead)" />
+    </g>
+    <text x="400" y="400" text-anchor="middle" font-size="16">遭受DNS污染攻擊後的情況</text>
+    <!-- 箭頭標記定義 -->
+    <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" />
+        </marker>
+    </defs>
+</svg>
+
+<h3 id="常見的攻擊症狀"><a href="#常見的攻擊症狀" class="headerlink" title="常見的攻擊症狀"></a>常見的攻擊症狀</h3><p>當網站遭受DNS污染攻擊時,常見的症狀包括:</p>
+<ul>
+<li>使用者被重新導向到廣告網站</li>
+<li>網頁中出現不明的廣告連結</li>
+<li>Google搜尋結果顯示異常描述</li>
+<li>網站管理員無法存取某些系統檔案</li>
+</ul>
+<h2 id="解決方案"><a href="#解決方案" class="headerlink" title="解決方案"></a>解決方案</h2><h3 id="方案一：使用web-config設定驗證標籤-建議方式"><a href="#方案一：使用web-config設定驗證標籤-建議方式" class="headerlink" title="方案一：使用web.config設定驗證標籤(建議方式)"></a>方案一：使用web.config設定驗證標籤(建議方式)</h3><p>這是最簡單且最安全的驗證方式,適合多頁面的IIS網站：</p>
+<ol>
+<li>開啟web.config檔案</li>
+<li>在system.webServer區段中加入設定：</li>
+</ol>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>system.webServer</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>httpProtocol</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>customHeaders</span><span class="token punctuation">></span></span>
+            <span class="token comment">&lt;!-- 
+            Google Search Console驗證標籤
+            此設定會自動為所有頁面加入meta標籤
+            不需要修改個別網頁
+            優點:集中管理、減少錯誤風險
+            --></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>add</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>X-Meta-Google-Site-Verification<span class="token punctuation">"</span></span> 
+                 <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>您的驗證碼<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>customHeaders</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>httpProtocol</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>system.webServer</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>優點：</p>
+<ul>
+<li>集中管理所有設定</li>
+<li>減少人為錯誤風險</li>
+<li>適合多頁面網站</li>
+<li>方便進行版本控制</li>
+</ul>
+<h3 id="方案二：直接在網頁中加入HTML中繼標記"><a href="#方案二：直接在網頁中加入HTML中繼標記" class="headerlink" title="方案二：直接在網頁中加入HTML中繼標記"></a>方案二：直接在網頁中加入HTML中繼標記</h3><p>如果您的網站架構較簡單,也可以直接修改主要的版面配置檔案：</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token doctype"><span class="token punctuation">&lt;!</span><span class="token doctype-tag">DOCTYPE</span> <span class="token name">html</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
+    <span class="token comment">&lt;!-- 原有的head內容 --></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>您的網站標題<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>utf-8<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+    
+    <span class="token comment">&lt;!-- Google Search Console驗證碼 --></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>google-site-verification<span class="token punctuation">"</span></span> 
+          <span class="token attr-name">content</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>您的驗證碼<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+    
+    <span class="token comment">&lt;!-- 其他meta標籤 --></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
+    <span class="token comment">&lt;!-- 網站內容 --></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="方案三：清理DNS設定與惡意程式碼"><a href="#方案三：清理DNS設定與惡意程式碼" class="headerlink" title="方案三：清理DNS設定與惡意程式碼"></a>方案三：清理DNS設定與惡意程式碼</h3><p>完成驗證後,需要進行清理工作：</p>
+<ol>
+<li><p>檢查並清理DNS紀錄</p>
+<pre class="line-numbers language-powershell" data-language="powershell"><code class="language-powershell"><span class="token comment"># 使用PowerShell檢查DNS紀錄</span>
+nslookup your-domain<span class="token punctuation">.</span>com
+
+<span class="token comment"># 檢查重點：</span>
+<span class="token comment"># - A記錄是否正確</span>
+<span class="token comment"># - 有無異常的CNAME記錄</span>
+<span class="token comment"># - MX記錄是否正確</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
+<li><p>掃描並移除可疑檔案</p>
+<pre class="line-numbers language-powershell" data-language="powershell"><code class="language-powershell"><span class="token comment"># 以系統管理員身分執行PowerShell</span>
+<span class="token comment"># 掃描特定資料夾下的可疑檔案</span>
+<span class="token variable">$websiteRoot</span> = <span class="token string">"C:\inetpub\wwwroot"</span>
+<span class="token function">Get-ChildItem</span> <span class="token operator">-</span>Path <span class="token variable">$websiteRoot</span> <span class="token operator">-</span>Recurse <span class="token operator">-</span>Include <span class="token operator">*</span><span class="token punctuation">.</span>php<span class="token punctuation">,</span><span class="token operator">*</span><span class="token punctuation">.</span>asp<span class="token punctuation">,</span><span class="token operator">*</span><span class="token punctuation">.</span>js <span class="token punctuation">|</span>
+<span class="token function">Where-Object</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment"># 檢查檔案修改時間</span>
+    <span class="token variable">$_</span><span class="token punctuation">.</span>LastWriteTime <span class="token operator">-gt</span> <span class="token punctuation">(</span><span class="token function">Get-Date</span><span class="token punctuation">)</span><span class="token punctuation">.</span>AddDays<span class="token punctuation">(</span><span class="token operator">-</span>7<span class="token punctuation">)</span> <span class="token operator">-and</span>
+    <span class="token comment"># 檢查檔案大小</span>
+    <span class="token variable">$_</span><span class="token punctuation">.</span>Length <span class="token operator">-gt</span> 1MB
+<span class="token punctuation">&#125;</span> <span class="token punctuation">|</span> <span class="token function">Format-Table</span> Name<span class="token punctuation">,</span>LastWriteTime<span class="token punctuation">,</span>Length <span class="token operator">-</span>AutoSize<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
+<li><p>更新IIS安全性設定</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token comment">&lt;!-- 在web.config中加入安全性設定 --></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>configuration</span><span class="token punctuation">></span></span>
+   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>system.webServer</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>security</span><span class="token punctuation">></span></span>
+         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>requestFiltering</span><span class="token punctuation">></span></span>
+            <span class="token comment">&lt;!-- 限制上傳檔案大小 --></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>requestLimits</span> <span class="token attr-name">maxAllowedContentLength</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>30000000<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+            <span class="token comment">&lt;!-- 禁止存取特定副檔名 --></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fileExtensions</span><span class="token punctuation">></span></span>
+               <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>add</span> <span class="token attr-name">fileExtension</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>.php<span class="token punctuation">"</span></span> <span class="token attr-name">allowed</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>false<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fileExtensions</span><span class="token punctuation">></span></span>
+         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>requestFiltering</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>security</span><span class="token punctuation">></span></span>
+   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>system.webServer</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>configuration</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
+</ol>
+<h2 id="疑難排解"><a href="#疑難排解" class="headerlink" title="疑難排解"></a>疑難排解</h2><h3 id="驗證失敗的常見原因"><a href="#驗證失敗的常見原因" class="headerlink" title="驗證失敗的常見原因"></a>驗證失敗的常見原因</h3><ol>
+<li>防火牆設定問題</li>
+</ol>
+<ul>
+<li>確認Google爬蟲的IP範圍是否被允許：<pre class="line-numbers language-none"><code class="language-none">66.249.64.0&#x2F;19
+66.249.88.0&#x2F;24<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></li>
+</ul>
+<ol start="2">
+<li>IIS設定問題</li>
+</ol>
+<ul>
+<li>檢查檔案讀取權限</li>
+<li>確認MIME類型設定</li>
+<li>查看IIS記錄檔</li>
+</ul>
+<ol start="3">
+<li>快取問題</li>
+</ol>
+<ul>
+<li>清除瀏覽器快取</li>
+<li>清除網站快取</li>
+<li>等待DNS更新完成</li>
+</ul>
+<h2 id="預防措施"><a href="#預防措施" class="headerlink" title="預防措施"></a>預防措施</h2><ol>
+<li>定期更新系統與應用程式</li>
+<li>實施強效的防火牆規則</li>
+<li>啟用檔案完整性監控</li>
+<li>定期備份重要資料</li>
+<li>記錄並監控系統活動</li>
+</ol>
+<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://support.google.com/webmasters">Google Search Console官方說明文件</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.google.com/webmasters/answer/9128668">Google Search Console新手指南</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-tw/iis/security/">Microsoft IIS安全性設定指南</a></li>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/search/apis/ipranges/googlebot">Google爬蟲IP範圍說明</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.twcert.org.tw/tw/cp-104-3600-0b28c-1.html">TWCERT/CC資安警訊</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/IIS/" rel="tag"># IIS</a>
+              <a href="/tags/%E8%B3%87%E5%AE%89/" rel="tag"># 資安</a>
+              <a href="/tags/DNS%E6%B1%A1%E6%9F%93/" rel="tag"># DNS污染</a>
+              <a href="/tags/Google-Search-Console/" rel="tag"># Google Search Console</a>
+              <a href="/tags/%E7%B6%B2%E7%AB%99%E9%A9%97%E8%AD%89/" rel="tag"># 網站驗證</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/01/24/deepseek-r1-%E6%B7%B1%E5%BA%A6%E5%89%96%E6%9E%90%E6%80%A7%E5%83%B9%E6%AF%94%E8%B6%85%E8%B6%8Aclaude%E8%88%87gpt-4%E7%9A%84ai%E6%96%B0%E9%81%B8%E6%93%87/" rel="prev" title="DeepSeek-R1 深度剖析：性價比超越Claude與GPT-4的AI新選擇">
+      <i class="fa fa-chevron-left"></i> DeepSeek-R1 深度剖析：性價比超越Claude與GPT-4的AI新選擇
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Google-Search-Console%E7%B0%A1%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">Google Search Console簡介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AFGoogle-Search-Console"><span class="nav-number">1.1.</span> <span class="nav-text">什麼是Google Search Console?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E9%9C%80%E8%A6%81%E4%BD%BF%E7%94%A8Search-Console"><span class="nav-number">1.2.</span> <span class="nav-text">為什麼需要使用Search Console?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%96%8B%E5%A7%8B%E4%BD%BF%E7%94%A8"><span class="nav-number">1.3.</span> <span class="nav-text">如何開始使用?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS%E6%B1%A1%E6%9F%93%E6%94%BB%E6%93%8A%E8%AA%AA%E6%98%8E"><span class="nav-number">2.</span> <span class="nav-text">DNS污染攻擊說明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AFDNS%E6%B1%A1%E6%9F%93"><span class="nav-number">2.1.</span> <span class="nav-text">什麼是DNS污染?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A6%8B%E7%9A%84%E6%94%BB%E6%93%8A%E7%97%87%E7%8B%80"><span class="nav-number">2.2.</span> <span class="nav-text">常見的攻擊症狀</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88"><span class="nav-number">3.</span> <span class="nav-text">解決方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%A1%88%E4%B8%80%EF%BC%9A%E4%BD%BF%E7%94%A8web-config%E8%A8%AD%E5%AE%9A%E9%A9%97%E8%AD%89%E6%A8%99%E7%B1%A4-%E5%BB%BA%E8%AD%B0%E6%96%B9%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text">方案一：使用web.config設定驗證標籤(建議方式)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%A1%88%E4%BA%8C%EF%BC%9A%E7%9B%B4%E6%8E%A5%E5%9C%A8%E7%B6%B2%E9%A0%81%E4%B8%AD%E5%8A%A0%E5%85%A5HTML%E4%B8%AD%E7%B9%BC%E6%A8%99%E8%A8%98"><span class="nav-number">3.2.</span> <span class="nav-text">方案二：直接在網頁中加入HTML中繼標記</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%A1%88%E4%B8%89%EF%BC%9A%E6%B8%85%E7%90%86DNS%E8%A8%AD%E5%AE%9A%E8%88%87%E6%83%A1%E6%84%8F%E7%A8%8B%E5%BC%8F%E7%A2%BC"><span class="nav-number">3.3.</span> <span class="nav-text">方案三：清理DNS設定與惡意程式碼</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%96%91%E9%9B%A3%E6%8E%92%E8%A7%A3"><span class="nav-number">4.</span> <span class="nav-text">疑難排解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A9%97%E8%AD%89%E5%A4%B1%E6%95%97%E7%9A%84%E5%B8%B8%E8%A6%8B%E5%8E%9F%E5%9B%A0"><span class="nav-number">4.1.</span> <span class="nav-text">驗證失敗的常見原因</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A0%90%E9%98%B2%E6%8E%AA%E6%96%BD"><span class="nav-number">5.</span> <span class="nav-text">預防措施</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%83%E8%80%83%E8%B3%87%E6%BA%90"><span class="nav-number">6.</span> <span class="nav-text">參考資源</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kyosora</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

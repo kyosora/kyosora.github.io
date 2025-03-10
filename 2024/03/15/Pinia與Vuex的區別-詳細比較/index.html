@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kyosora.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Pinia與Vuex的區別:詳細比較在Vue.js的狀態管理領域中,Pinia和Vuex是兩個主要的選擇。儘管它們都旨在解決相同的問題,但它們在設計理念和使用方式上有顯著的差異。本文將深入探討Pinia和Vuex的區別,幫助開發者做出明智的選擇。 1. 起源與發展Vuex Vuex是Vue.js的官方狀態管理庫,於2015年發布。 它遵循Flux架構,設計初衷是為了處理大型複雜應用的狀態管理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pinia與Vuex的區別:詳細比較">
+<meta property="og:url" content="https://kyosora.github.io/2024/03/15/Pinia%E8%88%87Vuex%E7%9A%84%E5%8D%80%E5%88%A5-%E8%A9%B3%E7%B4%B0%E6%AF%94%E8%BC%83/index.html">
+<meta property="og:site_name" content="kyosora 虛空筆記">
+<meta property="og:description" content="Pinia與Vuex的區別:詳細比較在Vue.js的狀態管理領域中,Pinia和Vuex是兩個主要的選擇。儘管它們都旨在解決相同的問題,但它們在設計理念和使用方式上有顯著的差異。本文將深入探討Pinia和Vuex的區別,幫助開發者做出明智的選擇。 1. 起源與發展Vuex Vuex是Vue.js的官方狀態管理庫,於2015年發布。 它遵循Flux架構,設計初衷是為了處理大型複雜應用的狀態管理。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-03-15T09:15:53.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:52:22.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Pinia">
+<meta property="article:tag" content="Vuex">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://kyosora.github.io/2024/03/15/Pinia%E8%88%87Vuex%E7%9A%84%E5%8D%80%E5%88%A5-%E8%A9%B3%E7%B4%B0%E6%AF%94%E8%BC%83/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>Pinia與Vuex的區別:詳細比較 | kyosora 虛空筆記</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kyosora 虛空筆記</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/2024/03/15/Pinia%E8%88%87Vuex%E7%9A%84%E5%8D%80%E5%88%A5-%E8%A9%B3%E7%B4%B0%E6%AF%94%E8%BC%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 虛空筆記">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Pinia與Vuex的區別:詳細比較
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2024-03-15 17:15:53" itemprop="dateCreated datePublished" datetime="2024-03-15T17:15:53+08:00">2024-03-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2024-11-27 14:52:22" itemprop="dateModified" datetime="2024-11-27T14:52:22+08:00">2024-11-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Pinia與Vuex的區別-詳細比較"><a href="#Pinia與Vuex的區別-詳細比較" class="headerlink" title="Pinia與Vuex的區別:詳細比較"></a>Pinia與Vuex的區別:詳細比較</h1><p>在Vue.js的狀態管理領域中,Pinia和Vuex是兩個主要的選擇。儘管它們都旨在解決相同的問題,但它們在設計理念和使用方式上有顯著的差異。本文將深入探討Pinia和Vuex的區別,幫助開發者做出明智的選擇。</p>
+<h2 id="1-起源與發展"><a href="#1-起源與發展" class="headerlink" title="1. 起源與發展"></a>1. 起源與發展</h2><h3 id="Vuex"><a href="#Vuex" class="headerlink" title="Vuex"></a>Vuex</h3><ul>
+<li>Vuex是Vue.js的官方狀態管理庫,於2015年發布。</li>
+<li>它遵循Flux架構,設計初衷是為了處理大型複雜應用的狀態管理。</li>
+</ul>
+<h3 id="Pinia"><a href="#Pinia" class="headerlink" title="Pinia"></a>Pinia</h3><ul>
+<li>Pinia是由Vue核心團隊成員Eduardo San Martin Morote開發的新一代狀態管理工具。</li>
+<li>它最初是作為Vuex 5的概念驗證而創建的,後來發展成為一個獨立的項目。</li>
+<li>在Vue 3發布後,Pinia迅速獲得了社區的青睞,並最終成為Vue的官方推薦狀態管理解決方案。</li>
+</ul>
+<h2 id="2-核心概念"><a href="#2-核心概念" class="headerlink" title="2. 核心概念"></a>2. 核心概念</h2><h3 id="Vuex-1"><a href="#Vuex-1" class="headerlink" title="Vuex"></a>Vuex</h3><ul>
+<li><strong>Store</strong>: 單一狀態樹,作為應用的唯一數據源。</li>
+<li><strong>State</strong>: 存儲應用的響應式狀態。</li>
+<li><strong>Getters</strong>: 從store中派生出的狀態。</li>
+<li><strong>Mutations</strong>: 用於修改狀態的同步函數。</li>
+<li><strong>Actions</strong>: 可包含異步操作的函數,用於提交mutation。</li>
+<li><strong>Modules</strong>: 將store分割成模塊,每個模塊擁有自己的state、mutation、action等。</li>
+</ul>
+<h3 id="Pinia-1"><a href="#Pinia-1" class="headerlink" title="Pinia"></a>Pinia</h3><ul>
+<li><strong>Store</strong>: 可以創建多個store,每個store都是獨立的。</li>
+<li><strong>State</strong>: 定義store的初始狀態。</li>
+<li><strong>Getters</strong>: 類似於computed屬性,用於派生狀態。</li>
+<li><strong>Actions</strong>: 可以是同步或異步的函數,用於修改狀態。</li>
+</ul>
+<h2 id="3-主要區別"><a href="#3-主要區別" class="headerlink" title="3. 主要區別"></a>3. 主要區別</h2><ol>
+<li><p><strong>結構複雜度</strong></p>
+<ul>
+<li>Vuex: 強制使用mutation來修改狀態,導致代碼結構較為複雜。</li>
+<li>Pinia: 簡化了狀態管理的結構,直接通過action修改狀態,無需mutation。</li>
+</ul>
+</li>
+<li><p><strong>TypeScript支持</strong></p>
+<ul>
+<li>Vuex: 對TypeScript的支持相對有限。</li>
+<li>Pinia: 設計之初就考慮到了TypeScript,提供了出色的類型推斷。</li>
+</ul>
+</li>
+<li><p><strong>模塊化</strong></p>
+<ul>
+<li>Vuex: 使用嵌套模塊來組織大型store,可能導致命名空間的複雜性。</li>
+<li>Pinia: 每個store都是獨立的,naturally支持模塊化,無需額外配置。</li>
+</ul>
+</li>
+<li><p><strong>開發者工具</strong></p>
+<ul>
+<li>Vuex: 有專門的Vuex開發者工具。</li>
+<li>Pinia: 與Vue開發者工具深度集成,提供更直觀的調試體驗。</li>
+</ul>
+</li>
+<li><p><strong>代碼分割</strong></p>
+<ul>
+<li>Vuex: 需要額外配置才能實現代碼分割。</li>
+<li>Pinia: 天生支持代碼分割,每個store可以按需導入。</li>
+</ul>
+</li>
+<li><p><strong>靈活性</strong></p>
+<ul>
+<li>Vuex: 相對固定的結構和使用模式。</li>
+<li>Pinia: 提供更大的靈活性,允許直接修改狀態,更符合Vue 3的組合式API風格。</li>
+</ul>
+</li>
+<li><p><strong>性能</strong></p>
+<ul>
+<li>Vuex: 在大型應用中可能面臨性能挑戰。</li>
+<li>Pinia: 採用了更高效的實現方式,在大型應用中表現更佳。</li>
+</ul>
+</li>
+</ol>
+<h2 id="4-使用場景"><a href="#4-使用場景" class="headerlink" title="4. 使用場景"></a>4. 使用場景</h2><h3 id="適合使用Vuex的情況"><a href="#適合使用Vuex的情況" class="headerlink" title="適合使用Vuex的情況"></a>適合使用Vuex的情況</h3><ul>
+<li>大型、複雜的Vue 2應用。</li>
+<li>需要嚴格的狀態變更追蹤。</li>
+<li>團隊已經熟悉Vuex的使用模式。</li>
+</ul>
+<h3 id="適合使用Pinia的情況"><a href="#適合使用Pinia的情況" class="headerlink" title="適合使用Pinia的情況"></a>適合使用Pinia的情況</h3><ul>
+<li>Vue 3項目(也支持Vue 2)。</li>
+<li>需要更簡潔、直觀的狀態管理解決方案。</li>
+<li>重視TypeScript支持和開發體驗。</li>
+<li>需要更好的性能和可擴展性。</li>
+</ul>
+<h2 id="5-遷移考慮"><a href="#5-遷移考慮" class="headerlink" title="5. 遷移考慮"></a>5. 遷移考慮</h2><p>如果您正在考慮從Vuex遷移到Pinia,以下幾點值得注意:</p>
+<ol>
+<li>Pinia提供了與Vuex相似的API,大部分概念可以直接映射。</li>
+<li>遷移過程可以漸進式進行,Pinia可以與Vuex共存。</li>
+<li>需要重構mutation為action,因為Pinia不再區分兩者。</li>
+<li>利用Pinia的組合式API風格,可以使代碼更加模塊化和可維護。</li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>Pinia代表了Vue生態系統中狀態管理的未來方向。它簡化了開發流程,提高了性能,並為Vue 3項目提供了更現代化的解決方案。然而,Vuex仍然是一個成熟且可靠的選擇,特別是對於現有的Vue 2項目。</p>
+<p>選擇Pinia還是Vuex,最終應該基於您的項目需求、團隊熟悉度以及未來的技術路線圖來決定。無論如何,兩者都能夠有效地解決Vue應用中的狀態管理問題。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Pinia/" rel="tag"># Pinia</a>
+              <a href="/tags/Vuex/" rel="tag"># Vuex</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/03/14/Promise-%E5%92%8C-setTimeout-%E7%9A%84%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90/" rel="prev" title="Promise 和 setTimeout 的深入解析">
+      <i class="fa fa-chevron-left"></i> Promise 和 setTimeout 的深入解析
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/03/17/Pinia%E7%9A%84%E8%B3%87%E6%96%99%E5%84%B2%E5%AD%98%E6%A9%9F%E5%88%B6%EF%BC%9A%E6%B7%B1%E5%85%A5%E6%8E%A2%E8%A8%8E/" rel="next" title="Pinia的資料儲存機制：深入探討">
+      Pinia的資料儲存機制：深入探討 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Pinia%E8%88%87Vuex%E7%9A%84%E5%8D%80%E5%88%A5-%E8%A9%B3%E7%B4%B0%E6%AF%94%E8%BC%83"><span class="nav-number">1.</span> <span class="nav-text">Pinia與Vuex的區別:詳細比較</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%B5%B7%E6%BA%90%E8%88%87%E7%99%BC%E5%B1%95"><span class="nav-number">1.1.</span> <span class="nav-text">1. 起源與發展</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Vuex"><span class="nav-number">1.1.1.</span> <span class="nav-text">Vuex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pinia"><span class="nav-number">1.1.2.</span> <span class="nav-text">Pinia</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.2.</span> <span class="nav-text">2. 核心概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Vuex-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">Vuex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pinia-1"><span class="nav-number">1.2.2.</span> <span class="nav-text">Pinia</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E4%B8%BB%E8%A6%81%E5%8D%80%E5%88%A5"><span class="nav-number">1.3.</span> <span class="nav-text">3. 主要區別</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E4%BD%BF%E7%94%A8%E5%A0%B4%E6%99%AF"><span class="nav-number">1.4.</span> <span class="nav-text">4. 使用場景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%A9%E5%90%88%E4%BD%BF%E7%94%A8Vuex%E7%9A%84%E6%83%85%E6%B3%81"><span class="nav-number">1.4.1.</span> <span class="nav-text">適合使用Vuex的情況</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%A9%E5%90%88%E4%BD%BF%E7%94%A8Pinia%E7%9A%84%E6%83%85%E6%B3%81"><span class="nav-number">1.4.2.</span> <span class="nav-text">適合使用Pinia的情況</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E9%81%B7%E7%A7%BB%E8%80%83%E6%85%AE"><span class="nav-number">1.5.</span> <span class="nav-text">5. 遷移考慮</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.6.</span> <span class="nav-text">結論</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kyosora</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

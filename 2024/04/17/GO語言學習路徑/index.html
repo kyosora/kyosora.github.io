@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kyosora.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="GO語言學習路徑GO是一種開源的編程語言,由Google公司於2009年開發。它的設計目標是提高程式開發的效率,能夠輕鬆地構建簡單、可靠且高效的軟件。GO語言綜合了靜態語言的安全性和動態語言的高效性，非常適合用於開發Web服務、系統編程和大規模分佈式系統等。 基礎知識開始學習GO語言之前，需要具備一定的編程基礎知識,了解基本的編程概念和邏輯思維。如果你是編程新手,可以先學習Python或JavaS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GO語言學習路徑">
+<meta property="og:url" content="https://kyosora.github.io/2024/04/17/GO%E8%AA%9E%E8%A8%80%E5%AD%B8%E7%BF%92%E8%B7%AF%E5%BE%91/index.html">
+<meta property="og:site_name" content="kyosora 虛空筆記">
+<meta property="og:description" content="GO語言學習路徑GO是一種開源的編程語言,由Google公司於2009年開發。它的設計目標是提高程式開發的效率,能夠輕鬆地構建簡單、可靠且高效的軟件。GO語言綜合了靜態語言的安全性和動態語言的高效性，非常適合用於開發Web服務、系統編程和大規模分佈式系統等。 基礎知識開始學習GO語言之前，需要具備一定的編程基礎知識,了解基本的編程概念和邏輯思維。如果你是編程新手,可以先學習Python或JavaS">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-04-17T01:29:42.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:45:48.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://kyosora.github.io/2024/04/17/GO%E8%AA%9E%E8%A8%80%E5%AD%B8%E7%BF%92%E8%B7%AF%E5%BE%91/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>GO語言學習路徑 | kyosora 虛空筆記</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kyosora 虛空筆記</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/2024/04/17/GO%E8%AA%9E%E8%A8%80%E5%AD%B8%E7%BF%92%E8%B7%AF%E5%BE%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 虛空筆記">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GO語言學習路徑
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2024-04-17 09:29:42" itemprop="dateCreated datePublished" datetime="2024-04-17T09:29:42+08:00">2024-04-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2024-11-27 14:45:48" itemprop="dateModified" datetime="2024-11-27T14:45:48+08:00">2024-11-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="GO語言學習路徑"><a href="#GO語言學習路徑" class="headerlink" title="GO語言學習路徑"></a>GO語言學習路徑</h1><p>GO是一種開源的編程語言,由Google公司於2009年開發。它的設計目標是提高程式開發的效率,能夠輕鬆地構建簡單、可靠且高效的軟件。GO語言綜合了靜態語言的安全性和動態語言的高效性，非常適合用於開發Web服務、系統編程和大規模分佈式系統等。</p>
+<h2 id="基礎知識"><a href="#基礎知識" class="headerlink" title="基礎知識"></a>基礎知識</h2><p>開始學習GO語言之前，需要具備一定的編程基礎知識,了解基本的編程概念和邏輯思維。如果你是編程新手,可以先學習Python或JavaScript等入門語言。</p>
+<h2 id="安裝GO環境"><a href="#安裝GO環境" class="headerlink" title="安裝GO環境"></a>安裝GO環境</h2><p>前往官方網站 <a target="_blank" rel="noopener" href="https://golang.org/">https://golang.org/</a> 下載GO語言安裝包<br>按照安裝說明完成GO環境的安裝<br>設置GOPATH環境變數,用於存放GO代碼</p>
+<h2 id="學習GO語言基礎"><a href="#學習GO語言基礎" class="headerlink" title="學習GO語言基礎"></a>學習GO語言基礎</h2><p>語法基礎<br>變量、常量<br>基本數據類型<br>運算符<br>流程控制(if、switch、for)<br>數組、切片<br>Map<br>函數<br>函數定義與調用<br>匿名函數<br>閉包<br>可變參數<br>defer語句<br>結構體<br>結構體定義<br>構造函數<br>方法<br>接口<br>接口定義<br>接口實現<br>空接口<br>並發編程<br>goroutine<br>channel<br>select<br>sync包<br>併發模式<br>標準庫<br>fmt<br>os<br>io<br>net<br>http<br>推薦閱讀經典書籍《GO語言編程》(The Go Programming Language)和《GO程序設計語言》(Programming in Go)。</p>
+<p>GO Web開發<br>Go Web基礎<br>http包<br>Web服務器<br>路由<br>模板<br>靜態文件處理<br>數據庫操作<br>database/sql<br>ORM框架(gorm、xorm)<br>常用Web框架<br>Gin<br>Beego<br>Echo<br>中間件<br>日誌記錄<br>請求處理 -身份驗證<br>任務調度<br>定時任務<br>延時任務<br>微服務<br>gRPC<br>Go-kit<br>Go-micro<br>學習GO Web開發時,可以參考項目 <a target="_blank" rel="noopener" href="https://github.com/golang/go">https://github.com/golang/go</a> 和書籍《Go Web編程》。</p>
+<h2 id="項目實戰"><a href="#項目實戰" class="headerlink" title="項目實戰"></a>項目實戰</h2><p>在學習GO語言基礎和Web開發知識後,最好通過實戰項目來鞏固所學知識。可以選擇自己感興趣的領域,例如開發Web服務、命令行工具、系統編程等。也可以參與開源項目,從實際項目中學習。</p>
+<h2 id="持續學習"><a href="#持續學習" class="headerlink" title="持續學習"></a>持續學習</h2><p>GO語言生態圈發展迅速,需要持續關注GO語言的最新動態,學習新特性和新工具。可以關注官方博客 <a target="_blank" rel="noopener" href="https://blog.golang.org/">https://blog.golang.org/</a> 和相關技術社區。</p>
+<p>編程之路漫漫,GO語言只是其中的一部分。保持熱情,持續學習,才能在這條路上越走越遠。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/04/10/NET-Core-%E4%B8%AD%E7%9A%84%E4%B8%AD%E9%96%93%E4%BB%B6%EF%BC%88Middleware%EF%BC%89/" rel="prev" title=".NET Core 中的中間件（Middleware）">
+      <i class="fa fa-chevron-left"></i> .NET Core 中的中間件（Middleware）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/04/23/%E7%B6%B2%E7%AB%99%E5%9C%96%E7%89%87%E8%B7%AF%E5%BE%91%E5%A4%A7%E5%B4%A9%E6%BD%B0%EF%BC%9F%E4%B8%80%E6%AC%A1%E6%90%9E%E6%87%82%E7%B6%B2%E7%AB%99%E9%83%A8%E7%BD%B2%E6%99%82%E7%9A%84%E5%9C%96%E7%89%87%E8%B7%AF%E5%BE%91%E5%95%8F%E9%A1%8C/" rel="next" title="網站圖片路徑大崩潰？一次搞懂網站部署時的圖片路徑問題">
+      網站圖片路徑大崩潰？一次搞懂網站部署時的圖片路徑問題 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#GO%E8%AA%9E%E8%A8%80%E5%AD%B8%E7%BF%92%E8%B7%AF%E5%BE%91"><span class="nav-number">1.</span> <span class="nav-text">GO語言學習路徑</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A4%8E%E7%9F%A5%E8%AD%98"><span class="nav-number">1.1.</span> <span class="nav-text">基礎知識</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%9DGO%E7%92%B0%E5%A2%83"><span class="nav-number">1.2.</span> <span class="nav-text">安裝GO環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%B8%E7%BF%92GO%E8%AA%9E%E8%A8%80%E5%9F%BA%E7%A4%8E"><span class="nav-number">1.3.</span> <span class="nav-text">學習GO語言基礎</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A0%85%E7%9B%AE%E5%AF%A6%E6%88%B0"><span class="nav-number">1.4.</span> <span class="nav-text">項目實戰</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%81%E7%BA%8C%E5%AD%B8%E7%BF%92"><span class="nav-number">1.5.</span> <span class="nav-text">持續學習</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kyosora</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

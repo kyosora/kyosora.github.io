@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kyosora.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言在現代軟體開發中,排程任務是一個不可或缺的環節。無論是定期資料備份、報表產生、郵件發送,還是系統維護,都需要一個可靠的排程系統。Quartz.NET 就是一個強大的開源排程框架,它不僅提供了豐富的功能,還具備高度的靈活性和可靠性。                          Scheduler               Job Store               Thread Po">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Quartz.NET 入門指南 - 打造可靠的.NET排程系統">
+<meta property="og:url" content="https://kyosora.github.io/2025/01/16/quartznet-%E5%85%A5%E9%96%80%E6%8C%87%E5%8D%97---%E6%89%93%E9%80%A0%E5%8F%AF%E9%9D%A0%E7%9A%84net%E6%8E%92%E7%A8%8B%E7%B3%BB%E7%B5%B1/index.html">
+<meta property="og:site_name" content="kyosora 虛空筆記">
+<meta property="og:description" content="前言在現代軟體開發中,排程任務是一個不可或缺的環節。無論是定期資料備份、報表產生、郵件發送,還是系統維護,都需要一個可靠的排程系統。Quartz.NET 就是一個強大的開源排程框架,它不僅提供了豐富的功能,還具備高度的靈活性和可靠性。                          Scheduler               Job Store               Thread Po">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2025-01-16T10:06:09.000Z">
+<meta property="article:modified_time" content="2025-01-16T10:11:04.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="C#">
+<meta property="article:tag" content=".NET">
+<meta property="article:tag" content="Quartz.NET">
+<meta property="article:tag" content="排程系統">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://kyosora.github.io/2025/01/16/quartznet-%E5%85%A5%E9%96%80%E6%8C%87%E5%8D%97---%E6%89%93%E9%80%A0%E5%8F%AF%E9%9D%A0%E7%9A%84net%E6%8E%92%E7%A8%8B%E7%B3%BB%E7%B5%B1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>Quartz.NET 入門指南 - 打造可靠的.NET排程系統 | kyosora 虛空筆記</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kyosora 虛空筆記</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/2025/01/16/quartznet-%E5%85%A5%E9%96%80%E6%8C%87%E5%8D%97---%E6%89%93%E9%80%A0%E5%8F%AF%E9%9D%A0%E7%9A%84net%E6%8E%92%E7%A8%8B%E7%B3%BB%E7%B5%B1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 虛空筆記">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Quartz.NET 入門指南 - 打造可靠的.NET排程系統
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2025-01-16 18:06:09 / 修改時間：18:11:04" itemprop="dateCreated datePublished" datetime="2025-01-16T18:06:09+08:00">2025-01-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/" itemprop="url" rel="index"><span itemprop="name">後端開發</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在現代軟體開發中,排程任務是一個不可或缺的環節。無論是定期資料備份、報表產生、郵件發送,還是系統維護,都需要一個可靠的排程系統。Quartz.NET 就是一個強大的開源排程框架,它不僅提供了豐富的功能,還具備高度的靈活性和可靠性。</p>
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+    <!-- 背景 -->
+    <rect width="800" height="600" fill="#ffffff"/>
+    <!-- Scheduler -->
+    <rect x="300" y="50" width="200" height="80" rx="10" fill="#4a90e2" opacity="0.8"/>
+    <text x="400" y="95" text-anchor="middle" fill="white" font-family="Arial" font-size="20">Scheduler</text>
+    <!-- Job Store -->
+    <rect x="50" y="200" width="160" height="80" rx="10" fill="#50c878" opacity="0.8"/>
+    <text x="130" y="245" text-anchor="middle" fill="white" font-family="Arial" font-size="20">Job Store</text>
+    <!-- Thread Pool -->
+    <rect x="590" y="200" width="160" height="80" rx="10" fill="#50c878" opacity="0.8"/>
+    <text x="670" y="245" text-anchor="middle" fill="white" font-family="Arial" font-size="20">Thread Pool</text>
+    <!-- Jobs -->
+    <rect x="50" y="400" width="120" height="60" rx="10" fill="#f5a623" opacity="0.8"/>
+    <text x="110" y="435" text-anchor="middle" fill="white" font-family="Arial" font-size="18">Jobs</text>
+    <!-- Triggers -->
+    <rect x="200" y="400" width="120" height="60" rx="10" fill="#f5a623" opacity="0.8"/>
+    <text x="260" y="435" text-anchor="middle" fill="white" font-family="Arial" font-size="18">Triggers</text>
+    <!-- Listeners -->
+    <rect x="350" y="400" width="120" height="60" rx="10" fill="#f5a623" opacity="0.8"/>
+    <text x="410" y="435" text-anchor="middle" fill="white" font-family="Arial" font-size="18">Listeners</text>
+    <!-- Plugins -->
+    <rect x="500" y="400" width="120" height="60" rx="10" fill="#f5a623" opacity="0.8"/>
+    <text x="560" y="435" text-anchor="middle" fill="white" font-family="Arial" font-size="18">Plugins</text>
+    <!-- 連接線 -->
+    <!-- Scheduler to Job Store -->
+    <path d="M 300 90 L 130 200" stroke="#666" stroke-width="2" fill="none"/>
+    <!-- Scheduler to Thread Pool -->
+    <path d="M 500 90 L 670 200" stroke="#666" stroke-width="2" fill="none"/>
+    <!-- Job Store to Jobs -->
+    <path d="M 130 280 L 110 400" stroke="#666" stroke-width="2" fill="none"/>
+    <!-- Job Store to Triggers -->
+    <path d="M 130 280 L 260 400" stroke="#666" stroke-width="2" fill="none"/>
+    <!-- Scheduler to Listeners -->
+    <path d="M 400 130 L 410 400" stroke="#666" stroke-width="2" fill="none"/>
+    <!-- Scheduler to Plugins -->
+    <path d="M 400 130 L 560 400" stroke="#666" stroke-width="2" fill="none"/>
+</svg>
+
+<h2 id="Quartz-NET-是什麼"><a href="#Quartz-NET-是什麼" class="headerlink" title="Quartz.NET 是什麼?"></a>Quartz.NET 是什麼?</h2><p>Quartz.NET 是 Java Quartz 排程框架的 .NET 移植版本,它提供了企業級的排程功能:</p>
+<ul>
+<li>支援複雜的排程模式(Cron表達式)</li>
+<li>具備叢集功能,確保高可用性</li>
+<li>提供任務持久化</li>
+<li>可靈活配置的錯誤處理機制</li>
+<li>豐富的監控與管理功能</li>
+</ul>
+<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>在開始使用 Quartz.NET 之前,我們需要理解幾個核心概念:</p>
+<ol>
+<li><strong>Job (工作)</strong>: 定義要執行的具體任務</li>
+<li><strong>Trigger (觸發器)</strong>: 決定任務何時執行</li>
+<li><strong>Scheduler (排程器)</strong>: 負責協調 Job 和 Trigger</li>
+</ol>
+<h2 id="實作範例"><a href="#實作範例" class="headerlink" title="實作範例"></a>實作範例</h2><h3 id="1-基本設置"><a href="#1-基本設置" class="headerlink" title="1. 基本設置"></a>1. 基本設置</h3><p>首先,使用 NuGet 安裝 Quartz 套件:</p>
+<pre class="line-numbers language-csharp" data-language="csharp"><code class="language-csharp">Install<span class="token operator">-</span>Package Quartz<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="2-建立簡單的-Job"><a href="#2-建立簡單的-Job" class="headerlink" title="2. 建立簡單的 Job"></a>2. 建立簡單的 Job</h3><pre class="line-numbers language-csharp" data-language="csharp"><code class="language-csharp"><span class="token comment">// 定義一個簡單的工作</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">HelloJob</span> <span class="token punctuation">:</span> <span class="token type-list"><span class="token class-name">IJob</span></span>
+<span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">async</span> <span class="token return-type class-name">Task</span> <span class="token function">Execute</span><span class="token punctuation">(</span><span class="token class-name">IJobExecutionContext</span> context<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token comment">// 記錄工作執行時間</span>
+        <span class="token class-name"><span class="token keyword">string</span></span> executeTime <span class="token operator">=</span> DateTime<span class="token punctuation">.</span>Now<span class="token punctuation">.</span><span class="token function">ToString</span><span class="token punctuation">(</span><span class="token string">"yyyy-MM-dd HH:mm:ss"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token comment">// 執行工作邏輯</span>
+        <span class="token keyword">await</span> Console<span class="token punctuation">.</span>Out<span class="token punctuation">.</span><span class="token function">WriteLineAsync</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">$"Hello! 執行時間: </span><span class="token interpolation"><span class="token punctuation">&#123;</span><span class="token expression language-csharp">executeTime</span><span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token comment">// 可以從 context 取得傳入的參數</span>
+        <span class="token class-name"><span class="token keyword">var</span></span> dataMap <span class="token operator">=</span> context<span class="token punctuation">.</span>JobDetail<span class="token punctuation">.</span>JobDataMap<span class="token punctuation">;</span>
+        <span class="token class-name"><span class="token keyword">string</span></span> jobSays <span class="token operator">=</span> dataMap<span class="token punctuation">.</span><span class="token function">GetString</span><span class="token punctuation">(</span><span class="token string">"jobSays"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">await</span> Console<span class="token punctuation">.</span>Out<span class="token punctuation">.</span><span class="token function">WriteLineAsync</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">$"參數值: </span><span class="token interpolation"><span class="token punctuation">&#123;</span><span class="token expression language-csharp">jobSays</span><span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="3-設置觸發器"><a href="#3-設置觸發器" class="headerlink" title="3. 設置觸發器"></a>3. 設置觸發器</h3><pre class="line-numbers language-csharp" data-language="csharp"><code class="language-csharp"><span class="token comment">// 建立排程器</span>
+<span class="token class-name">IScheduler</span> scheduler <span class="token operator">=</span> <span class="token keyword">await</span> StdSchedulerFactory<span class="token punctuation">.</span><span class="token function">GetDefaultScheduler</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 定義工作</span>
+<span class="token class-name">IJobDetail</span> job <span class="token operator">=</span> JobBuilder<span class="token punctuation">.</span><span class="token generic-method"><span class="token function">Create</span><span class="token generic class-name"><span class="token punctuation">&lt;</span>HelloJob<span class="token punctuation">></span></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">WithIdentity</span><span class="token punctuation">(</span><span class="token string">"helloJob"</span><span class="token punctuation">,</span> <span class="token string">"group1"</span><span class="token punctuation">)</span>    <span class="token comment">// 設定工作名稱和群組</span>
+    <span class="token punctuation">.</span><span class="token function">UsingJobData</span><span class="token punctuation">(</span><span class="token string">"jobSays"</span><span class="token punctuation">,</span> <span class="token string">"Hello World!"</span><span class="token punctuation">)</span>  <span class="token comment">// 傳入參數</span>
+    <span class="token punctuation">.</span><span class="token function">Build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 建立觸發器 - 每5秒執行一次</span>
+<span class="token class-name">ITrigger</span> trigger <span class="token operator">=</span> TriggerBuilder<span class="token punctuation">.</span><span class="token function">Create</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">WithIdentity</span><span class="token punctuation">(</span><span class="token string">"trigger1"</span><span class="token punctuation">,</span> <span class="token string">"group1"</span><span class="token punctuation">)</span>    <span class="token comment">// 設定觸發器名稱和群組</span>
+    <span class="token punctuation">.</span><span class="token function">StartNow</span><span class="token punctuation">(</span><span class="token punctuation">)</span>                            <span class="token comment">// 立即開始</span>
+    <span class="token punctuation">.</span><span class="token function">WithSimpleSchedule</span><span class="token punctuation">(</span>x <span class="token operator">=></span> x            
+        <span class="token punctuation">.</span><span class="token function">WithIntervalInSeconds</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span>          <span class="token comment">// 間隔5秒</span>
+        <span class="token punctuation">.</span><span class="token function">RepeatForever</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>                  <span class="token comment">// 永遠重複</span>
+    <span class="token punctuation">.</span><span class="token function">Build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 註冊工作和觸發器</span>
+<span class="token keyword">await</span> scheduler<span class="token punctuation">.</span><span class="token function">ScheduleJob</span><span class="token punctuation">(</span>job<span class="token punctuation">,</span> trigger<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 啟動排程器</span>
+<span class="token keyword">await</span> scheduler<span class="token punctuation">.</span><span class="token function">Start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="4-使用-Cron-表達式"><a href="#4-使用-Cron-表達式" class="headerlink" title="4. 使用 Cron 表達式"></a>4. 使用 Cron 表達式</h3><p>Cron 表達式提供了更靈活的排程設定:</p>
+<pre class="line-numbers language-csharp" data-language="csharp"><code class="language-csharp"><span class="token comment">// 建立每天早上 9:00 執行的觸發器</span>
+<span class="token class-name">ITrigger</span> cronTrigger <span class="token operator">=</span> TriggerBuilder<span class="token punctuation">.</span><span class="token function">Create</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">WithIdentity</span><span class="token punctuation">(</span><span class="token string">"trigger2"</span><span class="token punctuation">,</span> <span class="token string">"group1"</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">WithCronSchedule</span><span class="token punctuation">(</span><span class="token string">"0 0 9 * * ?"</span><span class="token punctuation">)</span>  <span class="token comment">// 每天早上 9:00</span>
+    <span class="token punctuation">.</span><span class="token function">Build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 註冊工作和觸發器</span>
+<span class="token keyword">await</span> scheduler<span class="token punctuation">.</span><span class="token function">ScheduleJob</span><span class="token punctuation">(</span>job<span class="token punctuation">,</span> cronTrigger<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>Cron 表達式說明:</p>
+<ul>
+<li>秒 分 時 日 月 星期 年</li>
+<li><code>0 0 9 * * ?</code> = 每天早上 9:00:00 執行</li>
+<li><code>0 0/30 * * * ?</code> = 每30分鐘執行一次</li>
+<li><code>0 0 9-17 * * ?</code> = 每天早上9點到下午5點執行</li>
+</ul>
+<h3 id="5-錯誤處理"><a href="#5-錯誤處理" class="headerlink" title="5. 錯誤處理"></a>5. 錯誤處理</h3><pre class="line-numbers language-csharp" data-language="csharp"><code class="language-csharp"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ErrorHandlingJob</span> <span class="token punctuation">:</span> <span class="token type-list"><span class="token class-name">IJob</span></span>
+<span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">async</span> <span class="token return-type class-name">Task</span> <span class="token function">Execute</span><span class="token punctuation">(</span><span class="token class-name">IJobExecutionContext</span> context<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token keyword">try</span>
+        <span class="token punctuation">&#123;</span>
+            <span class="token comment">// 工作邏輯</span>
+            <span class="token keyword">await</span> <span class="token function">DoWork</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> ex<span class="token punctuation">)</span>
+        <span class="token punctuation">&#123;</span>
+            <span class="token comment">// 記錄錯誤</span>
+            <span class="token keyword">await</span> <span class="token function">LogError</span><span class="token punctuation">(</span>ex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            
+            <span class="token comment">// 決定是否重試</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">ShouldRetry</span><span class="token punctuation">(</span>ex<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">&#123;</span>
+                <span class="token comment">// 觸發重試機制</span>
+                <span class="token keyword">await</span> <span class="token function">TriggerRetry</span><span class="token punctuation">(</span>context<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            
+            <span class="token comment">// 拋出例外,讓 Quartz 知道工作失敗</span>
+            <span class="token keyword">throw</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="最佳實踐建議"><a href="#最佳實踐建議" class="headerlink" title="最佳實踐建議"></a>最佳實踐建議</h2><ol>
+<li><p><strong>工作設計原則</strong></p>
+<ul>
+<li>保持工作的原子性</li>
+<li>避免長時間執行的工作</li>
+<li>實作適當的錯誤處理機制</li>
+</ul>
+</li>
+<li><p><strong>效能考量</strong></p>
+<ul>
+<li>適當設定執行緒池大小</li>
+<li>避免過於頻繁的排程</li>
+<li>考慮使用叢集來分散負載</li>
+</ul>
+</li>
+<li><p><strong>監控與維護</strong></p>
+<ul>
+<li>實作適當的記錄機制</li>
+<li>定期檢查工作執行狀態</li>
+<li>設置適當的警告機制</li>
+</ul>
+</li>
+</ol>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>Quartz.NET 是一個功能強大且靈活的排程框架,透過本文的介紹,相信您已經對它有了基本的認識。在實際應用中,建議根據專案需求選擇適當的功能組合,同時注意遵循最佳實踐原則,以建構出可靠的排程系統。</p>
+<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.quartz-scheduler.net/documentation/">Quartz.NET 官方文件</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/quartznet/quartznet">Quartz.NET GitHub</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C#</a>
+              <a href="/tags/NET/" rel="tag"># .NET</a>
+              <a href="/tags/Quartz-NET/" rel="tag"># Quartz.NET</a>
+              <a href="/tags/%E6%8E%92%E7%A8%8B%E7%B3%BB%E7%B5%B1/" rel="tag"># 排程系統</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/01/03/windows%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E9%80%A3%E7%B7%9A%E9%87%8D%E7%BD%AE%E5%B8%B3%E5%AF%86%E6%95%99%E5%AD%B8/" rel="prev" title="Windows遠端桌面連線重置帳密教學">
+      <i class="fa fa-chevron-left"></i> Windows遠端桌面連線重置帳密教學
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/01/23/%E4%B8%BB%E7%AE%A1%E6%96%B0%E4%BB%BB%E5%8B%99%E4%BE%86%E8%A5%B2%E8%B3%87%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%AB%E5%88%86%E4%BA%AB7%E5%80%8B%E8%A8%8A%E8%99%9F%E8%BE%A8%E8%AD%98%E6%88%90%E9%95%B7%E6%A9%9F%E6%9C%83%E6%88%96%E9%81%8E%E5%8B%9E%E9%99%B7%E9%98%B1/" rel="next" title="主管新任務來襲！資深工程師分享：7個訊號辨識成長機會或過勞陷阱">
+      主管新任務來襲！資深工程師分享：7個訊號辨識成長機會或過勞陷阱 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Quartz-NET-%E6%98%AF%E4%BB%80%E9%BA%BC"><span class="nav-number">2.</span> <span class="nav-text">Quartz.NET 是什麼?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">3.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E4%BD%9C%E7%AF%84%E4%BE%8B"><span class="nav-number">4.</span> <span class="nav-text">實作範例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9F%BA%E6%9C%AC%E8%A8%AD%E7%BD%AE"><span class="nav-number">4.1.</span> <span class="nav-text">1. 基本設置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%BB%BA%E7%AB%8B%E7%B0%A1%E5%96%AE%E7%9A%84-Job"><span class="nav-number">4.2.</span> <span class="nav-text">2. 建立簡單的 Job</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%A8%AD%E7%BD%AE%E8%A7%B8%E7%99%BC%E5%99%A8"><span class="nav-number">4.3.</span> <span class="nav-text">3. 設置觸發器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BD%BF%E7%94%A8-Cron-%E8%A1%A8%E9%81%94%E5%BC%8F"><span class="nav-number">4.4.</span> <span class="nav-text">4. 使用 Cron 表達式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E9%8C%AF%E8%AA%A4%E8%99%95%E7%90%86"><span class="nav-number">4.5.</span> <span class="nav-text">5. 錯誤處理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E4%BD%B3%E5%AF%A6%E8%B8%90%E5%BB%BA%E8%AD%B0"><span class="nav-number">5.</span> <span class="nav-text">最佳實踐建議</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AA%9E"><span class="nav-number">6.</span> <span class="nav-text">結語</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%83%E8%80%83%E8%B3%87%E6%BA%90"><span class="nav-number">7.</span> <span class="nav-text">參考資源</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kyosora</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

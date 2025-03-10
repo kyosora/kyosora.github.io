@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kyosora.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="CSS 偽元素指南在 CSS 的世界裡，偽元素是一個強大但常被忽視的功能。本文將深入探討 CSS 偽元素，特別是 ::before 和 ::after，以及其他常用的偽元素。 什麼是偽元素？偽元素允許您在文檔中插入內容或選擇特定部分，而無需修改 HTML 結構。它們使用雙冒號 :: 語法（儘管出於向後兼容性，某些偽元素也支援單冒號 : 語法）。 CSS 偽元素列表以下是常見的 CSS 偽元素：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSS 偽元素指南">
+<meta property="og:url" content="https://kyosora.github.io/2024/06/09/CSS-%E5%81%BD%E5%85%83%E7%B4%A0%E6%8C%87%E5%8D%97/index.html">
+<meta property="og:site_name" content="kyosora 虛空筆記">
+<meta property="og:description" content="CSS 偽元素指南在 CSS 的世界裡，偽元素是一個強大但常被忽視的功能。本文將深入探討 CSS 偽元素，特別是 ::before 和 ::after，以及其他常用的偽元素。 什麼是偽元素？偽元素允許您在文檔中插入內容或選擇特定部分，而無需修改 HTML 結構。它們使用雙冒號 :: 語法（儘管出於向後兼容性，某些偽元素也支援單冒號 : 語法）。 CSS 偽元素列表以下是常見的 CSS 偽元素：">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-06-09T11:44:24.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:36:38.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="CSS">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://kyosora.github.io/2024/06/09/CSS-%E5%81%BD%E5%85%83%E7%B4%A0%E6%8C%87%E5%8D%97/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>CSS 偽元素指南 | kyosora 虛空筆記</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kyosora 虛空筆記</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/2024/06/09/CSS-%E5%81%BD%E5%85%83%E7%B4%A0%E6%8C%87%E5%8D%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 虛空筆記">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CSS 偽元素指南
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2024-06-09 19:44:24" itemprop="dateCreated datePublished" datetime="2024-06-09T19:44:24+08:00">2024-06-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2024-11-27 14:36:38" itemprop="dateModified" datetime="2024-11-27T14:36:38+08:00">2024-11-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="CSS-偽元素指南"><a href="#CSS-偽元素指南" class="headerlink" title="CSS 偽元素指南"></a>CSS 偽元素指南</h1><p>在 CSS 的世界裡，偽元素是一個強大但常被忽視的功能。本文將深入探討 CSS 偽元素，特別是 <code>::before</code> 和 <code>::after</code>，以及其他常用的偽元素。</p>
+<h2 id="什麼是偽元素？"><a href="#什麼是偽元素？" class="headerlink" title="什麼是偽元素？"></a>什麼是偽元素？</h2><p>偽元素允許您在文檔中插入內容或選擇特定部分，而無需修改 HTML 結構。它們使用雙冒號 <code>::</code> 語法（儘管出於向後兼容性，某些偽元素也支援單冒號 <code>:</code> 語法）。</p>
+<h2 id="CSS-偽元素列表"><a href="#CSS-偽元素列表" class="headerlink" title="CSS 偽元素列表"></a>CSS 偽元素列表</h2><p>以下是常見的 CSS 偽元素：</p>
+<ol>
+<li><code>::before</code> - 在元素內容之前插入內容</li>
+<li><code>::after</code> - 在元素內容之後插入內容</li>
+<li><code>::first-line</code> - 選擇元素的第一行</li>
+<li><code>::first-letter</code> - 選擇元素的第一個字母</li>
+<li><code>::selection</code> - 選擇用戶高亮的部分</li>
+<li><code>::placeholder</code> - 選擇輸入框的預設文字</li>
+<li><code>::marker</code> - 選擇列表項目的標記（例如點或數字）</li>
+<li><code>::backdrop</code> - 用於全螢幕元素底下的背景</li>
+</ol>
+<p>較少使用但在特定情況下很有用的偽元素：</p>
+<ol start="9">
+<li><code>::cue</code> - 用於 WebVTT 字幕</li>
+<li><code>::slotted()</code> - 用於 Web Components 中的投影內容</li>
+</ol>
+<h2 id="before-和-after-詳解"><a href="#before-和-after-詳解" class="headerlink" title="::before 和 ::after 詳解"></a>::before 和 ::after 詳解</h2><p><code>::before</code> 和 <code>::after</code> 是最常用的偽元素，它們允許我們在元素的內容之前或之後插入生成的內容。</p>
+<h3 id="基本語法"><a href="#基本語法" class="headerlink" title="基本語法"></a>基本語法</h3><pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token selector">selector::before</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">content</span><span class="token punctuation">:</span> <span class="token string">"你想插入的內容"</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token selector">selector::after</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">content</span><span class="token punctuation">:</span> <span class="token string">"你想插入的內容"</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>注意: <code>content</code> 屬性是必須的，即使它的值是空字串。</p>
+<h3 id="常見用途"><a href="#常見用途" class="headerlink" title="常見用途"></a>常見用途</h3><ol>
+<li>添加圖示</li>
+<li>創建裝飾性元素</li>
+<li>清除浮動 (clearfix)</li>
+<li>添加工具提示</li>
+<li>實現計數器功能</li>
+</ol>
+<p>（這裡可以保留原文中的詳細例子）</p>
+<h2 id="其他偽元素的使用"><a href="#其他偽元素的使用" class="headerlink" title="其他偽元素的使用"></a>其他偽元素的使用</h2><h3 id="first-line-和-first-letter"><a href="#first-line-和-first-letter" class="headerlink" title="::first-line 和 ::first-letter"></a>::first-line 和 ::first-letter</h3><p>這兩個偽元素常用於排版設計，特別是文章或段落的開頭。</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token selector">p::first-line</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">font-weight</span><span class="token punctuation">:</span> bold<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token selector">p::first-letter</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">font-size</span><span class="token punctuation">:</span> 2em<span class="token punctuation">;</span>
+  <span class="token property">float</span><span class="token punctuation">:</span> left<span class="token punctuation">;</span>
+  <span class="token property">margin-right</span><span class="token punctuation">:</span> 5px<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="selection"><a href="#selection" class="headerlink" title="::selection"></a>::selection</h3><p>用來自定義用戶選中文字時的樣式。</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token selector">::selection</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">background-color</span><span class="token punctuation">:</span> #ffb7b7<span class="token punctuation">;</span>
+  <span class="token property">color</span><span class="token punctuation">:</span> #000<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="placeholder"><a href="#placeholder" class="headerlink" title="::placeholder"></a>::placeholder</h3><p>自定義輸入框的預設文字樣式。</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token selector">input::placeholder</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">color</span><span class="token punctuation">:</span> #999<span class="token punctuation">;</span>
+  <span class="token property">font-style</span><span class="token punctuation">:</span> italic<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="marker"><a href="#marker" class="headerlink" title="::marker"></a>::marker</h3><p>自定義列表項目的標記樣式。</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token selector">li::marker</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">color</span><span class="token punctuation">:</span> #1a73e8<span class="token punctuation">;</span>
+  <span class="token property">font-size</span><span class="token punctuation">:</span> 1.2em<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="backdrop"><a href="#backdrop" class="headerlink" title="::backdrop"></a>::backdrop</h3><p>當元素處於全螢幕模式時，為其底下的背景添加樣式。</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token selector">dialog::backdrop</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">background-color</span><span class="token punctuation">:</span> <span class="token function">rgba</span><span class="token punctuation">(</span>0<span class="token punctuation">,</span> 0<span class="token punctuation">,</span> 0<span class="token punctuation">,</span> 0.5<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h2><ol>
+<li>偽元素預設是行內元素。</li>
+<li>偽元素無法選中或直接操作，因為它們不存在於 DOM 中。</li>
+<li>某些 HTML 元素（如 img）不支援 ::before 和 ::after。</li>
+<li>不是所有的偽元素都能在所有元素上使用，使用時需要注意兼容性。</li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>CSS 偽元素為網頁設計師和開發者提供了豐富的可能性。它們允許我們添加額外的內容、修改特定部分的樣式，同時保持 HTML 的簡潔和語義化。靈活運用這些偽元素，可以讓你的網頁設計更加靈活、有創意，同時提高代碼的可維護性。</p>
+<p>希望這篇完整的 CSS 偽元素指南能幫助你更好地理解和運用這些強大的 CSS 功能。happy coding!</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CSS/" rel="tag"># CSS</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/06/06/Windows%E5%B7%A5%E4%BD%9C%E6%8E%92%E7%A8%8B%E5%99%A8%E6%B2%92%E6%9C%89%E6%AD%A3%E5%B8%B8%E9%81%8B%E4%BD%9C/" rel="prev" title="Windows工作排程器沒有正常運作">
+      <i class="fa fa-chevron-left"></i> Windows工作排程器沒有正常運作
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/06/11/%E6%8F%90%E5%8D%87%E7%B6%B2%E9%A0%81%E8%A1%A8%E5%96%AE%E9%A9%97%E8%AD%89%EF%BC%9A%E5%BE%9E%E7%B0%A1%E5%96%AE%E6%AA%A2%E6%9F%A5%E5%88%B0%E5%85%A8%E9%9D%A2%E5%84%AA%E5%8C%96/" rel="next" title="提升網頁表單驗證：從簡單檢查到全面優化">
+      提升網頁表單驗證：從簡單檢查到全面優化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CSS-%E5%81%BD%E5%85%83%E7%B4%A0%E6%8C%87%E5%8D%97"><span class="nav-number">1.</span> <span class="nav-text">CSS 偽元素指南</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AF%E5%81%BD%E5%85%83%E7%B4%A0%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">什麼是偽元素？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS-%E5%81%BD%E5%85%83%E7%B4%A0%E5%88%97%E8%A1%A8"><span class="nav-number">1.2.</span> <span class="nav-text">CSS 偽元素列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#before-%E5%92%8C-after-%E8%A9%B3%E8%A7%A3"><span class="nav-number">1.3.</span> <span class="nav-text">::before 和 ::after 詳解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%AA%9E%E6%B3%95"><span class="nav-number">1.3.1.</span> <span class="nav-text">基本語法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A6%8B%E7%94%A8%E9%80%94"><span class="nav-number">1.3.2.</span> <span class="nav-text">常見用途</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%81%BD%E5%85%83%E7%B4%A0%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">1.4.</span> <span class="nav-text">其他偽元素的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#first-line-%E5%92%8C-first-letter"><span class="nav-number">1.4.1.</span> <span class="nav-text">::first-line 和 ::first-letter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#selection"><span class="nav-number">1.4.2.</span> <span class="nav-text">::selection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#placeholder"><span class="nav-number">1.4.3.</span> <span class="nav-text">::placeholder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#marker"><span class="nav-number">1.4.4.</span> <span class="nav-text">::marker</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#backdrop"><span class="nav-number">1.4.5.</span> <span class="nav-text">::backdrop</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85"><span class="nav-number">1.5.</span> <span class="nav-text">注意事項</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.6.</span> <span class="nav-text">結論</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kyosora</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
