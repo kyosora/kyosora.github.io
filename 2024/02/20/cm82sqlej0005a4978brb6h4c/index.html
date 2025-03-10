@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kyosora.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="CORS 都有哪些解決方法?在前後端分離的開發過程中,跨來源資源共用(Cross-Origin Resource Sharing, CORS)是一個常見的問題。當前端和後端運行在不同的網域或連接埠時,瀏覽器的同源政策會阻止前端對後端的請求。以下我們將探討幾種解決 CORS 問題的方法,特別是在使用 .NET Core 作為後端的情況下。 1. 在後端配置 CORS在 .NET Core 中,你可以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CORS 都有哪些解決方法?">
+<meta property="og:url" content="https://kyosora.github.io/2024/02/20/cm82sqlej0005a4978brb6h4c/index.html">
+<meta property="og:site_name" content="kyosora 虛空筆記">
+<meta property="og:description" content="CORS 都有哪些解決方法?在前後端分離的開發過程中,跨來源資源共用(Cross-Origin Resource Sharing, CORS)是一個常見的問題。當前端和後端運行在不同的網域或連接埠時,瀏覽器的同源政策會阻止前端對後端的請求。以下我們將探討幾種解決 CORS 問題的方法,特別是在使用 .NET Core 作為後端的情況下。 1. 在後端配置 CORS在 .NET Core 中,你可以">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-02-20T07:47:22.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:38:28.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="CORS">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://kyosora.github.io/2024/02/20/cm82sqlej0005a4978brb6h4c/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>CORS 都有哪些解決方法? | kyosora 虛空筆記</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kyosora 虛空筆記</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/2024/02/20/cm82sqlej0005a4978brb6h4c/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 虛空筆記">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CORS 都有哪些解決方法?
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2024-02-20 15:47:22" itemprop="dateCreated datePublished" datetime="2024-02-20T15:47:22+08:00">2024-02-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2024-11-27 14:38:28" itemprop="dateModified" datetime="2024-11-27T14:38:28+08:00">2024-11-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">資訊安全</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="CORS-都有哪些解決方法"><a href="#CORS-都有哪些解決方法" class="headerlink" title="CORS 都有哪些解決方法?"></a>CORS 都有哪些解決方法?</h1><p>在前後端分離的開發過程中,跨來源資源共用(Cross-Origin Resource Sharing, CORS)是一個常見的問題。當前端和後端運行在不同的網域或連接埠時,瀏覽器的同源政策會阻止前端對後端的請求。以下我們將探討幾種解決 CORS 問題的方法,特別是在使用 .NET Core 作為後端的情況下。</p>
+<h2 id="1-在後端配置-CORS"><a href="#1-在後端配置-CORS" class="headerlink" title="1. 在後端配置 CORS"></a>1. 在後端配置 CORS</h2><p>在 .NET Core 中,你可以通過以下步驟來配置 CORS:</p>
+<ol>
+<li>在 <code>Startup.cs</code> 文件的 <code>ConfigureServices</code> 方法中添加 CORS 服務:</li>
+</ol>
+<pre class="line-numbers language-csharp" data-language="csharp"><code class="language-csharp"><span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">void</span></span> <span class="token function">ConfigureServices</span><span class="token punctuation">(</span><span class="token class-name">IServiceCollection</span> services<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    services<span class="token punctuation">.</span><span class="token function">AddCors</span><span class="token punctuation">(</span>options <span class="token operator">=></span>
+    <span class="token punctuation">&#123;</span>
+        options<span class="token punctuation">.</span><span class="token function">AddPolicy</span><span class="token punctuation">(</span><span class="token string">"AllowSpecificOrigin"</span><span class="token punctuation">,</span>
+            builder <span class="token operator">=></span> builder<span class="token punctuation">.</span><span class="token function">WithOrigins</span><span class="token punctuation">(</span><span class="token string">"http://localhost:3000"</span><span class="token punctuation">)</span> <span class="token comment">// 前端的 URL</span>
+                              <span class="token punctuation">.</span><span class="token function">AllowAnyHeader</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                              <span class="token punctuation">.</span><span class="token function">AllowAnyMethod</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    
+    <span class="token comment">// 其他服務配置...</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ol start="2">
+<li>在 <code>Configure</code> 方法中使用 CORS 中介軟體:</li>
+</ol>
+<pre class="line-numbers language-csharp" data-language="csharp"><code class="language-csharp"><span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">void</span></span> <span class="token function">Configure</span><span class="token punctuation">(</span><span class="token class-name">IApplicationBuilder</span> app<span class="token punctuation">,</span> <span class="token class-name">IWebHostEnvironment</span> env<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">// 其他中介軟體...</span>
+    
+    app<span class="token punctuation">.</span><span class="token function">UseCors</span><span class="token punctuation">(</span><span class="token string">"AllowSpecificOrigin"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    
+    app<span class="token punctuation">.</span><span class="token function">UseRouting</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// 其他配置...</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="2-使用代理伺服器"><a href="#2-使用代理伺服器" class="headerlink" title="2. 使用代理伺服器"></a>2. 使用代理伺服器</h2><p>在開發環境中,你可以設置一個代理伺服器來轉發請求,避免 CORS 問題。以下是幾種常見的方法:</p>
+<h3 id="a-使用-Create-React-App-的代理功能"><a href="#a-使用-Create-React-App-的代理功能" class="headerlink" title="a. 使用 Create React App 的代理功能"></a>a. 使用 Create React App 的代理功能</h3><p>如果你的前端使用 Create React App,你可以在 <code>package.json</code> 中添加一個 <code>proxy</code> 字段:</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"your-app"</span><span class="token punctuation">,</span>
+  <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"0.1.0"</span><span class="token punctuation">,</span>
+  <span class="token property">"proxy"</span><span class="token operator">:</span> <span class="token string">"http://localhost:5000"</span><span class="token punctuation">,</span>
+  <span class="token comment">// ...</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="b-使用-webpack-dev-server-的代理功能"><a href="#b-使用-webpack-dev-server-的代理功能" class="headerlink" title="b. 使用 webpack-dev-server 的代理功能"></a>b. 使用 webpack-dev-server 的代理功能</h3><p>如果你使用 webpack-dev-server,可以在配置文件中設置代理:</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// ...</span>
+  <span class="token literal-property property">devServer</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">proxy</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token string-property property">'/api'</span><span class="token operator">:</span> <span class="token string">'http://localhost:5000'</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="3-使用-Vite-解決-CORS-問題"><a href="#3-使用-Vite-解決-CORS-問題" class="headerlink" title="3. 使用 Vite 解決 CORS 問題"></a>3. 使用 Vite 解決 CORS 問題</h2><p>Vite 是一個現代化的前端建置工具，它也提供了處理 CORS 的解決方案。在 Vite 專案中，你可以通過配置 <code>vite.config.js</code> 文件來設置代理：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">import</span> <span class="token punctuation">&#123;</span> defineConfig <span class="token punctuation">&#125;</span> <span class="token keyword">from</span> <span class="token string">'vite'</span>
+<span class="token keyword">import</span> react <span class="token keyword">from</span> <span class="token string">'@vitejs/plugin-react'</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token function">defineConfig</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token function">react</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">server</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">proxy</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token string-property property">'/api'</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+        <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">'http://localhost:5000'</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">changeOrigin</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+        <span class="token function-variable function">rewrite</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token parameter">path</span><span class="token punctuation">)</span> <span class="token operator">=></span> path<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^\/api</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>這個配置會將所有以 <code>/api</code> 開頭的請求代理到 <code>http://localhost:5000</code>，有效地繞過了 CORS 限制。</p>
+<h2 id="4-使用-Axios-處理-CORS"><a href="#4-使用-Axios-處理-CORS" class="headerlink" title="4. 使用 Axios 處理 CORS"></a>4. 使用 Axios 處理 CORS</h2><p>Axios 是一個流行的 HTTP 客戶端庫，雖然它本身不能直接解決 CORS 問題，但可以通過一些配置來協助處理：</p>
+<ol>
+<li>設置 <code>withCredentials</code> 選項：</li>
+</ol>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">import</span> axios <span class="token keyword">from</span> <span class="token string">'axios'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> instance <span class="token operator">=</span> axios<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">baseURL</span><span class="token operator">:</span> <span class="token string">'http://localhost:5000'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">withCredentials</span><span class="token operator">:</span> <span class="token boolean">true</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>這會在跨域請求中包含憑證（如 cookies）。</p>
+<ol start="2">
+<li>使用攔截器添加自定義標頭：</li>
+</ol>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">instance<span class="token punctuation">.</span>interceptors<span class="token punctuation">.</span>request<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">config</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  config<span class="token punctuation">.</span>headers<span class="token punctuation">[</span><span class="token string">'X-Requested-With'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">'XMLHttpRequest'</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> config<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>這可以幫助伺服器識別 AJAX 請求。</p>
+<p>請注意，使用 Axios 的這些方法需要伺服器端的相應配置才能完全解決 CORS 問題。</p>
+<h2 id="5-使用瀏覽器擴充功能-僅用於開發"><a href="#5-使用瀏覽器擴充功能-僅用於開發" class="headerlink" title="5. 使用瀏覽器擴充功能 (僅用於開發)"></a>5. 使用瀏覽器擴充功能 (僅用於開發)</h2><p>在開發過程中,你可以使用如 “CORS Unblock” 這樣的瀏覽器擴充功能來暫時解除 CORS 限制。但請注意,這只適用於開發階段,不應在生產環境中使用。</p>
+<h2 id="6-在生產環境中的最佳實踐"><a href="#6-在生產環境中的最佳實踐" class="headerlink" title="6. 在生產環境中的最佳實踐"></a>6. 在生產環境中的最佳實踐</h2><p>在生產環境中,建議採取以下措施:</p>
+<ol>
+<li>將前後端部署在同一個網域下。</li>
+<li>使用反向代理伺服器(如 Nginx)來處理前後端的請求。</li>
+<li>謹慎配置 CORS 政策,只允許必要的來源、標頭和方法。</li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>CORS 是前後端分離開發中的一個常見挑戰,但通過適當的配置和工具,我們可以有效地解決這個問題。在開發階段,使用後端配置、代理伺服器、Vite 或 Axios 等工具是常見的解決方案。而在生產環境中,則需要更加謹慎地處理,確保應用程式的安全性和效能。</p>
+<p>記住,CORS 的存在是為了保護使用者的安全,所以在解決 CORS 問題時,也要考慮到安全性的平衡。無論使用哪種方法,都要確保你的應用程式在處理跨域請求時保持安全。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CORS/" rel="tag"># CORS</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/02/17/cm82sqlf70019a497b2b7gbsd/" rel="prev" title="Git分支管理規範：提升團隊協作效率">
+      <i class="fa fa-chevron-left"></i> Git分支管理規範：提升團隊協作效率
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/02/23/cm82sqlen000aa49764n1bm1h/" rel="next" title="Chrome套件開發教學：自動整理書籤到域名資料夾">
+      Chrome套件開發教學：自動整理書籤到域名資料夾 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CORS-%E9%83%BD%E6%9C%89%E5%93%AA%E4%BA%9B%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">CORS 都有哪些解決方法?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%9C%A8%E5%BE%8C%E7%AB%AF%E9%85%8D%E7%BD%AE-CORS"><span class="nav-number">1.1.</span> <span class="nav-text">1. 在後端配置 CORS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%90%86%E4%BC%BA%E6%9C%8D%E5%99%A8"><span class="nav-number">1.2.</span> <span class="nav-text">2. 使用代理伺服器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-%E4%BD%BF%E7%94%A8-Create-React-App-%E7%9A%84%E4%BB%A3%E7%90%86%E5%8A%9F%E8%83%BD"><span class="nav-number">1.2.1.</span> <span class="nav-text">a. 使用 Create React App 的代理功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-%E4%BD%BF%E7%94%A8-webpack-dev-server-%E7%9A%84%E4%BB%A3%E7%90%86%E5%8A%9F%E8%83%BD"><span class="nav-number">1.2.2.</span> <span class="nav-text">b. 使用 webpack-dev-server 的代理功能</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E4%BD%BF%E7%94%A8-Vite-%E8%A7%A3%E6%B1%BA-CORS-%E5%95%8F%E9%A1%8C"><span class="nav-number">1.3.</span> <span class="nav-text">3. 使用 Vite 解決 CORS 問題</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E4%BD%BF%E7%94%A8-Axios-%E8%99%95%E7%90%86-CORS"><span class="nav-number">1.4.</span> <span class="nav-text">4. 使用 Axios 處理 CORS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E4%BD%BF%E7%94%A8%E7%80%8F%E8%A6%BD%E5%99%A8%E6%93%B4%E5%85%85%E5%8A%9F%E8%83%BD-%E5%83%85%E7%94%A8%E6%96%BC%E9%96%8B%E7%99%BC"><span class="nav-number">1.5.</span> <span class="nav-text">5. 使用瀏覽器擴充功能 (僅用於開發)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E5%9C%A8%E7%94%9F%E7%94%A2%E7%92%B0%E5%A2%83%E4%B8%AD%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AF%A6%E8%B8%90"><span class="nav-number">1.6.</span> <span class="nav-text">6. 在生產環境中的最佳實踐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.7.</span> <span class="nav-text">結論</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kyosora</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

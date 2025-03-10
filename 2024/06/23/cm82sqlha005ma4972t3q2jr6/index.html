@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kyosora.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="使用 NSSM 將 EXE 包裝成 Windows 服務NSSM（Non-Sucking Service Manager）是一個強大的工具，可以輕鬆地將任何可執行文件（EXE）轉換為 Windows 服務。本教學將指導您完成整個過程，從安裝 NSSM 到配置和管理您的服務。 目錄 NSSM 簡介 下載和安裝 NSSM 基本使用：創建服務 高級配置選項 管理服務 常見問題解決 最佳實踐和注意事項">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 NSSM 將 EXE 包裝成 Windows 服務">
+<meta property="og:url" content="https://kyosora.github.io/2024/06/23/cm82sqlha005ma4972t3q2jr6/index.html">
+<meta property="og:site_name" content="kyosora 虛空筆記">
+<meta property="og:description" content="使用 NSSM 將 EXE 包裝成 Windows 服務NSSM（Non-Sucking Service Manager）是一個強大的工具，可以輕鬆地將任何可執行文件（EXE）轉換為 Windows 服務。本教學將指導您完成整個過程，從安裝 NSSM 到配置和管理您的服務。 目錄 NSSM 簡介 下載和安裝 NSSM 基本使用：創建服務 高級配置選項 管理服務 常見問題解決 最佳實踐和注意事項">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-06-23T02:35:36.000Z">
+<meta property="article:modified_time" content="2024-12-10T01:58:52.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="NSSM">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://kyosora.github.io/2024/06/23/cm82sqlha005ma4972t3q2jr6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>使用 NSSM 將 EXE 包裝成 Windows 服務 | kyosora 虛空筆記</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kyosora 虛空筆記</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/2024/06/23/cm82sqlha005ma4972t3q2jr6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 虛空筆記">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用 NSSM 將 EXE 包裝成 Windows 服務
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2024-06-23 10:35:36" itemprop="dateCreated datePublished" datetime="2024-06-23T10:35:36+08:00">2024-06-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2024-12-10 09:58:52" itemprop="dateModified" datetime="2024-12-10T09:58:52+08:00">2024-12-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BB%9F%E9%AB%94%E4%BB%8B%E7%B4%B9/" itemprop="url" rel="index"><span itemprop="name">軟體介紹</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="使用-NSSM-將-EXE-包裝成-Windows-服務"><a href="#使用-NSSM-將-EXE-包裝成-Windows-服務" class="headerlink" title="使用 NSSM 將 EXE 包裝成 Windows 服務"></a>使用 NSSM 將 EXE 包裝成 Windows 服務</h1><p>NSSM（Non-Sucking Service Manager）是一個強大的工具，可以輕鬆地將任何可執行文件（EXE）轉換為 Windows 服務。本教學將指導您完成整個過程，從安裝 NSSM 到配置和管理您的服務。</p>
+<h2 id="目錄"><a href="#目錄" class="headerlink" title="目錄"></a>目錄</h2><ol>
+<li>NSSM 簡介</li>
+<li>下載和安裝 NSSM</li>
+<li>基本使用：創建服務</li>
+<li>高級配置選項</li>
+<li>管理服務</li>
+<li>常見問題解決</li>
+<li>最佳實踐和注意事項</li>
+</ol>
+<h2 id="1-NSSM-簡介與SC命令的比較"><a href="#1-NSSM-簡介與SC命令的比較" class="headerlink" title="1. NSSM 簡介與SC命令的比較"></a>1. NSSM 簡介與SC命令的比較</h2><p>NSSM 是一個免費的開源工具，它允許您將幾乎任何應用程序作為 Windows 服務運行。與SC命令比較</p>
+<h2 id="SC命令的優點："><a href="#SC命令的優點：" class="headerlink" title="SC命令的優點："></a>SC命令的優點：</h2><h4 id="1-Windows-內建，無需額外安裝"><a href="#1-Windows-內建，無需額外安裝" class="headerlink" title="1. Windows 內建，無需額外安裝"></a>1. Windows 內建，無需額外安裝</h4><h4 id="2-命令簡單，適合基本需求"><a href="#2-命令簡單，適合基本需求" class="headerlink" title="2. 命令簡單，適合基本需求"></a>2. 命令簡單，適合基本需求</h4><h2 id="SC命令的限制："><a href="#SC命令的限制：" class="headerlink" title="SC命令的限制："></a>SC命令的限制：</h2><h4 id="1-功能相對簡單，缺乏高級選項"><a href="#1-功能相對簡單，缺乏高級選項" class="headerlink" title="1. 功能相對簡單，缺乏高級選項"></a>1. 功能相對簡單，缺乏高級選項</h4><h4 id="2-對於複雜的啟動參數或環境設置，可能需要額外的腳本"><a href="#2-對於複雜的啟動參數或環境設置，可能需要額外的腳本" class="headerlink" title="2. 對於複雜的啟動參數或環境設置，可能需要額外的腳本"></a>2. 對於複雜的啟動參數或環境設置，可能需要額外的腳本</h4><h4 id="3-錯誤處理和日誌記錄功能有限"><a href="#3-錯誤處理和日誌記錄功能有限" class="headerlink" title="3. 錯誤處理和日誌記錄功能有限"></a>3. 錯誤處理和日誌記錄功能有限</h4><h2 id="NSSM的優點："><a href="#NSSM的優點：" class="headerlink" title="NSSM的優點："></a>NSSM的優點：</h2><h4 id="1-圖形介面：易於使用，不需要記憶複雜的命令列語法"><a href="#1-圖形介面：易於使用，不需要記憶複雜的命令列語法" class="headerlink" title="1. 圖形介面：易於使用，不需要記憶複雜的命令列語法"></a>1. 圖形介面：易於使用，不需要記憶複雜的命令列語法</h4><h4 id="2-豐富的組態選項："><a href="#2-豐富的組態選項：" class="headerlink" title="2. 豐富的組態選項："></a>2. 豐富的組態選項：</h4><h4 id="可以設置啟動目錄、環境變量"><a href="#可以設置啟動目錄、環境變量" class="headerlink" title="- 可以設置啟動目錄、環境變量"></a>- 可以設置啟動目錄、環境變量</h4><h4 id="支援複雜的啟動參數"><a href="#支援複雜的啟動參數" class="headerlink" title="- 支援複雜的啟動參數"></a>- 支援複雜的啟動參數</h4><h4 id="可以組態服務依賴關係"><a href="#可以組態服務依賴關係" class="headerlink" title="- 可以組態服務依賴關係"></a>- 可以組態服務依賴關係</h4><h4 id="3-錯誤處理：可以設置在程序崩潰時自動重啟"><a href="#3-錯誤處理：可以設置在程序崩潰時自動重啟" class="headerlink" title="3. 錯誤處理：可以設置在程序崩潰時自動重啟"></a>3. 錯誤處理：可以設置在程序崩潰時自動重啟</h4><h4 id="4-日誌功能：可以捕獲並記錄標準輸出和錯誤輸出"><a href="#4-日誌功能：可以捕獲並記錄標準輸出和錯誤輸出" class="headerlink" title="4. 日誌功能：可以捕獲並記錄標準輸出和錯誤輸出"></a>4. 日誌功能：可以捕獲並記錄標準輸出和錯誤輸出</h4><h4 id="5-關機行為控制：可以設置如何優雅地關閉服務"><a href="#5-關機行為控制：可以設置如何優雅地關閉服務" class="headerlink" title="5. 關機行為控制：可以設置如何優雅地關閉服務"></a>5. 關機行為控制：可以設置如何優雅地關閉服務</h4><h4 id="6-I-O-重新導向：可以將輸入輸出重新導向到檔案"><a href="#6-I-O-重新導向：可以將輸入輸出重新導向到檔案" class="headerlink" title="6. I/O 重新導向：可以將輸入輸出重新導向到檔案"></a>6. I/O 重新導向：可以將輸入輸出重新導向到檔案</h4><h4 id="7-支援互動式程序：某些需要用戶輸入的程序也可以作為服務運行"><a href="#7-支援互動式程序：某些需要用戶輸入的程序也可以作為服務運行" class="headerlink" title="7. 支援互動式程序：某些需要用戶輸入的程序也可以作為服務運行"></a>7. 支援互動式程序：某些需要用戶輸入的程序也可以作為服務運行</h4><h4 id="8-服務監控：提供了更好的方式來監控服務狀態"><a href="#8-服務監控：提供了更好的方式來監控服務狀態" class="headerlink" title="8. 服務監控：提供了更好的方式來監控服務狀態"></a>8. 服務監控：提供了更好的方式來監控服務狀態</h4><p>總的來說，雖然 SC 命令對於簡單的需求來說已經足夠，但 NSSM 提供了更多的靈活性和功能，特別適合那些需要更精細控制的複雜場景。如果您的程序需要特殊的啟動條件、錯誤處理或日誌記錄，NSSM 可能是更好的選擇。</p>
+<h2 id="2-下載和安裝-NSSM"><a href="#2-下載和安裝-NSSM" class="headerlink" title="2. 下載和安裝 NSSM"></a>2. 下載和安裝 NSSM</h2><ol>
+<li>訪問 NSSM 官方網站：<a target="_blank" rel="noopener" href="https://nssm.cc/download">https://nssm.cc/download</a></li>
+<li>下載最新版本的 NSSM（選擇適合您系統的版本，32 位或 64 位）</li>
+<li>解壓下載的壓縮文件</li>
+<li>將 nssm.exe 放置在一個便於訪問的位置，如 <code>C:\Program Files\NSSM\</code></li>
+<li>可選：將 NSSM 的路徑添加到系統的 PATH 環境變量中</li>
+</ol>
+<h2 id="3-基本使用：創建服務"><a href="#3-基本使用：創建服務" class="headerlink" title="3. 基本使用：創建服務"></a>3. 基本使用：創建服務</h2><p>以管理員身份打開命令提示符，然後按照以下步驟操作：</p>
+<ol>
+<li><p>創建新服務：</p>
+<pre class="line-numbers language-none"><code class="language-none">nssm install &lt;服務名稱&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>這將打開 NSSM 的圖形界面。</p>
+</li>
+<li><p>在彈出的窗口中，設置以下內容：</p>
+<ul>
+<li>Path: 您的 EXE 文件的完整路徑</li>
+<li>Startup directory: EXE 文件所在的目錄</li>
+<li>Arguments: 如果需要，添加命令行參數</li>
+</ul>
+</li>
+<li><p>點擊 “Install service” 按鈕</p>
+</li>
+</ol>
+<p>您也可以使用命令行直接創建服務：</p>
+<pre class="line-numbers language-none"><code class="language-none">nssm install &lt;服務名稱&gt; &lt;EXE 路徑&gt; [參數]<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>例如：</p>
+<pre class="line-numbers language-none"><code class="language-none">nssm install MyService C:\MyApp\MyProgram.exe -config C:\MyApp\config.ini<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h2 id="4-高級配置選項"><a href="#4-高級配置選項" class="headerlink" title="4. 高級配置選項"></a>4. 高級配置選項</h2><p>NSSM 提供了許多高級配置選項：</p>
+<ol>
+<li><p>設置服務顯示名稱和描述：</p>
+<pre class="line-numbers language-none"><code class="language-none">nssm set &lt;服務名稱&gt; DisplayName &quot;My Service Display Name&quot;
+nssm set &lt;服務名稱&gt; Description &quot;This is my service description&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></li>
+<li><p>配置啟動類型：</p>
+<pre class="line-numbers language-none"><code class="language-none">nssm set &lt;服務名稱&gt; Start SERVICE_AUTO_START<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+<li><p>設置環境變量：</p>
+<pre class="line-numbers language-none"><code class="language-none">nssm set &lt;服務名稱&gt; AppEnvironment PATH&#x3D;C:\MyApp;%PATH%<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+<li><p>配置錯誤處理：</p>
+<pre class="line-numbers language-none"><code class="language-none">nssm set &lt;服務名稱&gt; AppExit Default Restart<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+<li><p>設置日誌文件：</p>
+<pre class="line-numbers language-none"><code class="language-none">nssm set &lt;服務名稱&gt; AppStdout C:\Logs\MyService.log
+nssm set &lt;服務名稱&gt; AppStderr C:\Logs\MyService.err<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></li>
+</ol>
+<h2 id="5-管理服務"><a href="#5-管理服務" class="headerlink" title="5. 管理服務"></a>5. 管理服務</h2><ol>
+<li><p>啟動服務：</p>
+<pre class="line-numbers language-none"><code class="language-none">nssm start &lt;服務名稱&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+<li><p>停止服務：</p>
+<pre class="line-numbers language-none"><code class="language-none">nssm stop &lt;服務名稱&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+<li><p>重啟服務：</p>
+<pre class="line-numbers language-none"><code class="language-none">nssm restart &lt;服務名稱&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+<li><p>查看服務狀態：</p>
+<pre class="line-numbers language-none"><code class="language-none">nssm status &lt;服務名稱&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+<li><p>編輯現有服務：</p>
+<pre class="line-numbers language-none"><code class="language-none">nssm edit &lt;服務名稱&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+<li><p>刪除服務：</p>
+<pre class="line-numbers language-none"><code class="language-none">nssm remove &lt;服務名稱&gt; confirm<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+</ol>
+<h2 id="6-常見問題解決"><a href="#6-常見問題解決" class="headerlink" title="6. 常見問題解決"></a>6. 常見問題解決</h2><ol>
+<li><p>服務無法啟動</p>
+<ul>
+<li>檢查 EXE 路徑是否正確</li>
+<li>確保 NSSM 和您的應用程序有足夠的權限</li>
+<li>查看 Windows 事件日誌和 NSSM 日誌文件</li>
+</ul>
+</li>
+<li><p>服務啟動後立即停止</p>
+<ul>
+<li>檢查您的應用程序是否設計為長時間運行</li>
+<li>確保所有必要的依賴項都可用</li>
+</ul>
+</li>
+<li><p>無法與服務通信</p>
+<ul>
+<li>檢查防火牆設置</li>
+<li>確保服務帳戶有適當的網絡權限</li>
+</ul>
+</li>
+</ol>
+<h2 id="7-最佳實踐和注意事項"><a href="#7-最佳實踐和注意事項" class="headerlink" title="7. 最佳實踐和注意事項"></a>7. 最佳實踐和注意事項</h2><ol>
+<li>始終使用管理員權限運行 NSSM 命令</li>
+<li>為您的服務使用描述性的名稱</li>
+<li>定期檢查服務日誌以確保正常運行</li>
+<li>考慮使用服務帳戶而不是系統帳戶來運行服務</li>
+<li>定期更新 NSSM 到最新版本</li>
+<li>在生產環境中部署之前，在測試環境中徹底測試您的服務配置</li>
+</ol>
+<p>通過遵循本教學，您應該能夠成功地使用 NSSM 將您的 EXE 文件包裝成 Windows 服務，並有效地管理它。NSSM 提供了一種靈活且強大的方式來確保您的應用程序作為服務持續運行，無需用戶干預。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NSSM/" rel="tag"># NSSM</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/06/22/cm82sqlg9003ja49788vq833c/" rel="prev" title="SQL查詢重複資料指南">
+      <i class="fa fa-chevron-left"></i> SQL查詢重複資料指南
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/06/25/cm82sqlgo004aa497dn1aa9q2/" rel="next" title="WebSocket通訊過程詳解">
+      WebSocket通訊過程詳解 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-NSSM-%E5%B0%87-EXE-%E5%8C%85%E8%A3%9D%E6%88%90-Windows-%E6%9C%8D%E5%8B%99"><span class="nav-number">1.</span> <span class="nav-text">使用 NSSM 將 EXE 包裝成 Windows 服務</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E9%8C%84"><span class="nav-number">1.1.</span> <span class="nav-text">目錄</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-NSSM-%E7%B0%A1%E4%BB%8B%E8%88%87SC%E5%91%BD%E4%BB%A4%E7%9A%84%E6%AF%94%E8%BC%83"><span class="nav-number">1.2.</span> <span class="nav-text">1. NSSM 簡介與SC命令的比較</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SC%E5%91%BD%E4%BB%A4%E7%9A%84%E5%84%AA%E9%BB%9E%EF%BC%9A"><span class="nav-number">1.3.</span> <span class="nav-text">SC命令的優點：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Windows-%E5%85%A7%E5%BB%BA%EF%BC%8C%E7%84%A1%E9%9C%80%E9%A1%8D%E5%A4%96%E5%AE%89%E8%A3%9D"><span class="nav-number">1.3.0.1.</span> <span class="nav-text">1. Windows 內建，無需額外安裝</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%91%BD%E4%BB%A4%E7%B0%A1%E5%96%AE%EF%BC%8C%E9%81%A9%E5%90%88%E5%9F%BA%E6%9C%AC%E9%9C%80%E6%B1%82"><span class="nav-number">1.3.0.2.</span> <span class="nav-text">2. 命令簡單，適合基本需求</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SC%E5%91%BD%E4%BB%A4%E7%9A%84%E9%99%90%E5%88%B6%EF%BC%9A"><span class="nav-number">1.4.</span> <span class="nav-text">SC命令的限制：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%8A%9F%E8%83%BD%E7%9B%B8%E5%B0%8D%E7%B0%A1%E5%96%AE%EF%BC%8C%E7%BC%BA%E4%B9%8F%E9%AB%98%E7%B4%9A%E9%81%B8%E9%A0%85"><span class="nav-number">1.4.0.1.</span> <span class="nav-text">1. 功能相對簡單，缺乏高級選項</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%B0%8D%E6%96%BC%E8%A4%87%E9%9B%9C%E7%9A%84%E5%95%9F%E5%8B%95%E5%8F%83%E6%95%B8%E6%88%96%E7%92%B0%E5%A2%83%E8%A8%AD%E7%BD%AE%EF%BC%8C%E5%8F%AF%E8%83%BD%E9%9C%80%E8%A6%81%E9%A1%8D%E5%A4%96%E7%9A%84%E8%85%B3%E6%9C%AC"><span class="nav-number">1.4.0.2.</span> <span class="nav-text">2. 對於複雜的啟動參數或環境設置，可能需要額外的腳本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E9%8C%AF%E8%AA%A4%E8%99%95%E7%90%86%E5%92%8C%E6%97%A5%E8%AA%8C%E8%A8%98%E9%8C%84%E5%8A%9F%E8%83%BD%E6%9C%89%E9%99%90"><span class="nav-number">1.4.0.3.</span> <span class="nav-text">3. 錯誤處理和日誌記錄功能有限</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NSSM%E7%9A%84%E5%84%AA%E9%BB%9E%EF%BC%9A"><span class="nav-number">1.5.</span> <span class="nav-text">NSSM的優點：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%9C%96%E5%BD%A2%E4%BB%8B%E9%9D%A2%EF%BC%9A%E6%98%93%E6%96%BC%E4%BD%BF%E7%94%A8%EF%BC%8C%E4%B8%8D%E9%9C%80%E8%A6%81%E8%A8%98%E6%86%B6%E8%A4%87%E9%9B%9C%E7%9A%84%E5%91%BD%E4%BB%A4%E5%88%97%E8%AA%9E%E6%B3%95"><span class="nav-number">1.5.0.1.</span> <span class="nav-text">1. 圖形介面：易於使用，不需要記憶複雜的命令列語法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E8%B1%90%E5%AF%8C%E7%9A%84%E7%B5%84%E6%85%8B%E9%81%B8%E9%A0%85%EF%BC%9A"><span class="nav-number">1.5.0.2.</span> <span class="nav-text">2. 豐富的組態選項：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%AF%E4%BB%A5%E8%A8%AD%E7%BD%AE%E5%95%9F%E5%8B%95%E7%9B%AE%E9%8C%84%E3%80%81%E7%92%B0%E5%A2%83%E8%AE%8A%E9%87%8F"><span class="nav-number">1.5.0.3.</span> <span class="nav-text">- 可以設置啟動目錄、環境變量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%94%AF%E6%8F%B4%E8%A4%87%E9%9B%9C%E7%9A%84%E5%95%9F%E5%8B%95%E5%8F%83%E6%95%B8"><span class="nav-number">1.5.0.4.</span> <span class="nav-text">- 支援複雜的啟動參數</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%AF%E4%BB%A5%E7%B5%84%E6%85%8B%E6%9C%8D%E5%8B%99%E4%BE%9D%E8%B3%B4%E9%97%9C%E4%BF%82"><span class="nav-number">1.5.0.5.</span> <span class="nav-text">- 可以組態服務依賴關係</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E9%8C%AF%E8%AA%A4%E8%99%95%E7%90%86%EF%BC%9A%E5%8F%AF%E4%BB%A5%E8%A8%AD%E7%BD%AE%E5%9C%A8%E7%A8%8B%E5%BA%8F%E5%B4%A9%E6%BD%B0%E6%99%82%E8%87%AA%E5%8B%95%E9%87%8D%E5%95%9F"><span class="nav-number">1.5.0.6.</span> <span class="nav-text">3. 錯誤處理：可以設置在程序崩潰時自動重啟</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E6%97%A5%E8%AA%8C%E5%8A%9F%E8%83%BD%EF%BC%9A%E5%8F%AF%E4%BB%A5%E6%8D%95%E7%8D%B2%E4%B8%A6%E8%A8%98%E9%8C%84%E6%A8%99%E6%BA%96%E8%BC%B8%E5%87%BA%E5%92%8C%E9%8C%AF%E8%AA%A4%E8%BC%B8%E5%87%BA"><span class="nav-number">1.5.0.7.</span> <span class="nav-text">4. 日誌功能：可以捕獲並記錄標準輸出和錯誤輸出</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E9%97%9C%E6%A9%9F%E8%A1%8C%E7%82%BA%E6%8E%A7%E5%88%B6%EF%BC%9A%E5%8F%AF%E4%BB%A5%E8%A8%AD%E7%BD%AE%E5%A6%82%E4%BD%95%E5%84%AA%E9%9B%85%E5%9C%B0%E9%97%9C%E9%96%89%E6%9C%8D%E5%8B%99"><span class="nav-number">1.5.0.8.</span> <span class="nav-text">5. 關機行為控制：可以設置如何優雅地關閉服務</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-I-O-%E9%87%8D%E6%96%B0%E5%B0%8E%E5%90%91%EF%BC%9A%E5%8F%AF%E4%BB%A5%E5%B0%87%E8%BC%B8%E5%85%A5%E8%BC%B8%E5%87%BA%E9%87%8D%E6%96%B0%E5%B0%8E%E5%90%91%E5%88%B0%E6%AA%94%E6%A1%88"><span class="nav-number">1.5.0.9.</span> <span class="nav-text">6. I&#x2F;O 重新導向：可以將輸入輸出重新導向到檔案</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-%E6%94%AF%E6%8F%B4%E4%BA%92%E5%8B%95%E5%BC%8F%E7%A8%8B%E5%BA%8F%EF%BC%9A%E6%9F%90%E4%BA%9B%E9%9C%80%E8%A6%81%E7%94%A8%E6%88%B6%E8%BC%B8%E5%85%A5%E7%9A%84%E7%A8%8B%E5%BA%8F%E4%B9%9F%E5%8F%AF%E4%BB%A5%E4%BD%9C%E7%82%BA%E6%9C%8D%E5%8B%99%E9%81%8B%E8%A1%8C"><span class="nav-number">1.5.0.10.</span> <span class="nav-text">7. 支援互動式程序：某些需要用戶輸入的程序也可以作為服務運行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-%E6%9C%8D%E5%8B%99%E7%9B%A3%E6%8E%A7%EF%BC%9A%E6%8F%90%E4%BE%9B%E4%BA%86%E6%9B%B4%E5%A5%BD%E7%9A%84%E6%96%B9%E5%BC%8F%E4%BE%86%E7%9B%A3%E6%8E%A7%E6%9C%8D%E5%8B%99%E7%8B%80%E6%85%8B"><span class="nav-number">1.5.0.11.</span> <span class="nav-text">8. 服務監控：提供了更好的方式來監控服務狀態</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%B8%8B%E8%BC%89%E5%92%8C%E5%AE%89%E8%A3%9D-NSSM"><span class="nav-number">1.6.</span> <span class="nav-text">2. 下載和安裝 NSSM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8%EF%BC%9A%E5%89%B5%E5%BB%BA%E6%9C%8D%E5%8B%99"><span class="nav-number">1.7.</span> <span class="nav-text">3. 基本使用：創建服務</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E9%AB%98%E7%B4%9A%E9%85%8D%E7%BD%AE%E9%81%B8%E9%A0%85"><span class="nav-number">1.8.</span> <span class="nav-text">4. 高級配置選項</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E7%AE%A1%E7%90%86%E6%9C%8D%E5%8B%99"><span class="nav-number">1.9.</span> <span class="nav-text">5. 管理服務</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E5%B8%B8%E8%A6%8B%E5%95%8F%E9%A1%8C%E8%A7%A3%E6%B1%BA"><span class="nav-number">1.10.</span> <span class="nav-text">6. 常見問題解決</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E6%9C%80%E4%BD%B3%E5%AF%A6%E8%B8%90%E5%92%8C%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85"><span class="nav-number">1.11.</span> <span class="nav-text">7. 最佳實踐和注意事項</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kyosora</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

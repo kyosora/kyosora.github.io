@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kyosora.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="使用 SQL Server Resource Governor 限制特定資料庫的資源使用1. 簡介某次在正式環境使用者抱怨網頁速度太慢，會卡好幾分鐘，於是開始排查問題，發現自己連接SSMS的搜尋也是一樣卡，不太對勁，結果最後發現了是其他專案資料庫排程執行時過度消耗資源，導致其他專案的效能受到影響，最好的解決方案是應該切其他主機，不過沒有其他資源只能想想其他方法。本文將介紹如何使用 SQL Serv">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 SQL Server Resource Governor 限制特定資料庫的資源使用">
+<meta property="og:url" content="https://kyosora.github.io/2024/08/08/cm82sqlhd005va497hspk8i45/index.html">
+<meta property="og:site_name" content="kyosora 虛空筆記">
+<meta property="og:description" content="使用 SQL Server Resource Governor 限制特定資料庫的資源使用1. 簡介某次在正式環境使用者抱怨網頁速度太慢，會卡好幾分鐘，於是開始排查問題，發現自己連接SSMS的搜尋也是一樣卡，不太對勁，結果最後發現了是其他專案資料庫排程執行時過度消耗資源，導致其他專案的效能受到影響，最好的解決方案是應該切其他主機，不過沒有其他資源只能想想其他方法。本文將介紹如何使用 SQL Serv">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-08-08T01:36:04.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:44:22.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="SQL Server">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://kyosora.github.io/2024/08/08/cm82sqlhd005va497hspk8i45/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>使用 SQL Server Resource Governor 限制特定資料庫的資源使用 | kyosora 虛空筆記</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kyosora 虛空筆記</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/2024/08/08/cm82sqlhd005va497hspk8i45/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 虛空筆記">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用 SQL Server Resource Governor 限制特定資料庫的資源使用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2024-08-08 09:36:04" itemprop="dateCreated datePublished" datetime="2024-08-08T09:36:04+08:00">2024-08-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2024-11-27 14:44:22" itemprop="dateModified" datetime="2024-11-27T14:44:22+08:00">2024-11-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB/" itemprop="url" rel="index"><span itemprop="name">資料庫</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="使用-SQL-Server-Resource-Governor-限制特定資料庫的資源使用"><a href="#使用-SQL-Server-Resource-Governor-限制特定資料庫的資源使用" class="headerlink" title="使用 SQL Server Resource Governor 限制特定資料庫的資源使用"></a>使用 SQL Server Resource Governor 限制特定資料庫的資源使用</h1><h2 id="1-簡介"><a href="#1-簡介" class="headerlink" title="1. 簡介"></a>1. 簡介</h2><p>某次在正式環境使用者抱怨網頁速度太慢，會卡好幾分鐘，於是開始排查問題，發現自己連接SSMS的搜尋也是一樣卡，不太對勁，結果最後發現了是其他專案資料庫排程執行時過度消耗資源，導致其他專案的效能受到影響，最好的解決方案是應該切其他主機，不過沒有其他資源只能想想其他方法。本文將介紹如何使用 SQL Server 的 Resource Governor 功能來解決這個問題，有效地限制特定資料庫的資源使用。</p>
+<h2 id="2-Resource-Governor-簡介"><a href="#2-Resource-Governor-簡介" class="headerlink" title="2. Resource Governor 簡介"></a>2. Resource Governor 簡介</h2><p>Resource Governor 是 SQL Server 提供的一個強大工具，用於管理 SQL Server 實例中的工作負載和資源消耗。它允許我們為不同的工作負載設置資源使用限制，確保關鍵任務能夠獲得所需的資源。</p>
+<p>相比其他方法（如設置 MAXDOP），Resource Governor 提供了更細緻和動態的控制，能夠根據多種條件（如資料庫名稱、登入帳號等）來分配資源。</p>
+<h2 id="3-設定-Resource-Governor-的步驟"><a href="#3-設定-Resource-Governor-的步驟" class="headerlink" title="3. 設定 Resource Governor 的步驟"></a>3. 設定 Resource Governor 的步驟</h2><h3 id="3-1-建立資源池-Resource-Pool"><a href="#3-1-建立資源池-Resource-Pool" class="headerlink" title="3.1 建立資源池 (Resource Pool)"></a>3.1 建立資源池 (Resource Pool)</h3><p>資源池定義了可用的資源限制。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">CREATE</span> RESOURCE POOL PoolAdhocDB
+<span class="token keyword">WITH</span> <span class="token punctuation">(</span>MAX_CPU_PERCENT <span class="token operator">=</span> <span class="token number">20</span><span class="token punctuation">,</span> 
+      MAX_MEMORY_PERCENT <span class="token operator">=</span> <span class="token number">25</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="3-2-建立工作負載群組-Workload-Group"><a href="#3-2-建立工作負載群組-Workload-Group" class="headerlink" title="3.2 建立工作負載群組 (Workload Group)"></a>3.2 建立工作負載群組 (Workload Group)</h3><p>工作負載群組關聯到特定的資源池。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">CREATE</span> WORKLOAD <span class="token keyword">GROUP</span> GroupAdhocDB
+<span class="token keyword">USING</span> PoolAdhocDB<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h3 id="3-3-建立分類函數-Classifier-Function"><a href="#3-3-建立分類函數-Classifier-Function" class="headerlink" title="3.3 建立分類函數 (Classifier Function)"></a>3.3 建立分類函數 (Classifier Function)</h3><p>分類函數決定將請求分配到哪個工作負載群組。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">USE</span> master<span class="token punctuation">;</span>
+GO
+
+<span class="token keyword">CREATE</span> <span class="token keyword">FUNCTION</span> dbo<span class="token punctuation">.</span>fn_WorkloadClassifier<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">RETURNS</span> sysname 
+<span class="token keyword">WITH</span> SCHEMABINDING
+<span class="token keyword">AS</span>
+<span class="token keyword">BEGIN</span>
+    <span class="token keyword">RETURN</span> <span class="token keyword">CASE</span> 
+               <span class="token keyword">WHEN</span> DB_NAME<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token string">'AdhocDatabase'</span> <span class="token keyword">THEN</span> <span class="token string">'GroupAdhocDB'</span>
+               <span class="token keyword">ELSE</span> <span class="token string">'default'</span>
+           <span class="token keyword">END</span>
+<span class="token keyword">END</span><span class="token punctuation">;</span>
+GO<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="3-4-啟用-Resource-Governor-設定"><a href="#3-4-啟用-Resource-Governor-設定" class="headerlink" title="3.4 啟用 Resource Governor 設定"></a>3.4 啟用 Resource Governor 設定</h3><pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">ALTER</span> RESOURCE GOVERNOR <span class="token keyword">WITH</span> <span class="token punctuation">(</span>CLASSIFIER_FUNCTION <span class="token operator">=</span> dbo<span class="token punctuation">.</span>fn_WorkloadClassifier<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">ALTER</span> RESOURCE GOVERNOR <span class="token keyword">RECONFIGURE</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h2 id="4-驗證設定"><a href="#4-驗證設定" class="headerlink" title="4. 驗證設定"></a>4. 驗證設定</h2><p>執行以下查詢來檢查 Resource Governor 的組態：</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> sys<span class="token punctuation">.</span>resource_governor_configuration<span class="token punctuation">;</span>
+<span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> sys<span class="token punctuation">.</span>resource_governor_resource_pools<span class="token punctuation">;</span>
+<span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> sys<span class="token punctuation">.</span>resource_governor_workload_groups<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="5-注意事項"><a href="#5-注意事項" class="headerlink" title="5. 注意事項"></a>5. 注意事項</h2><ul>
+<li>確保在 master 資料庫中創建分類函數</li>
+<li>確保有足夠的權限（通常需要 CONTROL SERVER 權限）</li>
+<li>根據實際情況調整資源池的限制參數</li>
+</ul>
+<h2 id="6-可能遇到的問題與解決方案"><a href="#6-可能遇到的問題與解決方案" class="headerlink" title="6. 可能遇到的問題與解決方案"></a>6. 可能遇到的問題與解決方案</h2><ol>
+<li>分類函數找不到的錯誤<ul>
+<li>解決方案：確保函數名稱正確，且存在於 master 資料庫中</li>
+</ul>
+</li>
+<li>權限不足的問題<ul>
+<li>解決方案：確保執行組態的帳號具有足夠的權限</li>
+</ul>
+</li>
+</ol>
+<h2 id="7-優化建議"><a href="#7-優化建議" class="headerlink" title="7. 優化建議"></a>7. 優化建議</h2><ul>
+<li>定期監控資源使用情況，可以使用 Dynamic Management Views (DMVs) 來追蹤資源使用</li>
+<li>根據監控結果調整資源池設定，確保資源分配合理</li>
+</ul>
+<h2 id="8-總結"><a href="#8-總結" class="headerlink" title="8. 總結"></a>8. 總結</h2><p>Resource Governor 為我們提供了一個強大的工具，用於管理 SQL Server 的資源分配。通過合理組態，我們可以：</p>
+<ul>
+<li>防止單一資料庫過度消耗資源</li>
+<li>確保關鍵業務的效能</li>
+<li>提高整體資料庫伺服器的穩定性和可預測性</li>
+</ul>
+<p>在複雜的多租戶或多應用環境中，Resource Governor 的使用尤為重要，它能夠幫助 DBA 更好地平衡各種工作負載的需求。</p>
+<h2 id="9-延伸閱讀"><a href="#9-延伸閱讀" class="headerlink" title="9. 延伸閱讀"></a>9. 延伸閱讀</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/sql/relational-databases/resource-governor/resource-governor">SQL Server 官方文檔：Resource Governor</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/sql/relational-databases/performance/monitor-resource-usage-system-statistical-functions">使用 Extended Events 監控 Resource Governor</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/sql/relational-databases/performance/performance-center-for-sql-server-database-engine-and-azure-sql-database">其他 SQL Server 效能優化技巧</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SQL-Server/" rel="tag"># SQL Server</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/08/06/cm82sqlhz007fa49771jw0cf1/" rel="prev" title="深入解析:使用Python構建全面的市場風險監測工具">
+      <i class="fa fa-chevron-left"></i> 深入解析:使用Python構建全面的市場風險監測工具
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/08/19/cm82sqlgm0047a4976duha99r/" rel="next" title="WebSocket教程：構建實時聊天應用">
+      WebSocket教程：構建實時聊天應用 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-SQL-Server-Resource-Governor-%E9%99%90%E5%88%B6%E7%89%B9%E5%AE%9A%E8%B3%87%E6%96%99%E5%BA%AB%E7%9A%84%E8%B3%87%E6%BA%90%E4%BD%BF%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">使用 SQL Server Resource Governor 限制特定資料庫的資源使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E7%B0%A1%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">1. 簡介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Resource-Governor-%E7%B0%A1%E4%BB%8B"><span class="nav-number">1.2.</span> <span class="nav-text">2. Resource Governor 簡介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E8%A8%AD%E5%AE%9A-Resource-Governor-%E7%9A%84%E6%AD%A5%E9%A9%9F"><span class="nav-number">1.3.</span> <span class="nav-text">3. 設定 Resource Governor 的步驟</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E5%BB%BA%E7%AB%8B%E8%B3%87%E6%BA%90%E6%B1%A0-Resource-Pool"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 建立資源池 (Resource Pool)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E5%BB%BA%E7%AB%8B%E5%B7%A5%E4%BD%9C%E8%B2%A0%E8%BC%89%E7%BE%A4%E7%B5%84-Workload-Group"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 建立工作負載群組 (Workload Group)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E5%BB%BA%E7%AB%8B%E5%88%86%E9%A1%9E%E5%87%BD%E6%95%B8-Classifier-Function"><span class="nav-number">1.3.3.</span> <span class="nav-text">3.3 建立分類函數 (Classifier Function)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E5%95%9F%E7%94%A8-Resource-Governor-%E8%A8%AD%E5%AE%9A"><span class="nav-number">1.3.4.</span> <span class="nav-text">3.4 啟用 Resource Governor 設定</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E9%A9%97%E8%AD%89%E8%A8%AD%E5%AE%9A"><span class="nav-number">1.4.</span> <span class="nav-text">4. 驗證設定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85"><span class="nav-number">1.5.</span> <span class="nav-text">5. 注意事項</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E5%8F%AF%E8%83%BD%E9%81%87%E5%88%B0%E7%9A%84%E5%95%8F%E9%A1%8C%E8%88%87%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88"><span class="nav-number">1.6.</span> <span class="nav-text">6. 可能遇到的問題與解決方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E5%84%AA%E5%8C%96%E5%BB%BA%E8%AD%B0"><span class="nav-number">1.7.</span> <span class="nav-text">7. 優化建議</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-%E7%B8%BD%E7%B5%90"><span class="nav-number">1.8.</span> <span class="nav-text">8. 總結</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-%E5%BB%B6%E4%BC%B8%E9%96%B1%E8%AE%80"><span class="nav-number">1.9.</span> <span class="nav-text">9. 延伸閱讀</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kyosora</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
