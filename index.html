@@ -1,0 +1,699 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>kyosora 虛空筆記 - 技術探索與學習分享</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="個人技術筆記和學習心得分享">
+<meta property="og:type" content="website">
+<meta property="og:title" content="kyosora 虛空筆記">
+<meta property="og:url" content="https://kyosora.github.io/">
+<meta property="og:site_name" content="kyosora 虛空筆記">
+<meta property="og:description" content="個人技術筆記和學習心得分享">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/img/butterfly-icon.png">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="網路安全, 系統管理, 程式設計, 技術筆記">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kyosora.github.io/img/butterfly-icon.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://kyosora.github.io/"><link rel="preconnect" href="https://jsd.012700.xyz"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://jsd.012700.xyz/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://jsd.012700.xyz/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 虛空筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://jsd.012700.xyz/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'kyosora 虛空筆記',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'home'
+}</script><link rel="preconnect" href="https://jsd.012700.xyz"><link href="/self/btf.css" rel="stylesheet"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "/img/loading.gif" data-lazy-src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">99</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">118</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">32</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 圖庫</span></a></li><li><a class="site-page child" href="/talking/"><i class="fa-fw fas fa-comment-dots"></i><span> 說說</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-thumbs-up"></i><span> 示例</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文檔</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/posts/21cfbf15/"><span> 🚀 快速開始</span></a></li><li><a class="site-page child" href="/posts/dc584b87/"><span> 📑 主題頁面</span></a></li><li><a class="site-page child" href="/posts/4aa8abbe/"><span> 🛠 主題配置</span></a></li><li><a class="site-page child" href="/posts/ceeb73f/"><span> ⚔️ 標簽外挂</span></a></li><li><a class="site-page child" href="/posts/98d20436/"><span> ❓ 主題問答</span></a></li><li><a class="site-page child" href="/posts/4073eda/"><span> ⚡️ 進階教程</span></a></li><li><a class="site-page child" href="/posts/198a4240/"><span> ✨ 更新日誌</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fas fa-comment-dots"></i><span> 留言板</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 語言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url(https://oss.012700.xyz/butterfly/2024/10/index.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 虛空筆記</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 圖庫</span></a></li><li><a class="site-page child" href="/talking/"><i class="fa-fw fas fa-comment-dots"></i><span> 說說</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-thumbs-up"></i><span> 示例</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文檔</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/posts/21cfbf15/"><span> 🚀 快速開始</span></a></li><li><a class="site-page child" href="/posts/dc584b87/"><span> 📑 主題頁面</span></a></li><li><a class="site-page child" href="/posts/4aa8abbe/"><span> 🛠 主題配置</span></a></li><li><a class="site-page child" href="/posts/ceeb73f/"><span> ⚔️ 標簽外挂</span></a></li><li><a class="site-page child" href="/posts/98d20436/"><span> ❓ 主題問答</span></a></li><li><a class="site-page child" href="/posts/4073eda/"><span> ⚡️ 進階教程</span></a></li><li><a class="site-page child" href="/posts/198a4240/"><span> ✨ 更新日誌</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fas fa-comment-dots"></i><span> 留言板</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 語言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="site-info"><h1 id="site-title">kyosora 虛空筆記</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="mailto:my@crazywong.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="post_cover left"><a href="/posts/undefined/" title="使用Google Search Console驗證與修復遭受DNS污染的IIS網站"><img class="post-bg" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-6.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用Google Search Console驗證與修復遭受DNS污染的IIS網站"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/undefined/" title="使用Google Search Console驗證與修復遭受DNS污染的IIS網站">使用Google Search Console驗證與修復遭受DNS污染的IIS網站</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2025-02-03T10:30:10.000Z" title="發表於 2025-02-03 18:30:10">2025-02-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%B6%B2%E8%B7%AF%E5%AE%89%E5%85%A8/">網路安全</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%B6%B2%E8%B7%AF%E5%AE%89%E5%85%A8/%E7%B3%BB%E7%B5%B1%E7%B6%AD%E8%AD%B7/">系統維護</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/posts/undefined/#post-comment"><span class="artalk-count" data-page-key="/posts/undefined/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> 則評論</span></span></div><div class="content">Google Search Console簡介 什麼是Google Search Console? Google Search Console(前身為Google網站管理員工具)是Google提供的免費網站監控與管理工具。它能協助網站管理員:  監控網站在Google搜尋中的表現 接收網站問題的警示通知 確認網站的擁有權 提交網站地圖(Sitemap) 查看網站的爬蟲數據  為什麼需要使用Search Console? 當網站遭受攻擊時,Search Console特別重要:  及時接收安全性警示 確認網站的真實擁有者 要求Google重新檢索網站內容 監控異常的搜尋結果  如何開始使用?  前往Google Search Console 使用Google帳號登入 點選「新增資源」 輸入您的網站網址 選擇驗證方式 本文章採用HTML 標記 驗證方式  DNS污染攻擊說明 什麼是DNS污染? DNS(Domain Name System)污染是一種網路攻擊手法,攻擊者會:  修改DNS伺服器的設定 將使用者導向惡意網站 植入廣告或惡意程式碼                    ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/undefined/" title="DeepSeek-R1 深度剖析：性價比超越Claude與GPT-4的AI新選擇"><img class="post-bg" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-7.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="DeepSeek-R1 深度剖析：性價比超越Claude與GPT-4的AI新選擇"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/undefined/" title="DeepSeek-R1 深度剖析：性價比超越Claude與GPT-4的AI新選擇">DeepSeek-R1 深度剖析：性價比超越Claude與GPT-4的AI新選擇</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2025-01-24T10:30:06.000Z" title="發表於 2025-01-24 18:30:06">2025-01-24</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E6%85%A7/">人工智慧</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/posts/undefined/#post-comment"><span class="artalk-count" data-page-key="/posts/undefined/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> 則評論</span></span></div><div class="content">在人工智慧競速發展的這幾年，企業開發者正面臨關鍵抉擇：如何用1/3成本實現超越GPT-4o的推理能力？ DeepSeek最新推出的R1模型給出令人驚豔的答案——憑藉獨創的動態推理路徑技術與三維資源壓縮架構，不僅在MMLU基準測試中以89.7分刷新紀錄，更實現較GPT-4o降低78%的推理成本。本文將透過架構層解析與實測數據，揭開這款「性價比屠夫」的技術突破。 一、DeepSeek-R1核心特性 1.1 動態推理路徑技術 R1 模型通過創新性思維鏈API實現決策過程透明化，技術實現包含：   使用  與  標籤規範推理步驟   支援長鏈推理（Chain-of-Thought，最大32K tokens）與自我驗證機制   提供含reasoning_content欄位的可審計決策日誌   應用場景對比優勢：    功能 R1模型 GPT-4o Claude 3.5     推理步驟可視化 ✅ 原生支援 ❌ 需提示工程 ❌ 無法實現   法律合規性記錄 ✅ 自動生成 ⚠️ 需二次開發 ⚠️ 需二次開發   教育場景適應性 ✅ 完整過程 ✅ 基礎推導 ❌ 僅輸出結論    1.2...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/posts/undefined/" title="主管新任務來襲！資深工程師分享：7個訊號辨識成長機會或過勞陷阱"><img class="post-bg" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-3.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="主管新任務來襲！資深工程師分享：7個訊號辨識成長機會或過勞陷阱"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/undefined/" title="主管新任務來襲！資深工程師分享：7個訊號辨識成長機會或過勞陷阱">主管新任務來襲！資深工程師分享：7個訊號辨識成長機會或過勞陷阱</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2025-01-23T10:34:50.000Z" title="發表於 2025-01-23 18:34:50">2025-01-23</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E8%81%B7%E5%A0%B4%E7%99%BC%E5%B1%95/">職場發展</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/posts/undefined/#post-comment"><span class="artalk-count" data-page-key="/posts/undefined/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> 則評論</span></span></div><div class="content"> 「這個新專案很有挑戰性，我希望你能帶著新人一起完成。順便也導入一下 Code Review 機制…」 身為資深工程師的你，聽到這句話的第一個反應是什麼？  每個工程師的職涯裡，總會遇到這樣的關鍵時刻 - 主管突然拋出一個看似「機會」的重責大任。但在專案執行資源、時程與授權層級都不明確的情況下，這是踏上成長階梯的機會，還是隱藏的過勞陷阱？ 本文將分享一套量化的評估框架，幫助你在 48 小時內做出正確判斷。 真實案例解析：一個令人困擾的週一早晨 小明是團隊的資深工程師，週一早上收到主管 Alice 的 Slack 訊息： 1Alice: 小明早安，公司最近接了一個新專案，預計 Q3 要上線。考慮到你的經驗，希望你能帶領新進的小王一起開發。順便也導入一下 Code Review 制度，提升團隊程式碼品質。你覺得如何？ 看似平常的對話，實際上暗藏了幾個關鍵問題：  專案時程與範疇是否合理？ 新人培訓需要多少時間？ Code Review 制度的導入成本？ 這些額外任務是否反映在 KPI？  五分鐘快速診斷：關鍵對話腳本 Step...</div></div></div><div class="recent-post-item ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-8919908724705274" data-ad-slot="1538867630"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/undefined/" title="Quartz.NET 入門指南 - 打造可靠的.NET排程系統"><img class="post-bg" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-1.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Quartz.NET 入門指南 - 打造可靠的.NET排程系統"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/undefined/" title="Quartz.NET 入門指南 - 打造可靠的.NET排程系統">Quartz.NET 入門指南 - 打造可靠的.NET排程系統</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2025-01-16T10:06:09.000Z" title="發表於 2025-01-16 18:06:09">2025-01-16</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/">後端開發</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/posts/undefined/#post-comment"><span class="artalk-count" data-page-key="/posts/undefined/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> 則評論</span></span></div><div class="content">前言 在現代軟體開發中,排程任務是一個不可或缺的環節。無論是定期資料備份、報表產生、郵件發送,還是系統維護,都需要一個可靠的排程系統。Quartz.NET 就是一個強大的開源排程框架,它不僅提供了豐富的功能,還具備高度的靈活性和可靠性。                          Scheduler               Job Store               Thread Pool               Jobs               Triggers               Listeners               Plugins                                                                   Quartz.NET 是什麼? Quartz.NET 是 Java Quartz 排程框架的 .NET...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/posts/undefined/" title="Windows遠端桌面連線重置帳密教學"><img class="post-bg" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-9.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Windows遠端桌面連線重置帳密教學"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/undefined/" title="Windows遠端桌面連線重置帳密教學">Windows遠端桌面連線重置帳密教學</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2025-01-03T10:30:00.000Z" title="發表於 2025-01-03 18:30:00">2025-01-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Windows%E6%95%99%E5%AD%B8/">Windows教學</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/posts/undefined/#post-comment"><span class="artalk-count" data-page-key="/posts/undefined/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> 則評論</span></span></div><div class="content">Windows遠端桌面連線重置帳密教學 在使用Windows遠端桌面連線(Remote Desktop Connection, RDP)時，有時候可能會遇到因為多次輸入錯誤帳號密碼，導致系統暫時鎖定無法重新輸入的情況。本文將教你如何快速解決這個問題，並提供一些預防措施。 問題說明 當我們在進行遠端桌面連線時，如果連續輸入錯誤的帳號密碼，Windows會出現以下錯誤訊息： 1無法使用這個認證登入到遠端電腦。請確認你的認證是有效的，然後再試一次。如果問題持續發生，請連絡系統管理員。 這是Windows的安全機制，為了防止惡意程式暴力破解密碼而設計的保護措施。 解決方法 方法一：使用圖形介面清除認證  按下 Windows鍵 + R 輸入 control keymgr.dll 在開啟的「已儲存的使用者名稱和密碼」視窗中 找到並刪除相關的遠端連線認證 關閉視窗 重新開啟遠端桌面連線程式  方法二：使用命令列清除認證 如果你比較習慣使用命令列介面，可以：  以系統管理員身分開啟命令提示字元 執行以下指令查看已儲存的認證：  1cmdkey...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/undefined/" title="使用 PowerShell 匯出完整的已安裝軟體清單"><img class="post-bg" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-6.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用 PowerShell 匯出完整的已安裝軟體清單"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/undefined/" title="使用 PowerShell 匯出完整的已安裝軟體清單">使用 PowerShell 匯出完整的已安裝軟體清單</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2025-01-02T02:00:00.000Z" title="發表於 2025-01-02 10:00:00">2025-01-02</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Windows-%E7%B3%BB%E7%B5%B1%E7%AE%A1%E7%90%86/">Windows 系統管理</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/posts/undefined/#post-comment"><span class="artalk-count" data-page-key="/posts/undefined/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> 則評論</span></span></div><div class="content">使用 PowerShell 匯出完整的已安裝軟體清單 在系統管理工作中,經常需要匯出電腦上已安裝的軟體清單。不過單純使用 Win32_Product 類別往往會漏掉許多軟體,因為現代軟體經常使用自己的安裝程式而非 Windows Installer。本文將介紹如何使用更全面的方法來取得完整的軟體清單。 為什麼需要掃描登錄檔 Windows 系統中,已安裝的軟體資訊主要儲存在以下登錄檔位置:  HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall (32 位元軟體)  這些位置包含了所有透過各種方式安裝的軟體資訊,比 Win32_Product 類別更完整。 完整的 PowerShell 腳本 123456789101112131415161718192021222324252627282930313233343536373839# 設定輸出編碼為...</div></div></div><div class="recent-post-item ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-8919908724705274" data-ad-slot="1538867630"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div class="recent-post-item"><div class="post_cover left"><a href="/posts/undefined/" title="邁入而立之年的2024回顧與2025展望 - 從0到1的投資之路"><img class="post-bg" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-8.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="邁入而立之年的2024回顧與2025展望 - 從0到1的投資之路"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/undefined/" title="邁入而立之年的2024回顧與2025展望 - 從0到1的投資之路">邁入而立之年的2024回顧與2025展望 - 從0到1的投資之路</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2025-01-01T10:39:00.000Z" title="發表於 2025-01-01 18:39:00">2025-01-01</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%94%9F%E6%B4%BB%E6%9C%AD%E8%A8%98/">生活札記</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/posts/undefined/#post-comment"><span class="artalk-count" data-page-key="/posts/undefined/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> 則評論</span></span></div><div class="content">序言 -...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/undefined/" title="Python程式打包成exe檔案的指南 - 使用PyInstaller打包PySide6應用程式"><img class="post-bg" src= "/img/loading.gif" data-lazy-src="https://images.unsplash.com/photo-1526379095098-d400fd0bf935" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Python程式打包成exe檔案的指南 - 使用PyInstaller打包PySide6應用程式"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/undefined/" title="Python程式打包成exe檔案的指南 - 使用PyInstaller打包PySide6應用程式">Python程式打包成exe檔案的指南 - 使用PyInstaller打包PySide6應用程式</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-12-23T02:30:00.000Z" title="發表於 2024-12-23 10:30:00">2024-12-23</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Python%E6%95%99%E5%AD%B8/">Python教學</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/posts/undefined/#post-comment"><span class="artalk-count" data-page-key="/posts/undefined/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> 則評論</span></span></div><div class="content">在開發完Python程式後,常常會需要將程式打包成exe檔案,方便在其他電腦上執行。本文將詳細說明如何使用PyInstaller工具,將Python程式打包成獨立的執行檔。特別針對使用PySide6開發的GUI應用程式,提供完整的打包設定和解決方案。 打包工具介紹 PyInstaller是目前最流行的Python打包工具之一,它可以:  將Python程式和所需的函式庫打包成單一執行檔 自動分析程式相依性 支援多種Python套件 跨平台打包支援  打包的基本步驟 1. 安裝PyInstaller 首先需要安裝PyInstaller套件: 1pip install pyinstaller 2. 準備打包環境 在打包之前,建議先建立一個獨立的虛擬環境: 1234567891011# 建立虛擬環境python -m venv venv# 啟動虛擬環境# Windowsvenv\Scripts\activate# Linux/Macsource venv/bin/activate# 安裝必要套件pip install -r requirements.txt 3....</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/posts/undefined/" title="寫 HEXO 部落格更有效率！跨平台桌面編輯器推薦"><img class="post-bg" src= "/img/loading.gif" data-lazy-src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="寫 HEXO 部落格更有效率！跨平台桌面編輯器推薦"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/undefined/" title="寫 HEXO 部落格更有效率！跨平台桌面編輯器推薦">寫 HEXO 部落格更有效率！跨平台桌面編輯器推薦</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-12-21T10:30:00.000Z" title="發表於 2024-12-21 18:30:00">2024-12-21</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%96%A6/">工具推薦</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/posts/undefined/#post-comment"><span class="artalk-count" data-page-key="/posts/undefined/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> 則評論</span></span></div><div class="content">你有遇過這些寫 HEXO 部落格的小困擾嗎？  一邊寫文章一邊要切換視窗預覽效果 想要快速修改文章的標題、分類和標籤要手動改 YAML 分類和標籤越來越多，不知道之前用過哪些 想要備份所有文章，還要自己一個一個找檔案  如果有類似困擾的話，不妨試試看這個專為 HEXO 部落客設計的桌面編輯器 - HEXO Editor Desktop！ 🌟 HEXO Editor 有什麼特別的？ 這是一款開源的跨平台編輯器，專注於改善 HEXO 部落客的寫作體驗。透過圖形化介面，讓你可以更專注在內容創作上。 主要功能   一站式編輯環境  Markdown 編輯器配合即時預覽功能 圖形化設定 Front Matter 分割畫面設計，編輯和預覽一次搞定    分類標籤管理  支援多層級分類 顯示標籤使用統計 自動完成建議功能    實用功能  支援快速鍵（如 Ctrl+S 儲存） 可搜尋過濾文章 一鍵備份匯出    支援多種作業系統  Windows macOS Linux    💡 實際操作介紹 1. 寫作流程 開啟程式後：  選擇你的 HEXO...</div></div></div><div class="recent-post-item ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-8919908724705274" data-ad-slot="1538867630"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/undefined/" title="SQL Server資料庫加密實戰:透明資料加密(TDE)完整實作指南"><img class="post-bg" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-1.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SQL Server資料庫加密實戰:透明資料加密(TDE)完整實作指南"></a></div><div class="recent-post-info"><a class="article-title" href="/posts/undefined/" title="SQL Server資料庫加密實戰:透明資料加密(TDE)完整實作指南">SQL Server資料庫加密實戰:透明資料加密(TDE)完整實作指南</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-12-20T10:43:00.000Z" title="發表於 2024-12-20 18:43:00">2024-12-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB/">資料庫</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/">資訊安全</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/posts/undefined/#post-comment"><span class="artalk-count" data-page-key="/posts/undefined/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> 則評論</span></span></div><div class="content">前言 隨著資安事件頻傳,如何保護資料庫中的敏感資料成為當前的重要課題。Microsoft SQL Server提供的透明資料加密(Transparent Data Encryption, TDE)是一個強大的解決方案,它能夠在資料寫入磁碟時自動加密,讀取時自動解密,對應用程式完全透明。本文將帶您一步步實作TDE,並深入探討其運作原理。 TDE運作原理 TDE的主要目的是保護資料庫檔案(.mdf、.ldf)中的靜態資料。當資料要寫入磁碟時,TDE會自動進行加密;當需要讀取資料時,則會自動解密。整個過程對應用程式來說是完全透明的,不需要修改任何程式碼。 以下是TDE的運作流程:                          資料庫檔案               資料庫引擎               記憶體               資料庫加密金鑰               憑證                                                                                      加密    ...</div></div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/#content-inner">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/#content-inner">10</a><a class="extend next" rel="next" href="/page/2/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "/img/loading.gif" data-lazy-src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kyosora</div><div class="author-info-description">個人技術筆記和學習心得分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">99</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">118</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">32</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly"><i class="fab fa-github"></i><span>主題 GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:my@crazywong.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">如果你在使用中遇到問題，請到 <a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly/issues" style="color:#49b1f5">Github Issues</a> 進行反饋，你也可以加入反饋群（掃碼或者點擊圖片跳轉） <div class="aside-qrcode" > <a href="https://h5.qun.qq.com/s/vTHKfqL0nC" target="_blank"> <img src= "/img/loading.gif" data-lazy-src="/img/qq.jpg" title="QQ 二維碼"></a> <a href="https://t.me/bu2fly" target="_blank"> <img src= "/img/loading.gif" data-lazy-src="/img/tg.jpg" title="Telegram 二維碼"></a> </div></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/undefined/" title="使用Google Search Console驗證與修復遭受DNS污染的IIS網站"><img src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-6.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用Google Search Console驗證與修復遭受DNS污染的IIS網站"/></a><div class="content"><a class="title" href="/posts/undefined/" title="使用Google Search Console驗證與修復遭受DNS污染的IIS網站">使用Google Search Console驗證與修復遭受DNS污染的IIS網站</a><time datetime="2025-02-03T10:30:10.000Z" title="發表於 2025-02-03 18:30:10">2025-02-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/undefined/" title="DeepSeek-R1 深度剖析：性價比超越Claude與GPT-4的AI新選擇"><img src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-7.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="DeepSeek-R1 深度剖析：性價比超越Claude與GPT-4的AI新選擇"/></a><div class="content"><a class="title" href="/posts/undefined/" title="DeepSeek-R1 深度剖析：性價比超越Claude與GPT-4的AI新選擇">DeepSeek-R1 深度剖析：性價比超越Claude與GPT-4的AI新選擇</a><time datetime="2025-01-24T10:30:06.000Z" title="發表於 2025-01-24 18:30:06">2025-01-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/undefined/" title="主管新任務來襲！資深工程師分享：7個訊號辨識成長機會或過勞陷阱"><img src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-3.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="主管新任務來襲！資深工程師分享：7個訊號辨識成長機會或過勞陷阱"/></a><div class="content"><a class="title" href="/posts/undefined/" title="主管新任務來襲！資深工程師分享：7個訊號辨識成長機會或過勞陷阱">主管新任務來襲！資深工程師分享：7個訊號辨識成長機會或過勞陷阱</a><time datetime="2025-01-23T10:34:50.000Z" title="發表於 2025-01-23 18:34:50">2025-01-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/undefined/" title="Quartz.NET 入門指南 - 打造可靠的.NET排程系統"><img src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-1.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Quartz.NET 入門指南 - 打造可靠的.NET排程系統"/></a><div class="content"><a class="title" href="/posts/undefined/" title="Quartz.NET 入門指南 - 打造可靠的.NET排程系統">Quartz.NET 入門指南 - 打造可靠的.NET排程系統</a><time datetime="2025-01-16T10:06:09.000Z" title="發表於 2025-01-16 18:06:09">2025-01-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/undefined/" title="Windows遠端桌面連線重置帳密教學"><img src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-9.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Windows遠端桌面連線重置帳密教學"/></a><div class="content"><a class="title" href="/posts/undefined/" title="Windows遠端桌面連線重置帳密教學">Windows遠端桌面連線重置帳密教學</a><time datetime="2025-01-03T10:30:00.000Z" title="發表於 2025-01-03 18:30:00">2025-01-03</time></div></div></div></div><div class="card-widget ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8919908724705274" data-ad-slot="8108145410" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div class="card-widget" id="card-newest-comments"><div class="item-headline"><i class="fas fa-comment-dots"></i><span>最新評論</span></div><div class="aside-list"><span>載入中...</span></div></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>分類</span>
+            
+          </div>
+          <ul class="card-category-list expandBtn" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/AI%E5%B7%A5%E5%85%B7/"><span class="card-category-list-name">AI工具</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/AI%E6%87%89%E7%94%A8/"><span class="card-category-list-name">AI應用</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Hexo/"><span class="card-category-list-name">Hexo</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Python%E6%95%99%E5%AD%B8/"><span class="card-category-list-name">Python教學</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Windows-%E7%B3%BB%E7%B5%B1%E7%AE%A1%E7%90%86/"><span class="card-category-list-name">Windows 系統管理</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Windows%E6%95%99%E5%AD%B8/"><span class="card-category-list-name">Windows教學</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E6%85%A7/"><span class="card-category-list-name">人工智慧</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%AF%A6%E7%94%A8%E6%8A%80%E5%B7%A7/"><span class="card-category-list-name">實用技巧</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%AF%A6%E7%94%A8%E6%95%99%E5%AD%B8/"><span class="card-category-list-name">實用教學</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%B4%B9/"><span class="card-category-list-name">工具介紹</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%96%A6/"><span class="card-category-list-name">工具推薦</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item parent"><a class="card-category-list-link" href="/categories/%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/"><span class="card-category-list-name">後端開發</span><span class="card-category-list-count">2</span><i class="fas fa-caret-left "></i></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/%E8%B3%87%E6%96%99%E5%BA%AB%E5%84%AA%E5%8C%96/"><span class="card-category-list-name">資料庫優化</span><span class="card-category-list-count">1</span></a></li></ul></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E6%9C%8D%E5%8B%99%E4%BB%8B%E7%B4%B9/"><span class="card-category-list-name">服務介紹</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E6%BC%94%E7%AE%97%E6%B3%95/"><span class="card-category-list-name">演算法</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%94%9F%E6%B4%BB%E6%9C%AD%E8%A8%98/"><span class="card-category-list-name">生活札記</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/"><span class="card-category-list-name">程式教學</span><span class="card-category-list-count">48</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/"><span class="card-category-list-name">程式設計</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%A8%8B%E5%BC%8F%E9%96%8B%E7%99%BC/"><span class="card-category-list-name">程式開發</span><span class="card-category-list-count">4</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%B6%B2%E8%B7%AF/"><span class="card-category-list-name">網路</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item parent"><a class="card-category-list-link" href="/categories/%E7%B6%B2%E8%B7%AF%E5%AE%89%E5%85%A8/"><span class="card-category-list-name">網路安全</span><span class="card-category-list-count">1</span><i class="fas fa-caret-left "></i></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%B6%B2%E8%B7%AF%E5%AE%89%E5%85%A8/%E7%B3%BB%E7%B5%B1%E7%B6%AD%E8%AD%B7/"><span class="card-category-list-name">系統維護</span><span class="card-category-list-count">1</span></a></li></ul></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%B6%B2%E9%A0%81%E9%96%8B%E7%99%BC/"><span class="card-category-list-name">網頁開發</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%81%B7%E5%A0%B4%E7%99%BC%E5%B1%95/"><span class="card-category-list-name">職場發展</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item parent"><a class="card-category-list-link" href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB/"><span class="card-category-list-name">資料庫</span><span class="card-category-list-count">5</span><i class="fas fa-caret-left "></i></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/"><span class="card-category-list-name">資訊安全</span><span class="card-category-list-count">1</span></a></li></ul></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB%E7%AE%A1%E7%90%86/"><span class="card-category-list-name">資料庫管理</span><span class="card-category-list-count">3</span></a></li><li class="card-category-list-item parent"><a class="card-category-list-link" href="/categories/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/"><span class="card-category-list-name">資訊安全</span><span class="card-category-list-count">7</span><i class="fas fa-caret-left "></i></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/%E4%BC%BA%E6%9C%8D%E5%99%A8%E7%AE%A1%E7%90%86/"><span class="card-category-list-name">伺服器管理</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/%E7%B3%BB%E7%B5%B1%E7%AE%A1%E7%90%86/"><span class="card-category-list-name">系統管理</span><span class="card-category-list-count">1</span></a></li></ul></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%BB%9F%E9%AB%94%E4%BB%8B%E7%B4%B9/"><span class="card-category-list-name">軟體介紹</span><span class="card-category-list-count">3</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E9%96%8B%E7%99%BC%E7%9B%B8%E9%97%9C/"><span class="card-category-list-name">開發相關</span><span class="card-category-list-count">6</span></a></li>
+          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>標籤</span></div><div class="card-tag-cloud"><a href="/tags/CSS/" style="font-size: 1.35em; color: rgb(50, 77, 53);">CSS</a><a href="/tags/API%E9%99%90%E6%B5%81/" style="font-size: 1.15em; color: rgb(100, 50, 160);">API限流</a><a href="/tags/Net/" style="font-size: 1.35em; color: rgb(53, 98, 53);">Net</a><a href="/tags/C/" style="font-size: 1.3em; color: rgb(180, 50, 55);">C#</a><a href="/tags/Chrome%E9%96%8B%E7%99%BC/" style="font-size: 1.15em; color: rgb(50, 58, 50);">Chrome開發</a><a href="/tags/Content-Security-Policy/" style="font-size: 1.15em; color: rgb(105, 50, 50);">Content Security Policy</a><a href="/tags/Docker/" style="font-size: 1.25em; color: rgb(50, 120, 50);">Docker</a><a href="/tags/CORS/" style="font-size: 1.15em; color: rgb(123, 75, 79);">CORS</a><a href="/tags/DNS/" style="font-size: 1.15em; color: rgb(168, 185, 147);">DNS</a><a href="/tags/EmEditor/" style="font-size: 1.15em; color: rgb(66, 152, 64);">EmEditor</a><a href="/tags/Git/" style="font-size: 1.25em; color: rgb(50, 50, 50);">Git</a><a href="/tags/HTMX/" style="font-size: 1.15em; color: rgb(50, 76, 90);">HTMX</a><a href="/tags/Hexo/" style="font-size: 1.2em; color: rgb(185, 50, 150);">Hexo</a><a href="/tags/Go/" style="font-size: 1.15em; color: rgb(187, 88, 177);">Go</a><a href="/tags/Cookie/" style="font-size: 1.15em; color: rgb(198, 118, 50);">Cookie</a><a href="/tags/IIS/" style="font-size: 1.25em; color: rgb(147, 50, 53);">IIS</a><a href="/tags/SSL-TLS/" style="font-size: 1.15em; color: rgb(113, 84, 50);">SSL/TLS</a><a href="/tags/%E5%BC%B1%E9%BB%9E%E6%8E%83%E6%8F%8F/" style="font-size: 1.25em; color: rgb(86, 69, 82);">弱點掃描</a><a href="/tags/%E8%B3%87%E5%AE%89%E5%B7%A5%E5%85%B7/" style="font-size: 1.15em; color: rgb(137, 105, 81);">資安工具</a><a href="/tags/JavaScript/" style="font-size: 1.4em; color: rgb(194, 50, 50);">JavaScript</a><a href="/tags/LibreOffice/" style="font-size: 1.15em; color: rgb(50, 158, 171);">LibreOffice</a><a href="/tags/%E7%B6%B2%E7%AB%99%E9%83%A8%E7%BD%B2/" style="font-size: 1.2em; color: rgb(89, 90, 50);">網站部署</a><a href="/tags/%E8%B7%AF%E5%BE%91%E8%A8%AD%E5%AE%9A/" style="font-size: 1.2em; color: rgb(50, 50, 105);">路徑設定</a><a href="/tags/HTML/" style="font-size: 1.2em; color: rgb(50, 153, 136);">HTML</a><a href="/tags/ASP-NET-MVC/" style="font-size: 1.2em; color: rgb(72, 113, 104);">ASP.NET MVC</a><a href="/tags/Pinia/" style="font-size: 1.25em; color: rgb(50, 69, 76);">Pinia</a><a href="/tags/Vuex/" style="font-size: 1.15em; color: rgb(106, 50, 197);">Vuex</a><a href="/tags/Redis/" style="font-size: 1.15em; color: rgb(191, 177, 104);">Redis</a><a href="/tags/SQL-Server/" style="font-size: 1.45em; color: rgb(62, 191, 79);">SQL Server</a><a href="/tags/Python/" style="font-size: 1.3em; color: rgb(50, 50, 159);">Python</a><a href="/tags/PyInstaller/" style="font-size: 1.15em; color: rgb(126, 50, 191);">PyInstaller</a><a href="/tags/PySide6/" style="font-size: 1.15em; color: rgb(50, 63, 81);">PySide6</a><a href="/tags/%E6%89%93%E5%8C%85%E6%95%99%E5%AD%B8/" style="font-size: 1.15em; color: rgb(146, 189, 87);">打包教學</a><a href="/tags/exe/" style="font-size: 1.15em; color: rgb(76, 151, 168);">exe</a><a href="/tags/SQL/" style="font-size: 1.4em; color: rgb(50, 193, 66);">SQL</a><a href="/tags/SQLCMD/" style="font-size: 1.25em; color: rgb(135, 50, 127);">SQLCMD</a><a href="/tags/BCP/" style="font-size: 1.15em; color: rgb(62, 86, 102);">BCP</a><a href="/tags/SSIS/" style="font-size: 1.15em; color: rgb(82, 50, 168);">SSIS</a><a href="/tags/CSV%E5%8C%AF%E5%87%BA/" style="font-size: 1.15em; color: rgb(71, 50, 84);">CSV匯出</a><a href="/tags/%E6%95%88%E8%83%BD%E5%84%AA%E5%8C%96/" style="font-size: 1.35em; color: rgb(171, 137, 108);">效能優化</a></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>歸檔</span>
+      <a class="card-more-btn" href="/archives/"
+            title="檢視更多">
+            <i class="fas fa-angle-right"></i>
+          </a>
+    </div>
+  
+    <ul class="card-archive-list">
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/02/">
+            <span class="card-archive-list-date">
+              2025年02月
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/01/">
+            <span class="card-archive-list-date">
+              2025年01月
+            </span>
+            <span class="card-archive-list-count">6</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/12/">
+            <span class="card-archive-list-date">
+              2024年12月
+            </span>
+            <span class="card-archive-list-count">14</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/11/">
+            <span class="card-archive-list-date">
+              2024年11月
+            </span>
+            <span class="card-archive-list-count">10</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/10/">
+            <span class="card-archive-list-date">
+              2024年10月
+            </span>
+            <span class="card-archive-list-count">6</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/09/">
+            <span class="card-archive-list-date">
+              2024年09月
+            </span>
+            <span class="card-archive-list-count">10</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/08/">
+            <span class="card-archive-list-date">
+              2024年08月
+            </span>
+            <span class="card-archive-list-count">7</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/07/">
+            <span class="card-archive-list-date">
+              2024年07月
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>網站資訊</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章數量 :</div><div class="item-count">99</div></div><div class="webinfo-item"><div class="item-name">運行時間 :</div><div class="item-count" id="runtimeshow" data-publishDate="2019-11-12T16:00:00.000Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">總字數 :</div><div class="item-count">110.6k</div></div><div class="webinfo-item"><div class="item-name">訪客數 :</div><div class="item-count" id="umami-site-uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">總瀏覽量 :</div><div class="item-count" id="umami-site-pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最後更新時間 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2025-03-10T08:57:49.330Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://oss.012700.xyz/butterfly/2024/10/index.jpg);"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By kyosora</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 0.0.0</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/utils.min.js"></script><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/main.min.js"></script><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/tw_cn.min.js"></script><script src="https://jsd.012700.xyz/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://jsd.012700.xyz/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://jsd.012700.xyz/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const getArtalkCount = async() => {
+    try {
+      const eleGroup = document.querySelectorAll('#recent-posts .artalk-count')
+      const keyArray = Array.from(eleGroup).map(i => i.getAttribute('data-page-key'))
+
+      const headerList = {
+        method: 'GET',
+      }
+
+      const searchParams = new URLSearchParams({
+        'site_name': 'Butterfly-Docs',
+        'page_keys': keyArray
+      })
+
+      const res = await fetch(`https://artalk.crazywong.com/api/v2/stats/page_comment?${searchParams}`, headerList)
+      const result = await res.json()
+
+      keyArray.forEach((key, index) => {
+        eleGroup[index].textContent = result.data[key] || 0
+      })
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  window.pjax ? getArtalkCount() : window.addEventListener('load', getArtalkCount)
+})()</script><script>window.typedJSFn = {
+  init: str => {
+    window.typed = new Typed('#subtitle', Object.assign({
+      strings: str,
+      startDelay: 300,
+      typeSpeed: 150,
+      loop: true,
+      backSpeed: 50,
+    }, {"loop":true}))
+  },
+  run: subtitleType => {
+    if (true) {
+      if (typeof Typed === 'function') {
+        subtitleType()
+      } else {
+        btf.getScript('https://jsd.012700.xyz/npm/typed.js/dist/typed.umd.min.js').then(subtitleType)
+      }
+    } else {
+      subtitleType()
+    }
+  },
+  processSubtitle: (content, extraContents = []) => {
+    if (true) {
+      const sub = ["今日事&#44;今日畢","Never put off till tomorrow what you can do today"].slice()
+
+      if (extraContents.length > 0) {
+        sub.unshift(...extraContents)
+      }
+
+      if (typeof content === 'string') {
+        sub.unshift(content)
+      } else if (Array.isArray(content)) {
+        sub.unshift(...content)
+      }
+
+      sub.length > 0 && typedJSFn.init(sub)
+    } else {
+      document.getElementById('subtitle').textContent = typeof content === 'string' ? content :
+        (Array.isArray(content) && content.length > 0 ? content[0] : '')
+    }
+  }
+}
+btf.addGlobalFn('pjaxSendOnce', () => { typed.destroy() }, 'typedDestroy')
+</script><script>function subtitleType () {
+  fetch('https://v1.hitokoto.cn')
+    .then(response => response.json())
+    .then(data => {
+      const from = '出自 ' + data.from
+      typedJSFn.processSubtitle(data.hitokoto, [from])
+    })
+    .catch(err => {
+      console.error('Failed to get the Hitokoto API:', err)
+      typedJSFn.processSubtitle(["今日事&#44;今日畢","Never put off till tomorrow what you can do today"])
+    })
+}
+typedJSFn.run(subtitleType)
+</script><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://jsd.012700.xyz/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const applyThemeDefaultsConfig = theme => {
+    if (theme === 'dark-mode') {
+      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
+      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    } else {
+      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
+      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    }
+  }
+
+  // Recursively traverse the config object and automatically apply theme-specific color schemes
+  const applyThemeConfig = (obj, theme) => {
+    if (typeof obj !== 'object' || obj === null) return
+
+    Object.keys(obj).forEach(key => {
+      const value = obj[key]
+      // If the property is an object and has theme-specific options, apply them
+      if (typeof value === 'object' && value !== null) {
+        if (value[theme]) {
+          obj[key] = value[theme] // Apply the value for the current theme
+        } else {
+          // Recursively process child objects
+          applyThemeConfig(value, theme)
+        }
+      }
+    })
+  }
+
+  const runChartJS = ele => {
+    window.loadChartJS = true
+
+    Array.from(ele).forEach((item, index) => {
+      const chartSrc = item.firstElementChild
+      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
+      const width = item.getAttribute('data-width')
+      const existingCanvas = document.getElementById(chartID)
+
+      // If a canvas already exists, remove it to avoid rendering duplicates
+      if (existingCanvas) {
+          existingCanvas.parentNode.remove()
+      }
+
+      const chartDefinition = chartSrc.textContent
+      const canvas = document.createElement('canvas')
+      canvas.id = chartID
+
+      const div = document.createElement('div')
+      div.className = 'chartjs-wrap'
+
+      if (width) {
+        div.style.width = width
+      }
+
+      div.appendChild(canvas)
+      chartSrc.insertAdjacentElement('afterend', div)
+
+      const ctx = document.getElementById(chartID).getContext('2d')
+
+      const config = JSON.parse(chartDefinition)
+
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
+
+      // Set default styles (initial setup)
+      applyThemeDefaultsConfig(theme)
+
+      // Automatically traverse the config and apply dual-mode color schemes
+      applyThemeConfig(config, theme)
+
+      new Chart(ctx, config)
+    })
+  }
+
+  const loadChartJS = () => {
+    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
+    if (chartJSEle.length === 0) return
+
+    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://jsd.012700.xyz/npm/chart.js/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
+  }
+
+  // Listen for theme change events
+  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
+  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
+
+  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
+})()</script></div><script>window.newestComments = {
+  changeContent: content => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[圖片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[連結]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[程式碼]') // replace code
+    content = content.replace(/<code>.*?<\/code>/gi, '[程式碼]') // replace code
+    content = content.replace(/<[^>]+>/g, "") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0, 150) + '...'
+    }
+    return content
+  },
+
+  generateHtml: (array, ele) => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class="aside-list-item">'
+
+        if (true && array[i].avatar) {
+          const imgAttr = 'data-lazy-src'
+          const lazyloadNative = ''
+          result += `<a href="${array[i].url}" class="thumbnail"><img ${imgAttr}="${array[i].avatar}" alt="${array[i].nick}" ${lazyloadNative}></a>`
+        }
+
+        result += `<div class="content">
+        <a class="comment" href="${array[i].url}" title="${array[i].content}">${array[i].content}</a>
+        <div class="name"><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '尚無評論'
+    }
+
+    ele.innerHTML = result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh(ele)
+  },
+
+  newestCommentInit: (name, getComment) => {
+    const $dom = document.querySelector('#card-newest-comments .aside-list')
+    if ($dom) {
+      const data = btf.saveToLocal.get(name)
+      if (data) {
+        newestComments.generateHtml(JSON.parse(data), $dom)
+      } else {
+        getComment($dom)
+      }
+    }
+  },
+
+  run: (name, getComment) => {
+    newestComments.newestCommentInit(name, getComment)
+    btf.addGlobalFn('pjaxComplete', () => newestComments.newestCommentInit(name, getComment), name)
+  }
+}</script><script>window.addEventListener('load', () => {
+  const keyName = 'artalk-newest-comments'
+  const { changeContent, generateHtml, run } = window.newestComments
+
+  const getAvatarValue = async () => {
+    const predefinedAvatarCdn = ''
+    const predefinedAvatarDefault = ''
+
+    const avatarDefaultFormat = e => e.startsWith('d=') ? e : `d=${e}`
+
+    if (predefinedAvatarCdn && predefinedAvatarDefault) {
+      return { avatarCdn: predefinedAvatarCdn, avatarDefault: avatarDefaultFormat(predefinedAvatarDefault) }
+    }
+
+    try {
+      const res = await fetch('https://artalk.crazywong.com/api/v2/conf')
+      const result = await res.json()
+      const { mirror, params, default: defaults } = result.frontend_conf.gravatar
+      const avatarCdn = predefinedAvatarCdn || mirror
+      let avatarDefault = avatarDefaultFormat(predefinedAvatarDefault || params || defaults)
+      return { avatarCdn, avatarDefault}
+    } catch (e) {
+      console.error(e)
+      return { avatarCdn: predefinedAvatarCdn, avatarDefault: avatarDefaultFormat(predefinedAvatarDefault) }
+    }
+  }
+
+  const searchParams = new URLSearchParams({
+    'site_name': 'Butterfly-Docs',
+    'limit': '12', // Fetch more comments to filter pending comments
+  })
+
+  const getComment = async (ele) => {
+    try {
+      const res = await fetch(`https://artalk.crazywong.com/api/v2/stats/latest_comments?${searchParams}`)
+      const result = await res.json()
+      const { avatarCdn, avatarDefault } = await getAvatarValue()
+      const artalk = result.data
+        .filter(e => !e.is_pending) // Filter pending comments
+        .slice(0, 6) // Limit the number of comments
+        .map(e => {
+          const avatar = avatarCdn && e.email_encrypted ? `${avatarCdn}${e.email_encrypted}?${avatarDefault}` : ''
+          return {
+            'avatar': avatar,
+            'content': changeContent(e.content_marked),
+            'nick': e.nick,
+            'url': e.page_url,
+            'date': e.date,
+          }
+        })
+      btf.saveToLocal.set(keyName, JSON.stringify(artalk), 5/(60*24))
+      generateHtml(artalk, ele)
+    } catch (e) {
+      console.log(e)
+      ele.textContent= "無法獲取評論，請確認相關配置是否正確"
+    }
+  }
+
+  run(keyName, getComment)
+})</script><script data-pjax src="/self/btf.js"></script><script defer="defer" id="ribbon" src="https://jsd.012700.xyz/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script src="https://jsd.012700.xyz/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      const usePjax = true
+      true 
+        ? (usePjax ? pjax.loadUrl('/404') : window.location.href = '/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})()</script><script>(() => {
+  const option = null
+  const config = {"site_uv":true,"site_pv":true,"page_pv":true,"token":"qTvz1SkmPDt785fgh6BpiA5qiFFIVUwxj8Ft+rPW+cdN59v1hXjwRgSmy0+ji9m+oLlcxvo2NfDSMa6epVl3NTlsN3ejCIwWeP8Y51aEJ0Sbem4UexGmJLspB7AkOBId2SdtT6QWEBlGmFIIQgchQ2zAKYxTmc/kpBED5aLSr+3uvmQ9/G7FJQeVFpveDkK0xM1hu36xq4a6/FSeROxtoEp5zabzTWiYTlLsQzIl/NlELnCq3nxK+oo/vl3UQo/oM/rae/gJX/MaVKsgIUCd2ABJogNkx2KTenBIBpbPki5FzOgPh6/z4GPa4HvhNO51DDVG1SEQZooqEYmt/gnybLBWFbN+7liZWw=="}
+
+  const runTrack = () => {
+    umami.track(props => ({ ...props, url: window.location.pathname, title: GLOBAL_CONFIG_SITE.title }))
+  }
+
+  const loadUmamiJS = () => {
+    btf.getScript('https://umami.012700.xyz/script.js', {
+      'data-website-id': '2a796d6c-6499-42d8-8eb4-d9a2930b0ff3',
+      'data-auto-track': 'false',
+      ...option
+    }).then(runTrack)
+  }
+
+  const getData = async (isPost) => {
+    const now = Date.now()
+    const keyUrl = isPost ? `&url=${window.location.pathname}` : ''
+    const headerList = { 'Accept': 'application/json' }
+    if (true) headerList['Authorization'] = `Bearer ${config.token}`
+    else headerList['x-umami-api-key'] = config.token
+    const res = await fetch(`https://umami.012700.xyz/api/websites/2a796d6c-6499-42d8-8eb4-d9a2930b0ff3/stats?startAt=0000000000&endAt=${now}${keyUrl}`, {
+      method: "GET",
+      headers: headerList
+    })
+    return await res.json()
+  }
+
+  const insertData = async () => {
+    try {
+      if (GLOBAL_CONFIG_SITE.pageType === 'post' && config.page_pv) {
+        const pagePV = document.getElementById('umamiPV')
+        if (pagePV) {
+          const data = await getData(true)
+          pagePV.textContent = data.pageviews.value
+        }
+      } else {
+        const data = (config.site_uv || config.site_pv) && await getData()
+        if (config.site_uv) {
+          const siteUV = document.getElementById('umami-site-uv')
+          if (siteUV) siteUV.textContent = data.visitors.value
+        }
+        if (config.site_pv) {
+          const sitePV = document.getElementById('umami-site-pv')
+          if (sitePV) sitePV.textContent = data.pageviews.value
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load Umami Analytics:', e)
+    }
+  }
+
+  btf.addGlobalFn('pjaxComplete', runTrack, 'umami_analytics_run_track')
+  btf.addGlobalFn('pjaxComplete', insertData, 'umami_analytics_insert')
+
+  loadUmamiJS()
+  insertData()
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜尋文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/search/local-search.min.js"></script></div></div></body></html>
