@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kyosora.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="圖片懶加載技術：提升網站效能的七大方法在現今的網路世界中，網站效能對用戶體驗至關重要。而圖片往往是影響網頁載入速度的主要因素之一。本文將為您介紹六種實用的圖片懶加載技術，幫助您大幅提升網站效能。 什麼是圖片懶加載？圖片懶加載是一種網頁優化技術，它延遲加載暫時不可見的圖片。簡單來說，只有當用戶滾動到圖片位置時，圖片才會開始載入。這種方法可以顯著減少初始頁面載入時間和頻寬使用。 七種圖片懶加載方法1.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="圖片懶加載技術：提升網站效能的七大方法">
+<meta property="og:url" content="https://kyosora.github.io/2024/03/10/cm82ssaac0068t497e6d67t8u/index.html">
+<meta property="og:site_name" content="kyosora 虛空筆記">
+<meta property="og:description" content="圖片懶加載技術：提升網站效能的七大方法在現今的網路世界中，網站效能對用戶體驗至關重要。而圖片往往是影響網頁載入速度的主要因素之一。本文將為您介紹六種實用的圖片懶加載技術，幫助您大幅提升網站效能。 什麼是圖片懶加載？圖片懶加載是一種網頁優化技術，它延遲加載暫時不可見的圖片。簡單來說，只有當用戶滾動到圖片位置時，圖片才會開始載入。這種方法可以顯著減少初始頁面載入時間和頻寬使用。 七種圖片懶加載方法1.">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-03-10T10:52:16.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:38:14.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="圖片懶加載">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://kyosora.github.io/2024/03/10/cm82ssaac0068t497e6d67t8u/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: {},
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>圖片懶加載技術：提升網站效能的七大方法 | kyosora 虛空筆記</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kyosora 虛空筆記</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/2024/03/10/cm82ssaac0068t497e6d67t8u/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 虛空筆記">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          圖片懶加載技術：提升網站效能的七大方法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2024-03-10 18:52:16" itemprop="dateCreated datePublished" datetime="2024-03-10T18:52:16+08:00">2024-03-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2024-11-27 14:38:14" itemprop="dateModified" datetime="2024-11-27T14:38:14+08:00">2024-11-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="圖片懶加載技術：提升網站效能的七大方法"><a href="#圖片懶加載技術：提升網站效能的七大方法" class="headerlink" title="圖片懶加載技術：提升網站效能的七大方法"></a>圖片懶加載技術：提升網站效能的七大方法</h1><p>在現今的網路世界中，網站效能對用戶體驗至關重要。而圖片往往是影響網頁載入速度的主要因素之一。本文將為您介紹六種實用的圖片懶加載技術，幫助您大幅提升網站效能。</p>
+<h2 id="什麼是圖片懶加載？"><a href="#什麼是圖片懶加載？" class="headerlink" title="什麼是圖片懶加載？"></a>什麼是圖片懶加載？</h2><p>圖片懶加載是一種網頁優化技術，它延遲加載暫時不可見的圖片。簡單來說，只有當用戶滾動到圖片位置時，圖片才會開始載入。這種方法可以顯著減少初始頁面載入時間和頻寬使用。</p>
+<h2 id="七種圖片懶加載方法"><a href="#七種圖片懶加載方法" class="headerlink" title="七種圖片懶加載方法"></a>七種圖片懶加載方法</h2><h3 id="1-原生懶加載"><a href="#1-原生懶加載" class="headerlink" title="1. 原生懶加載"></a>1. 原生懶加載</h3><p>HTML5 引入的 <code>loading</code> 屬性讓懶加載變得異常簡單：</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>image.jpg<span class="token punctuation">"</span></span> <span class="token attr-name">loading</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>lazy<span class="token punctuation">"</span></span> <span class="token attr-name">alt</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>懶加載圖片<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><strong>優點：</strong></p>
+<ul>
+<li>實施簡單</li>
+<li>瀏覽器原生支援，效能佳</li>
+<li>無需 JavaScript</li>
+</ul>
+<p><strong>缺點：</strong></p>
+<ul>
+<li>舊版瀏覽器可能不支援</li>
+</ul>
+<h3 id="2-Intersection-Observer-API"><a href="#2-Intersection-Observer-API" class="headerlink" title="2. Intersection Observer API"></a>2. Intersection Observer API</h3><p>這是一個強大的 JavaScript API，用於監測元素是否進入視口：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> observer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">IntersectionObserver</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">entries</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  entries<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">entry</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>entry<span class="token punctuation">.</span>isIntersecting<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> image <span class="token operator">=</span> entry<span class="token punctuation">.</span>target<span class="token punctuation">;</span>
+      image<span class="token punctuation">.</span>src <span class="token operator">=</span> image<span class="token punctuation">.</span>dataset<span class="token punctuation">.</span>src<span class="token punctuation">;</span>
+      observer<span class="token punctuation">.</span><span class="token function">unobserve</span><span class="token punctuation">(</span>image<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+document<span class="token punctuation">.</span><span class="token function">querySelectorAll</span><span class="token punctuation">(</span><span class="token string">'img[data-src]'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">img</span><span class="token punctuation">)</span> <span class="token operator">=></span> observer<span class="token punctuation">.</span><span class="token function">observe</span><span class="token punctuation">(</span>img<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>優點：</strong></p>
+<ul>
+<li>高度可自訂</li>
+<li>效能優異</li>
+<li>可用於其他元素的懶加載</li>
+</ul>
+<p><strong>缺點：</strong></p>
+<ul>
+<li>需要較多程式碼</li>
+<li>部分舊版瀏覽器不支援</li>
+</ul>
+<h3 id="3-滾動事件監聽"><a href="#3-滾動事件監聽" class="headerlink" title="3. 滾動事件監聽"></a>3. 滾動事件監聽</h3><p>這是一種傳統但仍然有效的方法：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">lazyLoad</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> images <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">querySelectorAll</span><span class="token punctuation">(</span><span class="token string">'img[data-src]'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  images<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">img</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isInViewport</span><span class="token punctuation">(</span>img<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      img<span class="token punctuation">.</span>src <span class="token operator">=</span> img<span class="token punctuation">.</span>dataset<span class="token punctuation">.</span>src<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+window<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">'scroll'</span><span class="token punctuation">,</span> lazyLoad<span class="token punctuation">)</span><span class="token punctuation">;</span>
+window<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">'load'</span><span class="token punctuation">,</span> lazyLoad<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>優點：</strong></p>
+<ul>
+<li>兼容性好</li>
+<li>實施相對簡單</li>
+</ul>
+<p><strong>缺點：</strong></p>
+<ul>
+<li>可能影響滾動效能</li>
+<li>需要額外函數判斷元素是否在視口內</li>
+</ul>
+<h3 id="4-使用第三方庫"><a href="#4-使用第三方庫" class="headerlink" title="4. 使用第三方庫"></a>4. 使用第三方庫</h3><p>許多成熟的懶加載庫如 lazysizes、lozad.js 等提供了豐富的功能：</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>lazysizes.min.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">data-src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>image.jpg<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>lazyload<span class="token punctuation">"</span></span> <span class="token attr-name">alt</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>懶加載圖片<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><strong>優點：</strong></p>
+<ul>
+<li>功能豐富</li>
+<li>兼容性好</li>
+<li>持續更新和維護</li>
+</ul>
+<p><strong>缺點：</strong></p>
+<ul>
+<li>增加額外的檔案大小</li>
+<li>可能引入不需要的功能</li>
+</ul>
+<h3 id="5-漸進式圖片加載"><a href="#5-漸進式圖片加載" class="headerlink" title="5. 漸進式圖片加載"></a>5. 漸進式圖片加載</h3><p>結合懶加載和漸進式加載的技術：</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>low-quality.jpg<span class="token punctuation">"</span></span> <span class="token attr-name">data-src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>high-quality.jpg<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>lazyload<span class="token punctuation">"</span></span> <span class="token attr-name">alt</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>漸進式加載圖片<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><strong>優點：</strong></p>
+<ul>
+<li>提供更好的用戶體驗</li>
+<li>適合大圖片或高質量圖片</li>
+</ul>
+<p><strong>缺點：</strong></p>
+<ul>
+<li>需要準備多個版本的圖片</li>
+<li>實施較為複雜</li>
+</ul>
+<h3 id="6-CSS-中的背景圖片懶加載"><a href="#6-CSS-中的背景圖片懶加載" class="headerlink" title="6. CSS 中的背景圖片懶加載"></a>6. CSS 中的背景圖片懶加載</h3><p>對於背景圖片，可以使用 CSS 和 JavaScript 結合的方式：</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token selector">.lazy-background</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">background-image</span><span class="token punctuation">:</span> none<span class="token punctuation">;</span>
+  <span class="token property">background-color</span><span class="token punctuation">:</span> #f1f1f1<span class="token punctuation">;</span> <span class="token comment">/* 佔位背景色 */</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">document<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">"DOMContentLoaded"</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">var</span> lazyBackgrounds <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>document<span class="token punctuation">.</span><span class="token function">querySelectorAll</span><span class="token punctuation">(</span><span class="token string">".lazy-background"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token string">"IntersectionObserver"</span> <span class="token keyword">in</span> window<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">let</span> lazyBackgroundObserver <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">IntersectionObserver</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">entries<span class="token punctuation">,</span> observer</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      entries<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">entry</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>entry<span class="token punctuation">.</span>isIntersecting<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+          entry<span class="token punctuation">.</span>target<span class="token punctuation">.</span>style<span class="token punctuation">.</span>backgroundImage <span class="token operator">=</span> <span class="token string">"url("</span> <span class="token operator">+</span> entry<span class="token punctuation">.</span>target<span class="token punctuation">.</span>dataset<span class="token punctuation">.</span>background <span class="token operator">+</span> <span class="token string">")"</span><span class="token punctuation">;</span>
+          lazyBackgroundObserver<span class="token punctuation">.</span><span class="token function">unobserve</span><span class="token punctuation">(</span>entry<span class="token punctuation">.</span>target<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    lazyBackgrounds<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">lazyBackground</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      lazyBackgroundObserver<span class="token punctuation">.</span><span class="token function">observe</span><span class="token punctuation">(</span>lazyBackground<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>優點：</strong></p>
+<ul>
+<li>適用於背景圖片</li>
+<li>可以與其他懶加載技術結合</li>
+</ul>
+<p><strong>缺點：</strong></p>
+<ul>
+<li>實施較為複雜</li>
+<li>需要同時修改 HTML、CSS 和 JavaScript</li>
+</ul>
+<h3 id="7-Vue-js-中使用-v-if-實現懶加載"><a href="#7-Vue-js-中使用-v-if-實現懶加載" class="headerlink" title="7. Vue.js 中使用 v-if 實現懶加載"></a>7. Vue.js 中使用 v-if 實現懶加載</h3><p>在 Vue.js 框架中，我們可以利用 <code>v-if</code> 指令配合 <code>Intersection Observer API</code> 來實現一種簡單有效的懶加載方式：</p>
+<pre class="line-numbers language-vue" data-language="vue"><code class="language-vue">&lt;template&gt;
+  &lt;div&gt;
+    &lt;img v-if&#x3D;&quot;isVisible&quot; :src&#x3D;&quot;imageUrl&quot; :alt&#x3D;&quot;imageAlt&quot;&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;template&gt;
+
+&lt;script&gt;
+export default &#123;
+  props: &#123;
+    imageUrl: String,
+    imageAlt: String
+  &#125;,
+  data() &#123;
+    return &#123;
+      isVisible: false
+    &#125;
+  &#125;,
+  mounted() &#123;
+    const observer &#x3D; new IntersectionObserver((entries) &#x3D;&gt; &#123;
+      if (entries[0].isIntersecting) &#123;
+        this.isVisible &#x3D; true;
+        observer.disconnect();
+      &#125;
+    &#125;);
+    observer.observe(this.$el);
+  &#125;
+&#125;
+&lt;&#x2F;script&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>使用方式：</p>
+<pre class="line-numbers language-vue" data-language="vue"><code class="language-vue">&lt;template&gt;
+  &lt;div&gt;
+    &lt;lazy-image 
+      v-for&#x3D;&quot;image in images&quot; 
+      :key&#x3D;&quot;image.id&quot;
+      :image-url&#x3D;&quot;image.url&quot;
+      :image-alt&#x3D;&quot;image.alt&quot;
+    &#x2F;&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;template&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>優點：</strong></p>
+<ul>
+<li>與 Vue.js 框架完美整合</li>
+<li>可重用性高，易於在不同組件中使用</li>
+<li>結合了 Vue 的響應式特性和 Intersection Observer 的效能</li>
+</ul>
+<p><strong>缺點：</strong></p>
+<ul>
+<li>需要額外的組件封裝</li>
+<li>對於大量圖片，可能需要優化 Observer 的使用</li>
+</ul>
+<p>這種方法特別適合於 Vue.js 開發的單頁應用（SPA）或大型應用。它不僅實現了懶加載，還充分利用了 Vue 的組件化特性，使得懶加載邏輯可以輕鬆地在整個應用中重複使用。</p>
+<h2 id="實施建議"><a href="#實施建議" class="headerlink" title="實施建議"></a>實施建議</h2><ol>
+<li><strong>選擇適合的方法：</strong> 根據您的網站需求和目標用戶群選擇合適的懶加載技術。</li>
+<li><strong>提供後備方案：</strong> 確保在不支援懶加載的瀏覽器中也能正常顯示圖片。</li>
+<li><strong>使用現代圖片格式：</strong> 考慮使用 WebP 等現代圖片格式，進一步提升載入速度。</li>
+<li><strong>設置圖片尺寸：</strong> 為所有圖片設置適當的 <code>width</code> 和 <code>height</code> 屬性，避免版面跳動。</li>
+<li><strong>注意 SEO：</strong> 確保重要圖片能被搜尋引擎正確索引。</li>
+<li><strong>框架整合：</strong> 如果您使用諸如 Vue.js、React 或 Angular 等前端框架，考慮如何將懶加載邏輯整合到組件系統中，以提高代碼的可重用性和可維護性。<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2></li>
+</ol>
+<p>隨著前端技術的不斷發展，圖片懶加載的實現方式也在不斷演進。從最初的滾動事件監聽，到現代化的 Intersection Observer API，再到各種框架特定的實現方式，我們現在有了更多選擇來優化網站的圖片加載。</p>
+<p>無論您選擇哪種方法，圖片懶加載都是提升網站效能、改善用戶體驗的有效手段。特別是對於圖片密集型的網站，實施懶加載可以帶來顯著的效能提升。</p>
+<p>在選擇和實施懶加載方案時，記得考慮您的具體需求、目標用戶群以及技術棧。同時，不要忘記持續監測和優化您的實施效果，確保它真正為您的網站帶來效能提升。</p>
+<p>最後，隨著網頁技術的不斷發展，保持對新技術和最佳實踐的關注也是非常重要的。也許在不久的將來，我們會看到更多創新的懶加載技術出現！</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%9C%96%E7%89%87%E6%87%B6%E5%8A%A0%E8%BC%89/" rel="tag"># 圖片懶加載</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/03/09/cm82ssaav007it497gfzl4ag2/" rel="prev" title="深入理解 JavaScript 的 async/await">
+      <i class="fa fa-chevron-left"></i> 深入理解 JavaScript 的 async/await
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/03/11/cm82ssa8i001rt4971zou2rwt/" rel="next" title="JS防抖（Debouncing）與節流（Throttling）">
+      JS防抖（Debouncing）與節流（Throttling） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%96%E7%89%87%E6%87%B6%E5%8A%A0%E8%BC%89%E6%8A%80%E8%A1%93%EF%BC%9A%E6%8F%90%E5%8D%87%E7%B6%B2%E7%AB%99%E6%95%88%E8%83%BD%E7%9A%84%E4%B8%83%E5%A4%A7%E6%96%B9%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">圖片懶加載技術：提升網站效能的七大方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AF%E5%9C%96%E7%89%87%E6%87%B6%E5%8A%A0%E8%BC%89%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">什麼是圖片懶加載？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E7%A8%AE%E5%9C%96%E7%89%87%E6%87%B6%E5%8A%A0%E8%BC%89%E6%96%B9%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">七種圖片懶加載方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%8E%9F%E7%94%9F%E6%87%B6%E5%8A%A0%E8%BC%89"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 原生懶加載</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Intersection-Observer-API"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. Intersection Observer API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%BB%BE%E5%8B%95%E4%BA%8B%E4%BB%B6%E7%9B%A3%E8%81%BD"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. 滾動事件監聽</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%AB"><span class="nav-number">1.2.4.</span> <span class="nav-text">4. 使用第三方庫</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E6%BC%B8%E9%80%B2%E5%BC%8F%E5%9C%96%E7%89%87%E5%8A%A0%E8%BC%89"><span class="nav-number">1.2.5.</span> <span class="nav-text">5. 漸進式圖片加載</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-CSS-%E4%B8%AD%E7%9A%84%E8%83%8C%E6%99%AF%E5%9C%96%E7%89%87%E6%87%B6%E5%8A%A0%E8%BC%89"><span class="nav-number">1.2.6.</span> <span class="nav-text">6. CSS 中的背景圖片懶加載</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-Vue-js-%E4%B8%AD%E4%BD%BF%E7%94%A8-v-if-%E5%AF%A6%E7%8F%BE%E6%87%B6%E5%8A%A0%E8%BC%89"><span class="nav-number">1.2.7.</span> <span class="nav-text">7. Vue.js 中使用 v-if 實現懶加載</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E6%96%BD%E5%BB%BA%E8%AD%B0"><span class="nav-number">1.3.</span> <span class="nav-text">實施建議</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.4.</span> <span class="nav-text">結論</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kyosora</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kyosora.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言隨著 AI 技術的快速發展,大型語言模型(LLM)的應用越來越廣泛。然而,要在本機運行這些模型往往需要複雜的環境設定與昂貴的硬體設備。今天要介紹的 Ollama 就是一個能讓你輕鬆在本機運行各種開源 AI 模型的神器! Ollama 是什麼?Ollama 是一個開源的 LLM 運行工具,它的主要特色包括:  簡單易用的安裝流程 支援多種開源模型 優秀的效能最佳化 完整的 API 支援 活躍的社">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在本機免費運行 AI 大模型的開源神器 Ollama">
+<meta property="og:url" content="https://kyosora.github.io/2024/12/11/cm82ssaah006kt497ammw6x8b/index.html">
+<meta property="og:site_name" content="kyosora 虛空筆記">
+<meta property="og:description" content="前言隨著 AI 技術的快速發展,大型語言模型(LLM)的應用越來越廣泛。然而,要在本機運行這些模型往往需要複雜的環境設定與昂貴的硬體設備。今天要介紹的 Ollama 就是一個能讓你輕鬆在本機運行各種開源 AI 模型的神器! Ollama 是什麼?Ollama 是一個開源的 LLM 運行工具,它的主要特色包括:  簡單易用的安裝流程 支援多種開源模型 優秀的效能最佳化 完整的 API 支援 活躍的社">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-12-11T10:16:34.000Z">
+<meta property="article:modified_time" content="2024-12-11T07:47:06.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Ollama">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="開源工具">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://kyosora.github.io/2024/12/11/cm82ssaah006kt497ammw6x8b/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: {},
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>在本機免費運行 AI 大模型的開源神器 Ollama | kyosora 虛空筆記</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kyosora 虛空筆記</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/2024/12/11/cm82ssaah006kt497ammw6x8b/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 虛空筆記">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在本機免費運行 AI 大模型的開源神器 Ollama
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2024-12-11 18:16:34 / 修改時間：15:47:06" itemprop="dateCreated datePublished" datetime="2024-12-11T18:16:34+08:00">2024-12-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI%E6%87%89%E7%94%A8/" itemprop="url" rel="index"><span itemprop="name">AI應用</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>隨著 AI 技術的快速發展,大型語言模型(LLM)的應用越來越廣泛。然而,要在本機運行這些模型往往需要複雜的環境設定與昂貴的硬體設備。今天要介紹的 Ollama 就是一個能讓你輕鬆在本機運行各種開源 AI 模型的神器!</p>
+<h2 id="Ollama-是什麼"><a href="#Ollama-是什麼" class="headerlink" title="Ollama 是什麼?"></a>Ollama 是什麼?</h2><p>Ollama 是一個開源的 LLM 運行工具,它的主要特色包括:</p>
+<ul>
+<li>簡單易用的安裝流程</li>
+<li>支援多種開源模型</li>
+<li>優秀的效能最佳化</li>
+<li>完整的 API 支援</li>
+<li>活躍的社群支援</li>
+</ul>
+<h1 id="安裝教學"><a href="#安裝教學" class="headerlink" title="安裝教學"></a>安裝教學</h1><h2 id="系統需求"><a href="#系統需求" class="headerlink" title="系統需求"></a>系統需求</h2><ul>
+<li>作業系統: Windows/macOS/Linux</li>
+<li>RAM: 建議至少 8GB</li>
+<li>硬碟空間: 依照模型大小,建議預留 10GB 以上</li>
+</ul>
+<h2 id="安裝步驟"><a href="#安裝步驟" class="headerlink" title="安裝步驟"></a>安裝步驟</h2><h3 id="Windows-安裝"><a href="#Windows-安裝" class="headerlink" title="Windows 安裝"></a>Windows 安裝</h3><ol>
+<li>從 <a target="_blank" rel="noopener" href="https://ollama.ai/">Ollama 官網</a> 下載 Windows 安裝檔</li>
+<li>執行安裝檔,依照指示完成安裝</li>
+<li>開啟命令提示字元確認安裝成功:<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">ollama <span class="token parameter variable">--version</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+</ol>
+<h3 id="macOS-安裝"><a href="#macOS-安裝" class="headerlink" title="macOS 安裝"></a>macOS 安裝</h3><p>使用 Homebrew 安裝:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">brew <span class="token function">install</span> ollama<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="Linux-安裝"><a href="#Linux-安裝" class="headerlink" title="Linux 安裝"></a>Linux 安裝</h3><p>使用官方腳本安裝:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> <span class="token parameter variable">-fsSL</span> https://ollama.ai/install.sh <span class="token operator">|</span> <span class="token function">sh</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h1 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h1><h2 id="下載模型"><a href="#下載模型" class="headerlink" title="下載模型"></a>下載模型</h2><p>Ollama 支援多種開源模型,以下是常用的指令:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 下載 Llama 2 模型</span>
+ollama pull llama2
+
+<span class="token comment"># 下載輕量版模型</span>
+ollama pull llama2-uncensored<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="開始對話"><a href="#開始對話" class="headerlink" title="開始對話"></a>開始對話</h2><p>執行以下指令開始與模型對話:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">ollama run llama2<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h2 id="常用指令範例"><a href="#常用指令範例" class="headerlink" title="常用指令範例"></a>常用指令範例</h2><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 列出已安裝的模型</span>
+ollama list
+
+<span class="token comment"># 刪除模型</span>
+ollama <span class="token function">rm</span> llama2
+
+<span class="token comment"># 匯出模型</span>
+ollama <span class="token builtin class-name">export</span> llama2 <span class="token operator">></span> llama2.tar<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="進階應用"><a href="#進階應用" class="headerlink" title="進階應用"></a>進階應用</h1><h2 id="使用-API"><a href="#使用-API" class="headerlink" title="使用 API"></a>使用 API</h2><p>Ollama 提供了完整的 REST API,讓你能輕鬆整合到自己的應用中:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># Python 範例</span>
+<span class="token keyword">import</span> requests
+
+<span class="token keyword">def</span> <span class="token function">chat_with_model</span><span class="token punctuation">(</span>prompt<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    url <span class="token operator">=</span> <span class="token string">'http://localhost:11434/api/generate'</span>
+    data <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+        <span class="token string">'model'</span><span class="token punctuation">:</span> <span class="token string">'llama2'</span><span class="token punctuation">,</span>
+        <span class="token string">'prompt'</span><span class="token punctuation">:</span> prompt
+    <span class="token punctuation">&#125;</span>
+    
+    response <span class="token operator">=</span> requests<span class="token punctuation">.</span>post<span class="token punctuation">(</span>url<span class="token punctuation">,</span> json<span class="token operator">=</span>data<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> response<span class="token punctuation">.</span>json<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string">'response'</span><span class="token punctuation">]</span>
+
+<span class="token comment"># 使用範例</span>
+result <span class="token operator">=</span> chat_with_model<span class="token punctuation">(</span><span class="token string">"解釋什麼是人工智慧"</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="自訂模型設定"><a href="#自訂模型設定" class="headerlink" title="自訂模型設定"></a>自訂模型設定</h2><p>你可以透過建立模型設定檔來自訂模型行為:</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># modelfile</span>
+FROM llama2
+
+<span class="token comment"># 設定系統提示</span>
+SYSTEM "你是一個熱心助人的 AI 助手"
+
+<span class="token comment"># 設定參數</span>
+PARAMETER temperature 0.7
+PARAMETER top_p 0.9<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="常見問題與解決方案"><a href="#常見問題與解決方案" class="headerlink" title="常見問題與解決方案"></a>常見問題與解決方案</h1><ol>
+<li>記憶體不足</li>
+</ol>
+<ul>
+<li>解決方案: 使用較小的模型或增加虛擬記憶體</li>
+</ul>
+<ol start="2">
+<li>模型下載失敗</li>
+</ol>
+<ul>
+<li>解決方案: 檢查網路連線或使用代理伺服器</li>
+</ul>
+<ol start="3">
+<li>API 連線問題</li>
+</ol>
+<ul>
+<li>解決方案: 確認 Ollama 服務是否正常運行</li>
+</ul>
+<h1 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h1><p>Ollama 讓在本機運行 AI 大模型變得前所未有的簡單。無論是研究、學習還是開發,都能透過 Ollama 輕鬆體驗 AI 技術的魅力。希望這篇教學能幫助你開始探索 AI 的世界!</p>
+<h1 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://ollama.ai/">Ollama 官方</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ollama/ollama">Ollama GitHub</a></li>
+<li><a target="_blank" rel="noopener" href="https://python.langchain.com/docs/integrations/llms/ollama">LangChain 整合教學</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Ollama/" rel="tag"># Ollama</a>
+              <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/LLM/" rel="tag"># LLM</a>
+              <a href="/tags/%E9%96%8B%E6%BA%90%E5%B7%A5%E5%85%B7/" rel="tag"># 開源工具</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/12/11/cm82ssab7008lt4977iz06wjj/" rel="prev" title="解決 C 槽爆炸危機！把 Ollama 模型檔案搬到 D 槽">
+      <i class="fa fa-chevron-left"></i> 解決 C 槽爆炸危機！把 Ollama 模型檔案搬到 D 槽
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/12/12/cm82ssaa3005at497hb2o4a36/" rel="next" title="【SQL Server密技】一次精通SELECT INTO批次建表，效能優化的絕佳解決方案！">
+      【SQL Server密技】一次精通SELECT INTO批次建表，效能優化的絕佳解決方案！ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Ollama-%E6%98%AF%E4%BB%80%E9%BA%BC"><span class="nav-number">1.1.</span> <span class="nav-text">Ollama 是什麼?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%9D%E6%95%99%E5%AD%B8"><span class="nav-number">2.</span> <span class="nav-text">安裝教學</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B3%BB%E7%B5%B1%E9%9C%80%E6%B1%82"><span class="nav-number">2.1.</span> <span class="nav-text">系統需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%9D%E6%AD%A5%E9%A9%9F"><span class="nav-number">2.2.</span> <span class="nav-text">安裝步驟</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Windows-%E5%AE%89%E8%A3%9D"><span class="nav-number">2.2.1.</span> <span class="nav-text">Windows 安裝</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#macOS-%E5%AE%89%E8%A3%9D"><span class="nav-number">2.2.2.</span> <span class="nav-text">macOS 安裝</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux-%E5%AE%89%E8%A3%9D"><span class="nav-number">2.2.3.</span> <span class="nav-text">Linux 安裝</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">基本使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BC%89%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.1.</span> <span class="nav-text">下載模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%96%8B%E5%A7%8B%E5%B0%8D%E8%A9%B1"><span class="nav-number">3.2.</span> <span class="nav-text">開始對話</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4%E7%AF%84%E4%BE%8B"><span class="nav-number">3.3.</span> <span class="nav-text">常用指令範例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%B2%E9%9A%8E%E6%87%89%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">進階應用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-API"><span class="nav-number">4.1.</span> <span class="nav-text">使用 API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E8%A8%82%E6%A8%A1%E5%9E%8B%E8%A8%AD%E5%AE%9A"><span class="nav-number">4.2.</span> <span class="nav-text">自訂模型設定</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A6%8B%E5%95%8F%E9%A1%8C%E8%88%87%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88"><span class="nav-number">5.</span> <span class="nav-text">常見問題與解決方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AA%9E"><span class="nav-number">6.</span> <span class="nav-text">結語</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%83%E8%80%83%E8%B3%87%E6%96%99"><span class="nav-number">7.</span> <span class="nav-text">參考資料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kyosora</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

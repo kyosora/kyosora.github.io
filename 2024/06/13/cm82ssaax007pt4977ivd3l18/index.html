@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kyosora.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="深入解析：處理中文數字的自訂排序函數在程式開發中，經常需要處理各種複雜的排序需求。今天，遇到一個需求需要對某個項目的欄位排序，欄位裡面開頭儲存著(一)、(二)等等的中文數字，所以寫下了這個自訂排序函數來處理，這個函數能夠處理帶有中文數字前綴的字串，並按照這些數字的順序進行排序。 函數概述這個自訂排序函數主要用於排序一個物件陣列 scope.datalist。每個物件都有一個 Catacory 屬性">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入解析：處理中文數字的自訂排序函數">
+<meta property="og:url" content="https://kyosora.github.io/2024/06/13/cm82ssaax007pt4977ivd3l18/index.html">
+<meta property="og:site_name" content="kyosora 虛空筆記">
+<meta property="og:description" content="深入解析：處理中文數字的自訂排序函數在程式開發中，經常需要處理各種複雜的排序需求。今天，遇到一個需求需要對某個項目的欄位排序，欄位裡面開頭儲存著(一)、(二)等等的中文數字，所以寫下了這個自訂排序函數來處理，這個函數能夠處理帶有中文數字前綴的字串，並按照這些數字的順序進行排序。 函數概述這個自訂排序函數主要用於排序一個物件陣列 scope.datalist。每個物件都有一個 Catacory 屬性">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-06-13T01:52:17.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:43:32.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="JavaScript">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://kyosora.github.io/2024/06/13/cm82ssaax007pt4977ivd3l18/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: {},
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>深入解析：處理中文數字的自訂排序函數 | kyosora 虛空筆記</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kyosora 虛空筆記</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/2024/06/13/cm82ssaax007pt4977ivd3l18/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 虛空筆記">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          深入解析：處理中文數字的自訂排序函數
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2024-06-13 09:52:17" itemprop="dateCreated datePublished" datetime="2024-06-13T09:52:17+08:00">2024-06-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2024-11-27 14:43:32" itemprop="dateModified" datetime="2024-11-27T14:43:32+08:00">2024-11-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="深入解析：處理中文數字的自訂排序函數"><a href="#深入解析：處理中文數字的自訂排序函數" class="headerlink" title="深入解析：處理中文數字的自訂排序函數"></a>深入解析：處理中文數字的自訂排序函數</h1><p>在程式開發中，經常需要處理各種複雜的排序需求。今天，遇到一個需求需要對某個項目的欄位排序，欄位裡面開頭儲存著(一)、(二)等等的中文數字，所以寫下了這個自訂排序函數來處理，這個函數能夠處理帶有中文數字前綴的字串，並按照這些數字的順序進行排序。</p>
+<h2 id="函數概述"><a href="#函數概述" class="headerlink" title="函數概述"></a>函數概述</h2><p>這個自訂排序函數主要用於排序一個物件陣列 <code>scope.datalist</code>。每個物件都有一個 <code>Catacory</code> 屬性，值可能包含像 “(一)”、”(二)”、”(十)”、”(二十)” 這樣的中文數字前綴，可以處理到(九十九)。函數的目標是根據這些前綴的數值大小對陣列進行排序，如果沒有排序的數字，設定為100，達成無順序的項目放到最後面的效果。</p>
+<h2 id="程式碼解析"><a href="#程式碼解析" class="headerlink" title="程式碼解析"></a>程式碼解析</h2><p>讓我們逐步分解這個函數的實現:</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">customSort</span><span class="token punctuation">(</span><span class="token parameter">a<span class="token punctuation">,</span> b</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// ... (getNumber函數的實現)</span>
+    <span class="token keyword">const</span> aNum <span class="token operator">=</span> <span class="token function">getNumber</span><span class="token punctuation">(</span>a<span class="token punctuation">.</span>Catacory<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> bNum <span class="token operator">=</span> <span class="token function">getNumber</span><span class="token punctuation">(</span>b<span class="token punctuation">.</span>Catacory<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>aNum <span class="token operator">!==</span> bNum<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> aNum <span class="token operator">-</span> bNum<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">// 如果數字相同,按原始順序排序</span>
+    <span class="token keyword">return</span> scope<span class="token punctuation">.</span>datalist<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span> <span class="token operator">-</span> scope<span class="token punctuation">.</span>datalist<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="1-getNumber-函數"><a href="#1-getNumber-函數" class="headerlink" title="1. getNumber 函數"></a>1. getNumber 函數</h3><p>這是整個排序邏輯的核心,它負責將中文數字轉換為阿拉伯數字:</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">getNumber</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">str</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> match <span class="token operator">=</span> str<span class="token punctuation">.</span><span class="token function">match</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^\(([一二三四五六七八九十]+)\)</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>match<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">const</span> numStr <span class="token operator">=</span> match<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">const</span> numMap <span class="token operator">=</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">一</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">二</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token literal-property property">三</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token literal-property property">四</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token literal-property property">五</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token literal-property property">六</span><span class="token operator">:</span> <span class="token number">6</span><span class="token punctuation">,</span> <span class="token literal-property property">七</span><span class="token operator">:</span> <span class="token number">7</span><span class="token punctuation">,</span> <span class="token literal-property property">八</span><span class="token operator">:</span> <span class="token number">8</span><span class="token punctuation">,</span> <span class="token literal-property property">九</span><span class="token operator">:</span> <span class="token number">9</span><span class="token punctuation">,</span> <span class="token literal-property property">十</span><span class="token operator">:</span> <span class="token number">10</span> <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>numStr<span class="token punctuation">.</span>length <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> numMap<span class="token punctuation">[</span>numStr<span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>numStr<span class="token punctuation">.</span><span class="token function">startsWith</span><span class="token punctuation">(</span><span class="token string">'十'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> numStr<span class="token punctuation">.</span>length <span class="token operator">===</span> <span class="token number">2</span> <span class="token operator">?</span> <span class="token number">10</span> <span class="token operator">+</span> numMap<span class="token punctuation">[</span>numStr<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> numMap<span class="token punctuation">[</span>numStr<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">*</span> <span class="token number">10</span> <span class="token operator">+</span> <span class="token punctuation">(</span>numMap<span class="token punctuation">[</span>numStr<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> <span class="token number">100</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="正則表達式匹配"><a href="#正則表達式匹配" class="headerlink" title="正則表達式匹配"></a>正則表達式匹配</h4><ul>
+<li>使用正則表達式 <code>/^\(([一二三四五六七八九十]+)\)/</code> 來匹配括號內的中文數字。</li>
+<li><code>^</code> 確保匹配從字串開始。</li>
+<li><code>\(</code> 和 <code>\)</code> 匹配左右括號。</li>
+<li><code>([一二三四五六七八九十]+)</code> 捕獲括號內的中文數字。</li>
+</ul>
+<h4 id="數字轉換邏輯"><a href="#數字轉換邏輯" class="headerlink" title="數字轉換邏輯"></a>數字轉換邏輯</h4><ul>
+<li>對於單個字符(如 “一”, “二”)，直接返回對應的數值。</li>
+<li>對於 “十” 開頭的數字:<ul>
+<li>“十” 返回 10</li>
+<li>“十一” 到 “十九” 返回 11 到 19</li>
+</ul>
+</li>
+<li>對於其他兩位數:<ul>
+<li>首位數字 * 10 + 末位數字</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-比較邏輯"><a href="#2-比較邏輯" class="headerlink" title="2. 比較邏輯"></a>2. 比較邏輯</h3><pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> aNum <span class="token operator">=</span> <span class="token function">getNumber</span><span class="token punctuation">(</span>a<span class="token punctuation">.</span>Catacory<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> bNum <span class="token operator">=</span> <span class="token function">getNumber</span><span class="token punctuation">(</span>b<span class="token punctuation">.</span>Catacory<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>aNum <span class="token operator">!==</span> bNum<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> aNum <span class="token operator">-</span> bNum<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>這部分代碼比較兩個轉換後的數字。如果不相等，則按數字大小排序。</p>
+<h3 id="3-處理相等情況"><a href="#3-處理相等情況" class="headerlink" title="3. 處理相等情況"></a>3. 處理相等情況</h3><pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">return</span> scope<span class="token punctuation">.</span>datalist<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span> <span class="token operator">-</span> scope<span class="token punctuation">.</span>datalist<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>當兩個項目的數字相同時，此代碼保持它們在原陣列中的相對順序。</p>
+<h2 id="應用排序"><a href="#應用排序" class="headerlink" title="應用排序"></a>應用排序</h2><p>最後，將自訂排序函數應用到陣列:</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">scope<span class="token punctuation">.</span>datalist<span class="token punctuation">.</span><span class="token function">sort</span><span class="token punctuation">(</span>customSort<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>這行代碼使用我們定義的 <code>customSort</code> 函數對 <code>scope.datalist</code> 進行排序。</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>這個自訂排序函數展示了如何處理複雜的排序需求，特別是在處理非標準數字格式時。它結合了正則表達式、字符串處理和數學運算，提供了一個靈活而強大的排序解決方案。</p>
+<p>這種方法不僅適用於處理中文數字，還可以擴展到其他類似的排序需求。通過理解和掌握這種技術，我們可以在日後的開發中更好地處理各種複雜的數據排序問題。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/06/11/cm82ssaat007dt4973wmk6dsk/" rel="prev" title="提升網頁表單驗證：從簡單檢查到全面優化">
+      <i class="fa fa-chevron-left"></i> 提升網頁表單驗證：從簡單檢查到全面優化
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/06/18/cm82ssa80000nt4974r42fivh/" rel="next" title="DuckDNS:免費且簡單的動態DNS服務">
+      DuckDNS:免費且簡單的動態DNS服務 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90%EF%BC%9A%E8%99%95%E7%90%86%E4%B8%AD%E6%96%87%E6%95%B8%E5%AD%97%E7%9A%84%E8%87%AA%E8%A8%82%E6%8E%92%E5%BA%8F%E5%87%BD%E6%95%B8"><span class="nav-number">1.</span> <span class="nav-text">深入解析：處理中文數字的自訂排序函數</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B8%E6%A6%82%E8%BF%B0"><span class="nav-number">1.1.</span> <span class="nav-text">函數概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%8B%E5%BC%8F%E7%A2%BC%E8%A7%A3%E6%9E%90"><span class="nav-number">1.2.</span> <span class="nav-text">程式碼解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-getNumber-%E5%87%BD%E6%95%B8"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. getNumber 函數</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%A3%E5%89%87%E8%A1%A8%E9%81%94%E5%BC%8F%E5%8C%B9%E9%85%8D"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">正則表達式匹配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B8%E5%AD%97%E8%BD%89%E6%8F%9B%E9%82%8F%E8%BC%AF"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">數字轉換邏輯</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%AF%94%E8%BC%83%E9%82%8F%E8%BC%AF"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 比較邏輯</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%99%95%E7%90%86%E7%9B%B8%E7%AD%89%E6%83%85%E6%B3%81"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. 處理相等情況</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%87%89%E7%94%A8%E6%8E%92%E5%BA%8F"><span class="nav-number">1.3.</span> <span class="nav-text">應用排序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.4.</span> <span class="nav-text">結論</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kyosora</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
