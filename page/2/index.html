@@ -321,60 +321,20 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>還在為重灌電腦後需要一一下載安裝軟體而頭痛嗎？每次環境設定都像一場馬拉松般耗時費力？別擔心，今天我要介紹的 Chocolatey 神技，讓你只需準備兩行 PowerShell 指令，就能一鍵還原所有常用軟體，省下寶貴的時間來做更重要的事！</p>
-<h2 id="Chocolatey-是什麼？為何我現在才知道？"><a href="#Chocolatey-是什麼？為何我現在才知道？" class="headerlink" title="Chocolatey 是什麼？為何我現在才知道？"></a>Chocolatey 是什麼？為何我現在才知道？</h2><p>Chocolatey 是 Windows 平台上的套件管理工具，如果你用過 Linux 的 apt 或 Mac 的 Homebrew，就會覺得 Chocolatey 相當親切。它讓你能透過命令列來安裝、更新和管理各種軟體，不必再手動下載安裝檔、點擊下一步、同意條款⋯⋯這些繁瑣的步驟。</p>
-<p>想想看，你是否曾經歷過這樣的情境：</p>
-<blockquote>
-<p>週一早上，筆電突然藍屏，送修後技術人員告訴你：「已經重灌系統了，資料都在，軟體得自己裝回去。」你內心OS：「天啊，又要花一整天重新下載安裝所有工作用軟體...」</p>
-</blockquote>
-<p>有了 Chocolatey，你只需執行一個指令檔，就能自動安裝回 Chrome、7-Zip、VS Code、Notepad++、Everything 等所有你日常使用的軟體。不只省時間，還能確保你不會忘記安裝某些不常用但關鍵時刻需要的工具。</p>
-<h2 id="安裝-Chocolatey：開始你的套件管理之旅"><a href="#安裝-Chocolatey：開始你的套件管理之旅" class="headerlink" title="安裝 Chocolatey：開始你的套件管理之旅"></a>安裝 Chocolatey：開始你的套件管理之旅</h2><p>安裝 Chocolatey 超級簡單。只要開啟 PowerShell（以系統管理員身分執行），然後貼上以下指令：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Set-ExecutionPolicy</span> Bypass <span class="literal">-Scope</span> <span class="keyword">Process</span> <span class="literal">-Force</span></span><br><span class="line">[<span class="type">System.Net.ServicePointManager</span>]::SecurityProtocol = [<span class="type">System.Net.ServicePointManager</span>]::SecurityProtocol <span class="operator">-bor</span> <span class="number">3072</span></span><br><span class="line"><span class="built_in">iex</span> ((<span class="built_in">New-Object</span> System.Net.WebClient).DownloadString(<span class="string">&#x27;https://community.chocolatey.org/install.ps1&#x27;</span>))</span><br></pre></td></tr></table></figure>
+          還在為重灌電腦後需要一一下載安裝軟體而頭痛嗎？每次環境設定都像一場馬拉松般耗時費力？別擔心，今天我要介紹的 Chocolatey 神技，讓你只需準備兩行 PowerShell 指令，就能一鍵還原所有常用軟體，省下寶貴的時間來做更重要的事！
 
-<p>輸入完指令後，按下 Enter 鍵，PowerShell 會自動下載並安裝 Chocolatey。安裝完成後，你可以輸入 <code>choco -v</code> 來確認是否安裝成功以及查看版本號。</p>
-<h2 id="用-Chocolatey-安裝軟體：再見，下一步按鈕！"><a href="#用-Chocolatey-安裝軟體：再見，下一步按鈕！" class="headerlink" title="用 Chocolatey 安裝軟體：再見，下一步按鈕！"></a>用 Chocolatey 安裝軟體：再見，下一步按鈕！</h2><p>有了 Chocolatey 後，安裝軟體變得超簡單。例如，如果你想安裝 Google Chrome，只需在 PowerShell 中輸入：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">choco install googlechrome <span class="literal">-y</span></span><br></pre></td></tr></table></figure>
+Chocolatey 是什麼？為何我現在才知道？
+Chocolatey 是 Windows 平台上的套件管理工具，如果你用過 Linux 的 apt 或 Mac 的 Homebrew，就會覺得 Chocolatey 相當親切。它讓你能透過命令列來安裝、更新和管理各種軟體，不必再手動下載安裝檔、點擊下一步、同意條款⋯⋯這些繁瑣的步驟。
 
-<p>這個指令會自動下載並安裝 Chrome 瀏覽器，<code>-y</code> 參數表示自動同意所有提示，讓安裝過程完全自動化。</p>
-<p>你也可以一次安裝多個軟體：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">choco install <span class="number">7</span>zip vscode notepadplusplus everything googlechrome <span class="literal">-y</span></span><br></pre></td></tr></table></figure>
-
-<p>這樣就能一次安裝 7-Zip、VS Code、Notepad++、Everything 和 Chrome 五個軟體，省去了逐一下載安裝的麻煩。</p>
-<h2 id="使用-PowerShell-備份你的軟體清單：智慧工程師的自保之道"><a href="#使用-PowerShell-備份你的軟體清單：智慧工程師的自保之道" class="headerlink" title="使用 PowerShell 備份你的軟體清單：智慧工程師的自保之道"></a>使用 PowerShell 備份你的軟體清單：智慧工程師的自保之道</h2><p>這才是今天的重點！你可以使用 PowerShell 指令來備份已安裝的 Chocolatey 套件清單，以便在新電腦或重灌後快速還原。</p>
-<p>首先，開啟 PowerShell，輸入以下指令來匯出所有已安裝的套件：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">choco list <span class="literal">--local-only</span> <span class="literal">--id-only</span> | <span class="built_in">Select-Object</span> <span class="literal">-Skip</span> <span class="number">1</span> | <span class="built_in">Where-Object</span> &#123; <span class="variable">$_</span> <span class="operator">-ne</span> <span class="string">&quot;&quot;</span> &#125; | <span class="built_in">Out-File</span> <span class="literal">-FilePath</span> <span class="string">&quot;<span class="variable">$env:USERPROFILE</span>\Desktop\chocolatey-packages.txt&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>這個指令會建立一個名為 <code>chocolatey-packages.txt</code> 的檔案在你的桌面上，裡面包含了所有通過 Chocolatey 安裝的軟體名稱。</p>
-<p>我們來解析一下這個指令：</p>
-<ul>
-<li><code>choco list --local-only --id-only</code>：列出所有本機安裝的 Chocolatey 套件，只顯示 ID</li>
-<li><code>Select-Object -Skip 1</code>：跳過第一行（通常是標題行）</li>
-<li><code>Where-Object &#123; $_ -ne &quot;&quot; &#125;</code>：過濾掉空行</li>
-<li><code>Out-File -FilePath &quot;$env:USERPROFILE\Desktop\chocolatey-packages.txt&quot;</code>：將結果輸出到桌面的檔案中</li>
-</ul>
-<h2 id="快速還原所有軟體：電腦重灌不再是噩夢"><a href="#快速還原所有軟體：電腦重灌不再是噩夢" class="headerlink" title="快速還原所有軟體：電腦重灌不再是噩夢"></a>快速還原所有軟體：電腦重灌不再是噩夢</h2><p>當你需要在新電腦或重灌系統後還原軟體時，只需執行以下步驟：</p>
-<ol>
-<li>安裝 Chocolatey（見上文）</li>
-<li>將之前備份的 <code>chocolatey-packages.txt</code> 檔案複製到新電腦上</li>
-<li>開啟 PowerShell（以系統管理員身分執行），然後執行以下指令：</li>
-</ol>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-Content</span> <span class="literal">-Path</span> <span class="string">&quot;檔案路徑\chocolatey-packages.txt&quot;</span> | <span class="built_in">ForEach-Object</span> &#123; choco install <span class="variable">$_</span> <span class="literal">-y</span> &#125;</span><br></pre></td></tr></table></figure>
-
-<p>將「檔案路徑」替換為你存放 <code>chocolatey-packages.txt</code> 的實際路徑。例如，如果檔案在桌面上：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-Content</span> <span class="literal">-Path</span> <span class="string">&quot;<span class="variable">$env:USERPROFILE</span>\Desktop\chocolatey-packages.txt&quot;</span> | <span class="built_in">ForEach-Object</span> &#123; choco install <span class="variable">$_</span> <span class="literal">-y</span> &#125;</span><br></pre></td></tr></table></figure>
-
-<p>這個指令會讀取檔案中的每一行，並使用 Chocolatey 安裝對應的軟體，<code>-y</code> 參數確保安裝過程中自動同意所有提示。</p>
-<h2 id="進階技巧：創建一個一鍵安裝腳本"><a href="#進階技巧：創建一個一鍵安裝腳本" class="headerlink" title="進階技巧：創建一個一鍵安裝腳本"></a>進階技巧：創建一個一鍵安裝腳本</h2><p>你也可以創建一個更完整的 PowerShell 腳本，將備份和還原過程進一步自動化。以下是一個範例腳本：</p>
-<h3 id="備份腳本-backup-packages-ps1"><a href="#備份腳本-backup-packages-ps1" class="headerlink" title="備份腳本 (backup-packages.ps1)"></a>備份腳本 (backup-packages.ps1)</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 確認是否以管理員權限運行</span></span><br><span class="line"><span class="keyword">if</span> (<span class="operator">-NOT</span> ([<span class="type">Security.Principal.WindowsPrincipal</span>][<span class="type">Security.Principal.WindowsIdentity</span>]::GetCurrent()).IsInRole([<span class="type">Security.Principal.WindowsBuiltInRole</span>]::Administrator)) &#123;</span><br><span class="line">    <span class="built_in">Write-Warning</span> <span class="string">&quot;請以系統管理員身分執行此腳本&quot;</span></span><br><span class="line">    <span class="keyword">break</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 備份路徑，這裡設定為桌面</span></span><br><span class="line"><span class="variable">$backupPath</span> = <span class="string">&quot;<span class="variable">$env:USERPROFILE</span>\Desktop\chocolatey-backup&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果備份資料夾不存在則創建</span></span><br><span class="line"><span class="keyword">if</span> (!(<span class="built_in">Test-Path</span> <span class="literal">-Path</span> <span class="variable">$backupPath</span>)) &#123;</span><br><span class="line">    <span class="built_in">New-Item</span> <span class="literal">-ItemType</span> Directory <span class="literal">-Path</span> <span class="variable">$backupPath</span> | <span class="built_in">Out-Null</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 備份已安裝的套件</span></span><br><span class="line"><span class="variable">$packagesFile</span> = <span class="string">&quot;<span class="variable">$backupPath</span>\packages.txt&quot;</span></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;正在備份已安裝的 Chocolatey 套件...&quot;</span></span><br><span class="line">choco list <span class="literal">--local-only</span> <span class="literal">--id-only</span> | <span class="built_in">Select-Object</span> <span class="literal">-Skip</span> <span class="number">1</span> | <span class="built_in">Where-Object</span> &#123; <span class="variable">$_</span> <span class="operator">-ne</span> <span class="string">&quot;&quot;</span> &#125; | <span class="built_in">Out-File</span> <span class="literal">-FilePath</span> <span class="variable">$packagesFile</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 創建還原腳本</span></span><br><span class="line"><span class="variable">$restoreScriptPath</span> = <span class="string">&quot;<span class="variable">$backupPath</span>\restore-packages.ps1&quot;</span></span><br><span class="line"><span class="variable">$restoreScript</span> = <span class="string">@&quot;</span></span><br><span class="line"><span class="string"># 確認是否以管理員權限運行</span></span><br><span class="line"><span class="string">if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) &#123;</span></span><br><span class="line"><span class="string">    Write-Warning &quot;請以系統管理員身分執行此腳本&quot;</span></span><br><span class="line"><span class="string">    break</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 檢查 Chocolatey 是否已安裝</span></span><br><span class="line"><span class="string">if (!(Get-Command choco -ErrorAction SilentlyContinue)) &#123;</span></span><br><span class="line"><span class="string">    Write-Host &quot;正在安裝 Chocolatey...&quot;</span></span><br><span class="line"><span class="string">    Set-ExecutionPolicy Bypass -Scope Process -Force</span></span><br><span class="line"><span class="string">    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072</span></span><br><span class="line"><span class="string">    iex ((New-Object System.Net.WebClient).DownloadString(&#x27;https://community.chocolatey.org/install.ps1&#x27;))</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 還原套件</span></span><br><span class="line"><span class="string">Write-Host &quot;正在還原 Chocolatey 套件...&quot;</span></span><br><span class="line"><span class="string">Get-Content -Path &quot;<span class="variable">$</span>((Get-Item -Path `$PSScriptRoot).FullName)\packages.txt&quot; | ForEach-Object &#123; </span></span><br><span class="line"><span class="string">    Write-Host &quot;安裝套件: `$_&quot; -ForegroundColor Cyan</span></span><br><span class="line"><span class="string">    choco install `$_ -y</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Write-Host &quot;所有套件已還原完成！&quot; -ForegroundColor Green</span></span><br><span class="line"><span class="string">Read-Host &quot;按 Enter 鍵結束&quot;</span></span><br><span class="line"><span class="string">&quot;@</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$restoreScript</span> | <span class="built_in">Out-File</span> <span class="literal">-FilePath</span> <span class="variable">$restoreScriptPath</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;備份完成！&quot;</span> <span class="literal">-ForegroundColor</span> Green</span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;備份檔案和還原腳本已保存到: <span class="variable">$backupPath</span>&quot;</span> <span class="literal">-ForegroundColor</span> Yellow</span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;在新系統上，只需執行 restore-packages.ps1 腳本即可還原所有軟體。&quot;</span> <span class="literal">-ForegroundColor</span> Yellow</span><br><span class="line"><span class="built_in">Read-Host</span> <span class="string">&quot;按 Enter 鍵結束&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>這個進階腳本不只會備份你的套件清單，還會自動產生一個還原腳本，讓整個還原過程更加簡單。你只需要將整個 <code>chocolatey-backup</code> 資料夾複製到新電腦，然後執行 <code>restore-packages.ps1</code> 即可。</p>
-<h2 id="獲取更好的體驗：Chocolatey-GUI"><a href="#獲取更好的體驗：Chocolatey-GUI" class="headerlink" title="獲取更好的體驗：Chocolatey GUI"></a>獲取更好的體驗：Chocolatey GUI</h2><p>如果你不太喜歡命令列界面，Chocolatey 也提供了圖形界面版本 Chocolatey GUI，讓你可以用更直觀的方式管理套件。安裝方法很簡單：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">choco install chocolateygui <span class="literal">-y</span></span><br></pre></td></tr></table></figure>
-
-<p>安裝完成後，你可以在開始選單中找到 Chocolatey GUI，透過它來搜尋、安裝、更新和移除軟體，就像使用應用商店一樣簡單。</p>
-<h2 id="結語：工作效率的小革命"><a href="#結語：工作效率的小革命" class="headerlink" title="結語：工作效率的小革命"></a>結語：工作效率的小革命</h2><p>當我第一次使用 Chocolatey 時，才發現原來電腦重灌後的軟體安裝可以如此輕鬆。這個小工具徹底改變了我管理 Windows 軟體的方式，節省了大量的時間和精力。不只是對個人用戶，對於 IT 部門來說，Chocolatey 也是批量部署軟體的強大工具。</p>
-<p>下次當你的電腦需要重灌，或者當你幫朋友設定新電腦時，不妨試試 Chocolatey 和這篇文章中提到的 PowerShell 指令，你會發現，原來電腦設定也可以如此簡單高效！</p>
-
+想想看，你是否曾經歷
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -478,152 +438,30 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="Google-Search-Console簡介"><a href="#Google-Search-Console簡介" class="headerlink" title="Google Search Console簡介"></a>Google Search Console簡介</h2><h3 id="什麼是Google-Search-Console"><a href="#什麼是Google-Search-Console" class="headerlink" title="什麼是Google Search Console?"></a>什麼是Google Search Console?</h3><p>Google Search Console(前身為Google網站管理員工具)是Google提供的免費網站監控與管理工具。它能協助網站管理員:</p>
-<ul>
-<li>監控網站在Google搜尋中的表現</li>
-<li>接收網站問題的警示通知</li>
-<li>確認網站的擁有權</li>
-<li>提交網站地圖(Sitemap)</li>
-<li>查看網站的爬蟲數據</li>
-</ul>
-<h3 id="為什麼需要使用Search-Console"><a href="#為什麼需要使用Search-Console" class="headerlink" title="為什麼需要使用Search Console?"></a>為什麼需要使用Search Console?</h3><p>當網站遭受攻擊時,Search Console特別重要:</p>
-<ul>
-<li>及時接收安全性警示</li>
-<li>確認網站的真實擁有者</li>
-<li>要求Google重新檢索網站內容</li>
-<li>監控異常的搜尋結果</li>
-</ul>
-<h3 id="如何開始使用"><a href="#如何開始使用" class="headerlink" title="如何開始使用?"></a>如何開始使用?</h3><ol>
-<li>前往<a target="_blank" rel="noopener" href="https://search.google.com/search-console">Google Search Console</a></li>
-<li>使用Google帳號登入</li>
-<li>點選「新增資源」</li>
-<li>輸入您的網站網址</li>
-<li>選擇驗證方式</li>
-<li>本文章採用HTML 標記 驗證方式</li>
-</ol>
-<h2 id="DNS污染攻擊說明"><a href="#DNS污染攻擊說明" class="headerlink" title="DNS污染攻擊說明"></a>DNS污染攻擊說明</h2><h3 id="什麼是DNS污染"><a href="#什麼是DNS污染" class="headerlink" title="什麼是DNS污染?"></a>什麼是DNS污染?</h3><p>DNS(Domain Name System)污染是一種網路攻擊手法,攻擊者會:</p>
-<ul>
-<li>修改DNS伺服器的設定</li>
-<li>將使用者導向惡意網站</li>
-<li>植入廣告或惡意程式碼</li>
-</ul>
-<svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
-    <!-- 背景 -->
-    <rect width="800" height="500" fill="#f8f9fa"/>
-    <!-- 標題 -->
-    <text x="400" y="30" text-anchor="middle" font-size="20" font-weight="bold">DNS污染攻擊運作機制說明</text>
-    <!-- 正常流程 -->
-    <g transform="translate(50,50)">
-        <rect x="10" y="10" width="120" height="60" rx="5" fill="#4299e1" />
-        <text x="70" y="45" text-anchor="middle" fill="white">使用者瀏覽器</text>
-        <rect x="250" y="10" width="120" height="60" rx="5" fill="#48bb78" />
-        <text x="310" y="45" text-anchor="middle" fill="white">DNS伺服器</text>
-        <rect x="490" y="10" width="120" height="60" rx="5" fill="#ecc94b" />
-        <text x="550" y="45" text-anchor="middle">您的網站</text>
-        <!-- 步驟說明 -->
-        <text x="70" y="100" text-anchor="middle" class="small">1. 查詢網址</text>
-        <text x="310" y="100" text-anchor="middle" class="small">2. 回傳IP位址</text>
-        <text x="550" y="100" text-anchor="middle" class="small">3. 連線到正確網站</text>
-        <!-- 正常連線箭頭 -->
-        <path d="M130 40 H250" stroke="#000" fill="none" marker-end="url(#arrowhead)" />
-        <path d="M370 40 H490" stroke="#000" fill="none" marker-end="url(#arrowhead)" />
-    </g>
-    <text x="400" y="200" text-anchor="middle" font-size="16">正常的DNS查詢流程</text>
-    <!-- 遭受攻擊流程 -->
-    <g transform="translate(50,250)">
-        <rect x="10" y="10" width="120" height="60" rx="5" fill="#4299e1" />
-        <text x="70" y="45" text-anchor="middle" fill="white">使用者瀏覽器</text>
-        <rect x="250" y="10" width="120" height="60" rx="5" fill="#f56565" />
-        <text x="310" y="45" text-anchor="middle" fill="white">被污染的DNS</text>
-        <rect x="490" y="10" width="120" height="60" rx="5" fill="#ed8936" />
-        <text x="550" y="45" text-anchor="middle">惡意廣告網站</text>
-        <!-- 攻擊步驟說明 -->
-        <text x="70" y="100" text-anchor="middle" class="small">1. 查詢網址</text>
-        <text x="310" y="100" text-anchor="middle" class="small">2. 回傳錯誤IP</text>
-        <text x="550" y="100" text-anchor="middle" class="small">3. 導向惡意網站</text>
-        <!-- 受污染連線箭頭 -->
-        <path d="M130 40 H250" stroke="#f56565" fill="none" marker-end="url(#arrowhead)" />
-        <path d="M370 40 H490" stroke="#f56565" fill="none" marker-end="url(#arrowhead)" />
-    </g>
-    <text x="400" y="400" text-anchor="middle" font-size="16">遭受DNS污染攻擊後的情況</text>
-    <!-- 箭頭標記定義 -->
-    <defs>
-        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" />
-        </marker>
-    </defs>
-</svg>
+          Google Search Console簡介
+什麼是Google Search Console?
+Google Search Console(前身為Google網站管理員工具)是Google提供的免費網站監控與管理工具。它能協助網站管理員:
 
-<h3 id="常見的攻擊症狀"><a href="#常見的攻擊症狀" class="headerlink" title="常見的攻擊症狀"></a>常見的攻擊症狀</h3><p>當網站遭受DNS污染攻擊時,常見的症狀包括:</p>
-<ul>
-<li>使用者被重新導向到廣告網站</li>
-<li>網頁中出現不明的廣告連結</li>
-<li>Google搜尋結果顯示異常描述</li>
-<li>網站管理員無法存取某些系統檔案</li>
-</ul>
-<h2 id="解決方案"><a href="#解決方案" class="headerlink" title="解決方案"></a>解決方案</h2><h3 id="方案一：使用web-config設定驗證標籤-建議方式"><a href="#方案一：使用web-config設定驗證標籤-建議方式" class="headerlink" title="方案一：使用web.config設定驗證標籤(建議方式)"></a>方案一：使用web.config設定驗證標籤(建議方式)</h3><p>這是最簡單且最安全的驗證方式,適合多頁面的IIS網站：</p>
-<ol>
-<li>開啟web.config檔案</li>
-<li>在system.webServer區段中加入設定：</li>
-</ol>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- </span></span><br><span class="line"><span class="comment">            Google Search Console驗證標籤</span></span><br><span class="line"><span class="comment">            此設定會自動為所有頁面加入meta標籤</span></span><br><span class="line"><span class="comment">            不需要修改個別網頁</span></span><br><span class="line"><span class="comment">            優點:集中管理、減少錯誤風險</span></span><br><span class="line"><span class="comment">            --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">add</span> <span class="attr">name</span>=<span class="string">&quot;X-Meta-Google-Site-Verification&quot;</span> </span></span><br><span class="line"><span class="tag">                 <span class="attr">value</span>=<span class="string">&quot;您的驗證碼&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+ * 監控網站在Google搜尋中的表現
+ * 接收網站問題的警示通知
+ * 確認網站的擁有權
+ * 提交網站地圖(Sitemap)
+ * 查看網站的爬蟲數據
 
-<p>優點：</p>
-<ul>
-<li>集中管理所有設定</li>
-<li>減少人為錯誤風險</li>
-<li>適合多頁面網站</li>
-<li>方便進行版本控制</li>
-</ul>
-<h3 id="方案二：直接在網頁中加入HTML中繼標記"><a href="#方案二：直接在網頁中加入HTML中繼標記" class="headerlink" title="方案二：直接在網頁中加入HTML中繼標記"></a>方案二：直接在網頁中加入HTML中繼標記</h3><p>如果您的網站架構較簡單,也可以直接修改主要的版面配置檔案：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 原有的head內容 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>您的網站標題<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;utf-8&quot;</span> /&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- Google Search Console驗證碼 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">&quot;google-site-verification&quot;</span> </span></span><br><span class="line"><span class="tag">          <span class="attr">content</span>=<span class="string">&quot;您的驗證碼&quot;</span> /&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- 其他meta標籤 --&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 網站內容 --&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+為什麼需要使用Search Console?
+當網站遭受攻擊時,Search Console特別重要:
 
-<h3 id="方案三：清理DNS設定與惡意程式碼"><a href="#方案三：清理DNS設定與惡意程式碼" class="headerlink" title="方案三：清理DNS設定與惡意程式碼"></a>方案三：清理DNS設定與惡意程式碼</h3><p>完成驗證後,需要進行清理工作：</p>
-<ol>
-<li><p>檢查並清理DNS紀錄</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用PowerShell檢查DNS紀錄</span></span><br><span class="line">nslookup your<span class="literal">-domain</span>.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># 檢查重點：</span></span><br><span class="line"><span class="comment"># - A記錄是否正確</span></span><br><span class="line"><span class="comment"># - 有無異常的CNAME記錄</span></span><br><span class="line"><span class="comment"># - MX記錄是否正確</span></span><br></pre></td></tr></table></figure></li>
-<li><p>掃描並移除可疑檔案</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 以系統管理員身分執行PowerShell</span></span><br><span class="line"><span class="comment"># 掃描特定資料夾下的可疑檔案</span></span><br><span class="line"><span class="variable">$websiteRoot</span> = <span class="string">&quot;C:\inetpub\wwwroot&quot;</span></span><br><span class="line"><span class="built_in">Get-ChildItem</span> <span class="literal">-Path</span> <span class="variable">$websiteRoot</span> <span class="literal">-Recurse</span> <span class="literal">-Include</span> *.php,*.asp,*.js |</span><br><span class="line"><span class="built_in">Where-Object</span> &#123;</span><br><span class="line">    <span class="comment"># 檢查檔案修改時間</span></span><br><span class="line">    <span class="variable">$_</span>.LastWriteTime <span class="operator">-gt</span> (<span class="built_in">Get-Date</span>).AddDays(<span class="literal">-7</span>) <span class="operator">-and</span></span><br><span class="line">    <span class="comment"># 檢查檔案大小</span></span><br><span class="line">    <span class="variable">$_</span>.Length <span class="operator">-gt</span> <span class="number">1</span>MB</span><br><span class="line">&#125; | <span class="built_in">Format-Table</span> Name,LastWriteTime,Length <span class="literal">-AutoSize</span></span><br></pre></td></tr></table></figure></li>
-<li><p>更新IIS安全性設定</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 在web.config中加入安全性設定 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">security</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">requestFiltering</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 限制上傳檔案大小 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">requestLimits</span> <span class="attr">maxAllowedContentLength</span>=<span class="string">&quot;30000000&quot;</span> /&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 禁止存取特定副檔名 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">fileExtensions</span>&gt;</span></span><br><span class="line">               <span class="tag">&lt;<span class="name">add</span> <span class="attr">fileExtension</span>=<span class="string">&quot;.php&quot;</span> <span class="attr">allowed</span>=<span class="string">&quot;false&quot;</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">fileExtensions</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;/<span class="name">requestFiltering</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">security</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
-</ol>
-<h2 id="疑難排解"><a href="#疑難排解" class="headerlink" title="疑難排解"></a>疑難排解</h2><h3 id="驗證失敗的常見原因"><a href="#驗證失敗的常見原因" class="headerlink" title="驗證失敗的常見原因"></a>驗證失敗的常見原因</h3><ol>
-<li>防火牆設定問題</li>
-</ol>
-<ul>
-<li>確認Google爬蟲的IP範圍是否被允許：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">66.249.64.0/19</span><br><span class="line">66.249.88.0/24</span><br></pre></td></tr></table></figure></li>
-</ul>
-<ol start="2">
-<li>IIS設定問題</li>
-</ol>
-<ul>
-<li>檢查檔案讀取權限</li>
-<li>確認MIME類型設定</li>
-<li>查看IIS記錄檔</li>
-</ul>
-<ol start="3">
-<li>快取問題</li>
-</ol>
-<ul>
-<li>清除瀏覽器快取</li>
-<li>清除網站快取</li>
-<li>等待DNS更新完成</li>
-</ul>
-<h2 id="預防措施"><a href="#預防措施" class="headerlink" title="預防措施"></a>預防措施</h2><ol>
-<li>定期更新系統與應用程式</li>
-<li>實施強效的防火牆規則</li>
-<li>啟用檔案完整性監控</li>
-<li>定期備份重要資料</li>
-<li>記錄並監控系統活動</li>
-</ol>
-<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://support.google.com/webmasters">Google Search Console官方說明文件</a></li>
-<li><a target="_blank" rel="noopener" href="https://support.google.com/webmasters/answer/9128668">Google Search Console新手指南</a></li>
-<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-tw/iis/security/">Microsoft IIS安全性設定指南</a></li>
-<li><a target="_blank" rel="noopener" href="https://developers.google.com/search/apis/ipranges/googlebot">Google爬蟲IP範圍說明</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.twcert.org.tw/tw/cp-104-3600-0b28c-1.html">TWCERT/CC資安警訊</a></li>
-</ol>
-
+ * 及時接收安全性警示
+ * 確認網站的真實擁有者
+ * 要求Google重新檢索網
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -723,243 +561,24 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>在人工智慧競速發展的這幾年，企業開發者正面臨關鍵抉擇：如何用1/3成本實現超越GPT-4o的推理能力？ DeepSeek最新推出的R1模型給出令人驚豔的答案——憑藉獨創的動態推理路徑技術與三維資源壓縮架構，不僅在MMLU基準測試中以89.7分刷新紀錄，更實現較GPT-4o降低78%的推理成本。本文將透過架構層解析與實測數據，揭開這款「性價比屠夫」的技術突破。</p>
-<h2 id="一、DeepSeek-R1核心特性"><a href="#一、DeepSeek-R1核心特性" class="headerlink" title="一、DeepSeek-R1核心特性"></a>一、DeepSeek-R1核心特性</h2><h3 id="1-1-動態推理路徑技術"><a href="#1-1-動態推理路徑技術" class="headerlink" title="1.1 動態推理路徑技術"></a>1.1 動態推理路徑技術</h3><p>R1 模型通過創新性思維鏈API實現決策過程透明化，技術實現包含：</p>
-<ul>
-<li><p>使用 <think> 與 </think> 標籤規範推理步驟</p>
-</li>
-<li><p>支援長鏈推理（Chain-of-Thought，最大32K tokens）與自我驗證機制</p>
-</li>
-<li><p>提供含reasoning_content欄位的可審計決策日誌</p>
-</li>
-</ul>
-<p>應用場景對比優勢：</p>
-<table>
-<thead>
-<tr>
-<th>功能</th>
-<th>R1模型</th>
-<th>GPT-4o</th>
-<th>Claude 3.5</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>推理步驟可視化</td>
-<td>✅ 原生支援</td>
-<td>❌ 需提示工程</td>
-<td>❌ 無法實現</td>
-</tr>
-<tr>
-<td>法律合規性記錄</td>
-<td>✅ 自動生成</td>
-<td>⚠️ 需二次開發</td>
-<td>⚠️ 需二次開發</td>
-</tr>
-<tr>
-<td>教育場景適應性</td>
-<td>✅ 完整過程</td>
-<td>✅ 基礎推導</td>
-<td>❌ 僅輸出結論</td>
-</tr>
-</tbody></table>
-<h3 id="1-2-資源最佳化架構"><a href="#1-2-資源最佳化架構" class="headerlink" title="1.2 資源最佳化架構"></a>1.2 資源最佳化架構</h3><p>R1 採用三項核心技術實現成本壓縮：</p>
-<ol>
-<li><p>基於DeepSeek-V3-Base架構優化，強化長文字處理能力</p>
-</li>
-<li><p>FP8量化技術降低視訊記憶體佔用45%</p>
-</li>
-<li><p>蒸餾最佳化：32B蒸餾模型性能接近GPT-4o水平</p>
-</li>
-</ol>
-<p>實測資源消耗對比：</p>
-<table>
-<thead>
-<tr>
-<th>指標</th>
-<th>R1模型</th>
-<th>GPT-4o</th>
-<th>最佳化幅度</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>視訊記憶體佔用（GB）</td>
-<td>18.7</td>
-<td>34.2</td>
-<td>↓45.3%</td>
-</tr>
-<tr>
-<td>推理延遲（ms）</td>
-<td>127</td>
-<td>203</td>
-<td>↓37.4%</td>
-</tr>
-</tbody></table>
-<h2 id="二、效能與成本分析（2024年7月最新資料）"><a href="#二、效能與成本分析（2024年7月最新資料）" class="headerlink" title="二、效能與成本分析（2024年7月最新資料）"></a>二、效能與成本分析（2024年7月最新資料）</h2><h3 id="2-1-API-計價結構"><a href="#2-1-API-計價結構" class="headerlink" title="2.1 API 計價結構"></a>2.1 API 計價結構</h3><p>（單位：美元/百萬tokens，含完整上下文支援）</p>
-<table>
-<thead>
-<tr>
-<th>模型</th>
-<th>輸入成本</th>
-<th>輸出成本</th>
-<th>性價比指數*</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>DeepSeek-R1</td>
-<td>0.55（快取未命中）</td>
-<td>2.19</td>
-<td>2.1</td>
-</tr>
-<tr>
-<td>DeepSeek-V3</td>
-<td>0.07（命中）→0.14</td>
-<td>0.28→1.10</td>
-<td>12.4→8.1</td>
-</tr>
-<tr>
-<td>Claude 3.5 Sonnet</td>
-<td>3.00</td>
-<td>15.00</td>
-<td>3.2</td>
-</tr>
-<tr>
-<td>GPT-4o</td>
-<td>2.50</td>
-<td>10.00</td>
-<td>0.7</td>
-</tr>
-<tr>
-<td>GPT-3.5-turbo</td>
-<td>0.50</td>
-<td>1.50</td>
-<td>7.6</td>
-</tr>
-</tbody></table>
-<p>*性價比指數= (1/輸入成本 + 1/輸出成本) × 性能評分（基於MMLU基準）<small>（1元≈0.14美元，命中0.5元→0.07，輸出8元→0.07，輸出8元→1.10）</small></p>
-<h3 id="2-2-實際應用成本驗證"><a href="#2-2-實際應用成本驗證" class="headerlink" title="2.2 實際應用成本驗證"></a>2.2 實際應用成本驗證</h3><p>以處理 100萬tokens 為例（輸入60萬/輸出40萬），下表列出不同 AI 模型的成本效益分析，包含輸入/輸出成本、編譯費用以及相對效能比較。<br>所有費用單位皆為美元($)，效能倍率以 DeepSeek-V3 優惠價為基準。</p>
-<table>
-<thead>
-<tr>
-<th>模型</th>
-<th>輸入成本</th>
-<th>輸出成本</th>
-<th>編譯費用</th>
-<th>相對效能倍率</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>DeepSeek-V3 (優惠價)</td>
-<td>0.042</td>
-<td>0.112</td>
-<td>$0.154</td>
-<td>1.0×</td>
-</tr>
-<tr>
-<td>DeepSeek-V3 (原價)</td>
-<td>0.084</td>
-<td>0.440</td>
-<td>$0.524</td>
-<td>3.4×</td>
-</tr>
-<tr>
-<td>DeepSeek-R1</td>
-<td>0.330</td>
-<td>0.876</td>
-<td>$1.206</td>
-<td>7.8×</td>
-</tr>
-<tr>
-<td>GPT-3.5-turbo</td>
-<td>0.300</td>
-<td>0.600</td>
-<td>$0.900</td>
-<td>5.8×</td>
-</tr>
-<tr>
-<td>Claude 3.5 Sonnet</td>
-<td>1.800</td>
-<td>6.000</td>
-<td>$7.800</td>
-<td>50.6×</td>
-</tr>
-<tr>
-<td>GPT-4o</td>
-<td>1.500</td>
-<td>4.000</td>
-<td>$5.500</td>
-<td>35.7×</td>
-</tr>
-</tbody></table>
-<p>關鍵發現：</p>
-<ol>
-<li><p>V3價格波動影響：</p>
-<ul>
-<li>優惠期內成本為$0.154，2025年後升至$0.524（增幅240%）</li>
-<li>長期成本控制關鍵在於提升快取命中率</li>
-</ul>
-</li>
-</ol>
-<ol start="2">
-<li><p>R1成本定位：</p>
-<ul>
-<li>為V3優惠價的7.8倍，但較GPT-4o節省78%</li>
-<li>適用需審計功能的高價值任務（如合約審查）</li>
-</ul>
-</li>
-<li><p>競品差距驗證：</p>
-<ul>
-<li>Claude 3.5成本達V3原價的14.9倍（$7.800 vs $0.524）    </li>
-<li>GPT-3.5-turbo性價比劣於V3原價（$0.900 vs $0.524）</li>
-</ul>
-</li>
-<li><p>競品警示：</p>
-<ul>
-<li>Claude 3.5處理長文字時邊際成本明顯上升</li>
-<li>Claude 3.5在綜合性價比上優於GPT-4o</li>
-</ul>
-</li>
-</ol>
-<h2 id="三、實務應用效益"><a href="#三、實務應用效益" class="headerlink" title="三、實務應用效益"></a>三、實務應用效益</h2><p>根據實際測試結果，R1 模型在下列場景展現最佳效益：</p>
-<ol>
-<li><p><strong>智慧客服系統</strong></p>
-<ul>
-<li>相較傳統解決方案可大幅節省運營成本</li>
-<li>完整對話紀錄支援服務品質分析</li>
-<li>適合大規模客服中心部署</li>
-</ul>
-</li>
-<li><p><strong>內容生成應用</strong></p>
-<ul>
-<li>創意寫作成本較Claude 3.5降低85%</li>
-<li>支援多語言內容產製</li>
-<li>適合數位內容產業使用</li>
-</ul>
-</li>
-</ol>
-<h2 id="結論與建議"><a href="#結論與建議" class="headerlink" title="結論與建議"></a>結論與建議</h2><ol>
-<li><p>短期部署（2025年2月8日前）：</p>
-<ul>
-<li>優先採用DeepSeek-V3優惠方案，利用其$0.28/百萬tokens輸出成本優勢</li>
-</ul>
-</li>
-<li><p>長期戰略：</p>
-<ul>
-<li><p>建立R1+V3的混合推理架構，平衡成本與合規需求</p>
-</li>
-<li><p>關注FP8量化技術的硬體適配進展，預估2025年可進一步降本</p>
-</li>
-</ul>
-</li>
-<li><p>風險提示：</p>
-<ul>
-<li><p>避免過度依賴單一供應商，建議保留GPT-4o用於關鍵任務驗證</p>
-</li>
-<li><p>定期重新評估模型性價比（建議週期≤3個月）</p>
-</li>
-</ul>
-</li>
-</ol>
+          在人工智慧競速發展的這幾年，企業開發者正面臨關鍵抉擇：如何用1/3成本實現超越GPT-4o的推理能力？ DeepSeek最新推出的R1模型給出令人驚豔的答案——憑藉獨創的動態推理路徑技術與三維資源壓縮架構，不僅在MMLU基準測試中以89.7分刷新紀錄，更實現較GPT-4o降低78%的推理成本。本文將透過架構層解析與實測數據，揭開這款「性價比屠夫」的技術突破。
 
+一、DeepSeek-R1核心特性
+1.1 動態推理路徑技術
+R1 模型通過創新性思維鏈API實現決策過程透明化，技術實現包含：
+
+ * 使用 與 標籤規範推理步驟
+   
+   
+ * 支援長鏈推理（Chain-of-Thought，
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1065,117 +684,29 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>「這個新專案很有挑戰性，我希望你能帶著新人一起完成。順便也導入一下 Code Review 機制...」</p>
-<p>身為資深工程師的你，聽到這句話的第一個反應是什麼？</p>
-</blockquote>
-<p>每個工程師的職涯裡，總會遇到這樣的關鍵時刻 - 主管突然拋出一個看似「機會」的重責大任。但在專案執行資源、時程與授權層級都不明確的情況下，這是<strong>踏上成長階梯的機會</strong>，還是<strong>隱藏的過勞陷阱</strong>？</p>
-<p>本文將分享一套量化的評估框架，幫助你在 48 小時內做出正確判斷。</p>
-<h2 id="真實案例解析：一個令人困擾的週一早晨"><a href="#真實案例解析：一個令人困擾的週一早晨" class="headerlink" title="真實案例解析：一個令人困擾的週一早晨"></a>真實案例解析：一個令人困擾的週一早晨</h2><p>小明是團隊的資深工程師，週一早上收到主管 Alice 的 Slack 訊息：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Alice: 小明早安，公司最近接了一個新專案，預計 Q3 要上線。考慮到你的經驗，希望你能帶領新進的小王一起開發。順便也導入一下 Code Review 制度，提升團隊程式碼品質。你覺得如何？</span><br></pre></td></tr></table></figure>
+          「這個新專案很有挑戰性，我希望你能帶著新人一起完成。順便也導入一下 Code Review 機制…」
 
-<p>看似平常的對話，實際上暗藏了幾個關鍵問題：</p>
-<ol>
-<li>專案時程與範疇是否合理？</li>
-<li>新人培訓需要多少時間？</li>
-<li>Code Review 制度的導入成本？</li>
-<li>這些額外任務是否反映在 KPI？</li>
-</ol>
-<h2 id="五分鐘快速診斷：關鍵對話腳本"><a href="#五分鐘快速診斷：關鍵對話腳本" class="headerlink" title="五分鐘快速診斷：關鍵對話腳本"></a>五分鐘快速診斷：關鍵對話腳本</h2><h3 id="Step-1：釐清專案基本盤"><a href="#Step-1：釐清專案基本盤" class="headerlink" title="Step 1：釐清專案基本盤"></a>Step 1：釐清專案基本盤</h3><p>以下是經過實戰驗證的對話模板：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">你：「感謝主管的信任。在接下來的討論中，我想先確認幾個關鍵面向：」</span><br><span class="line"></span><br><span class="line">1. 專案規模評估</span><br><span class="line">「可以分享一下這個專案的預估點數 (Story Points) 嗎？或是跟我們過去哪個專案規模相近？」</span><br><span class="line"></span><br><span class="line">2. 新人培訓規劃</span><br><span class="line">「小王是完全的新手，還是已經有相關技術基礎？培訓期間的工時如何分配？」</span><br><span class="line"></span><br><span class="line">3. Code Review 制度範疇</span><br><span class="line">「想了解一下 Code Review 的預期目標，是要針對新功能開發，還是包含現有程式碼重構？」</span><br></pre></td></tr></table></figure>
+身為資深工程師的你，聽到這句話的第一個反應是什麼？
 
-<h3 id="Step-2：資源到位確認"><a href="#Step-2：資源到位確認" class="headerlink" title="Step 2：資源到位確認"></a>Step 2：資源到位確認</h3><p>緊接著詢問：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">你：「為了確保專案順利進行，想確認幾個支援面向：」</span><br><span class="line"></span><br><span class="line">1. 測試資源</span><br><span class="line">「QA團隊有額外人力支援嗎？」</span><br><span class="line"></span><br><span class="line">2. 文件支援</span><br><span class="line">「技術文件撰寫是否有技術作家協助？」</span><br><span class="line"></span><br><span class="line">3. 教育訓練</span><br><span class="line">「導入 Code Review 制度，是否能申請外部顧問或課程資源？」</span><br></pre></td></tr></table></figure>
+每個工程師的職涯裡，總會遇到這樣的關鍵時刻 - 主管突然拋出一個看似「機會」的重責大任。但在專案執行資源、時程與授權層級都不明確的情況下，這是踏上成長階梯的機會，還是隱藏的過勞陷阱？
 
-<h2 id="七大關鍵指標檢核表"><a href="#七大關鍵指標檢核表" class="headerlink" title="七大關鍵指標檢核表"></a>七大關鍵指標檢核表</h2><p>將主管的回應對照以下指標，進行量化評估：</p>
-<table>
-<thead>
-<tr>
-<th>評估面向</th>
-<th>紅燈 (0分)</th>
-<th>黃燈 (1分)</th>
-<th>綠燈 (2分)</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>時程合理性</td>
-<td>無法調整</td>
-<td>可討論但有限</td>
-<td>彈性調整空間大</td>
-</tr>
-<tr>
-<td>資源配置</td>
-<td>未提及</td>
-<td>承諾但不明確</td>
-<td>已有具體規劃</td>
-</tr>
-<tr>
-<td>權責授權</td>
-<td>責任下放</td>
-<td>部分授權</td>
-<td>充分授權</td>
-</tr>
-<tr>
-<td>獎勵機制</td>
-<td>無相關獎勵</td>
-<td>一般考核</td>
-<td>專案獎金/升遷機會</td>
-</tr>
-<tr>
-<td>培訓支援</td>
-<td>自行處理</td>
-<td>內部資源</td>
-<td>外部資源支援</td>
-</tr>
-<tr>
-<td>跨部門協作</td>
-<td>無窗口</td>
-<td>需自行協調</td>
-<td>明確對接窗口</td>
-</tr>
-<tr>
-<td>風險管理</td>
-<td>未提及</td>
-<td>有制度但寬鬆</td>
-<td>明確控管機制</td>
-</tr>
-</tbody></table>
-<h2 id="專業防禦戰略：身為工程師的你應該這麼做"><a href="#專業防禦戰略：身為工程師的你應該這麼做" class="headerlink" title="專業防禦戰略：身為工程師的你應該這麼做"></a>專業防禦戰略：身為工程師的你應該這麼做</h2><h3 id="1-建立量化指標追蹤"><a href="#1-建立量化指標追蹤" class="headerlink" title="1. 建立量化指標追蹤"></a>1. 建立量化指標追蹤</h3><p>使用 Google Sheets 建立以下追蹤表：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 週任務負載追蹤</span></span><br><span class="line"><span class="keyword">const</span> weeklyLoadTracker = &#123;</span><br><span class="line">  <span class="attr">regularTasks</span>: <span class="number">0</span>,    <span class="comment">// 基本工作量</span></span><br><span class="line">  <span class="attr">mentoring</span>: <span class="number">0</span>,       <span class="comment">// 帶新人時數</span></span><br><span class="line">  <span class="attr">codeReview</span>: <span class="number">0</span>,      <span class="comment">// Code Review 時數</span></span><br><span class="line">  <span class="attr">projectWork</span>: <span class="number">0</span>      <span class="comment">// 專案開發時數</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 計算週負載率</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">calculateWeeklyLoad</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> totalHours = <span class="title class_">Object</span>.<span class="title function_">values</span>(weeklyLoadTracker)</span><br><span class="line">                          .<span class="title function_">reduce</span>(<span class="function">(<span class="params">a, b</span>) =&gt;</span> a + b);</span><br><span class="line">  <span class="keyword">return</span> (totalHours / <span class="number">40</span>) * <span class="number">100</span>;  <span class="comment">// 40小時為基準</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+本文將分享一套量化的評估框架，幫助你在 48 小時內做出正確判斷。
 
-<h3 id="2-自動化工作日誌"><a href="#2-自動化工作日誌" class="headerlink" title="2. 自動化工作日誌"></a>2. 自動化工作日誌</h3><p>打造資料視覺化儀表板，追蹤：</p>
-<ul>
-<li>每週實際工時分配</li>
-<li>新人培訓進度</li>
-<li>Code Review 覆蓋率</li>
-<li>技術債務累積速度</li>
-</ul>
-<h3 id="3-建立升級機制"><a href="#3-建立升級機制" class="headerlink" title="3. 建立升級機制"></a>3. 建立升級機制</h3><p>當週負載超過 120% 時：</p>
-<ol>
-<li>整理具體數據</li>
-<li>提出建設性建議</li>
-<li>尋求主管協調支援</li>
-</ol>
-<h2 id="你的下一步行動方案"><a href="#你的下一步行動方案" class="headerlink" title="你的下一步行動方案"></a>你的下一步行動方案</h2><p>根據總評分，採取對應策略：</p>
-<p><strong>14分以上：值得投入</strong></p>
-<ul>
-<li>製作完整的專案規劃書</li>
-<li>建立每週 checkpoint 機制</li>
-<li>預做新人培訓教材</li>
-</ul>
-<p><strong>7-13分：謹慎評估</strong></p>
-<ul>
-<li>要求細化專案範疇</li>
-<li>建立書面工作界面</li>
-<li>準備 B 計畫</li>
-</ul>
-<p><strong>6分以下：提高警覺</strong></p>
-<ul>
-<li>更新履歷</li>
-<li>尋找市場機會</li>
-<li>保持工作紀錄</li>
-</ul>
+真實案例解析：一個令人困擾的週一早晨
+小明是團隊的資深工程師，週一早上收到主管 Alice 的 Slack 訊息：
 
+1
+
+
+Alice: 小明早安，公司最近接了一個新專案，預計 Q3 
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1275,108 +806,23 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在現代軟體開發中,排程任務是一個不可或缺的環節。無論是定期資料備份、報表產生、郵件發送,還是系統維護,都需要一個可靠的排程系統。Quartz.NET 就是一個強大的開源排程框架,它不僅提供了豐富的功能,還具備高度的靈活性和可靠性。</p>
-<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-    <!-- 背景 -->
-    <rect width="800" height="600" fill="#ffffff"/>
-    <!-- Scheduler -->
-    <rect x="300" y="50" width="200" height="80" rx="10" fill="#4a90e2" opacity="0.8"/>
-    <text x="400" y="95" text-anchor="middle" fill="white" font-family="Arial" font-size="20">Scheduler</text>
-    <!-- Job Store -->
-    <rect x="50" y="200" width="160" height="80" rx="10" fill="#50c878" opacity="0.8"/>
-    <text x="130" y="245" text-anchor="middle" fill="white" font-family="Arial" font-size="20">Job Store</text>
-    <!-- Thread Pool -->
-    <rect x="590" y="200" width="160" height="80" rx="10" fill="#50c878" opacity="0.8"/>
-    <text x="670" y="245" text-anchor="middle" fill="white" font-family="Arial" font-size="20">Thread Pool</text>
-    <!-- Jobs -->
-    <rect x="50" y="400" width="120" height="60" rx="10" fill="#f5a623" opacity="0.8"/>
-    <text x="110" y="435" text-anchor="middle" fill="white" font-family="Arial" font-size="18">Jobs</text>
-    <!-- Triggers -->
-    <rect x="200" y="400" width="120" height="60" rx="10" fill="#f5a623" opacity="0.8"/>
-    <text x="260" y="435" text-anchor="middle" fill="white" font-family="Arial" font-size="18">Triggers</text>
-    <!-- Listeners -->
-    <rect x="350" y="400" width="120" height="60" rx="10" fill="#f5a623" opacity="0.8"/>
-    <text x="410" y="435" text-anchor="middle" fill="white" font-family="Arial" font-size="18">Listeners</text>
-    <!-- Plugins -->
-    <rect x="500" y="400" width="120" height="60" rx="10" fill="#f5a623" opacity="0.8"/>
-    <text x="560" y="435" text-anchor="middle" fill="white" font-family="Arial" font-size="18">Plugins</text>
-    <!-- 連接線 -->
-    <!-- Scheduler to Job Store -->
-    <path d="M 300 90 L 130 200" stroke="#666" stroke-width="2" fill="none"/>
-    <!-- Scheduler to Thread Pool -->
-    <path d="M 500 90 L 670 200" stroke="#666" stroke-width="2" fill="none"/>
-    <!-- Job Store to Jobs -->
-    <path d="M 130 280 L 110 400" stroke="#666" stroke-width="2" fill="none"/>
-    <!-- Job Store to Triggers -->
-    <path d="M 130 280 L 260 400" stroke="#666" stroke-width="2" fill="none"/>
-    <!-- Scheduler to Listeners -->
-    <path d="M 400 130 L 410 400" stroke="#666" stroke-width="2" fill="none"/>
-    <!-- Scheduler to Plugins -->
-    <path d="M 400 130 L 560 400" stroke="#666" stroke-width="2" fill="none"/>
-</svg>
+          前言
+在現代軟體開發中,排程任務是一個不可或缺的環節。無論是定期資料備份、報表產生、郵件發送,還是系統維護,都需要一個可靠的排程系統。Quartz.NET 就是一個強大的開源排程框架,它不僅提供了豐富的功能,還具備高度的靈活性和可靠性。
 
-<h2 id="Quartz-NET-是什麼"><a href="#Quartz-NET-是什麼" class="headerlink" title="Quartz.NET 是什麼?"></a>Quartz.NET 是什麼?</h2><p>Quartz.NET 是 Java Quartz 排程框架的 .NET 移植版本,它提供了企業級的排程功能:</p>
-<ul>
-<li>支援複雜的排程模式(Cron表達式)</li>
-<li>具備叢集功能,確保高可用性</li>
-<li>提供任務持久化</li>
-<li>可靈活配置的錯誤處理機制</li>
-<li>豐富的監控與管理功能</li>
-</ul>
-<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>在開始使用 Quartz.NET 之前,我們需要理解幾個核心概念:</p>
-<ol>
-<li><strong>Job (工作)</strong>: 定義要執行的具體任務</li>
-<li><strong>Trigger (觸發器)</strong>: 決定任務何時執行</li>
-<li><strong>Scheduler (排程器)</strong>: 負責協調 Job 和 Trigger</li>
-</ol>
-<h2 id="實作範例"><a href="#實作範例" class="headerlink" title="實作範例"></a>實作範例</h2><h3 id="1-基本設置"><a href="#1-基本設置" class="headerlink" title="1. 基本設置"></a>1. 基本設置</h3><p>首先,使用 NuGet 安裝 Quartz 套件:</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Install-Package Quartz</span><br></pre></td></tr></table></figure>
+Scheduler Job Store Thread Pool Jobs Triggers Listeners Plugins Quartz.NET 是什麼?
+Quartz.NET 是 Java Quartz 排程框架的 .NET 移植版本,它提供了企業級的排程功能:
 
-<h3 id="2-建立簡單的-Job"><a href="#2-建立簡單的-Job" class="headerlink" title="2. 建立簡單的 Job"></a>2. 建立簡單的 Job</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定義一個簡單的工作</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HelloJob</span> : <span class="title">IJob</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task <span class="title">Execute</span>(<span class="params">IJobExecutionContext context</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 記錄工作執行時間</span></span><br><span class="line">        <span class="built_in">string</span> executeTime = DateTime.Now.ToString(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 執行工作邏輯</span></span><br><span class="line">        <span class="keyword">await</span> Console.Out.WriteLineAsync(<span class="string">$&quot;Hello! 執行時間: <span class="subst">&#123;executeTime&#125;</span>&quot;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 可以從 context 取得傳入的參數</span></span><br><span class="line">        <span class="keyword">var</span> dataMap = context.JobDetail.JobDataMap;</span><br><span class="line">        <span class="built_in">string</span> jobSays = dataMap.GetString(<span class="string">&quot;jobSays&quot;</span>);</span><br><span class="line">        <span class="keyword">await</span> Console.Out.WriteLineAsync(<span class="string">$&quot;參數值: <span class="subst">&#123;jobSays&#125;</span>&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-設置觸發器"><a href="#3-設置觸發器" class="headerlink" title="3. 設置觸發器"></a>3. 設置觸發器</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 建立排程器</span></span><br><span class="line">IScheduler scheduler = <span class="keyword">await</span> StdSchedulerFactory.GetDefaultScheduler();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定義工作</span></span><br><span class="line">IJobDetail job = JobBuilder.Create&lt;HelloJob&gt;()</span><br><span class="line">    .WithIdentity(<span class="string">&quot;helloJob&quot;</span>, <span class="string">&quot;group1&quot;</span>)    <span class="comment">// 設定工作名稱和群組</span></span><br><span class="line">    .UsingJobData(<span class="string">&quot;jobSays&quot;</span>, <span class="string">&quot;Hello World!&quot;</span>)  <span class="comment">// 傳入參數</span></span><br><span class="line">    .Build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 建立觸發器 - 每5秒執行一次</span></span><br><span class="line">ITrigger trigger = TriggerBuilder.Create()</span><br><span class="line">    .WithIdentity(<span class="string">&quot;trigger1&quot;</span>, <span class="string">&quot;group1&quot;</span>)    <span class="comment">// 設定觸發器名稱和群組</span></span><br><span class="line">    .StartNow()                            <span class="comment">// 立即開始</span></span><br><span class="line">    .WithSimpleSchedule(x =&gt; x            </span><br><span class="line">        .WithIntervalInSeconds(<span class="number">5</span>)          <span class="comment">// 間隔5秒</span></span><br><span class="line">        .RepeatForever())                  <span class="comment">// 永遠重複</span></span><br><span class="line">    .Build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 註冊工作和觸發器</span></span><br><span class="line"><span class="keyword">await</span> scheduler.ScheduleJob(job, trigger);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 啟動排程器</span></span><br><span class="line"><span class="keyword">await</span> scheduler.Start();</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-使用-Cron-表達式"><a href="#4-使用-Cron-表達式" class="headerlink" title="4. 使用 Cron 表達式"></a>4. 使用 Cron 表達式</h3><p>Cron 表達式提供了更靈活的排程設定:</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 建立每天早上 9:00 執行的觸發器</span></span><br><span class="line">ITrigger cronTrigger = TriggerBuilder.Create()</span><br><span class="line">    .WithIdentity(<span class="string">&quot;trigger2&quot;</span>, <span class="string">&quot;group1&quot;</span>)</span><br><span class="line">    .WithCronSchedule(<span class="string">&quot;0 0 9 * * ?&quot;</span>)  <span class="comment">// 每天早上 9:00</span></span><br><span class="line">    .Build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 註冊工作和觸發器</span></span><br><span class="line"><span class="keyword">await</span> scheduler.ScheduleJob(job, cronTrigger);</span><br></pre></td></tr></table></figure>
-
-<p>Cron 表達式說明:</p>
-<ul>
-<li>秒 分 時 日 月 星期 年</li>
-<li><code>0 0 9 * * ?</code> = 每天早上 9:00:00 執行</li>
-<li><code>0 0/30 * * * ?</code> = 每30分鐘執行一次</li>
-<li><code>0 0 9-17 * * ?</code> = 每天早上9點到下午5點執行</li>
-</ul>
-<h3 id="5-錯誤處理"><a href="#5-錯誤處理" class="headerlink" title="5. 錯誤處理"></a>5. 錯誤處理</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ErrorHandlingJob</span> : <span class="title">IJob</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task <span class="title">Execute</span>(<span class="params">IJobExecutionContext context</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 工作邏輯</span></span><br><span class="line">            <span class="keyword">await</span> DoWork();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Exception ex)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 記錄錯誤</span></span><br><span class="line">            <span class="keyword">await</span> LogError(ex);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 決定是否重試</span></span><br><span class="line">            <span class="keyword">if</span> (ShouldRetry(ex))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 觸發重試機制</span></span><br><span class="line">                <span class="keyword">await</span> TriggerRetry(context);</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 拋出例外,讓 Quartz 知道工作失敗</span></span><br><span class="line">            <span class="keyword">throw</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="最佳實踐建議"><a href="#最佳實踐建議" class="headerlink" title="最佳實踐建議"></a>最佳實踐建議</h2><ol>
-<li><p><strong>工作設計原則</strong></p>
-<ul>
-<li>保持工作的原子性</li>
-<li>避免長時間執行的工作</li>
-<li>實作適當的錯誤處理機制</li>
-</ul>
-</li>
-<li><p><strong>效能考量</strong></p>
-<ul>
-<li>適當設定執行緒池大小</li>
-<li>避免過於頻繁的排程</li>
-<li>考慮使用叢集來分散負載</li>
-</ul>
-</li>
-<li><p><strong>監控與維護</strong></p>
-<ul>
-<li>實作適當的記錄機制</li>
-<li>定期檢查工作執行狀態</li>
-<li>設置適當的警告機制</li>
-</ul>
-</li>
-</ol>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>Quartz.NET 是一個功能強大且靈活的排程框架,透過本文的介紹,相信您已經對它有了基本的認識。在實際應用中,建議根據專案需求選擇適當的功能組合,同時注意遵循最佳實踐原則,以建構出可靠的排程系統。</p>
-<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://www.quartz-scheduler.net/documentation/">Quartz.NET 官方文件</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/quartznet/quartznet">Quartz.NET GitHub</a></li>
-</ul>
-
+ * 支援複雜的排程模式(Cron表達式)
+ * 具備叢集功能,確保高可用性
+ * 提供
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1482,40 +928,30 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="Windows遠端桌面連線重置帳密教學"><a href="#Windows遠端桌面連線重置帳密教學" class="headerlink" title="Windows遠端桌面連線重置帳密教學"></a>Windows遠端桌面連線重置帳密教學</h1><p>在使用Windows遠端桌面連線(Remote Desktop Connection, RDP)時，有時候可能會遇到因為多次輸入錯誤帳號密碼，導致系統暫時鎖定無法重新輸入的情況。本文將教你如何快速解決這個問題，並提供一些預防措施。</p>
-<h2 id="問題說明"><a href="#問題說明" class="headerlink" title="問題說明"></a>問題說明</h2><p>當我們在進行遠端桌面連線時，如果連續輸入錯誤的帳號密碼，Windows會出現以下錯誤訊息：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">無法使用這個認證登入到遠端電腦。請確認你的認證是有效的，然後再試一次。如果問題持續發生，請連絡系統管理員。</span><br></pre></td></tr></table></figure>
+          Windows遠端桌面連線重置帳密教學
+在使用Windows遠端桌面連線(Remote Desktop Connection, RDP)時，有時候可能會遇到因為多次輸入錯誤帳號密碼，導致系統暫時鎖定無法重新輸入的情況。本文將教你如何快速解決這個問題，並提供一些預防措施。
 
-<p>這是Windows的安全機制，為了防止惡意程式暴力破解密碼而設計的保護措施。</p>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><h3 id="方法一：使用圖形介面清除認證"><a href="#方法一：使用圖形介面清除認證" class="headerlink" title="方法一：使用圖形介面清除認證"></a>方法一：使用圖形介面清除認證</h3><ol>
-<li>按下 Windows鍵 + R</li>
-<li>輸入 <code>control keymgr.dll</code> </li>
-<li>在開啟的「已儲存的使用者名稱和密碼」視窗中</li>
-<li>找到並刪除相關的遠端連線認證</li>
-<li>關閉視窗</li>
-<li>重新開啟遠端桌面連線程式</li>
-</ol>
-<h3 id="方法二：使用命令列清除認證"><a href="#方法二：使用命令列清除認證" class="headerlink" title="方法二：使用命令列清除認證"></a>方法二：使用命令列清除認證</h3><p>如果你比較習慣使用命令列介面，可以：</p>
-<ol>
-<li><p>以系統管理員身分開啟命令提示字元</p>
-</li>
-<li><p>執行以下指令查看已儲存的認證：</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmdkey /list</span><br></pre></td></tr></table></figure></li>
-<li><p>執行以下指令刪除特定認證：</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmdkey /delete:目標電腦名稱</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h2 id="預防措施"><a href="#預防措施" class="headerlink" title="預防措施"></a>預防措施</h2><p>為了避免類似問題再次發生，建議：</p>
-<ol>
-<li>將常用的遠端連線資訊儲存成 .rdp 檔案</li>
-<li>確實檢查帳號密碼再輸入</li>
-<li>考慮使用密碼管理工具</li>
-<li>定期更新Windows系統，確保安全性更新</li>
-</ol>
-<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-tw/windows-server/remote/remote-desktop-services/troubleshoot/rdp-error-general-troubleshooting">Microsoft 官方文件：遠端桌面連線疑難排解指南</a></li>
-<li><a target="_blank" rel="noopener" href="https://support.microsoft.com/zh-tw/windows/windows-credentials-manager">Windows 安全性中心：認證管理</a></li>
-</ul>
+問題說明
+當我們在進行遠端桌面連線時，如果連續輸入錯誤的帳號密碼，Windows會出現以下錯誤訊息：
 
+1
+
+
+無法使用這個認證登入到遠端電腦。請確認你的認證是有效的，然後再試一次。如果問題持續發生，請連絡系統管理員。
+
+
+這是Windows的安全機制，為了防止惡意程式暴力破解密碼而設計的保護措施。
+
+解決方法
+方法一：使用
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1615,110 +1051,22 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="使用-PowerShell-匯出完整的已安裝軟體清單"><a href="#使用-PowerShell-匯出完整的已安裝軟體清單" class="headerlink" title="使用 PowerShell 匯出完整的已安裝軟體清單"></a>使用 PowerShell 匯出完整的已安裝軟體清單</h1><p>在系統管理工作中,經常需要匯出電腦上已安裝的軟體清單。不過單純使用 Win32_Product 類別往往會漏掉許多軟體,因為現代軟體經常使用自己的安裝程式而非 Windows Installer。本文將介紹如何使用更全面的方法來取得完整的軟體清單。</p>
-<h2 id="為什麼需要掃描登錄檔"><a href="#為什麼需要掃描登錄檔" class="headerlink" title="為什麼需要掃描登錄檔"></a>為什麼需要掃描登錄檔</h2><p>Windows 系統中,已安裝的軟體資訊主要儲存在以下登錄檔位置:</p>
-<ul>
-<li>HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall</li>
-<li>HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall (32 位元軟體)</li>
-</ul>
-<p>這些位置包含了所有透過各種方式安裝的軟體資訊,比 Win32_Product 類別更完整。</p>
-<h2 id="完整的-PowerShell-腳本"><a href="#完整的-PowerShell-腳本" class="headerlink" title="完整的 PowerShell 腳本"></a>完整的 PowerShell 腳本</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 設定輸出編碼為 UTF8,避免中文亂碼</span></span><br><span class="line"><span class="variable">$OutputEncoding</span> = [<span class="type">System.Text.Encoding</span>]::UTF8</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定義要掃描的登錄檔路徑</span></span><br><span class="line"><span class="variable">$RegPaths</span> = <span class="selector-tag">@</span>(</span><br><span class="line">    <span class="string">&quot;HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*&quot;</span>,</span><br><span class="line">    <span class="string">&quot;HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 取得已安裝的軟體清單</span></span><br><span class="line"><span class="variable">$InstalledSoftware</span> = <span class="selector-tag">@</span>()</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$Path</span> <span class="keyword">in</span> <span class="variable">$RegPaths</span>) &#123;</span><br><span class="line">    <span class="comment"># 從登錄檔讀取軟體資訊</span></span><br><span class="line">    <span class="variable">$Software</span> = <span class="built_in">Get-ItemProperty</span> <span class="variable">$Path</span> |</span><br><span class="line">        <span class="comment"># 選擇需要的欄位</span></span><br><span class="line">        <span class="built_in">Select-Object</span> DisplayName, DisplayVersion, Publisher, InstallDate |</span><br><span class="line">        <span class="comment"># 過濾掉沒有名稱的項目(通常是更新檔)</span></span><br><span class="line">        <span class="built_in">Where-Object</span> &#123; <span class="variable">$_</span>.DisplayName &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="variable">$InstalledSoftware</span> += <span class="variable">$Software</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 依照軟體名稱排序並移除重複項目</span></span><br><span class="line"><span class="variable">$InstalledSoftware</span> = <span class="variable">$InstalledSoftware</span> |</span><br><span class="line">    <span class="built_in">Sort-Object</span> DisplayName <span class="literal">-Unique</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 設定輸出檔案路徑,存在桌面</span></span><br><span class="line"><span class="variable">$DesktopPath</span> = [<span class="type">Environment</span>]::GetFolderPath(<span class="string">&quot;Desktop&quot;</span>)</span><br><span class="line"><span class="variable">$OutputFile</span> = <span class="built_in">Join-Path</span> <span class="variable">$DesktopPath</span> <span class="string">&quot;installed_software_complete.csv&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 匯出成 CSV 檔案</span></span><br><span class="line"><span class="variable">$InstalledSoftware</span> | </span><br><span class="line">    <span class="built_in">Select-Object</span> <span class="selector-tag">@</span>&#123;N=<span class="string">&#x27;名稱&#x27;</span>;E=&#123;<span class="variable">$_</span>.DisplayName&#125;&#125;,</span><br><span class="line">                  <span class="selector-tag">@</span>&#123;N=<span class="string">&#x27;版本&#x27;</span>;E=&#123;<span class="variable">$_</span>.DisplayVersion&#125;&#125;,</span><br><span class="line">                  <span class="selector-tag">@</span>&#123;N=<span class="string">&#x27;發布者&#x27;</span>;E=&#123;<span class="variable">$_</span>.Publisher&#125;&#125;,</span><br><span class="line">                  <span class="selector-tag">@</span>&#123;N=<span class="string">&#x27;安裝日期&#x27;</span>;E=&#123;<span class="variable">$_</span>.InstallDate&#125;&#125; |</span><br><span class="line">    <span class="built_in">Export-Csv</span> <span class="literal">-Path</span> <span class="variable">$OutputFile</span> <span class="literal">-NoTypeInformation</span> <span class="literal">-Encoding</span> UTF8</span><br><span class="line"></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;軟體清單已匯出至: <span class="variable">$OutputFile</span>&quot;</span></span><br></pre></td></tr></table></figure>
+          使用 PowerShell 匯出完整的已安裝軟體清單
+在系統管理工作中,經常需要匯出電腦上已安裝的軟體清單。不過單純使用 Win32_Product 類別往往會漏掉許多軟體,因為現代軟體經常使用自己的安裝程式而非 Windows Installer。本文將介紹如何使用更全面的方法來取得完整的軟體清單。
 
-<h2 id="腳本說明"><a href="#腳本說明" class="headerlink" title="腳本說明"></a>腳本說明</h2><p>讓我們逐步解釋這個腳本的功能:</p>
-<ol>
-<li><p><strong>設定編碼</strong></p>
-<ul>
-<li>使用 UTF8 編碼確保中文字能正確顯示</li>
-<li>避免輸出的 CSV 檔案開啟時出現亂碼</li>
-</ul>
-</li>
-<li><p><strong>定義登錄檔路徑</strong></p>
-<ul>
-<li>設定兩個需要掃描的登錄檔位置</li>
-<li>包含 64 位元和 32 位元的軟體資訊</li>
-</ul>
-</li>
-<li><p><strong>讀取軟體資訊</strong></p>
-<ul>
-<li>使用 Get-ItemProperty 讀取登錄檔內容</li>
-<li>選擇重要欄位:名稱、版本、發布者、安裝日期</li>
-<li>過濾掉沒有名稱的項目(通常是更新檔或系統元件)</li>
-</ul>
-</li>
-<li><p><strong>資料處理</strong></p>
-<ul>
-<li>合併兩個登錄檔路徑的資料</li>
-<li>依照軟體名稱排序</li>
-<li>移除重複的項目</li>
-</ul>
-</li>
-<li><p><strong>匯出資料</strong></p>
-<ul>
-<li>將欄位名稱改為中文,方便閱讀</li>
-<li>匯出成 CSV 格式,存放在桌面</li>
-</ul>
-</li>
-</ol>
-<h2 id="執行結果"><a href="#執行結果" class="headerlink" title="執行結果"></a>執行結果</h2><p>執行後會在桌面產生 installed_software_complete.csv 檔案,打開後可以看到類似以下的內容:</p>
-<table>
-<thead>
-<tr>
-<th>名稱</th>
-<th>版本</th>
-<th>發布者</th>
-<th>安裝日期</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Adobe Creative Cloud</td>
-<td>5.11.0.522</td>
-<td>Adobe Inc.</td>
-<td>20231201</td>
-</tr>
-<tr>
-<td>Google Chrome</td>
-<td>120.0.6099.130</td>
-<td>Google LLC</td>
-<td>20231215</td>
-</tr>
-<tr>
-<td>Microsoft Office</td>
-<td>16.0.17201.20290</td>
-<td>Microsoft Corporation</td>
-<td>20230601</td>
-</tr>
-<tr>
-<td>PyCharm 2023.3</td>
-<td>233.11799.298</td>
-<td>JetBrains s.r.o.</td>
-<td>20231220</td>
-</tr>
-<tr>
-<td>Visual Studio Code</td>
-<td>1.85.1</td>
-<td>Microsoft Corporation</td>
-<td>20231218</td>
-</tr>
-</tbody></table>
-<h2 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h2><ol>
-<li>此腳本需要以系統管理員權限執行</li>
-<li>某些軟體可能沒有完整的安裝資訊</li>
-<li>安裝日期格式可能因軟體而異</li>
-</ol>
-<h2 id="進階使用"><a href="#進階使用" class="headerlink" title="進階使用"></a>進階使用</h2><p>如果需要更多資訊,可以修改 Select-Object 的欄位,例如:</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Select-Object</span> DisplayName, DisplayVersion, Publisher, InstallDate, </span><br><span class="line">            InstallLocation, UninstallString, EstimatedSize</span><br></pre></td></tr></table></figure>
+為什麼需要掃描登錄檔
+Windows 系統中,已安裝的軟體資訊主要儲存在以下登錄檔位置:
 
-<p>這樣就能同時匯出:</p>
-<ul>
-<li>安裝路徑 (InstallLocation)</li>
-<li>解除安裝指令 (UninstallString)</li>
-<li>預估大小 (EstimatedSize)</li>
-</ul>
-<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_registry_provider">Microsoft Docs: About Registry Providers</a></li>
-<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-itemproperty">Microsoft Docs: Get-ItemProperty</a></li>
-</ul>
-
+ * HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall
+ * HKLM:\SOFTWARE\WOW6432Node\Microsoft\
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1824,39 +1172,23 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="序言-三十而立的感悟"><a href="#序言-三十而立的感悟" class="headerlink" title="序言 - 三十而立的感悟"></a>序言 - 三十而立的感悟</h1><p>時光飛逝，回首2024年，不知不覺已經走過了四年的職場生涯，也迎來了人生的第三個十年。古人說「三十而立」，對我來說，這確實是一個值得停下腳步，好好思考未來方向的時刻。</p>
-<h1 id="2024年度成果總結"><a href="#2024年度成果總結" class="headerlink" title="2024年度成果總結"></a>2024年度成果總結</h1><h2 id="持續寫作的堅持"><a href="#持續寫作的堅持" class="headerlink" title="持續寫作的堅持"></a>持續寫作的堅持</h2><p>2024年總共完成了93篇文章，平均每個月將近8篇的產出量。寫作對我來說，不僅是記錄生活、分享經驗的方式，更是一種自我成長的過程。每一篇文章都代表了一次思考、一次沉澱，也是未來回顧時最珍貴的印記。</p>
-<h2 id="工作與旅遊的平衡"><a href="#工作與旅遊的平衡" class="headerlink" title="工作與旅遊的平衡"></a>工作與旅遊的平衡</h2><p>今年最難忘的經歷之一，莫過於公司安排的日本東京七天員工旅行。除了體驗日本的文化與美食，這次旅行也讓我對台灣的經濟現況有了新的認識。記得在東京銀座逛街時驚訝地發現，許多商品的價格竟然與台北相差無幾，這讓我不禁思考台灣這幾年物價上漲的速度。</p>
-<h1 id="投資理財的初體驗"><a href="#投資理財的初體驗" class="headerlink" title="投資理財的初體驗"></a>投資理財的初體驗</h1><h2 id="從0到1的股市之路"><a href="#從0到1的股市之路" class="headerlink" title="從0到1的股市之路"></a>從0到1的股市之路</h2><p>2024年是我投資理財的元年，第一次踏入股市這個大江湖。回顧這一年的投資歷程：</p>
-<p>台股方面：</p>
-<ul>
-<li>已實現損益：+14,791元</li>
-<li>未實現損益：-14,321元</li>
-</ul>
-<p>美股方面：</p>
-<ul>
-<li>已實現損益：+3,301.01美元</li>
-<li>未實現損益：-825.75美元</li>
-</ul>
-<p>整體而言，雖然賺的不多，但作為投資新手，能夠在第一年就取得正收益，我認為是一個不錯的開始。</p>
-<h2 id="新手投資者的三大學習"><a href="#新手投資者的三大學習" class="headerlink" title="新手投資者的三大學習"></a>新手投資者的三大學習</h2><ol>
-<li><strong>不要追高</strong>：最慘痛的教訓就是在股價高點追入，結果遇到回檔</li>
-<li><strong>設定停損</strong>：情緒管理很重要，要學會適時認賠</li>
-<li><strong>分散投資</strong>：不要把雞蛋都放在同一個籃子裡</li>
-</ol>
-<h1 id="2025年度展望"><a href="#2025年度展望" class="headerlink" title="2025年度展望"></a>2025年度展望</h1><p>展望2025年，我給自己設定了幾個目標：</p>
-<ol>
-<li><strong>寫作目標</strong>：挑戰突破100篇的年度產量</li>
-<li><strong>投資計畫</strong>：<ul>
-<li>建立更完整的投資組合</li>
-<li>設定更嚴格的資金控管</li>
-<li>學習更多投資知識</li>
-</ul>
-</li>
-<li><strong>職涯發展</strong>：在工作上尋求更多成長機會</li>
-</ol>
-<h1 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h1><p>2024年對我來說是一個轉捩點，不僅開始了投資理財的新篇章，更標誌著我人生的新階段。展望2025年，期許自己能夠在各個領域都有更好的表現，無論是寫作、投資還是職涯發展，都能夠穩步向前，創造屬於自己的精彩人生。</p>
+          序言 - 三十而立的感悟
+時光飛逝，回首2024年，不知不覺已經走過了四年的職場生涯，也迎來了人生的第三個十年。古人說「三十而立」，對我來說，這確實是一個值得停下腳步，好好思考未來方向的時刻。
 
+2024年度成果總結
+持續寫作的堅持
+2024年總共完成了93篇文章，平均每個月將近8篇的產出量。寫作對我來說，不僅是記錄生活、分享經驗的方式，更是一種自我成長的過程。每一篇文章都代表了一次思考、一次沉澱，也是未來回顧時最珍貴的印記。
+
+工作與旅遊的平衡
+今年最難忘的經歷之一，莫過於公司安排的日本東京七天員工旅行。除了體驗日本的文化與美食，這次旅行也讓我對台灣的經濟現況有了新的認識。記得在東京銀座逛街
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1962,84 +1294,32 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>在開發完Python程式後,常常會需要將程式打包成exe檔案,方便在其他電腦上執行。本文將詳細說明如何使用PyInstaller工具,將Python程式打包成獨立的執行檔。特別針對使用PySide6開發的GUI應用程式,提供完整的打包設定和解決方案。</p>
-<h2 id="打包工具介紹"><a href="#打包工具介紹" class="headerlink" title="打包工具介紹"></a>打包工具介紹</h2><p>PyInstaller是目前最流行的Python打包工具之一,它可以:</p>
-<ul>
-<li>將Python程式和所需的函式庫打包成單一執行檔</li>
-<li>自動分析程式相依性</li>
-<li>支援多種Python套件</li>
-<li>跨平台打包支援</li>
-</ul>
-<h2 id="打包的基本步驟"><a href="#打包的基本步驟" class="headerlink" title="打包的基本步驟"></a>打包的基本步驟</h2><h3 id="1-安裝PyInstaller"><a href="#1-安裝PyInstaller" class="headerlink" title="1. 安裝PyInstaller"></a>1. 安裝PyInstaller</h3><p>首先需要安裝PyInstaller套件:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install pyinstaller</span><br></pre></td></tr></table></figure>
+          在開發完Python程式後,常常會需要將程式打包成exe檔案,方便在其他電腦上執行。本文將詳細說明如何使用PyInstaller工具,將Python程式打包成獨立的執行檔。特別針對使用PySide6開發的GUI應用程式,提供完整的打包設定和解決方案。
 
-<h3 id="2-準備打包環境"><a href="#2-準備打包環境" class="headerlink" title="2. 準備打包環境"></a>2. 準備打包環境</h3><p>在打包之前,建議先建立一個獨立的虛擬環境:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 建立虛擬環境</span></span><br><span class="line">python -m venv venv</span><br><span class="line"></span><br><span class="line"><span class="comment"># 啟動虛擬環境</span></span><br><span class="line"><span class="comment"># Windows</span></span><br><span class="line">venv\Scripts\activate</span><br><span class="line"><span class="comment"># Linux/Mac</span></span><br><span class="line"><span class="built_in">source</span> venv/bin/activate</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安裝必要套件</span></span><br><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
+打包工具介紹
+PyInstaller是目前最流行的Python打包工具之一,它可以:
 
-<h3 id="3-PySide6特殊設定"><a href="#3-PySide6特殊設定" class="headerlink" title="3. PySide6特殊設定"></a>3. PySide6特殊設定</h3><p>使用PySide6開發的應用程式需要特別注意以下幾點:</p>
-<ol>
-<li>確保正確引入所需的PySide6模組</li>
-<li>處理資源檔案(圖片、樣式表等)</li>
-<li>設定正確的打包參數</li>
-</ol>
-<p>建議在程式碼中使用相對路徑存取資源檔案:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pathlib <span class="keyword">import</span> Path</span><br><span class="line"></span><br><span class="line"><span class="comment"># 取得程式所在目錄</span></span><br><span class="line">BASE_DIR = Path(__file__).resolve().parent</span><br><span class="line"></span><br><span class="line"><span class="comment"># 載入資源檔案</span></span><br><span class="line">style_file = BASE_DIR / <span class="string">&#x27;styles.json&#x27;</span></span><br></pre></td></tr></table></figure>
+ * 將Python程式和所需的函式庫打包成單一執行檔
+ * 自動分析程式相依性
+ * 支援多種Python套件
+ * 跨平台打包支援
 
-<h3 id="4-打包指令和參數說明"><a href="#4-打包指令和參數說明" class="headerlink" title="4. 打包指令和參數說明"></a>4. 打包指令和參數說明</h3><p>基本打包指令:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pyinstaller main.py</span><br></pre></td></tr></table></figure>
+打包的基本步驟
+1. 安裝PyInstaller
+首先需要安裝PyInstaller套件:
 
-<p>針對PySide6應用程式的完整打包指令:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">pyinstaller --name=<span class="string">&quot;HexoEditor&quot;</span> ^</span><br><span class="line">            --windowed ^</span><br><span class="line">            --icon=icon.ico ^</span><br><span class="line">            --add-data=<span class="string">&quot;styles.json;.&quot;</span> ^</span><br><span class="line">            --add-data=<span class="string">&quot;category_config.json;.&quot;</span> ^</span><br><span class="line">            --add-data=<span class="string">&quot;tag_config.json;.&quot;</span> ^</span><br><span class="line">            --hidden-import=PySide6.QtXml ^</span><br><span class="line">            main.py</span><br></pre></td></tr></table></figure>
+1
 
-<p>參數說明:</p>
-<ul>
-<li><code>--name</code>: 指定輸出的執行檔名稱</li>
-<li><code>--windowed</code>: 不顯示命令列視窗</li>
-<li><code>--icon</code>: 指定應用程式圖示</li>
-<li><code>--add-data</code>: 加入額外的資源檔案</li>
-<li><code>--hidden-import</code>: 加入隱含的相依套件</li>
-</ul>
-<h3 id="5-處理常見問題"><a href="#5-處理常見問題" class="headerlink" title="5. 處理常見問題"></a>5. 處理常見問題</h3><ol>
-<li><p>找不到模組或檔案</p>
-<ul>
-<li>使用<code>--hidden-import</code>參數加入相依套件</li>
-<li>使用<code>--add-data</code>加入資源檔案</li>
-</ul>
-</li>
-<li><p>執行檔太大</p>
-<ul>
-<li>使用<code>--exclude-module</code>排除不需要的模組</li>
-<li>清理虛擬環境中不必要的套件</li>
-</ul>
-</li>
-<li><p>啟動時出現錯誤</p>
-<ul>
-<li>檢查是否有正確處理檔案路徑</li>
-<li>確認所有相依套件都已包含</li>
-</ul>
-</li>
-<li><p>PySide6特有問題</p>
-<ul>
-<li>確保加入QtWebEngine相關檔案</li>
-<li>處理plugins和platforms目錄</li>
-</ul>
-</li>
-</ol>
-<h2 id="成品檢查清單"><a href="#成品檢查清單" class="headerlink" title="成品檢查清單"></a>成品檢查清單</h2><p>打包完成後,建議檢查以下項目:</p>
-<ul>
-<li><input disabled="" type="checkbox"> 執行檔是否可以正常啟動</li>
-<li><input disabled="" type="checkbox"> 所有功能是否正常運作</li>
-<li><input disabled="" type="checkbox"> 資源檔案是否正確載入</li>
-<li><input disabled="" type="checkbox"> 是否有不必要的檔案可以清理</li>
-<li><input disabled="" type="checkbox"> 檔案大小是否合理</li>
-</ul>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>使用PyInstaller打包Python程式是一個相對直接的過程,但需要注意一些細節。特別是對於使用PySide6開發的GUI應用程式,正確的設定和參數選擇能夠確保打包結果的品質。希望這篇教學能幫助你順利完成程式的打包工作。</p>
-<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://pyinstaller.org/en/stable/">PyInstaller官方文件</a></li>
-<li><a target="_blank" rel="noopener" href="https://doc.qt.io/qtforpython-6/">PySide6文件</a></li>
-<li><a target="_blank" rel="noopener" href="https://packaging.python.org/guides/distributing-packages-using-setuptools/">Python打包指南</a></li>
-</ul>
 
+pip insta
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -2145,101 +1425,30 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>你有遇過這些寫 HEXO 部落格的小困擾嗎？</p>
-<ul>
-<li>一邊寫文章一邊要切換視窗預覽效果</li>
-<li>想要快速修改文章的標題、分類和標籤要手動改 YAML</li>
-<li>分類和標籤越來越多，不知道之前用過哪些</li>
-<li>想要備份所有文章，還要自己一個一個找檔案</li>
-</ul>
-<p>如果有類似困擾的話，不妨試試看這個專為 HEXO 部落客設計的桌面編輯器 - <strong>HEXO Editor Desktop</strong>！</p>
-<h2 id="🌟-HEXO-Editor-有什麼特別的？"><a href="#🌟-HEXO-Editor-有什麼特別的？" class="headerlink" title="🌟 HEXO Editor 有什麼特別的？"></a>🌟 HEXO Editor 有什麼特別的？</h2><p>這是一款開源的跨平台編輯器，專注於改善 HEXO 部落客的寫作體驗。透過圖形化介面，讓你可以更專注在內容創作上。</p>
-<h3 id="主要功能"><a href="#主要功能" class="headerlink" title="主要功能"></a>主要功能</h3><ol>
-<li><p><strong>一站式編輯環境</strong></p>
-<ul>
-<li>Markdown 編輯器配合即時預覽功能</li>
-<li>圖形化設定 Front Matter</li>
-<li>分割畫面設計，編輯和預覽一次搞定</li>
-</ul>
-</li>
-<li><p><strong>分類標籤管理</strong></p>
-<ul>
-<li>支援多層級分類</li>
-<li>顯示標籤使用統計</li>
-<li>自動完成建議功能</li>
-</ul>
-</li>
-<li><p><strong>實用功能</strong></p>
-<ul>
-<li>支援快速鍵（如 Ctrl+S 儲存）</li>
-<li>可搜尋過濾文章</li>
-<li>一鍵備份匯出</li>
-</ul>
-</li>
-<li><p><strong>支援多種作業系統</strong></p>
-<ul>
-<li>Windows</li>
-<li>macOS</li>
-<li>Linux</li>
-</ul>
-</li>
-</ol>
-<h2 id="💡-實際操作介紹"><a href="#💡-實際操作介紹" class="headerlink" title="💡 實際操作介紹"></a>💡 實際操作介紹</h2><h3 id="1-寫作流程"><a href="#1-寫作流程" class="headerlink" title="1. 寫作流程"></a>1. 寫作流程</h3><p>開啟程式後：</p>
-<ul>
-<li>選擇你的 HEXO 部落格資料夾</li>
-<li>在左側列表中尋找或搜尋文章</li>
-<li>使用右側編輯區修改內容</li>
-<li>同時預覽文章呈現效果</li>
-</ul>
-<h3 id="2-Front-Matter-設定"><a href="#2-Front-Matter-設定" class="headerlink" title="2. Front Matter 設定"></a>2. Front Matter 設定</h3><p>使用圖形化介面輕鬆設定：</p>
-<ul>
-<li>文章標題</li>
-<li>發布時間</li>
-<li>封面圖片</li>
-<li>分類和標籤</li>
-<li>其他自訂欄位</li>
-</ul>
-<h3 id="3-分類標籤整理"><a href="#3-分類標籤整理" class="headerlink" title="3. 分類標籤整理"></a>3. 分類標籤整理</h3><p>完整的管理功能：</p>
-<ul>
-<li>檢視所有分類和標籤</li>
-<li>查看使用次數統計</li>
-<li>合併或重新命名</li>
-<li>管理階層式分類</li>
-</ul>
-<h3 id="4-備份功能"><a href="#4-備份功能" class="headerlink" title="4. 備份功能"></a>4. 備份功能</h3><p>簡單的備份流程：</p>
-<ul>
-<li>自動打包成 ZIP 檔</li>
-<li>包含文章和相關檔案</li>
-<li>方便備份和轉移</li>
-</ul>
-<h2 id="🚀-開始使用"><a href="#🚀-開始使用" class="headerlink" title="🚀 開始使用"></a>🚀 開始使用</h2><h3 id="環境需求"><a href="#環境需求" class="headerlink" title="環境需求"></a>環境需求</h3><ul>
-<li>Python 3.8 以上版本</li>
-<li>PySide6</li>
-<li>Git (選用)</li>
-</ul>
-<h3 id="安裝步驟"><a href="#安裝步驟" class="headerlink" title="安裝步驟"></a>安裝步驟</h3><ol>
-<li><p>下載專案：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/kyosora/hexo-editor-desktop.git</span><br><span class="line"><span class="built_in">cd</span> hexo-editor-desktop</span><br></pre></td></tr></table></figure></li>
-<li><p>安裝套件：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure></li>
-<li><p>執行程式：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python main.py</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h2 id="🤝-一起參與開發"><a href="#🤝-一起參與開發" class="headerlink" title="🤝 一起參與開發"></a>🤝 一起參與開發</h2><p>這是一個開源專案，歡迎各種形式的貢獻：</p>
-<ol>
-<li>到 <a target="_blank" rel="noopener" href="https://github.com/kyosora/hexo-editor-desktop">GitHub</a> 給個星星支持</li>
-<li>回報問題或提供建議</li>
-<li>提交程式碼改善</li>
-<li>協助翻譯文件</li>
-</ol>
-<h2 id="📝-小結"><a href="#📝-小結" class="headerlink" title="📝 小結"></a>📝 小結</h2><p>HEXO Editor Desktop 希望能幫助部落客更專注在寫作上，減少處理技術細節的時間。這個專案正在持續發展中，歡迎大家一起參與，讓它變得更好！</p>
-<h2 id="🔗-相關連結"><a href="#🔗-相關連結" class="headerlink" title="🔗 相關連結"></a>🔗 相關連結</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://github.com/kyosora/hexo-editor-desktop">GitHub 專案</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/kyosora/hexo-editor-desktop/issues">問題回報</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/kyosora/hexo-editor-desktop/blob/main/CONTRIBUTING.md">貢獻指南</a></li>
-</ul>
-<p>如果你對這個工具有任何想法或建議，都歡迎在 GitHub 上討論交流！</p>
+          你有遇過這些寫 HEXO 部落格的小困擾嗎？
 
+ * 一邊寫文章一邊要切換視窗預覽效果
+ * 想要快速修改文章的標題、分類和標籤要手動改 YAML
+ * 分類和標籤越來越多，不知道之前用過哪些
+ * 想要備份所有文章，還要自己一個一個找檔案
+
+如果有類似困擾的話，不妨試試看這個專為 HEXO 部落客設計的桌面編輯器 - HEXO Editor Desktop！
+
+🌟 HEXO Editor 有什麼特別的？
+這是一款開源的跨平台編輯器，專注於改善 HEXO 部落客的寫作體驗。透過圖形化介面，讓你可以更專注在內容創作上。
+
+主要功能
+ 1. 一站式編輯環境
+    
+     * Markdow
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -2282,7 +1491,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">303k</span>
+    <span title="總字數">302k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">

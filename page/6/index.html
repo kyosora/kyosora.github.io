@@ -317,31 +317,24 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="如何快速刪除包含數百萬文件的資料夾：Windows-批次檔案解決方案"><a href="#如何快速刪除包含數百萬文件的資料夾：Windows-批次檔案解決方案" class="headerlink" title="如何快速刪除包含數百萬文件的資料夾：Windows 批次檔案解決方案"></a>如何快速刪除包含數百萬文件的資料夾：Windows 批次檔案解決方案</h1><p>在日常工作中，我們偶爾會遇到一些看似簡單，實則棘手的問題。最近，我就遇到了這樣一個挑戰：如何刪除一個包含超過兩百萬個文件的資料夾。</p>
-<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>我有一個資料夾，裡面累積了超過兩百萬個文件。當我試圖通過 Windows 檔案總管直接刪除這個資料夾時，系統就會卡死，無法完成操作。這是因為 Windows 在處理如此大量的文件時會變得異常緩慢，甚至完全無響應。</p>
-<h2 id="解決方案：使用批次檔案"><a href="#解決方案：使用批次檔案" class="headerlink" title="解決方案：使用批次檔案"></a>解決方案：使用批次檔案</h2><p>在嘗試了多種方法後，我發現使用 Windows 批次檔案（.bat）是最有效的解決方案。這種方法不僅能夠處理大量文件，而且速度相當快。</p>
-<p>以下是我使用的批次檔案代碼：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">@echo off</span><br><span class="line">setlocal enabledelayedexpansion</span><br><span class="line"></span><br><span class="line">set &quot;folder_path=%~dp0&quot;</span><br><span class="line"></span><br><span class="line">echo 警告：此批次檔案將快速刪除以下資料夾中的所有檔案和子資料夾：</span><br><span class="line">echo %folder_path%</span><br><span class="line">echo.</span><br><span class="line">echo 請確認這是您想要清空的正確資料夾。</span><br><span class="line">echo 按 Y 繼續，或按任意其他鍵取消操作。</span><br><span class="line">set /p confirm=確認刪除 (Y/N)? </span><br><span class="line"></span><br><span class="line">if /i &quot;%confirm%&quot; neq &quot;Y&quot; (</span><br><span class="line">    echo 操作已取消。</span><br><span class="line">    goto :EOF</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">echo.</span><br><span class="line">echo 正在快速刪除所有內容，請稍候...</span><br><span class="line"></span><br><span class="line">pushd &quot;%folder_path%&quot;</span><br><span class="line"></span><br><span class="line">:: 使用 robocopy 來快速清空資料夾</span><br><span class="line">mkdir empty_temp</span><br><span class="line">robocopy empty_temp . /mir /mt:32</span><br><span class="line"></span><br><span class="line">:: 刪除臨時資料夾</span><br><span class="line">rmdir empty_temp</span><br><span class="line"></span><br><span class="line">popd</span><br><span class="line"></span><br><span class="line">echo 所有內容已被刪除。</span><br><span class="line"></span><br><span class="line">echo.</span><br><span class="line">echo 按任意鍵退出。</span><br><span class="line">pause &gt; nul</span><br></pre></td></tr></table></figure>
+          如何快速刪除包含數百萬文件的資料夾：Windows 批次檔案解決方案
+在日常工作中，我們偶爾會遇到一些看似簡單，實則棘手的問題。最近，我就遇到了這樣一個挑戰：如何刪除一個包含超過兩百萬個文件的資料夾。
 
-<h2 id="如何使用這個批次檔案"><a href="#如何使用這個批次檔案" class="headerlink" title="如何使用這個批次檔案"></a>如何使用這個批次檔案</h2><ol>
-<li>將上面的代碼複製到一個文本編輯器中（如記事本）。</li>
-<li>將文件保存為 <code>.bat</code> 格式，例如 <code>fast_delete_all.bat</code>。</li>
-<li>將這個 <code>.bat</code> 文件放在你想要清空的資料夾中。</li>
-<li>雙擊運行該 <code>.bat</code> 文件。</li>
-<li>仔細閱讀警告信息，確認路徑是否正確。</li>
-<li>如果確認無誤，輸入 &#39;Y&#39; 並按 Enter 執行刪除操作。</li>
-</ol>
-<h2 id="為什麼這個方法有效"><a href="#為什麼這個方法有效" class="headerlink" title="為什麼這個方法有效"></a>為什麼這個方法有效</h2><p>這個批次檔案之所以能夠快速處理大量文件，主要是因為它使用了 <code>robocopy</code> 命令。<code>robocopy</code>（Robust File Copy）是 Windows 的一個強大的文件複製工具，但在這裡我們巧妙地用它來&quot;複製&quot;一個空資料夾，從而達到快速清空目標資料夾的效果。</p>
-<p><code>/mir</code> 參數使 <code>robocopy</code> 鏡像空資料夾到目標資料夾，實際上刪除了所有內容。而 <code>/mt:32</code> 參數啟用了多線程操作，大大加快了處理速度。</p>
-<h2 id="安全提示"><a href="#安全提示" class="headerlink" title="安全提示"></a>安全提示</h2><p>雖然這個方法非常有效，但也請記住：</p>
-<ol>
-<li>使用前務必仔細檢查要刪除的資料夾路徑是否正確。</li>
-<li>這個批次檔案會刪除指定資料夾中的所有內容，包括子資料夾和隱藏文件，請確保你真的想要刪除所有內容。</li>
-<li>建議在執行前先備份重要數據。</li>
-</ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>當面對需要刪除大量文件的情況時，Windows 內建的刪除功能可能會讓你失望。但是，通過使用這個簡單的批次檔案，你可以輕鬆且快速地解決這個問題。這不僅節省了時間，也避免了系統卡死的風險。</p>
-<p>希望這個解決方案能幫助到遇到類似問題的朋友。</p>
+問題描述
+我有一個資料夾，裡面累積了超過兩百萬個文件。當我試圖通過 Windows 檔案總管直接刪除這個資料夾時，系統就會卡死，無法完成操作。這是因為 Windows 在處理如此大量的文件時會變得異常緩慢，甚至完全無響應。
 
+解決方案：使用批次檔案
+在嘗試了多種方法後，我發現使用 Windows 批次檔案（.bat）是最有效的解決方案。這種方法不僅能夠處理大量文件，而且速度相當快。
+
+以下是我
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -447,56 +440,48 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="SQL中的CASE語法-強大而靈活的條件表達式"><a href="#SQL中的CASE語法-強大而靈活的條件表達式" class="headerlink" title="SQL中的CASE語法:強大而靈活的條件表達式"></a>SQL中的CASE語法:強大而靈活的條件表達式</h1><p>在SQL中,CASE語法是一個非常實用且強大的工具。它允許我們在查詢中進行條件判斷,根據不同的情況返回不同的結果。本文將深入探討CASE語法的用法、優點以及實際應用場景。</p>
-<h2 id="CASE語法的基本結構"><a href="#CASE語法的基本結構" class="headerlink" title="CASE語法的基本結構"></a>CASE語法的基本結構</h2><p>CASE語法有兩種基本形式:簡單CASE和搜索CASE。</p>
-<h3 id="簡單CASE語法"><a href="#簡單CASE語法" class="headerlink" title="簡單CASE語法"></a>簡單CASE語法</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CASE</span> 表達式</span><br><span class="line">    <span class="keyword">WHEN</span> 值<span class="number">1</span> <span class="keyword">THEN</span> 結果<span class="number">1</span></span><br><span class="line">    <span class="keyword">WHEN</span> 值<span class="number">2</span> <span class="keyword">THEN</span> 結果<span class="number">2</span></span><br><span class="line">    ...</span><br><span class="line">    [<span class="keyword">ELSE</span> 其他結果]</span><br><span class="line"><span class="keyword">END</span></span><br></pre></td></tr></table></figure>
+          SQL中的CASE語法:強大而靈活的條件表達式
+在SQL中,CASE語法是一個非常實用且強大的工具。它允許我們在查詢中進行條件判斷,根據不同的情況返回不同的結果。本文將深入探討CASE語法的用法、優點以及實際應用場景。
 
-<h3 id="搜索CASE語法"><a href="#搜索CASE語法" class="headerlink" title="搜索CASE語法"></a>搜索CASE語法</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CASE</span></span><br><span class="line">    <span class="keyword">WHEN</span> 條件<span class="number">1</span> <span class="keyword">THEN</span> 結果<span class="number">1</span></span><br><span class="line">    <span class="keyword">WHEN</span> 條件<span class="number">2</span> <span class="keyword">THEN</span> 結果<span class="number">2</span></span><br><span class="line">    ...</span><br><span class="line">    [<span class="keyword">ELSE</span> 其他結果]</span><br><span class="line"><span class="keyword">END</span></span><br></pre></td></tr></table></figure>
+CASE語法的基本結構
+CASE語法有兩種基本形式:簡單CASE和搜索CASE。
 
-<h2 id="CASE語法的優點"><a href="#CASE語法的優點" class="headerlink" title="CASE語法的優點"></a>CASE語法的優點</h2><ol>
-<li>靈活性:可以處理複雜的條件邏輯</li>
-<li>可讀性:使查詢更易於理解</li>
-<li>效能:通常比使用多個IF語句更有效率</li>
-<li>多功能性:可以在SELECT、WHERE、ORDER BY等子句中使用</li>
-</ol>
-<h2 id="實際應用場景"><a href="#實際應用場景" class="headerlink" title="實際應用場景"></a>實際應用場景</h2><p>讓我們來看幾個CASE語法的實際應用例子:</p>
-<h3 id="例子1-根據成績分級"><a href="#例子1-根據成績分級" class="headerlink" title="例子1:根據成績分級"></a>例子1:根據成績分級</h3><p>假設我們有一個包含學生成績的資料表,我們想要根據分數給出對應的等級:</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    學生姓名,</span><br><span class="line">    分數,</span><br><span class="line">    <span class="keyword">CASE</span> </span><br><span class="line">        <span class="keyword">WHEN</span> 分數 <span class="operator">&gt;=</span> <span class="number">90</span> <span class="keyword">THEN</span> <span class="string">&#x27;A&#x27;</span></span><br><span class="line">        <span class="keyword">WHEN</span> 分數 <span class="operator">&gt;=</span> <span class="number">80</span> <span class="keyword">THEN</span> <span class="string">&#x27;B&#x27;</span></span><br><span class="line">        <span class="keyword">WHEN</span> 分數 <span class="operator">&gt;=</span> <span class="number">70</span> <span class="keyword">THEN</span> <span class="string">&#x27;C&#x27;</span></span><br><span class="line">        <span class="keyword">WHEN</span> 分數 <span class="operator">&gt;=</span> <span class="number">60</span> <span class="keyword">THEN</span> <span class="string">&#x27;D&#x27;</span></span><br><span class="line">        <span class="keyword">ELSE</span> <span class="string">&#x27;F&#x27;</span></span><br><span class="line">    <span class="keyword">END</span> <span class="keyword">AS</span> 等級</span><br><span class="line"><span class="keyword">FROM</span> 學生成績表;</span><br></pre></td></tr></table></figure>
+簡單CASE語法
+1
+2
+3
+4
+5
+6
 
-<h3 id="例子2-根據部門計算不同的薪資增長"><a href="#例子2-根據部門計算不同的薪資增長" class="headerlink" title="例子2:根據部門計算不同的薪資增長"></a>例子2:根據部門計算不同的薪資增長</h3><p>假設不同部門有不同的薪資增長率:</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    員工姓名,</span><br><span class="line">    部門,</span><br><span class="line">    目前薪資,</span><br><span class="line">    <span class="keyword">CASE</span> 部門</span><br><span class="line">        <span class="keyword">WHEN</span> <span class="string">&#x27;銷售&#x27;</span> <span class="keyword">THEN</span> 目前薪資 <span class="operator">*</span> <span class="number">1.1</span></span><br><span class="line">        <span class="keyword">WHEN</span> <span class="string">&#x27;技術&#x27;</span> <span class="keyword">THEN</span> 目前薪資 <span class="operator">*</span> <span class="number">1.05</span></span><br><span class="line">        <span class="keyword">WHEN</span> <span class="string">&#x27;行政&#x27;</span> <span class="keyword">THEN</span> 目前薪資 <span class="operator">*</span> <span class="number">1.03</span></span><br><span class="line">        <span class="keyword">ELSE</span> 目前薪資</span><br><span class="line">    <span class="keyword">END</span> <span class="keyword">AS</span> 調整後薪資</span><br><span class="line"><span class="keyword">FROM</span> 員工資料表;</span><br></pre></td></tr></table></figure>
 
-<h3 id="例子3-在GROUP-BY中使用CASE"><a href="#例子3-在GROUP-BY中使用CASE" class="headerlink" title="例子3:在GROUP BY中使用CASE"></a>例子3:在GROUP BY中使用CASE</h3><p>CASE語法也可以用在GROUP BY子句中,實現更複雜的分組邏輯:</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    <span class="keyword">CASE</span> </span><br><span class="line">        <span class="keyword">WHEN</span> 年齡 <span class="operator">&lt;</span> <span class="number">18</span> <span class="keyword">THEN</span> <span class="string">&#x27;未成年&#x27;</span></span><br><span class="line">        <span class="keyword">WHEN</span> 年齡 <span class="keyword">BETWEEN</span> <span class="number">18</span> <span class="keyword">AND</span> <span class="number">65</span> <span class="keyword">THEN</span> <span class="string">&#x27;成年&#x27;</span></span><br><span class="line">        <span class="keyword">ELSE</span> <span class="string">&#x27;銀髮族&#x27;</span></span><br><span class="line">    <span class="keyword">END</span> <span class="keyword">AS</span> 年齡組,</span><br><span class="line">    <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">AS</span> 人數</span><br><span class="line"><span class="keyword">FROM</span> 客戶資料表</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> </span><br><span class="line">    <span class="keyword">CASE</span> </span><br><span class="line">        <span class="keyword">WHEN</span> 年齡 <span class="operator">&lt;</span> <span class="number">18</span> <span class="keyword">THEN</span> <span class="string">&#x27;未成年&#x27;</span></span><br><span class="line">        <span class="keyword">WHEN</span> 年齡 <span class="keyword">BETWEEN</span> <span class="number">18</span> <span class="keyword">AND</span> <span class="number">65</span> <span class="keyword">THEN</span> <span class="string">&#x27;成年&#x27;</span></span><br><span class="line">        <span class="keyword">ELSE</span> <span class="string">&#x27;銀髮族&#x27;</span></span><br><span class="line">    <span class="keyword">END</span>;</span><br></pre></td></tr></table></figure>
+CASE 表達式
+    WHEN 值1 THEN 結果1
+    WHEN 值2 THEN 結果2
+    ...
+    [ELSE 其他結果]
+END
 
-<h2 id="CASE語法在UPDATE語句中的應用"><a href="#CASE語法在UPDATE語句中的應用" class="headerlink" title="CASE語法在UPDATE語句中的應用"></a>CASE語法在UPDATE語句中的應用</h2><p>除了在SELECT語句中使用CASE,我們也經常在UPDATE語句中運用CASE來實現條件更新。這允許我們根據不同的條件對資料進行更複雜的更新操作。</p>
-<h3 id="UPDATE語句中使用CASE的基本語法"><a href="#UPDATE語句中使用CASE的基本語法" class="headerlink" title="UPDATE語句中使用CASE的基本語法"></a>UPDATE語句中使用CASE的基本語法</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> 資料表</span><br><span class="line"><span class="keyword">SET</span> 欄位 <span class="operator">=</span> <span class="keyword">CASE</span></span><br><span class="line">    <span class="keyword">WHEN</span> 條件<span class="number">1</span> <span class="keyword">THEN</span> 值<span class="number">1</span></span><br><span class="line">    <span class="keyword">WHEN</span> 條件<span class="number">2</span> <span class="keyword">THEN</span> 值<span class="number">2</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">ELSE</span> 預設值</span><br><span class="line"><span class="keyword">END</span></span><br><span class="line"><span class="keyword">WHERE</span> 條件;</span><br></pre></td></tr></table></figure>
 
-<h3 id="實際應用例子"><a href="#實際應用例子" class="headerlink" title="實際應用例子"></a>實際應用例子</h3><p>讓我們來看幾個在UPDATE語句中使用CASE的實際例子:</p>
-<h4 id="例子1-根據員工表現更新薪資"><a href="#例子1-根據員工表現更新薪資" class="headerlink" title="例子1:根據員工表現更新薪資"></a>例子1:根據員工表現更新薪資</h4><p>假設我們要根據員工的表現評級來更新他們的薪資:</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> 員工資料表</span><br><span class="line"><span class="keyword">SET</span> 薪資 <span class="operator">=</span> <span class="keyword">CASE</span> 表現評級</span><br><span class="line">    <span class="keyword">WHEN</span> <span class="string">&#x27;A&#x27;</span> <span class="keyword">THEN</span> 薪資 <span class="operator">*</span> <span class="number">1.1</span></span><br><span class="line">    <span class="keyword">WHEN</span> <span class="string">&#x27;B&#x27;</span> <span class="keyword">THEN</span> 薪資 <span class="operator">*</span> <span class="number">1.05</span></span><br><span class="line">    <span class="keyword">WHEN</span> <span class="string">&#x27;C&#x27;</span> <span class="keyword">THEN</span> 薪資 <span class="operator">*</span> <span class="number">1.02</span></span><br><span class="line">    <span class="keyword">ELSE</span> 薪資</span><br><span class="line"><span class="keyword">END</span>;</span><br></pre></td></tr></table></figure>
+搜索CASE語法
+1
+2
+3
+4
+5
+6
 
-<p>這個查詢會根據員工的表現評級來增加他們的薪資。A級員工加薪10%,B級5%,C級2%,其他保持不變。</p>
-<h4 id="例子2-根據庫存量更新產品狀態"><a href="#例子2-根據庫存量更新產品狀態" class="headerlink" title="例子2:根據庫存量更新產品狀態"></a>例子2:根據庫存量更新產品狀態</h4><p>假設我們要根據產品的庫存量來更新其狀態:</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> 產品資料表</span><br><span class="line"><span class="keyword">SET</span> 狀態 <span class="operator">=</span> <span class="keyword">CASE</span></span><br><span class="line">    <span class="keyword">WHEN</span> 庫存量 <span class="operator">=</span> <span class="number">0</span> <span class="keyword">THEN</span> <span class="string">&#x27;缺貨&#x27;</span></span><br><span class="line">    <span class="keyword">WHEN</span> 庫存量 <span class="keyword">BETWEEN</span> <span class="number">1</span> <span class="keyword">AND</span> <span class="number">10</span> <span class="keyword">THEN</span> <span class="string">&#x27;低庫存&#x27;</span></span><br><span class="line">    <span class="keyword">WHEN</span> 庫存量 <span class="keyword">BETWEEN</span> <span class="number">11</span> <span class="keyword">AND</span> <span class="number">50</span> <span class="keyword">THEN</span> <span class="string">&#x27;適中&#x27;</span></span><br><span class="line">    <span class="keyword">ELSE</span> <span class="string">&#x27;充足&#x27;</span></span><br><span class="line"><span class="keyword">END</span>;</span><br></pre></td></tr></table></figure>
 
-<p>這個查詢會根據產品的庫存量自動更新產品狀態。</p>
-<h4 id="例子3-在單一UPDATE語句中更新多個欄位"><a href="#例子3-在單一UPDATE語句中更新多個欄位" class="headerlink" title="例子3:在單一UPDATE語句中更新多個欄位"></a>例子3:在單一UPDATE語句中更新多個欄位</h4><p>CASE語法的一個強大功能是它允許我們在一個UPDATE語句中根據不同條件更新多個欄位:</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> 訂單資料表</span><br><span class="line"><span class="keyword">SET</span> </span><br><span class="line">    處理狀態 <span class="operator">=</span> <span class="keyword">CASE</span></span><br><span class="line">        <span class="keyword">WHEN</span> 付款狀態 <span class="operator">=</span> <span class="string">&#x27;已付款&#x27;</span> <span class="keyword">AND</span> 運送狀態 <span class="operator">=</span> <span class="string">&#x27;已發貨&#x27;</span> <span class="keyword">THEN</span> <span class="string">&#x27;已完成&#x27;</span></span><br><span class="line">        <span class="keyword">WHEN</span> 付款狀態 <span class="operator">=</span> <span class="string">&#x27;已付款&#x27;</span> <span class="keyword">AND</span> 運送狀態 <span class="operator">=</span> <span class="string">&#x27;準備中&#x27;</span> <span class="keyword">THEN</span> <span class="string">&#x27;處理中&#x27;</span></span><br><span class="line">        <span class="keyword">WHEN</span> 付款狀態 <span class="operator">=</span> <span class="string">&#x27;未付款&#x27;</span> <span class="keyword">THEN</span> <span class="string">&#x27;等待付款&#x27;</span></span><br><span class="line">        <span class="keyword">ELSE</span> <span class="string">&#x27;處理中&#x27;</span></span><br><span class="line">    <span class="keyword">END</span>,</span><br><span class="line">    優先級 <span class="operator">=</span> <span class="keyword">CASE</span></span><br><span class="line">        <span class="keyword">WHEN</span> 訂單金額 <span class="operator">&gt;</span> <span class="number">10000</span> <span class="keyword">THEN</span> <span class="string">&#x27;高&#x27;</span></span><br><span class="line">        <span class="keyword">WHEN</span> 訂單金額 <span class="keyword">BETWEEN</span> <span class="number">5000</span> <span class="keyword">AND</span> <span class="number">10000</span> <span class="keyword">THEN</span> <span class="string">&#x27;中&#x27;</span></span><br><span class="line">        <span class="keyword">ELSE</span> <span class="string">&#x27;低&#x27;</span></span><br><span class="line">    <span class="keyword">END</span></span><br><span class="line"><span class="keyword">WHERE</span> 訂單日期 <span class="operator">=</span> <span class="built_in">CURRENT_DATE</span>;</span><br></pre></td></tr></table></figure>
-
-<p>這個查詢同時更新了訂單的處理狀態和優先級,基於不同的條件。</p>
-<h2 id="使用CASE進行UPDATE時的注意事項"><a href="#使用CASE進行UPDATE時的注意事項" class="headerlink" title="使用CASE進行UPDATE時的注意事項"></a>使用CASE進行UPDATE時的注意事項</h2><ol>
-<li><p>效能考量:在大型資料表上使用複雜的CASE語句進行UPDATE可能會影響效能。在這種情況下,可以考慮分批處理或使用索引來優化。</p>
-</li>
-<li><p>資料一致性:確保CASE語句涵蓋了所有可能的情況,以避免意外的NULL值或錯誤的更新。</p>
-</li>
-<li><p>交易管理:在進行大規模或關鍵的更新時,建議使用交易(Transaction)來確保資料的一致性和可回溯性。</p>
-</li>
-<li><p>測試:在實際執行UPDATE之前,可以先使用SELECT語句和相同的CASE邏輯來預覽更新的結果,以確保更新的正確性。</p>
-</li>
-</ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>CASE語法不僅在SELECT語句中有廣泛應用,在UPDATE語句中也是一個強大的工具。它允許我們根據複雜的條件邏輯來更新資料,提高了資料操作的靈活性和效率。無論是在資料查詢還是更新中,靈活運用CASE語法都可以幫助我們更好地處理複雜的業務邏輯,提升SQL程式碼的表達能力和可維護性。</p>
-
+CASE
+    WHEN 條件1 TH
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -602,95 +587,22 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="Redis詳細介紹、使用場景及與SQL-Server的結合"><a href="#Redis詳細介紹、使用場景及與SQL-Server的結合" class="headerlink" title="Redis詳細介紹、使用場景及與SQL Server的結合"></a>Redis詳細介紹、使用場景及與SQL Server的結合</h1><h2 id="什麼是Redis"><a href="#什麼是Redis" class="headerlink" title="什麼是Redis?"></a>什麼是Redis?</h2><p>Redis(Remote Dictionary Server)是一個開源的、高性能的、基於記憶體的鍵值對數據庫。它由Salvatore Sanfilippo開發,並於2009年首次發布。Redis不僅僅是一個簡單的鍵值存儲,它還支持多種數據結構,如字符串、哈希、列表、集合、有序集合等。</p>
-<h2 id="Redis的主要特點"><a href="#Redis的主要特點" class="headerlink" title="Redis的主要特點"></a>Redis的主要特點</h2><ol>
-<li><strong>高性能</strong>: Redis將所有數據存儲在記憶體中,因此可以實現極快的讀寫速度。</li>
-<li><strong>持久化</strong>: 儘管是記憶體數據庫,Redis也提供了數據持久化的選項。</li>
-<li><strong>多種數據結構</strong>: 支持字符串、哈希、列表、集合、有序集合等數據類型。</li>
-<li><strong>原子性操作</strong>: Redis的所有操作都是原子性的,包括那些處理複雜數據結構的操作。</li>
-<li><strong>多功能性</strong>: 除了作為數據庫使用,Redis還可用作緩存、消息隊列等。</li>
-<li><strong>支持事務</strong>: Redis支持事務,可以一次執行多個命令。</li>
-<li><strong>發布/訂閱功能</strong>: 實現了發布/訂閱模式,可用於消息傳遞。</li>
-</ol>
-<h2 id="Redis的使用場景"><a href="#Redis的使用場景" class="headerlink" title="Redis的使用場景"></a>Redis的使用場景</h2><p>Redis因其高性能和多功能性,在多種場景下都有廣泛應用。以下是一些常見的使用場景:</p>
-<h3 id="1-緩存系統"><a href="#1-緩存系統" class="headerlink" title="1. 緩存系統"></a>1. 緩存系統</h3><p>Redis最常見的用途之一是作為緩存系統。它可以存儲頻繁訪問的數據,減少對後端數據庫的訪問,從而提高應用程序的響應速度。</p>
-<p><strong>示例</strong>: 在一個電子商務網站中,商品信息可以緩存在Redis中。當用戶瀏覽商品時,系統首先檢查Redis,如果找到數據就直接返回,否則才去查詢數據庫並更新緩存。</p>
-<h3 id="2-會話存儲"><a href="#2-會話存儲" class="headerlink" title="2. 會話存儲"></a>2. 會話存儲</h3><p>Redis的高速讀寫特性使其成為存儲短期會話數據的理想選擇。</p>
-<p><strong>示例</strong>: 在Web應用中,用戶的會話信息可以存儲在Redis中。每次用戶與應用交互時,可以快速檢索和更新會話數據。</p>
-<h3 id="3-實時分析"><a href="#3-實時分析" class="headerlink" title="3. 實時分析"></a>3. 實時分析</h3><p>Redis可以用於跟踪實時數據和執行實時分析。</p>
-<p><strong>示例</strong>: 在一個社交媒體平台中,Redis可以用來實時跟踪熱門話題或趨勢。每當有新的帖子或互動時,相關的計數器可以在Redis中快速更新。</p>
-<h3 id="4-排行榜-計數器"><a href="#4-排行榜-計數器" class="headerlink" title="4. 排行榜/計數器"></a>4. 排行榜/計數器</h3><p>Redis的有序集合(Sorted Set)非常適合實現排行榜功能。</p>
-<p><strong>示例</strong>: 在一個在線遊戲中,玩家的分數可以存儲在Redis的有序集合中。Redis可以輕鬆地返回前N名玩家或某個玩家的排名。</p>
-<h3 id="5-消息隊列"><a href="#5-消息隊列" class="headerlink" title="5. 消息隊列"></a>5. 消息隊列</h3><p>Redis的列表數據結構可以用作輕量級消息隊列。</p>
-<p><strong>示例</strong>: 在一個任務處理系統中,待處理的任務可以推送到Redis列表中。處理程序可以從列表中獲取任務並執行。</p>
-<h3 id="6-地理空間數據"><a href="#6-地理空間數據" class="headerlink" title="6. 地理空間數據"></a>6. 地理空間數據</h3><p>Redis 3.2版本引入了地理空間索引,可以用於存儲和查詢地理位置數據。</p>
-<p><strong>示例</strong>: 在一個打車應用中,可以使用Redis存儲司機的實時位置,並快速查找某個位置附近的可用司機。</p>
-<h2 id="Redis與SQL-Server的結合使用"><a href="#Redis與SQL-Server的結合使用" class="headerlink" title="Redis與SQL Server的結合使用"></a>Redis與SQL Server的結合使用</h2><p>在現代系統架構中,同時使用Redis和SQL Server是一種常見且有效的策略,被稱為多數據存儲架構或混合數據存儲架構。這種組合能夠充分發揮兩種數據庫的優勢,創建更高效、更靈活的數據處理系統。</p>
-<h3 id="為什麼要結合使用"><a href="#為什麼要結合使用" class="headerlink" title="為什麼要結合使用?"></a>為什麼要結合使用?</h3><ol>
-<li><p><strong>SQL Server</strong>: </p>
-<ul>
-<li>適合存儲結構化數據</li>
-<li>支持複雜的查詢和事務處理</li>
-<li>提供強大的數據管理功能</li>
-</ul>
-</li>
-<li><p><strong>Redis</strong>: </p>
-<ul>
-<li>提供極快的讀寫速度</li>
-<li>適合緩存和實時數據處理</li>
-<li>支持多種數據結構,適用於特定場景</li>
-</ul>
-</li>
-</ol>
-<h3 id="典型使用場景"><a href="#典型使用場景" class="headerlink" title="典型使用場景"></a>典型使用場景</h3><ol>
-<li><p><strong>緩存層</strong>:</p>
-<ul>
-<li>主數據存儲在SQL Server中</li>
-<li>頻繁訪問的數據緩存在Redis中</li>
-<li>顯著提高讀取速度,減輕SQL Server的負擔</li>
-</ul>
-</li>
-<li><p><strong>會話管理</strong>:</p>
-<ul>
-<li>用戶帳戶信息存儲在SQL Server中</li>
-<li>會話數據(如登錄狀態)存儲在Redis中</li>
-<li>實現快速的會話檢查和管理</li>
-</ul>
-</li>
-<li><p><strong>實時分析</strong>:</p>
-<ul>
-<li>歷史數據存儲在SQL Server中</li>
-<li>實時統計數據存儲在Redis中</li>
-<li>支持快速更新和查詢實時數據</li>
-</ul>
-</li>
-<li><p><strong>任務隊列</strong>:</p>
-<ul>
-<li>任務詳細信息存儲在SQL Server中</li>
-<li>待處理任務隊列使用Redis列表</li>
-<li>實現高效的任務分發和處理</li>
-</ul>
-</li>
-</ol>
-<h3 id="實現方式"><a href="#實現方式" class="headerlink" title="實現方式"></a>實現方式</h3><ul>
-<li>在應用層面管理數據的分配和同步</li>
-<li>使用適當的緩存策略(如寫入策略、過期策略)確保數據一致性</li>
-<li>根據數據特性和訪問模式決定最適合的存儲位置</li>
-</ul>
-<h3 id="優勢"><a href="#優勢" class="headerlink" title="優勢"></a>優勢</h3><ol>
-<li>結合了SQL Server的強大數據管理能力和Redis的高性能</li>
-<li>顯著提高系統整體性能和擴展性</li>
-<li>能夠靈活應對不同類型的數據需求</li>
-</ol>
-<h3 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h3><ol>
-<li>需要仔細處理數據同步和一致性問題</li>
-<li>增加了系統複雜性,需要更多的開發和維護工作</li>
-<li>需要合理平衡資源使用,避免過度依賴某一存儲系統</li>
-</ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>Redis憑藉其高性能、靈活性和豐富的功能,在現代軟件架構中扮演著重要角色。無論是單獨使用還是與SQL Server等關係型數據庫結合,Redis都能夠為系統帶來顯著的性能提升和功能擴展。</p>
-<p>在選擇使用Redis時,需要考慮其內存使用、數據一致性等因素。而在與SQL Server結合使用時,更需要仔細設計數據流和存儲策略,以充分發揮兩種數據庫的優勢。</p>
-<p>通過合理使用Redis和SQL Server的組合,開發者可以創建出高效、可靈活擴展且能夠處理各種複雜數據需求的強大系統。</p>
+          Redis詳細介紹、使用場景及與SQL Server的結合
+什麼是Redis?
+Redis(Remote Dictionary Server)是一個開源的、高性能的、基於記憶體的鍵值對數據庫。它由Salvatore Sanfilippo開發,並於2009年首次發布。Redis不僅僅是一個簡單的鍵值存儲,它還支持多種數據結構,如字符串、哈希、列表、集合、有序集合等。
 
+Redis的主要特點
+ 1. 高性能: Redis將所有數據存儲在記憶體中,因此可以實現極快的讀寫速度。
+ 2. 持久化: 儘管是記憶體數據庫,Redis也提供了數據持久化的選項。
+ 3. 多種數據結構: 支持字符串、哈希、列表、
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -796,48 +708,28 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="Vue-組件緩存問題與解決方案"><a href="#Vue-組件緩存問題與解決方案" class="headerlink" title="Vue 組件緩存問題與解決方案"></a>Vue 組件緩存問題與解決方案</h1><p>在開發 Vue.js 應用程式時，我們經常會遇到組件緩存的問題。特別是使用 <code>httpVueLoader</code> 動態載入組件時，瀏覽器的緩存機制可能會導致更新後的組件無法即時反映在畫面上。本文將分享幾種實用的解決方案，幫助你擺脫緩存困擾。</p>
-<h2 id="問題情境"><a href="#問題情境" class="headerlink" title="問題情境"></a>問題情境</h2><p>假設我們有以下幾個使用 <code>httpVueLoader</code> 載入的組件：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;x-spit&#x27;</span>, <span class="title function_">httpVueLoader</span>(<span class="string">&#x27;DrainFacility/SurveyPit.vue&#x27;</span>)); <span class="comment">// 陰井</span></span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;x-shole&#x27;</span>, <span class="title function_">httpVueLoader</span>(<span class="string">&#x27;DrainFacility/SurveyHole.vue&#x27;</span>)); <span class="comment">// 人孔</span></span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;x-spiple&#x27;</span>, <span class="title function_">httpVueLoader</span>(<span class="string">&#x27;DrainFacility/SurveyPiple.vue&#x27;</span>)); <span class="comment">// 連接管</span></span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;x-spipeline&#x27;</span>, <span class="title function_">httpVueLoader</span>(<span class="string">&#x27;DrainFacility/SurveyPipeline.vue&#x27;</span>)); <span class="comment">// 管線</span></span><br></pre></td></tr></table></figure>
+          Vue 組件緩存問題與解決方案
+在開發 Vue.js 應用程式時，我們經常會遇到組件緩存的問題。特別是使用 httpVueLoader 動態載入組件時，瀏覽器的緩存機制可能會導致更新後的組件無法即時反映在畫面上。本文將分享幾種實用的解決方案，幫助你擺脫緩存困擾。
 
-<p>當我們修改這些 <code>.vue</code> 檔案的內容時，可能會發現修改後的內容並沒有立即反映在網頁上。這是因為瀏覽器為了提升效能，會將這些檔案暫存起來，導致我們看到的還是舊版本的內容。</p>
-<h2 id="解決方案"><a href="#解決方案" class="headerlink" title="解決方案"></a>解決方案</h2><h3 id="1-加入版本號或時間戳"><a href="#1-加入版本號或時間戳" class="headerlink" title="1. 加入版本號或時間戳"></a>1. 加入版本號或時間戳</h3><p>最簡單的解決方案是在檔案路徑後面加入一個動態參數：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用時間戳</span></span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;x-spit&#x27;</span>, <span class="title function_">httpVueLoader</span>(<span class="string">&#x27;DrainFacility/SurveyPit.vue?v=&#x27;</span> + <span class="title class_">Date</span>.<span class="title function_">now</span>()));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 或使用版本號</span></span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">VERSION</span> = <span class="string">&#x27;1.0.1&#x27;</span>;</span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;x-spit&#x27;</span>, <span class="title function_">httpVueLoader</span>(<span class="string">`DrainFacility/SurveyPit.vue?v=<span class="subst">$&#123;VERSION&#125;</span>`</span>));</span><br></pre></td></tr></table></figure>
+問題情境
+假設我們有以下幾個使用 httpVueLoader 載入的組件：
 
-<h3 id="2-設定伺服器快取控制"><a href="#2-設定伺服器快取控制" class="headerlink" title="2. 設定伺服器快取控制"></a>2. 設定伺服器快取控制</h3><p>在伺服器端設定適當的 HTTP 標頭，可以告訴瀏覽器不要快取特定檔案：</p>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Nginx 設定範例</span></span><br><span class="line"><span class="section">location</span> /components/ &#123;</span><br><span class="line">    <span class="attribute">add_header</span> Cache-Control <span class="string">&quot;no-cache, no-store, must-revalidate&quot;</span>;</span><br><span class="line">    <span class="attribute">add_header</span> Pragma <span class="string">&quot;no-cache&quot;</span>;</span><br><span class="line">    <span class="attribute">add_header</span> Expires <span class="string">&quot;0&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+1
+2
+3
+4
 
-<h3 id="3-使用-Webpack-動態引入"><a href="#3-使用-Webpack-動態引入" class="headerlink" title="3. 使用 Webpack 動態引入"></a>3. 使用 Webpack 動態引入</h3><p>如果你的專案使用 Webpack，可以改用動態引入的方式：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 改寫前</span></span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;x-spit&#x27;</span>, <span class="title function_">httpVueLoader</span>(<span class="string">&#x27;DrainFacility/SurveyPit.vue&#x27;</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 改寫後</span></span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;x-spit&#x27;</span>, <span class="function">() =&gt;</span> <span class="keyword">import</span>(<span class="string">&#x27;./DrainFacility/SurveyPit.vue&#x27;</span>));</span><br></pre></td></tr></table></figure>
 
-<h3 id="4-使用-Vue-的-keep-alive-控制緩存"><a href="#4-使用-Vue-的-keep-alive-控制緩存" class="headerlink" title="4. 使用 Vue 的 keep-alive 控制緩存"></a>4. 使用 Vue 的 keep-alive 控制緩存</h3><p>如果你想要更細緻地控制組件的緩存行為，可以使用 Vue 內建的 <code>keep-alive</code> 組件：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">keep-alive</span> <span class="attr">:include</span>=<span class="string">&quot;[&#x27;ComponentA&#x27;, &#x27;ComponentB&#x27;]&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">router-view</span>&gt;</span><span class="tag">&lt;/<span class="name">router-view</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">keep-alive</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="5-開發時的實用技巧"><a href="#5-開發時的實用技巧" class="headerlink" title="5. 開發時的實用技巧"></a>5. 開發時的實用技巧</h3><ol>
-<li><p>使用 Chrome 的開發者工具：</p>
-<ul>
-<li>勾選 Network 頁籤中的 &quot;Disable cache&quot;</li>
-<li>或按住重新整理按鈕，選擇「強制重新整理」(Ctrl + F5)</li>
-</ul>
-</li>
-<li><p>在 Vue CLI 專案中設定 devServer：</p>
-</li>
-</ol>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// vue.config.js</span></span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="attr">devServer</span>: &#123;</span><br><span class="line">    <span class="attr">headers</span>: &#123;</span><br><span class="line">      <span class="string">&#x27;Cache-Control&#x27;</span>: <span class="string">&#x27;no-cache, no-store, must-revalidate&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h2><p>組件緩存問題雖然困擾，但有多種解決方案可以選擇。建議根據專案的實際需求，選擇最適合的方案：</p>
-<ul>
-<li>如果是開發階段，使用時間戳或禁用快取是最直接的解決方案</li>
-<li>如果是生產環境，則建議使用版本號或 Webpack 的動態引入</li>
-<li>若需要更細緻的緩存控制，可以考慮使用 <code>keep-alive</code> 組件</li>
-</ul>
-<p>記住，快取機制本身是為了提升效能而存在的，我們的目標是在開發便利性和執行效能之間取得平衡。</p>
-<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ul>
-<li>Vue.js 官方文件</li>
-<li>Vue Router 文件</li>
-<li>MDN Web 文件（HTTP 快取）</li>
-</ul>
-
+Vue.component('x-spit', httpVueLoader('DrainFacility/SurveyPit.vue')); // 陰井
+Vue.component('x-shole', httpVueLoader('D
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -943,56 +835,26 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="EmEditor-介紹與-JSON-壓縮-解壓縮教程"><a href="#EmEditor-介紹與-JSON-壓縮-解壓縮教程" class="headerlink" title="EmEditor 介紹與 JSON 壓縮/解壓縮教程"></a>EmEditor 介紹與 JSON 壓縮/解壓縮教程</h1><h2 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h2><p>工作的時候拿到了超過1G以上的JSON檔，使用VSCODE、跟NotePad++雖然都能開啟，但是速度真的慢，而且JSON也因為太大無法做格式化動作，於是開始找能開啟大檔案的軟體。</p>
-<h2 id="1-EmEditor-軟體介紹"><a href="#1-EmEditor-軟體介紹" class="headerlink" title="1. EmEditor 軟體介紹"></a>1. EmEditor 軟體介紹</h2><p>EmEditor 是一款強大的文本編輯器,專為處理大型文件而設計。以下是其主要特點：</p>
-<ul>
-<li><strong>高性能</strong>：能夠輕鬆處理超過 248GB 的大型文件。</li>
-<li><strong>多功能</strong>：支持多種編碼,語法高亮,正則表達式等。</li>
-<li><strong>可定制</strong>：提供豐富的插件和自定義選項。</li>
-<li><strong>CSV/TSV 支持</strong>：優秀的電子表格處理能力。</li>
-<li><strong>宏和腳本</strong>：支持錄製宏和執行 JavaScript 腳本。</li>
-<li><strong>多語言支持</strong>：包括中文在內的多種語言界面。</li>
-</ul>
-<h3 id="對大型-JSON-文件的優勢"><a href="#對大型-JSON-文件的優勢" class="headerlink" title="對大型 JSON 文件的優勢"></a>對大型 JSON 文件的優勢</h3><ul>
-<li>可以快速打開和編輯大型 JSON 文件。</li>
-<li>提供 JSON 格式化和壓縮功能。</li>
-<li>支持通過腳本進行高級 JSON 操作。</li>
-</ul>
-<h2 id="2-使用-JavaScript-腳本進行-JSON-壓縮與解壓縮"><a href="#2-使用-JavaScript-腳本進行-JSON-壓縮與解壓縮" class="headerlink" title="2. 使用 JavaScript 腳本進行 JSON 壓縮與解壓縮"></a>2. 使用 JavaScript 腳本進行 JSON 壓縮與解壓縮</h2><p>EmEditor 允許用戶使用 JavaScript 腳本來增強其功能。以下是如何編寫和使用腳本來壓縮和解壓縮 JSON：</p>
-<h3 id="JSON-壓縮腳本"><a href="#JSON-壓縮腳本" class="headerlink" title="JSON 壓縮腳本"></a>JSON 壓縮腳本</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">document</span>.<span class="property">selection</span>.<span class="title class_">SelectAll</span>();</span><br><span class="line"><span class="variable language_">document</span>.<span class="property">selection</span>.<span class="property">Text</span> = <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(<span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="variable language_">document</span>.<span class="property">selection</span>.<span class="property">Text</span>));</span><br></pre></td></tr></table></figure>
+          EmEditor 介紹與 JSON 壓縮/解壓縮教程
+前言：
+工作的時候拿到了超過1G以上的JSON檔，使用VSCODE、跟NotePad++雖然都能開啟，但是速度真的慢，而且JSON也因為太大無法做格式化動作，於是開始找能開啟大檔案的軟體。
 
-<p>這個腳本的工作原理：</p>
-<ol>
-<li><code>document.selection.SelectAll()</code> 選中所有文本。</li>
-<li><code>JSON.parse()</code> 將文本解析為 JavaScript 對象。</li>
-<li><code>JSON.stringify()</code> 將對象轉換回 JSON 字符串,但不帶任何格式化。</li>
-<li>結果替換了原有的文本,實現了 JSON 的壓縮。</li>
-</ol>
-<h3 id="JSON-解壓縮（格式化）腳本"><a href="#JSON-解壓縮（格式化）腳本" class="headerlink" title="JSON 解壓縮（格式化）腳本"></a>JSON 解壓縮（格式化）腳本</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">document</span>.<span class="property">selection</span>.<span class="title class_">SelectAll</span>();</span><br><span class="line"><span class="variable language_">document</span>.<span class="property">selection</span>.<span class="property">Text</span> = <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(<span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="variable language_">document</span>.<span class="property">selection</span>.<span class="property">Text</span>), <span class="literal">null</span>, <span class="string">&#x27;\t&#x27;</span>);</span><br></pre></td></tr></table></figure>
+1. EmEditor 軟體介紹
+EmEditor 是一款強大的文本編輯器,專為處理大型文件而設計。以下是其主要特點：
 
-<p>這個腳本的工作原理：</p>
-<ol>
-<li>選中所有文本並解析為 JavaScript 對象,與壓縮腳本相同。</li>
-<li><code>JSON.stringify()</code> 中的額外參數：<ul>
-<li><code>null</code> 表示不使用替換函數。</li>
-<li><code>&#39;\t&#39;</code> 指定使用製表符進行縮進,使 JSON 更易讀。</li>
-</ul>
-</li>
-</ol>
-<h2 id="3-在-EmEditor-中使用腳本"><a href="#3-在-EmEditor-中使用腳本" class="headerlink" title="3. 在 EmEditor 中使用腳本"></a>3. 在 EmEditor 中使用腳本</h2><ol>
-<li>打開 EmEditor 並載入您的 JSON 文件。</li>
-<li>在新開的頁面貼上相應的腳本。</li>
-<li>保存成jsee檔,給它一個描述性的名稱（如 &quot;JSON壓縮&quot; 或 &quot;JSON解壓縮&quot;）。</li>
-<li>點擊「巨集」&gt;「自訂」。<br><img src="20240912095550018.png"></li>
-<li>點擊添加，將剛剛寫的jsee檔添加。<br><img src="20240912095851185.png"></li>
-</ol>
-<h2 id="4-實用技巧"><a href="#4-實用技巧" class="headerlink" title="4. 實用技巧"></a>4. 實用技巧</h2><ul>
-<li>為這些腳本分配快捷鍵,以便更快地執行。</li>
-<li>在處理非常大的文件時,可能需要增加 EmEditor 的內存使用限制。</li>
-<li>使用 EmEditor 的「大檔案控制器」功能來更有效地處理大型 JSON 文件。</li>
-</ul>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>EmEditor 結合 JavaScript 腳本為處理大型 JSON 文件提供了強大而靈活的解決方案。通過掌握這些技巧,您可以輕鬆地對 JSON 數據進行壓縮、解壓縮和格式化,大大提高工作效率。</p>
-
+ * 高性能：能夠輕鬆處理超過 248GB 的大型文件。
+ * 多功能：支持多種編碼,語法高亮,正則表達式等。
+ * 可定制：提供豐富的插件和自定義選項。
+ * CSV/TSV 支持：優秀的電子表格處理能力。
+ * 宏和腳本：支持錄
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1098,49 +960,22 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="Vue3-SFC-Loader-深入解析：輕鬆加載-Vue-單文件組件"><a href="#Vue3-SFC-Loader-深入解析：輕鬆加載-Vue-單文件組件" class="headerlink" title="Vue3 SFC Loader 深入解析：輕鬆加載 Vue 單文件組件"></a>Vue3 SFC Loader 深入解析：輕鬆加載 Vue 單文件組件</h1><h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>在Vue.js開發中,單文件組件(Single File Components, SFC)是一種廣受歡迎的文件格式,它允許我們將組件的模板、邏輯和樣式封裝在一個文件中。然而,在某些場景下,我們可能需要在運行時動態加載這些.vue文件,而不是在構建階段將它們編譯為JavaScript。這就是vue3-sfc-loader發揮作用的地方。</p>
-<p>本文將深入探討vue3-sfc-loader,介紹它的功能、使用方法,以及在實際項目中的應用場景。</p>
-<h2 id="什麼是vue3-sfc-loader"><a href="#什麼是vue3-sfc-loader" class="headerlink" title="什麼是vue3-sfc-loader?"></a>什麼是vue3-sfc-loader?</h2><p>vue3-sfc-loader是一個強大的工具,允許我們在瀏覽器中直接加載和使用Vue 3單文件組件(.vue文件),而無需預編譯。這為開發人員提供了更大的靈活性,特別是在以下場景中:</p>
-<ol>
-<li>動態加載組件</li>
-<li>在線代碼編輯器</li>
-<li>不使用構建工具的小型項目</li>
-<li>原型設計和快速開發</li>
-</ol>
-<h2 id="安裝和基本使用"><a href="#安裝和基本使用" class="headerlink" title="安裝和基本使用"></a>安裝和基本使用</h2><p>首先,我們需要安裝vue3-sfc-loader:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install vue3-sfc-loader</span><br></pre></td></tr></table></figure>
+          Vue3 SFC Loader 深入解析：輕鬆加載 Vue 單文件組件
+引言
+在Vue.js開發中,單文件組件(Single File Components, SFC)是一種廣受歡迎的文件格式,它允許我們將組件的模板、邏輯和樣式封裝在一個文件中。然而,在某些場景下,我們可能需要在運行時動態加載這些.vue文件,而不是在構建階段將它們編譯為JavaScript。這就是vue3-sfc-loader發揮作用的地方。
 
-<p>接下來,讓我們看一個基本的使用示例:</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">&quot;viewport&quot;</span> <span class="attr">content</span>=<span class="string">&quot;width=device-width, initial-scale=1.0&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Vue3 SFC Loader Example<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://unpkg.com/vue@3&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://unpkg.com/vue3-sfc-loader&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;app&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">const</span> &#123; loadModule &#125; = <span class="variable language_">window</span>[<span class="string">&#x27;vue3-sfc-loader&#x27;</span>];</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">const</span> options = &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="attr">moduleCache</span>: &#123;</span></span><br><span class="line"><span class="language-javascript">                <span class="attr">vue</span>: <span class="title class_">Vue</span></span></span><br><span class="line"><span class="language-javascript">            &#125;,</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">async</span> <span class="title function_">getFile</span>(<span class="params">url</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                <span class="keyword">const</span> res = <span class="keyword">await</span> <span class="title function_">fetch</span>(url);</span></span><br><span class="line"><span class="language-javascript">                <span class="keyword">if</span> ( !res.<span class="property">ok</span> )</span></span><br><span class="line"><span class="language-javascript">                    <span class="keyword">throw</span> <span class="title class_">Object</span>.<span class="title function_">assign</span>(<span class="keyword">new</span> <span class="title class_">Error</span>(res.<span class="property">statusText</span> + <span class="string">&#x27; &#x27;</span> + url), &#123; res &#125;);</span></span><br><span class="line"><span class="language-javascript">                <span class="keyword">return</span> &#123;</span></span><br><span class="line"><span class="language-javascript">                    <span class="attr">getContentData</span>: <span class="function"><span class="params">asBinary</span> =&gt;</span> asBinary ? res.<span class="title function_">arrayBuffer</span>() : res.<span class="title function_">text</span>(),</span></span><br><span class="line"><span class="language-javascript">                &#125;</span></span><br><span class="line"><span class="language-javascript">            &#125;,</span></span><br><span class="line"><span class="language-javascript">            <span class="title function_">addStyle</span>(<span class="params">textContent</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                <span class="keyword">const</span> style = <span class="title class_">Object</span>.<span class="title function_">assign</span>(<span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;style&#x27;</span>), &#123; textContent &#125;);</span></span><br><span class="line"><span class="language-javascript">                <span class="keyword">const</span> ref = <span class="variable language_">document</span>.<span class="property">head</span>.<span class="title function_">getElementsByTagName</span>(<span class="string">&#x27;style&#x27;</span>)[<span class="number">0</span>] || <span class="literal">null</span>;</span></span><br><span class="line"><span class="language-javascript">                <span class="variable language_">document</span>.<span class="property">head</span>.<span class="title function_">insertBefore</span>(style, ref);</span></span><br><span class="line"><span class="language-javascript">            &#125;,</span></span><br><span class="line"><span class="language-javascript">        &#125;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">const</span> app = <span class="title class_">Vue</span>.<span class="title function_">createApp</span>(&#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="attr">components</span>: &#123;</span></span><br><span class="line"><span class="language-javascript">                <span class="string">&#x27;my-component&#x27;</span>: <span class="title class_">Vue</span>.<span class="title function_">defineAsyncComponent</span>(<span class="function">() =&gt;</span> <span class="title function_">loadModule</span>(<span class="string">&#x27;./MyComponent.vue&#x27;</span>, options)),</span></span><br><span class="line"><span class="language-javascript">            &#125;,</span></span><br><span class="line"><span class="language-javascript">            <span class="attr">template</span>: <span class="string">&#x27;&lt;my-component&gt;&lt;/my-component&gt;&#x27;</span></span></span><br><span class="line"><span class="language-javascript">        &#125;);</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        app.<span class="title function_">mount</span>(<span class="string">&#x27;#app&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript">    </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+本文將深入探討vue3-sfc-loader,介紹它的功能、使用方法,以及在實際項目中的應用場景。
 
-<p>在這個例子中,我們使用vue3-sfc-loader動態加載了一個名為MyComponent.vue的組件。</p>
-<h2 id="深入理解配置選項"><a href="#深入理解配置選項" class="headerlink" title="深入理解配置選項"></a>深入理解配置選項</h2><p>vue3-sfc-loader提供了多個配置選項,讓我們可以自定義加載過程:</p>
-<ol>
-<li><code>moduleCache</code>: 用於緩存已加載的模塊,提高性能。</li>
-<li><code>getFile</code>: 一個異步函數,用於獲取.vue文件的內容。</li>
-<li><code>addStyle</code>: 一個函數,用於將組件的樣式添加到DOM中。</li>
-<li><code>handleModule</code>: 可選函數,用於自定義模塊的處理方式。</li>
-<li><code>log</code>: 可選函數,用於自定義日誌輸出。</li>
-</ol>
-<h2 id="高級使用技巧"><a href="#高級使用技巧" class="headerlink" title="高級使用技巧"></a>高級使用技巧</h2><h3 id="1-動態路由組件"><a href="#1-動態路由組件" class="headerlink" title="1. 動態路由組件"></a>1. 動態路由組件</h3><p>vue3-sfc-loader非常適合實現動態路由組件。例如:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> routes = [</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">path</span>: <span class="string">&#x27;/dynamic-page&#x27;</span>,</span><br><span class="line">    <span class="attr">component</span>: <span class="title class_">Vue</span>.<span class="title function_">defineAsyncComponent</span>(<span class="function">() =&gt;</span> <span class="title function_">loadModule</span>(<span class="string">&#x27;./DynamicPage.vue&#x27;</span>, options))</span><br><span class="line">  &#125;</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-插件系統"><a href="#2-插件系統" class="headerlink" title="2. 插件系統"></a>2. 插件系統</h3><p>您可以使用vue3-sfc-loader來實現一個簡單的插件系統,允許用戶上傳自己的Vue組件:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">loadUserPlugin</span>(<span class="params">pluginUrl</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="title class_">Vue</span>.<span class="title function_">defineAsyncComponent</span>(<span class="function">() =&gt;</span> <span class="title function_">loadModule</span>(pluginUrl, options));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-在線代碼編輯器"><a href="#3-在線代碼編輯器" class="headerlink" title="3. 在線代碼編輯器"></a>3. 在線代碼編輯器</h3><p>vue3-sfc-loader可以用來構建在線Vue代碼編輯器,實時編譯和預覽用戶編寫的Vue組件:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">compileAndRun</span>(<span class="params">code</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> blob = <span class="keyword">new</span> <span class="title class_">Blob</span>([code], &#123; <span class="attr">type</span>: <span class="string">&#x27;text/plain&#x27;</span> &#125;);</span><br><span class="line">  <span class="keyword">const</span> url = <span class="variable constant_">URL</span>.<span class="title function_">createObjectURL</span>(blob);</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">loadModule</span>(url, options).<span class="title function_">then</span>(<span class="function">(<span class="params"><span class="variable language_">module</span></span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="variable constant_">URL</span>.<span class="title function_">revokeObjectURL</span>(url);</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">module</span>;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="性能考慮"><a href="#性能考慮" class="headerlink" title="性能考慮"></a>性能考慮</h2><p>雖然vue3-sfc-loader提供了很大的靈活性,但它也帶來了一些性能開銷。在運行時編譯組件會增加初始加載時間和內存使用。因此,在大型生產應用中,應謹慎使用此方法,並考慮以下優化策略:</p>
-<ol>
-<li>實施有效的緩存機制</li>
-<li>只在必要時使用動態加載</li>
-<li>考慮使用服務器端渲染(SSR)來改善初始加載性能</li>
-</ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>vue3-sfc-loader為Vue 3開發者提供了一個強大的工具,使得在運行時動態加載和使用.vue文件成為可能。它特別適用於需要高度靈活性的場景,如動態主題、插件系統或在線代碼編輯器。</p>
-<p>然而,開發者應該權衡使用vue3-sfc-loader的優勢和潛在的性能影響。在大多數情況下,預編譯組件仍然是推薦的方法。但對於那些需要極高靈活性的特定用例,vue3-sfc-loader無疑是一個值得考慮的強大工具。</p>
-<p>通過深入了解和合理使用vue3-sfc-loader,我們可以在Vue 3項目中實現更大的靈活性和創新性,同時保持良好的性能和用戶體驗。</p>
-
+什麼是vue3-sfc-loader?
+vue3-sfc-loader是一個強大
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1246,77 +1081,36 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="C-常用命名空間參考指南"><a href="#C-常用命名空間參考指南" class="headerlink" title="C# 常用命名空間參考指南"></a>C# 常用命名空間參考指南</h1><p>筆記一些常用到的命名空間</p>
-<h2 id="1-基礎核心命名空間"><a href="#1-基礎核心命名空間" class="headerlink" title="1. 基礎核心命名空間"></a>1. 基礎核心命名空間</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;                     <span class="comment">// 基礎類型、例外處理</span></span><br><span class="line"><span class="keyword">using</span> System.Collections;         <span class="comment">// 非泛型集合</span></span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic; <span class="comment">// 泛型集合</span></span><br><span class="line"><span class="keyword">using</span> System.Linq;               <span class="comment">// LINQ 查詢</span></span><br><span class="line"><span class="keyword">using</span> System.ComponentModel;      <span class="comment">// 資料綁定、型別轉換</span></span><br><span class="line"><span class="keyword">using</span> System.Text;               <span class="comment">// 文字處理</span></span><br><span class="line"><span class="keyword">using</span> System.Text.RegularExpressions; <span class="comment">// 正則表達式</span></span><br><span class="line"><span class="keyword">using</span> System.Globalization;      <span class="comment">// 地區和文化資訊</span></span><br><span class="line"><span class="keyword">using</span> System.Configuration;      <span class="comment">// 應用程式配置</span></span><br><span class="line"><span class="keyword">using</span> System.Runtime.Serialization; <span class="comment">// 序列化</span></span><br></pre></td></tr></table></figure>
+          C# 常用命名空間參考指南
+筆記一些常用到的命名空間
 
-<h2 id="2-檔案與-I-O-處理"><a href="#2-檔案與-I-O-處理" class="headerlink" title="2. 檔案與 I/O 處理"></a>2. 檔案與 I/O 處理</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.IO;                 <span class="comment">// 檔案與目錄操作</span></span><br><span class="line"><span class="keyword">using</span> System.IO.Compression;     <span class="comment">// 檔案壓縮</span></span><br><span class="line"><span class="keyword">using</span> System.IO.Ports;          <span class="comment">// 序列埠通訊</span></span><br><span class="line"><span class="keyword">using</span> System.Xml;               <span class="comment">// XML 處理</span></span><br><span class="line"><span class="keyword">using</span> System.Xml.Linq;          <span class="comment">// LINQ to XML</span></span><br><span class="line"><span class="keyword">using</span> System.Xml.Serialization; <span class="comment">// XML 序列化</span></span><br><span class="line"><span class="keyword">using</span> System.Xml.Schema;        <span class="comment">// XML Schema</span></span><br></pre></td></tr></table></figure>
+1. 基礎核心命名空間
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
 
-<h2 id="3-網路與-Web-開發"><a href="#3-網路與-Web-開發" class="headerlink" title="3. 網路與 Web 開發"></a>3. 網路與 Web 開發</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Net;               <span class="comment">// 基礎網路功能</span></span><br><span class="line"><span class="keyword">using</span> System.Net.Http;          <span class="comment">// HTTP 客戶端</span></span><br><span class="line"><span class="keyword">using</span> System.Net.Mail;          <span class="comment">// 電子郵件</span></span><br><span class="line"><span class="keyword">using</span> System.Net.Sockets;       <span class="comment">// TCP/IP 網路</span></span><br><span class="line"><span class="keyword">using</span> System.Web;               <span class="comment">// Web 應用程式</span></span><br><span class="line"><span class="keyword">using</span> System.Web.Http;          <span class="comment">// Web API</span></span><br><span class="line"><span class="keyword">using</span> System.Web.Mvc;           <span class="comment">// ASP.NET MVC</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore;     <span class="comment">// .NET Core Web 應用</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.SignalR; <span class="comment">// 即時通訊</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Authentication; <span class="comment">// 身份驗證</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Authorization;  <span class="comment">// 授權</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.DependencyInjection; <span class="comment">// 依賴注入</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Configuration;  <span class="comment">// 配置</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Logging;        <span class="comment">// 日誌</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="4-資料庫存取"><a href="#4-資料庫存取" class="headerlink" title="4. 資料庫存取"></a>4. 資料庫存取</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Data;              <span class="comment">// 資料庫通用功能</span></span><br><span class="line"><span class="keyword">using</span> System.Data.SqlClient;    <span class="comment">// SQL Server 連線</span></span><br><span class="line"><span class="keyword">using</span> System.Data.Entity;       <span class="comment">// Entity Framework</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.EntityFrameworkCore; <span class="comment">// EF Core</span></span><br><span class="line"><span class="keyword">using</span> Dapper;                  <span class="comment">// Dapper ORM</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.Data.Sqlite;   <span class="comment">// SQLite</span></span><br><span class="line"><span class="keyword">using</span> Npgsql;                  <span class="comment">// PostgreSQL</span></span><br><span class="line"><span class="keyword">using</span> MongoDB.Driver;          <span class="comment">// MongoDB</span></span><br><span class="line"><span class="keyword">using</span> StackExchange.Redis;     <span class="comment">// Redis</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="5-訊息佇列與事件匯流排"><a href="#5-訊息佇列與事件匯流排" class="headerlink" title="5. 訊息佇列與事件匯流排"></a>5. 訊息佇列與事件匯流排</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> RabbitMQ.Client;         <span class="comment">// RabbitMQ</span></span><br><span class="line"><span class="keyword">using</span> Azure.Messaging.ServiceBus; <span class="comment">// Azure Service Bus</span></span><br><span class="line"><span class="keyword">using</span> MassTransit;             <span class="comment">// MassTransit</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.Azure.EventHubs; <span class="comment">// Azure Event Hubs</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="6-雲端服務整合"><a href="#6-雲端服務整合" class="headerlink" title="6. 雲端服務整合"></a>6. 雲端服務整合</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Azure.Storage.Blobs;     <span class="comment">// Azure Blob Storage</span></span><br><span class="line"><span class="keyword">using</span> Azure.Identity;          <span class="comment">// Azure 身份認證</span></span><br><span class="line"><span class="keyword">using</span> Amazon.S3;               <span class="comment">// AWS S3</span></span><br><span class="line"><span class="keyword">using</span> Amazon.SQS;              <span class="comment">// AWS SQS</span></span><br><span class="line"><span class="keyword">using</span> Google.Cloud.Storage.V1; <span class="comment">// Google Cloud Storage</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="7-效能與監控"><a href="#7-效能與監控" class="headerlink" title="7. 效能與監控"></a>7. 效能與監控</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Diagnostics;       <span class="comment">// 效能監控、事件記錄</span></span><br><span class="line"><span class="keyword">using</span> OpenTelemetry;           <span class="comment">// 分散式追蹤</span></span><br><span class="line"><span class="keyword">using</span> OpenTelemetry.Metrics;   <span class="comment">// 指標收集</span></span><br><span class="line"><span class="keyword">using</span> App.Metrics;             <span class="comment">// 應用程式指標</span></span><br><span class="line"><span class="keyword">using</span> Prometheus;              <span class="comment">// Prometheus 監控</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="8-快取"><a href="#8-快取" class="headerlink" title="8. 快取"></a>8. 快取</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Caching.Memory;  <span class="comment">// 記憶體快取</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Caching.Redis;   <span class="comment">// Redis 快取</span></span><br><span class="line"><span class="keyword">using</span> LazyCache;               <span class="comment">// 延遲快取</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="9-背景工作"><a href="#9-背景工作" class="headerlink" title="9. 背景工作"></a>9. 背景工作</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Hangfire;               <span class="comment">// 背景工作排程</span></span><br><span class="line"><span class="keyword">using</span> Quartz;                 <span class="comment">// 工作排程</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Hosting; <span class="comment">// 託管服務</span></span><br><span class="line"><span class="keyword">using</span> System.Reactive;        <span class="comment">// 反應式程式設計</span></span><br><span class="line"><span class="keyword">using</span> System.Reactive.Linq;   <span class="comment">// Rx.NET</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="10-測試相關"><a href="#10-測試相關" class="headerlink" title="10. 測試相關"></a>10. 測試相關</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Microsoft.VisualStudio.TestTools.UnitTesting; <span class="comment">// MSTest</span></span><br><span class="line"><span class="keyword">using</span> Xunit;                  <span class="comment">// xUnit</span></span><br><span class="line"><span class="keyword">using</span> NUnit.Framework;        <span class="comment">// NUnit</span></span><br><span class="line"><span class="keyword">using</span> Moq;                   <span class="comment">// Mock 框架</span></span><br><span class="line"><span class="keyword">using</span> FluentAssertions;      <span class="comment">// 流暢的斷言</span></span><br><span class="line"><span class="keyword">using</span> AutoFixture;           <span class="comment">// 測試資料產生</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="使用情境範例"><a href="#使用情境範例" class="headerlink" title="使用情境範例"></a>使用情境範例</h2><h3 id="1-檔案操作"><a href="#1-檔案操作" class="headerlink" title="1. 檔案操作"></a>1. 檔案操作</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> System.Text;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 讀取文字檔</span></span><br><span class="line"><span class="built_in">string</span> content = File.ReadAllText(<span class="string">&quot;file.txt&quot;</span>, Encoding.UTF8);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 寫入檔案</span></span><br><span class="line">File.WriteAllText(<span class="string">&quot;output.txt&quot;</span>, <span class="string">&quot;內容&quot;</span>, Encoding.UTF8);</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-資料庫操作"><a href="#2-資料庫操作" class="headerlink" title="2. 資料庫操作"></a>2. 資料庫操作</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Data.SqlClient;</span><br><span class="line"></span><br><span class="line"><span class="built_in">string</span> connectionString = <span class="string">&quot;連線字串&quot;</span>;</span><br><span class="line"><span class="keyword">using</span> (<span class="keyword">var</span> connection = <span class="keyword">new</span> SqlConnection(connectionString))</span><br><span class="line">&#123;</span><br><span class="line">    connection.Open();</span><br><span class="line">    <span class="comment">// 執行 SQL 命令</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-HTTP-請求"><a href="#3-HTTP-請求" class="headerlink" title="3. HTTP 請求"></a>3. HTTP 請求</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Net.Http;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> (<span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient())</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> response = <span class="keyword">await</span> client.GetAsync(<span class="string">&quot;https://api.example.com&quot;</span>);</span><br><span class="line">    <span class="built_in">string</span> content = <span class="keyword">await</span> response.Content.ReadAsStringAsync();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-JSON-處理"><a href="#4-JSON-處理" class="headerlink" title="4. JSON 處理"></a>4. JSON 處理</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Newtonsoft.Json;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 序列化</span></span><br><span class="line"><span class="built_in">string</span> json = JsonConvert.SerializeObject(<span class="built_in">object</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 反序列化</span></span><br><span class="line"><span class="keyword">var</span> obj = JsonConvert.DeserializeObject&lt;Type&gt;(json);</span><br></pre></td></tr></table></figure>
-<h3 id="4-依賴注入設定"><a href="#4-依賴注入設定" class="headerlink" title="4. 依賴注入設定"></a>4. 依賴注入設定</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Microsoft.Extensions.DependencyInjection;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ConfigureServices</span>(<span class="params">IServiceCollection services</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    services.AddScoped&lt;IUserService, UserService&gt;();</span><br><span class="line">    services.AddSingleton&lt;ICacheService, RedisCacheService&gt;();</span><br><span class="line">    services.AddTransient&lt;IEmailSender, SmtpEmailSender&gt;();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="5-非同步操作與取消"><a href="#5-非同步操作與取消" class="headerlink" title="5. 非同步操作與取消"></a>5. 非同步操作與取消</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Threading;</span><br><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task <span class="title">ProcessDataAsync</span>(<span class="params">CancellationToken cancellationToken</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> Task.WhenAll(</span><br><span class="line">        Task1Async(cancellationToken),</span><br><span class="line">        Task2Async(cancellationToken)</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="6-分散式快取"><a href="#6-分散式快取" class="headerlink" title="6. 分散式快取"></a>6. 分散式快取</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Caching.Distributed;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task&lt;<span class="built_in">string</span>&gt; <span class="title">GetCachedDataAsync</span>(<span class="params">IDistributedCache cache, <span class="built_in">string</span> key</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> cache.GetStringAsync(key) ?? </span><br><span class="line">           <span class="keyword">await</span> FetchAndCacheDataAsync(cache, key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="最佳實踐建議"><a href="#最佳實踐建議" class="headerlink" title="最佳實踐建議"></a>最佳實踐建議</h2><ol>
-<li><p>命名空間組織</p>
-<ul>
-<li>按功能領域組織命名空間</li>
-<li>避免循環依賴</li>
-<li>保持命名空間結構扁平化</li>
-</ul>
-</li>
-<li><p>效能考量</p>
-<ul>
-<li>使用 <code>global using</code> 統一管理常用命名空間</li>
-<li>避免在熱路徑中動態載入組件</li>
-<li>注意命名空間引用對編譯時間的影響</li>
-</ul>
-</li>
-<li><p>相容性管理</p>
-<ul>
-<li>使用 <code>#if</code> 條件編譯符號處理不同框架版本</li>
-<li>定期更新套件版本</li>
-<li>維護最小相依性原則</li>
-</ul>
-</li>
-<li><p>安全性考量</p>
-<ul>
-<li>優先使用最新的安全性API</li>
-<li>避免使用已棄用的命名空間</li>
-<li>遵循最小權限原則</li>
-</ul>
-</li>
-<li><p>套件管理</p>
-<ul>
-<li>使用中央化的套件版本管理</li>
-<li>定期審查第三方套件的安全性更新</li>
-<li>建立套件使用規範</li>
-</ul>
-</li>
-</ol>
-
+using System;                     // 基礎類型、例外處理
+using System.Collections;         // 非泛型集合
+using System.Collections.Generic; // 泛型集合
+using System.Linq;               // LINQ 查詢
+using System.ComponentModel;      // 資料綁定、型別轉換
+using System.T
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1422,139 +1216,31 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="2024年CSS終於實現垂直置中"><a href="#2024年CSS終於實現垂直置中" class="headerlink" title="2024年CSS終於實現垂直置中"></a>2024年CSS終於實現垂直置中</h1><p>在2024年，<code>align-content</code>終於可以在塊級佈局中運作了。只需<strong>一個CSS屬性</strong>就能實現垂直置中，而不需使用Flexbox或Grid。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;align-content: center; height: 100px;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">code</span>&gt;</span>align-content<span class="tag">&lt;/<span class="name">code</span>&gt;</span> 現在可以直接使用了!</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+          2024年CSS終於實現垂直置中
+在2024年，align-content終於可以在塊級佈局中運作了。只需一個CSS屬性就能實現垂直置中，而不需使用Flexbox或Grid。
 
-<p><a target="_blank" rel="noopener" href="https://caniuse.com/mdn-css_properties_align-content_block_context">支援情況</a>:<br>Chrome: 123 | Firefox: 125 | Safari: 17.4</p>
-<p>可以看到只支援比較新的瀏覽器版本，所以使用上還是得考慮一下，總的來說，雖然我們會很興奮地看到新的 CSS 特性出現，但在實際開發中，我們需要平衡新特性的使用和對舊版瀏覽器的支援。通常，我們會採用漸進式增強的策略，確保基本功能在所有環境中都能正常運作，同時為支援新特性的瀏覽器提供更好的體驗。。</p>
-<h2 id="有什麼新變化"><a href="#有什麼新變化" class="headerlink" title="有什麼新變化?"></a>有什麼新變化?</h2><p>CSS對齊的現況是需要切換到<em>flexbox</em>或<em>grid</em>佈局，因為<code>align-content</code>在預設佈局(<em>flow</em>)中不起作用。在2024年，瀏覽器<a target="_blank" rel="noopener" href="https://web.dev/blog/align-content-block">實作了</a>流式佈局的<code>align-content</code>。這帶來一些好處:</p>
-<ul>
-<li>你不需要使用flexbox或grid，只需要一個CSS屬性就能實現對齊。</li>
-<li>因此，內容不需要包裝在一個div中。</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 可以運作 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid; align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  內容。</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+1
+2
+3
 
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 失敗! --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid; align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  包含<span class="tag">&lt;<span class="name">em</span>&gt;</span>多個<span class="tag">&lt;/<span class="name">em</span>&gt;</span>節點的內容。</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 使用內容包裝器可以運作 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid; align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>  <span class="comment">&lt;!-- 額外的包裝器 --&gt;</span></span><br><span class="line">    包含<span class="tag">&lt;<span class="name">em</span>&gt;</span>多個<span class="tag">&lt;/<span class="name">em</span>&gt;</span>節點的內容。</span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<div style="align-content: center; height: 100px;">
+  <code>align-content</code> 現在可以直接使用了!
+</div>
 
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 不需要內容包裝器就可以運作 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  包含<span class="tag">&lt;<span class="name">em</span>&gt;</span>多個<span class="tag">&lt;/<span class="name">em</span>&gt;</span>節點的內容。</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p>經過幾十年的進步，CSS終於有了一個<strong>單一屬性</strong>來控制垂直對齊，這真是太棒了!</p>
-<h2 id="垂直置中-歷史回顧"><a href="#垂直置中-歷史回顧" class="headerlink" title="垂直置中 - 歷史回顧"></a>垂直置中 - 歷史回顧</h2><p>瀏覽器很有趣，像對齊這樣的基本需求在很長一段時間內都沒有簡單的解決方案。以下是如何置中內容:</p>
-<p>以下是在瀏覽器中如何<em>垂直</em>置中(<em>水平</em>置中是另一個話題):</p>
-<h3 id="方法1-表格單元格"><a href="#方法1-表格單元格" class="headerlink" title="方法1:表格單元格"></a>方法1:表格單元格</h3><p>有4種主要佈局:flow(預設)、table、flexbox、grid。如何對齊內容取決於容器的佈局。flexbox和grid是後來才加入的，所以table是最早的選擇。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: table;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: table-cell; vertical-align: middle;&quot;</span>&gt;</span></span><br><span class="line">    內容。</span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+支援情況:
+Chrome: 123 | Firefox: 125 | Safari: 17.4
 
-<p>可以僅透過CSS召喚出一個表格，但需要這樣一個間接方法實在是一種恥辱。</p>
-<h3 id="方法2-絕對定位"><a href="#方法2-絕對定位" class="headerlink" title="方法2:絕對定位"></a>方法2:絕對定位</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;position: relative;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;position: absolute; top: 50%; transform: translateY(-50%);&quot;</span>&gt;</span></span><br><span class="line">    內容。</span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>這種方法使用絕對定位來繞過佈局，因為流式佈局無法幫助我們:</p>
-<ol>
-<li>用<code>position: relative</code>標記參考容器。</li>
-<li>用<code>position: absolute; top: 50%</code>將內容邊緣放在中心。</li>
-<li>用<code>transform: translateY(-50%)</code>將內容中心偏移到邊緣。</li>
-</ol>
-<p>此方法的缺點有：</p>
-<ol>
-<li>複雜性：這個方法需要多個 CSS 屬性組合，不夠直觀。</li>
-<li>破壞文檔流：使用絕對定位會將元素從正常文檔流中移除，可能導致佈局問題。</li>
-<li>需要額外的包裝元素：這個方法通常需要一個額外的容器元素。</li>
-<li>不靈活：在某些情況下，這種方法可能不適用，特別是當容器高度不固定時。</li>
-<li>性能考慮：使用 transform 可能在某些情況下引起性能問題。</li>
-<li>不符合語義：這種方法使用了與內容語義無關的 CSS 技巧來實現佈局。</li>
-</ol>
-<p>不過這個方法還是很多開發者在使用，因為</p>
-<ol>
-<li>廣泛支援：這個方法在絕大多數瀏覽器中都能正常工作，包括較舊的版本。</li>
-<li>可靠性：一旦掌握，這個方法在大多數情況下都能可靠地工作。</li>
-<li>靈活性：可以輕易調整以適應不同的情況，如水平置中。</li>
-<li>習慣：許多開發者已經習慣了這種方法，並能快速實現。</li>
-<li>相容性好：不依賴於新的 CSS 特性，因此在各種環境中都能使用。</li>
-<li>問題解決：儘管不完美，但它解決了一個常見的佈局問題。</li>
-</ol>
-<h3 id="方法3-行內內容"><a href="#方法3-行內內容" class="headerlink" title="方法3:行內內容"></a>方法3:行內內容</h3><p>雖然流式佈局不能幫助內容對齊，但它允許在行內進行垂直對齊。那麼為什麼不讓一行和容器一樣高呢?</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;container&quot;</span>&gt;</span></span><br><span class="line">  ::before</span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;content&quot;</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.container</span><span class="selector-pseudo">::before</span> &#123;</span><br><span class="line">  <span class="attribute">content</span>: <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">100%</span>;</span><br><span class="line">  <span class="attribute">display</span>: inline-block;</span><br><span class="line">  <span class="attribute">vertical-align</span>: middle;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.content</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: inline-block;</span><br><span class="line">  <span class="attribute">vertical-align</span>: middle;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>這有一些缺陷:除了犧牲一個偽元素外，開頭還有一個零寬度的<a target="_blank" rel="noopener" href="https://christopheraue.net/design/vertical-align#:~:text=strut">&quot;支柱&quot;字元</a>可能會搞亂東西。</p>
-<h3 id="方法4-單行flexbox"><a href="#方法4-單行flexbox" class="headerlink" title="方法4:單行flexbox"></a>方法4:單行flexbox</h3><p>flexbox在Web出現20年後才廣泛可用。它有兩種模式:單行和多行。在單行模式(預設)下，該行填滿垂直空間，<code>align-items</code>在行內對齊內容。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: flex; align-items: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>或者，讓行變成列，用<code>justify-content</code>對齊項目。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: flex; flex-flow: column; justify-content: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="方法5-多行flexbox"><a href="#方法5-多行flexbox" class="headerlink" title="方法5:多行flexbox"></a>方法5:多行flexbox</h3><p>在多行flexbox中，行不再填滿垂直空間，所以可以用<code>align-content</code>對齊只有1個項目的行。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: flex; flex-flow: row wrap; align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="方法6-網格內容"><a href="#方法6-網格內容" class="headerlink" title="方法6:網格內容"></a>方法6:網格內容</h3><p>網格出現得更晚。對齊變得更簡單。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid; align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="方法7-網格單元格"><a href="#方法7-網格單元格" class="headerlink" title="方法7:網格單元格"></a>方法7:網格單元格</h3><p>注意與前一種方法的細微差別:</p>
-<ul>
-<li><code>align-content</code>將<em>單元格</em>相對於<em>容器</em>置中。</li>
-<li><code>align-items</code>將<em>內容</em>相對於<em>單元格</em>置中，而<em>單元格</em>會拉伸以適應<em>容器</em>。</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid; align-items: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>似乎有很多方法可以做同樣的事情。</p>
-<h3 id="方法8-自動外邊距"><a href="#方法8-自動外邊距" class="headerlink" title="方法8:自動外邊距"></a>方法8:自動外邊距</h3><p>在流式佈局中，<code>margin:auto</code>可以水平置中，但不能垂直置中。flexbox和Grid沒有這個問題。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;margin-block: auto;&quot;</span>&gt;</span></span><br><span class="line">    內容。</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>不過，我還是很困惑為什麼要設計邊距來控制對齊。</p>
-<h3 id="方法9-2024年的這篇文章"><a href="#方法9-2024年的這篇文章" class="headerlink" title="方法9:2024年的這篇文章"></a>方法9:2024年的這篇文章</h3><p>為什麼瀏覽器一開始就不加入這個功能呢?</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">code</span>&gt;</span>align-content<span class="tag">&lt;/<span class="name">code</span>&gt;</span> 現在可以直接使用了!</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>方法1中的表格單元格，像這種方法一樣，也不需要內容包裝器(儘管它需要一個表格包裝器)。我們又回到了起點!</p>
-<p>不過使用上要看瀏覽器是否支援，可以使用以下策略：</p>
-<ol>
-<li>使用特性檢測：<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="string">&#x27;alignContent&#x27;</span> <span class="keyword">in</span> <span class="variable language_">document</span>.<span class="property">documentElement</span>.<span class="property">style</span>) &#123;</span><br><span class="line">  <span class="comment">// 使用新的 align-content 方法</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  <span class="comment">// 使用備用方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>使用 CSS @supports：<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">@supports</span> (<span class="attribute">align-content</span>: center) &#123;</span><br><span class="line">  <span class="selector-class">.container</span> &#123;</span><br><span class="line">    <span class="attribute">align-content</span>: center;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@supports</span> <span class="keyword">not</span> (<span class="attribute">align-content</span>: center) &#123;</span><br><span class="line">  <span class="comment">/* 當樣式不被瀏覽器所支援就套用此處的樣式 */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h3></li>
-</ol>
-<p>以下是所有垂直置中方法</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="selector-tag">p</span>&gt;Various methods for vertical centering. Yellow is <span class="attribute">container</span> and green is <span class="attribute">content</span> wrapper. Note that the first and last methods do not require <span class="selector-tag">a</span> <span class="attribute">content</span> wrapper.&lt;/<span class="selector-tag">p</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">display</span>: table;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> style=&quot;<span class="attribute">display</span>: table-cell; <span class="attribute">vertical-align</span>: middle;&quot;&gt;</span><br><span class="line">    <span class="selector-tag">Table</span> cell with &lt;<span class="selector-tag">code</span>&gt;<span class="attribute">vertical-align</span>&lt;/<span class="selector-tag">code</span>&gt;.</span><br><span class="line">  &lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">position</span>: relative;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot; style=&quot;<span class="attribute">position</span>: absolute; <span class="attribute">top</span>: <span class="number">50%</span>; <span class="attribute">transform</span>: <span class="built_in">translateY</span>(-<span class="number">50%</span>);&quot;&gt;</span><br><span class="line">    &lt;<span class="selector-tag">b</span>&gt;Absolute&lt;/<span class="selector-tag">b</span>&gt; positioning.</span><br><span class="line">  &lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">span</span> style=&quot;<span class="attribute">display</span>: inline-block; <span class="attribute">vertical-align</span>: middle; <span class="attribute">height</span>: <span class="number">100%</span>;&quot;&gt;&lt;/<span class="selector-tag">span</span>&gt;&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot; style=&quot;<span class="attribute">display</span>: inline-block; <span class="attribute">vertical-align</span>: middle;&quot;&gt;</span><br><span class="line">    &lt;<span class="selector-tag">b</span>&gt;Inline&lt;/<span class="selector-tag">b</span>&gt; <span class="attribute">content</span>.</span><br><span class="line">  &lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">display</span>: flex; <span class="attribute">align-items</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot;&gt;Single-<span class="selector-tag">line</span> &lt;<span class="selector-tag">b</span>&gt;flexbox&lt;/<span class="selector-tag">b</span>&gt; (cross axis).&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">display</span>: flex; <span class="attribute">flex-flow</span>: column; <span class="attribute">justify-content</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot;&gt;Single-<span class="selector-tag">line</span> &lt;<span class="selector-tag">b</span>&gt;flexbox&lt;/<span class="selector-tag">b</span>&gt; (<span class="selector-tag">main</span> axis).&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">display</span>: flex; <span class="attribute">flex-flow</span>: row wrap; <span class="attribute">align-content</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot;&gt;Multi-<span class="selector-tag">line</span> &lt;<span class="selector-tag">b</span>&gt;flexbox&lt;/<span class="selector-tag">b</span>&gt; (cross axis).&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">display</span>: grid; <span class="attribute">align-content</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot;&gt;&lt;<span class="selector-tag">b</span>&gt;<span class="attribute">Grid</span>&lt;/<span class="selector-tag">b</span>&gt; <span class="attribute">content</span>.&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">display</span>: grid; <span class="attribute">align-items</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot;&gt;&lt;<span class="selector-tag">b</span>&gt;<span class="attribute">Grid</span>&lt;/<span class="selector-tag">b</span>&gt; cell.&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">display</span>: grid;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot; style=&quot;<span class="attribute">margin-block</span>: auto;&quot;&gt;</span><br><span class="line">    Auto-&lt;<span class="selector-tag">b</span>&gt;<span class="attribute">margin</span>&lt;/<span class="selector-tag">b</span>&gt;.</span><br><span class="line">  &lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">align-content</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">code</span>&gt;<span class="attribute">align-content</span>&lt;/<span class="selector-tag">code</span>&gt; just works in <span class="number">2024</span>!</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="實現二維對齊"><a href="#實現二維對齊" class="headerlink" title="實現二維對齊"></a>實現二維對齊</h2><p>有沒有一個<em>水平</em>對齊的<strong>單一屬性</strong>?<code>align-content</code>的對應屬性是什麼?讓我們看看各種對齊屬性:</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>flow</th>
-<th>flexbox</th>
-<th>grid</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>  align-content</code></td>
-<td>block軸</td>
-<td>交叉軸(行)</td>
-<td>block軸(網格)</td>
-</tr>
-<tr>
-<td><code>justify-content</code></td>
-<td>無效果</td>
-<td>主軸</td>
-<td>inline軸(網格)</td>
-</tr>
-<tr>
-<td><code>  align-items</code></td>
-<td>無效果</td>
-<td>交叉軸(項目)</td>
-<td>block軸(單元格)</td>
-</tr>
-<tr>
-<td><code>justify-items</code></td>
-<td>無效果</td>
-<td>無效果</td>
-<td>inline軸(單元格)</td>
-</tr>
-</tbody></table>
-<p>表:不同佈局中的對齊屬性</p>
-<h3 id="背景-CSS軸術語"><a href="#背景-CSS軸術語" class="headerlink" title="背景:CSS軸術語"></a>背景:CSS軸術語</h3><p><em>block軸</em>通常是<em>垂直的</em>，<em>inline軸</em>是<em>水平的</em>。需要這些術語是因為<a target="_blank" rel="noopener" href="https://build-your-own.org/visual_css/2p40_box_model.html#:~:text=Logical%20properties">垂直<code>writing-mode</code></a>是存在的,所以<strong>block軸和inline軸是相對於文字方向的</strong>。這類似於<em>主軸</em>和<em>交叉軸</em>是相對於flexbox項目方向的。</p>
-<p><strong>結論</strong>: &quot;items&quot;用於可以<em>單獨</em>對齊的內容。在主軸上,flex項目不能單獨對齊,所以是&quot;content&quot;。</p>
-
+可以看到只支援比較新的瀏覽器版本，所以使用上還是得考慮一下，總的來說，雖然我們會很興奮地看到新的 CSS 
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1660,109 +1346,32 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="Docker-容器化進階：自動化部署與-CI-CD-實戰指南"><a href="#Docker-容器化進階：自動化部署與-CI-CD-實戰指南" class="headerlink" title="Docker 容器化進階：自動化部署與 CI/CD 實戰指南"></a>Docker 容器化進階：自動化部署與 CI/CD 實戰指南</h1><p>本文承接<a href="https://kyosora.github.io/2024/08/20/%E5%BE%9E%E9%9B%B6%E9%96%8B%E5%A7%8B%E7%9A%84-Docker-%E5%AE%B9%E5%99%A8%E5%8C%96%E6%8C%87%E5%8D%97-Vue3-+-.NET-Core-+-SQL-Server/">從零開始的 Docker 容器化指南</a>，主要討論如何實現全自動化的 Docker 部署流程。透過整合 GitHub Actions、Docker Hub 和自動化工具，我們可以實現程式碼推送後自動更新生產環境的目標。</p>
-<h2 id="目錄"><a href="#目錄" class="headerlink" title="目錄"></a>目錄</h2><ul>
-<li><a href="#%E8%87%AA%E5%8B%95%E5%8C%96%E9%83%A8%E7%BD%B2%E6%A6%82%E8%BF%B0">自動化部署概述</a></li>
-<li><a href="#github-actions-%E8%A8%AD%E5%AE%9A">GitHub Actions 設定</a></li>
-<li><a href="#%E8%87%AA%E5%8B%95%E6%9B%B4%E6%96%B0%E5%AE%B9%E5%99%A8%E8%A8%AD%E5%AE%9A">自動更新容器設定</a></li>
-<li><a href="#%E9%9B%B6%E5%81%9C%E6%A9%9F%E9%83%A8%E7%BD%B2%E7%AD%96%E7%95%A5">零停機部署策略</a></li>
-<li><a href="#%E5%82%99%E4%BB%BD%E8%88%87%E9%82%84%E5%8E%9F%E6%A9%9F%E5%88%B6">備份與還原機制</a></li>
-<li><a href="#%E7%9B%A3%E6%8E%A7%E8%88%87%E5%91%8A%E8%AD%A6%E8%A8%AD%E5%AE%9A">監控與告警設定</a></li>
-<li><a href="#%E6%95%85%E9%9A%9C%E6%8E%92%E9%99%A4%E8%88%87%E5%9B%9E%E6%BB%BE%E6%B5%81%E7%A8%8B">故障排除與回滾流程</a></li>
-<li><a href="#%E6%9C%80%E4%BD%B3%E5%AF%A6%E8%B8%90%E5%BB%BA%E8%AD%B0">最佳實踐建議</a></li>
-</ul>
-<h2 id="自動化部署概述"><a href="#自動化部署概述" class="headerlink" title="自動化部署概述"></a>自動化部署概述</h2><p>完整的自動化部署流程包含以下步驟：</p>
-<ol>
-<li>開發者推送程式碼到 GitHub</li>
-<li>GitHub Actions 自動執行測試和建置</li>
-<li>建立新的 Docker 映像檔並推送至 Docker Hub</li>
-<li>生產環境自動偵測並更新容器</li>
-<li>健康檢查確認部署狀態</li>
-</ol>
-<h3 id="部署流程圖"><a href="#部署流程圖" class="headerlink" title="部署流程圖"></a>部署流程圖</h3><pre><code class="highlight mermaid">graph TD
-    A[開發者推送程式碼] --&gt; B[GitHub Actions 觸發]
-    B --&gt; C[執行測試]
-    C --&gt; D[建立 Docker 映像檔]
-    D --&gt; E[推送至 Docker Hub]
-    E --&gt; F[生產環境更新]
-    F --&gt; G[健康檢查]
-    G --&gt;|成功| H[部署完成]
-    G --&gt;|失敗| I[自動回滾]</code></pre>
+          Docker 容器化進階：自動化部署與 CI/CD 實戰指南
+本文承接從零開始的 Docker 容器化指南，主要討論如何實現全自動化的 Docker 部署流程。透過整合 GitHub Actions、Docker Hub 和自動化工具，我們可以實現程式碼推送後自動更新生產環境的目標。
 
-<h2 id="GitHub-Actions-設定"><a href="#GitHub-Actions-設定" class="headerlink" title="GitHub Actions 設定"></a>GitHub Actions 設定</h2><h3 id="1-基礎設定"><a href="#1-基礎設定" class="headerlink" title="1. 基礎設定"></a>1. 基礎設定</h3><p>建立 <code>.github/workflows/deploy.yml</code> 檔案：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">Production</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span> [ <span class="string">main</span> ]</span><br><span class="line">  <span class="attr">workflow_dispatch:</span>  <span class="comment"># 允許手動觸發</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">deploy:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">code</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/checkout@v2</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Set</span> <span class="string">up</span> <span class="string">Docker</span> <span class="string">Buildx</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">docker/setup-buildx-action@v1</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Cache</span> <span class="string">Docker</span> <span class="string">layers</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/cache@v2</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">path:</span> <span class="string">/tmp/.buildx-cache</span></span><br><span class="line">          <span class="attr">key:</span> <span class="string">$&#123;&#123;</span> <span class="string">runner.os</span> <span class="string">&#125;&#125;-buildx-$&#123;&#123;</span> <span class="string">github.sha</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">restore-keys:</span> <span class="string">|</span></span><br><span class="line"><span class="string">            $&#123;&#123; runner.os &#125;&#125;-buildx-</span></span><br><span class="line"><span class="string"></span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Login</span> <span class="string">to</span> <span class="string">Docker</span> <span class="string">Hub</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">docker/login-action@v1</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">username:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.DOCKER_HUB_USERNAME</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">password:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.DOCKER_HUB_ACCESS_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Build</span> <span class="string">and</span> <span class="string">push</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">docker/build-push-action@v2</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">context:</span> <span class="string">.</span></span><br><span class="line">          <span class="attr">push:</span> <span class="literal">true</span></span><br><span class="line">          <span class="attr">tags:</span> <span class="string">|</span></span><br><span class="line"><span class="string">            user/myapp:latest</span></span><br><span class="line"><span class="string">            user/myapp:$&#123;&#123; github.sha &#125;&#125;</span></span><br><span class="line"><span class="string"></span>          <span class="attr">cache-from:</span> <span class="string">type=local,src=/tmp/.buildx-cache</span></span><br><span class="line">          <span class="attr">cache-to:</span> <span class="string">type=local,dest=/tmp/.buildx-cache-new</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># 更新快取</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Move</span> <span class="string">cache</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">          rm -rf /tmp/.buildx-cache</span></span><br><span class="line"><span class="string">          mv /tmp/.buildx-cache-new /tmp/.buildx-cache</span></span><br></pre></td></tr></table></figure>
+目錄
+ * 自動化部署概述
+ * GitHub Actions 設定
+ * 自動更新容器設定
+ * 零停機部署策略
+ * 備份與還原機制
+ * 監控與告警設定
+ * 故障排除與回滾流程
+ * 最佳實踐建議
 
-<h3 id="2-部署到伺服器"><a href="#2-部署到伺服器" class="headerlink" title="2. 部署到伺服器"></a>2. 部署到伺服器</h3><p>添加遠端部署步驟：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">Production</span></span><br><span class="line">  <span class="attr">uses:</span> <span class="string">appleboy/ssh-action@master</span></span><br><span class="line">  <span class="attr">with:</span></span><br><span class="line">    <span class="attr">host:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.SERVER_HOST</span> <span class="string">&#125;&#125;</span></span><br><span class="line">    <span class="attr">username:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.SERVER_USER</span> <span class="string">&#125;&#125;</span></span><br><span class="line">    <span class="attr">key:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.SERVER_SSH_KEY</span> <span class="string">&#125;&#125;</span></span><br><span class="line">    <span class="attr">script:</span> <span class="string">|</span></span><br><span class="line"><span class="string">      cd /path/to/project</span></span><br><span class="line"><span class="string">      ./deploy.sh $&#123;&#123; github.sha &#125;&#125;</span></span><br></pre></td></tr></table></figure>
+自動化部署概述
+完整的自動化部署流程包含以下步驟：
 
-<h2 id="自動更新容器設定"><a href="#自動更新容器設定" class="headerlink" title="自動更新容器設定"></a>自動更新容器設定</h2><h3 id="1-Watchtower-設定"><a href="#1-Watchtower-設定" class="headerlink" title="1. Watchtower 設定"></a>1. Watchtower 設定</h3><p>Watchtower 可以自動監測和更新 Docker 容器：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># docker-compose.yml</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">watchtower:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">containrrr/watchtower</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/var/run/docker.sock:/var/run/docker.sock</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">WATCHTOWER_CLEANUP=true</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">WATCHTOWER_LABEL_ENABLE=true</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">WATCHTOWER_NOTIFICATION_URL=slack://hook-url</span></span><br><span class="line">    <span class="attr">labels:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;com.centurylinklabs.watchtower.enable=true&quot;</span></span><br><span class="line">    <span class="attr">command:</span> <span class="string">--interval</span> <span class="number">300</span> <span class="comment"># 每5分鐘檢查一次</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="2-容器標籤設定"><a href="#2-容器標籤設定" class="headerlink" title="2. 容器標籤設定"></a>2. 容器標籤設定</h3><p>為需要自動更新的服務加上標籤：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">api:</span></span><br><span class="line">    <span class="attr">labels:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;com.centurylinklabs.watchtower.enable=true&quot;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="零停機部署策略"><a href="#零停機部署策略" class="headerlink" title="零停機部署策略"></a>零停機部署策略</h2><h3 id="1-藍綠部署"><a href="#1-藍綠部署" class="headerlink" title="1. 藍綠部署"></a>1. 藍綠部署</h3><p>建立部署腳本 <code>deploy.sh</code>：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 設定變數</span></span><br><span class="line">APP_NAME=<span class="string">&quot;myapp&quot;</span></span><br><span class="line">BLUE_PORT=<span class="string">&quot;8080&quot;</span></span><br><span class="line">GREEN_PORT=<span class="string">&quot;8081&quot;</span></span><br><span class="line">PROXY_PORT=<span class="string">&quot;80&quot;</span></span><br><span class="line">VERSION=<span class="variable">$1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 獲取當前活動的部署顏色</span></span><br><span class="line">ACTIVE_COLOR=$(docker ps --filter <span class="string">&quot;name=<span class="variable">$&#123;APP_NAME&#125;</span>-&quot;</span> --format <span class="string">&quot;&#123;&#123;.Names&#125;&#125;&quot;</span> | grep -o <span class="string">&#x27;blue\|green&#x27;</span>)</span><br><span class="line"><span class="keyword">if</span> [ <span class="string">&quot;<span class="variable">$ACTIVE_COLOR</span>&quot;</span> == <span class="string">&quot;blue&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">    NEW_COLOR=<span class="string">&quot;green&quot;</span></span><br><span class="line">    NEW_PORT=<span class="variable">$GREEN_PORT</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    NEW_COLOR=<span class="string">&quot;blue&quot;</span></span><br><span class="line">    NEW_PORT=<span class="variable">$BLUE_PORT</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Starting <span class="variable">$NEW_COLOR</span> deployment...&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 部署新版本</span></span><br><span class="line">docker-compose -f docker-compose.<span class="variable">$NEW_COLOR</span>.yml up -d --build</span><br><span class="line"></span><br><span class="line"><span class="comment"># 等待服務啟動</span></span><br><span class="line"><span class="built_in">sleep</span> 10</span><br><span class="line"></span><br><span class="line"><span class="comment"># 健康檢查</span></span><br><span class="line"><span class="keyword">if</span> curl -f <span class="string">&quot;http://localhost:<span class="variable">$NEW_PORT</span>/health&quot;</span>; <span class="keyword">then</span></span><br><span class="line">    <span class="comment"># 切換流量</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;Switching traffic to <span class="variable">$NEW_COLOR</span> deployment&quot;</span></span><br><span class="line">    docker-compose -f docker-compose.proxy.yml up -d --force-recreate</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 移除舊版本</span></span><br><span class="line">    <span class="keyword">if</span> [ -n <span class="string">&quot;<span class="variable">$ACTIVE_COLOR</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">        docker-compose -f docker-compose.<span class="variable">$ACTIVE_COLOR</span>.yml down</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;Deployment successful!&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;Health check failed! Rolling back...&quot;</span></span><br><span class="line">    docker-compose -f docker-compose.<span class="variable">$NEW_COLOR</span>.yml down</span><br><span class="line">    <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="2-健康檢查設定"><a href="#2-健康檢查設定" class="headerlink" title="2. 健康檢查設定"></a>2. 健康檢查設定</h3><p>在服務中設定健康檢查：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">api:</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> [<span class="string">&quot;CMD&quot;</span>, <span class="string">&quot;curl&quot;</span>, <span class="string">&quot;-f&quot;</span>, <span class="string">&quot;http://localhost/health&quot;</span>]</span><br><span class="line">      <span class="attr">interval:</span> <span class="string">30s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">10s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">3</span></span><br><span class="line">      <span class="attr">start_period:</span> <span class="string">40s</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="備份與還原機制"><a href="#備份與還原機制" class="headerlink" title="備份與還原機制"></a>備份與還原機制</h2><h3 id="1-自動備份設定"><a href="#1-自動備份設定" class="headerlink" title="1. 自動備份設定"></a>1. 自動備份設定</h3><p>建立備份腳本 <code>backup.sh</code>：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 設定變數</span></span><br><span class="line">BACKUP_DIR=<span class="string">&quot;/backups&quot;</span></span><br><span class="line">TIMESTAMP=$(<span class="built_in">date</span> +%Y%m%d_%H%M%S)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 建立備份目錄</span></span><br><span class="line"><span class="built_in">mkdir</span> -p <span class="variable">$BACKUP_DIR</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 備份 Docker Compose 設定</span></span><br><span class="line">docker-compose config &gt; <span class="variable">$BACKUP_DIR</span>/docker-compose-<span class="variable">$TIMESTAMP</span>.yml</span><br><span class="line"></span><br><span class="line"><span class="comment"># 備份容器資料</span></span><br><span class="line">docker-compose <span class="built_in">exec</span> -T db sh -c <span class="string">&#x27;mysqldump -u root -p&quot;$MYSQL_ROOT_PASSWORD&quot; --all-databases&#x27;</span> &gt; <span class="variable">$BACKUP_DIR</span>/db-<span class="variable">$TIMESTAMP</span>.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 保留最近 7 天的備份</span></span><br><span class="line">find <span class="variable">$BACKUP_DIR</span> -<span class="built_in">type</span> f -mtime +7 -delete</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-還原流程"><a href="#2-還原流程" class="headerlink" title="2. 還原流程"></a>2. 還原流程</h3><p>建立還原腳本 <code>restore.sh</code>：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">&quot;<span class="variable">$1</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;Please provide backup timestamp&quot;</span></span><br><span class="line">    <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">TIMESTAMP=<span class="variable">$1</span></span><br><span class="line">BACKUP_DIR=<span class="string">&quot;/backups&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 檢查備份檔案是否存在</span></span><br><span class="line"><span class="keyword">if</span> [ ! -f <span class="string">&quot;<span class="variable">$BACKUP_DIR</span>/docker-compose-<span class="variable">$TIMESTAMP</span>.yml&quot;</span> ] || </span><br><span class="line">   [ ! -f <span class="string">&quot;<span class="variable">$BACKUP_DIR</span>/db-<span class="variable">$TIMESTAMP</span>.sql&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;Backup files not found&quot;</span></span><br><span class="line">    <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止現有服務</span></span><br><span class="line">docker-compose down</span><br><span class="line"></span><br><span class="line"><span class="comment"># 還原設定檔</span></span><br><span class="line"><span class="built_in">cp</span> <span class="variable">$BACKUP_DIR</span>/docker-compose-<span class="variable">$TIMESTAMP</span>.yml docker-compose.yml</span><br><span class="line"></span><br><span class="line"><span class="comment"># 啟動服務</span></span><br><span class="line">docker-compose up -d</span><br><span class="line"></span><br><span class="line"><span class="comment"># 還原資料庫</span></span><br><span class="line">docker-compose <span class="built_in">exec</span> -T db sh -c <span class="string">&quot;mysql -u root -p\&quot;<span class="variable">$MYSQL_ROOT_PASSWORD</span>\&quot;&quot;</span> &lt; <span class="variable">$BACKUP_DIR</span>/db-<span class="variable">$TIMESTAMP</span>.sql</span><br></pre></td></tr></table></figure>
-
-<h2 id="監控與告警設定"><a href="#監控與告警設定" class="headerlink" title="監控與告警設定"></a>監控與告警設定</h2><h3 id="1-Prometheus-設定"><a href="#1-Prometheus-設定" class="headerlink" title="1. Prometheus 設定"></a>1. Prometheus 設定</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># docker-compose.yml</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">prometheus:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">prom/prometheus</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./prometheus.yml:/etc/prometheus/prometheus.yml</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9090:9090&quot;</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">grafana:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">grafana/grafana</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;3000:3000&quot;</span></span><br><span class="line">    <span class="attr">depends_on:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">prometheus</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="2-告警設定"><a href="#2-告警設定" class="headerlink" title="2. 告警設定"></a>2. 告警設定</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># prometheus.yml</span></span><br><span class="line"><span class="attr">alerting:</span></span><br><span class="line">  <span class="attr">alertmanagers:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">static_configs:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">targets:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="string">alertmanager:9093</span></span><br><span class="line"></span><br><span class="line"><span class="attr">rule_files:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">alert.rules.yml</span></span><br><span class="line"></span><br><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">job_name:</span> <span class="string">&#x27;docker&#x27;</span></span><br><span class="line">    <span class="attr">static_configs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">targets:</span> [<span class="string">&#x27;localhost:9323&#x27;</span>]</span><br></pre></td></tr></table></figure>
-
-<h2 id="故障排除與回滾流程"><a href="#故障排除與回滾流程" class="headerlink" title="故障排除與回滾流程"></a>故障排除與回滾流程</h2><h3 id="1-常見問題處理"><a href="#1-常見問題處理" class="headerlink" title="1. 常見問題處理"></a>1. 常見問題處理</h3><ul>
-<li>映像檔拉取失敗</li>
-<li>容器啟動失敗</li>
-<li>健康檢查失敗</li>
-<li>資料庫連線問題</li>
-</ul>
-<h3 id="2-回滾流程"><a href="#2-回滾流程" class="headerlink" title="2. 回滾流程"></a>2. 回滾流程</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># rollback.sh</span></span><br><span class="line"></span><br><span class="line">VERSION=<span class="variable">$1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">&quot;<span class="variable">$VERSION</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;Please specify version to rollback&quot;</span></span><br><span class="line">    <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 拉取指定版本映像檔</span></span><br><span class="line">docker-compose pull</span><br><span class="line"></span><br><span class="line"><span class="comment"># 設定版本</span></span><br><span class="line"><span class="built_in">export</span> APP_VERSION=<span class="variable">$VERSION</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止並重新啟動服務</span></span><br><span class="line">docker-compose down</span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
-
-<h2 id="最佳實踐建議"><a href="#最佳實踐建議" class="headerlink" title="最佳實踐建議"></a>最佳實踐建議</h2><ol>
-<li><p>版本管理</p>
-<ul>
-<li>使用語意化版本號</li>
-<li>保留歷史版本映像檔</li>
-<li>定期清理舊版本</li>
-</ul>
-</li>
-<li><p>監控策略</p>
-<ul>
-<li>設定關鍵指標監控</li>
-<li>建立適當的告警閾值</li>
-<li>保留足夠的日誌資訊</li>
-</ul>
-</li>
-<li><p>部署安全</p>
-<ul>
-<li>使用加密的環境變數</li>
-<li>實施適當的存取控制</li>
-<li>定期更新基礎映像檔</li>
-</ul>
-</li>
-<li><p>效能優化</p>
-<ul>
-<li>最佳化映像檔大小</li>
-<li>使用多階段建置</li>
-<li>實施快取策略</li>
-</ul>
-</li>
-</ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>透過本文介紹的自動化部署流程，我們可以大幅減少人工操作，提高部署效率和可靠性。記得根據實際需求調整配置，並持續優化部署流程。</p>
-<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://docs.github.com/en/actions">GitHub Actions 文件</a></li>
-<li><a target="_blank" rel="noopener" href="https://docs.docker.com/compose/">Docker Compose 文件</a></li>
-<li><a target="_blank" rel="noopener" href="https://containrrr.dev/watchtower/">Watchtower 文件</a></li>
-<li><a target="_blank" rel="noopener" href="https://prometheus.io/docs/introduction/overview/">Prometheus 文件</a></li>
-</ul>
-
+ 1. 開發者推送程式碼到 GitHub
+ 2. 
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1868,73 +1477,23 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="什麼是Mojo程式語言"><a href="#什麼是Mojo程式語言" class="headerlink" title="什麼是Mojo程式語言?"></a>什麼是Mojo程式語言?</h1><p>想像一個程式語言,它繼承了Python的簡潔易用,卻能提供與C++相媲美的極致效能,這就是Mojo程式語言。由Swift語言創始者Chris Lattner領軍開發的Mojo,被視為Python的超集合(superset),為AI和高效能運算開啟了新篇章。</p>
-<h2 id="為什麼我們需要Mojo"><a href="#為什麼我們需要Mojo" class="headerlink" title="為什麼我們需要Mojo?"></a>為什麼我們需要Mojo?</h2><p>Python雖然是全球最受歡迎的程式語言之一,但在效能方面一直為人所詬病。特別是在AI和機器學習領域,Python的執行速度常常成為效能瓶頸。Mojo就是為了解決這個問題而生,它讓開發者能夠:</p>
-<ul>
-<li>使用熟悉的Python語法</li>
-<li>獲得接近原生程式碼的執行效能</li>
-<li>無需重寫既有的Python程式碼</li>
-<li>擁有更好的記憶體管理機制</li>
-</ul>
-<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
-    <!-- 背景 -->
-    <rect width="800" height="400" fill="#f8f9fa"></rect>
-    <!-- 標題 -->
-    <text x="400" y="50" text-anchor="middle" font-size="24" fill="#333">Python vs Mojo 效能比較</text>
-    <!-- Y軸 -->
-    <line x1="100" y1="350" x2="100" y2="100" stroke="#333" stroke-width="2"></line>
-    <text x="90" y="225" text-anchor="end" font-size="14" fill="#666" transform="rotate(-90, 90, 225)">執行時間 (毫秒)</text>
-    <!-- X軸 -->
-    <line x1="100" y1="350" x2="700" y2="350" stroke="#333" stroke-width="2"></line>
-    <!-- 長條圖 - Python -->
-    <rect x="200" y="150" width="100" height="200" fill="#3776ab" opacity="0.8"></rect>
-    <text x="250" y="370" text-anchor="middle" font-size="14" fill="#333">Python</text>
-    <text x="250" y="140" text-anchor="middle" font-size="14" fill="#333">100ms</text>
-    <!-- 長條圖 - Mojo -->
-    <rect x="500" y="330" width="100" height="20" fill="#ff6b6b" opacity="0.8"></rect>
-    <text x="550" y="370" text-anchor="middle" font-size="14" fill="#333">Mojo</text>
-    <text x="550" y="320" text-anchor="middle" font-size="14" fill="#333">1ms</text>
-    <!-- 圖例 -->
-    <rect x="350" y="60" width="15" height="15" fill="#3776ab" opacity="0.8"></rect>
-    <text x="370" y="72" font-size="12" fill="#333">Python</text>
-    <rect x="450" y="60" width="15" height="15" fill="#ff6b6b" opacity="0.8"></rect>
-    <text x="470" y="72" font-size="12" fill="#333">Mojo</text>
-</svg>
+          什麼是Mojo程式語言?
+想像一個程式語言,它繼承了Python的簡潔易用,卻能提供與C++相媲美的極致效能,這就是Mojo程式語言。由Swift語言創始者Chris Lattner領軍開發的Mojo,被視為Python的超集合(superset),為AI和高效能運算開啟了新篇章。
 
-<h2 id="Mojo的關鍵特色"><a href="#Mojo的關鍵特色" class="headerlink" title="Mojo的關鍵特色"></a>Mojo的關鍵特色</h2><h3 id="1-Python相容性"><a href="#1-Python相容性" class="headerlink" title="1. Python相容性"></a>1. Python相容性</h3><p>Mojo完全相容Python語法,讓Python開發者可以無痛上手:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Python程式碼</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">x, y</span>):</span><br><span class="line">    <span class="keyword">return</span> x + y</span><br><span class="line"></span><br><span class="line"><span class="comment"># Mojo程式碼 - 語法完全相同</span></span><br><span class="line">fn add(x: Int, y: Int) -&gt; Int:</span><br><span class="line">    <span class="keyword">return</span> x + y</span><br></pre></td></tr></table></figure>
+為什麼我們需要Mojo?
+Python雖然是全球最受歡迎的程式語言之一,但在效能方面一直為人所詬病。特別是在AI和機器學習領域,Python的執行速度常常成為效能瓶頸。Mojo就是為了解決這個問題而生,它讓開發者能夠:
 
-<h3 id="2-強大的效能優化"><a href="#2-強大的效能優化" class="headerlink" title="2. 強大的效能優化"></a>2. 強大的效能優化</h3><p>Mojo引入了系統程式語言級別的效能優化機制:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Mojo的SIMD向量運算最佳化</span></span><br><span class="line">fn vector_add(x: SIMD[DType.float32, <span class="number">4</span>], y: SIMD[DType.float32, <span class="number">4</span>]) -&gt; SIMD[DType.float32, <span class="number">4</span>]:</span><br><span class="line">    <span class="keyword">return</span> x + y</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-記憶體安全"><a href="#3-記憶體安全" class="headerlink" title="3. 記憶體安全"></a>3. 記憶體安全</h3><p>Mojo提供了先進的記憶體管理機制:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Mojo的所有權系統確保記憶體安全</span></span><br><span class="line">fn process_data() raises:</span><br><span class="line">    let data = Array[Int](<span class="number">1000</span>)  <span class="comment"># 自動管理記憶體生命週期</span></span><br><span class="line">    <span class="comment"># 處理資料...</span></span><br><span class="line">    <span class="keyword">return</span>  <span class="comment"># 離開函式時自動釋放記憶體</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="4-平行運算支援"><a href="#4-平行運算支援" class="headerlink" title="4. 平行運算支援"></a>4. 平行運算支援</h3><p>內建的平行運算功能讓多核心處理變得簡單:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Mojo的平行運算支援</span></span><br><span class="line">fn parallel_sum(data: Array[Int]) -&gt; Int:</span><br><span class="line">    var result = <span class="number">0</span></span><br><span class="line"><span class="meta">    @parallel</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(data)):</span><br><span class="line">        result += data[i]</span><br><span class="line">    <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure>
-
-<h2 id="實際應用案例"><a href="#實際應用案例" class="headerlink" title="實際應用案例"></a>實際應用案例</h2><p>Mojo特別適合以下場景:</p>
-<ol>
-<li>機器學習模型訓練</li>
-<li>科學運算</li>
-<li>高效能運算</li>
-<li>系統程式開發</li>
-<li>遊戲引擎開發</li>
-</ol>
-<h2 id="未來展望"><a href="#未來展望" class="headerlink" title="未來展望"></a>未來展望</h2><p>Mojo仍在積極發展中,未來將會:</p>
-<ul>
-<li>擴充標準函式庫</li>
-<li>提供更多最佳化工具</li>
-<li>改善開發者體驗</li>
-<li>強化與現有Python生態系統的整合</li>
-</ul>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>Mojo為Python開發者帶來了革命性的改變。它不僅保留了Python的優雅語法,還提供了系統級程式語言的效能。無論是AI開發、科學運算還是一般應用程式開發,Mojo都值得一試。</p>
-<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://www.modular.com/mojo">Mojo程式語言官方網站</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/modularml/mojo">Mojo GitHub Repository</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.modular.com/blog/mojo-its-finally-here">Chris Lattner的Mojo介紹文章</a></li>
-</ul>
-
+ * 使用熟悉的Python語法
+ * 獲得接近原生程式碼的執行效能
+ * 無需重寫既有的P
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1977,7 +1536,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">303k</span>
+    <span title="總字數">302k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">

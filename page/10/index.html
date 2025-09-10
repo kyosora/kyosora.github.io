@@ -317,75 +317,42 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="CSS實現DOM節點水平居中的多種方式"><a href="#CSS實現DOM節點水平居中的多種方式" class="headerlink" title="CSS實現DOM節點水平居中的多種方式"></a>CSS實現DOM節點水平居中的多種方式</h1><p>在網頁設計中，將元素水平居中是一個常見的需求。CSS提供了多種方法來實現這一目標，每種方法都有其適用場景和優缺點。本文將詳細介紹幾種常用的CSS水平居中方法，幫助您在不同情況下選擇最適合的技術。</p>
-<h2 id="1-使用-text-align-center"><a href="#1-使用-text-align-center" class="headerlink" title="1. 使用 text-align: center"></a>1. 使用 text-align: center</h2><p>這是最簡單的方法，適用於行內元素或者行內塊元素。</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.parent</span> &#123;</span><br><span class="line">  <span class="attribute">text-align</span>: center;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          CSS實現DOM節點水平居中的多種方式
+在網頁設計中，將元素水平居中是一個常見的需求。CSS提供了多種方法來實現這一目標，每種方法都有其適用場景和優缺點。本文將詳細介紹幾種常用的CSS水平居中方法，幫助您在不同情況下選擇最適合的技術。
 
-<p><strong>優點</strong>：</p>
-<ul>
-<li>簡單易用</li>
-<li>兼容性好</li>
-</ul>
-<p><strong>缺點</strong>：</p>
-<ul>
-<li>只適用於行內元素或行內塊元素</li>
-<li>對塊級元素無效</li>
-</ul>
-<h2 id="2-使用-margin-auto"><a href="#2-使用-margin-auto" class="headerlink" title="2. 使用 margin: auto"></a>2. 使用 margin: auto</h2><p>這種方法適用於有固定寬度的塊級元素。</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.child</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">300px</span>;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">0</span> auto;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+1. 使用 text-align: center
+這是最簡單的方法，適用於行內元素或者行內塊元素。
 
-<p><strong>優點</strong>：</p>
-<ul>
-<li>簡單有效</li>
-<li>廣泛支持</li>
-</ul>
-<p><strong>缺點</strong>：</p>
-<ul>
-<li>需要指定元素的寬度</li>
-<li>不適用於行內元素</li>
-</ul>
-<h2 id="3-使用-Flexbox"><a href="#3-使用-Flexbox" class="headerlink" title="3. 使用 Flexbox"></a>3. 使用 Flexbox</h2><p>Flexbox是一種現代的布局方式，可以輕鬆實現各種居中效果。</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.parent</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: flex;</span><br><span class="line">  <span class="attribute">justify-content</span>: center;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+1
+2
+3
 
-<p><strong>優點</strong>：</p>
-<ul>
-<li>靈活強大</li>
-<li>可以同時實現水平和垂直居中</li>
-<li>不需要知道子元素的尺寸</li>
-</ul>
-<p><strong>缺點</strong>：</p>
-<ul>
-<li>在舊版瀏覽器中可能不被支持</li>
-</ul>
-<h2 id="4-使用-Grid"><a href="#4-使用-Grid" class="headerlink" title="4. 使用 Grid"></a>4. 使用 Grid</h2><p>CSS Grid是另一種現代布局技術，也可以輕鬆實現居中。</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.parent</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: grid;</span><br><span class="line">  <span class="attribute">justify-content</span>: center;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><strong>優點</strong>：</p>
-<ul>
-<li>功能強大，可以實現複雜的布局</li>
-<li>適用於一維和二維布局</li>
-</ul>
-<p><strong>缺點</strong>：</p>
-<ul>
-<li>瀏覽器支持度不如Flexbox</li>
-<li>對於簡單的居中需求可能過於複雜</li>
-</ul>
-<h2 id="5-使用絕對定位和-transform"><a href="#5-使用絕對定位和-transform" class="headerlink" title="5. 使用絕對定位和 transform"></a>5. 使用絕對定位和 transform</h2><p>這種方法可以在不知道元素尺寸的情況下實現居中。</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.parent</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: relative;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.child</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: absolute;</span><br><span class="line">  <span class="attribute">left</span>: <span class="number">50%</span>;</span><br><span class="line">  <span class="attribute">transform</span>: <span class="built_in">translateX</span>(-<span class="number">50%</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+.parent {
+  text-align: center;
+}
 
-<p><strong>優點</strong>：</p>
-<ul>
-<li>不需要知道子元素的寬度</li>
-<li>可以與垂直居中技術結合</li>
-</ul>
-<p><strong>缺點</strong>：</p>
-<ul>
-<li>代碼相對複雜</li>
-<li>使用 transform 可能影響性能</li>
-</ul>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>選擇合適的水平居中方法取決於多個因素，包括目標元素的類型、父容器的特性、瀏覽器兼容性要求等。在現代網頁開發中，Flexbox 和 Grid 提供了強大而靈活的解決方案，但在某些情況下，傳統方法如 <code>margin: auto</code> 或 <code>text-align: center</code> 可能更簡單有效。</p>
-<p>了解這些不同的技術及其適用場景，將幫助您在項目中做出最佳的樣式決策，創建出既美觀又功能強大的網頁佈局。</p>
 
+優點：
+
+ * 簡單易用
+ * 兼容性好
+
+缺點：
+
+ * 只適用於行內元素或行內塊元素
+ * 對塊級元素無效
+
+2. 使用 margin: auto
+這種方法適用於有固定
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -491,37 +458,24 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="Pinia的資料儲存機制：深入探討"><a href="#Pinia的資料儲存機制：深入探討" class="headerlink" title="Pinia的資料儲存機制：深入探討"></a>Pinia的資料儲存機制：深入探討</h1><p>在Vue.js生態系統中，Pinia作為一個強大的狀態管理函式庫，為開發者提供了簡潔而高效的資料管理方案。但是，當我們使用Pinia進行資料儲存時，這些資料最終儲存在哪裡呢？讓我們深入探討Pinia的運作原理，以及它如何處理資料儲存。</p>
-<h2 id="Pinia的核心概念"><a href="#Pinia的核心概念" class="headerlink" title="Pinia的核心概念"></a>Pinia的核心概念</h2><p>首先，我們需要了解Pinia的核心概念。Pinia將應用程式的狀態分割成不同的&quot;store&quot;，每個store負責管理特定的狀態片段。這種設計使得狀態管理更加模組化和易於維護。</p>
-<h2 id="記憶體中的資料儲存"><a href="#記憶體中的資料儲存" class="headerlink" title="記憶體中的資料儲存"></a>記憶體中的資料儲存</h2><p>當我們使用Pinia時，它主要將資料儲存在應用程式的記憶體中。具體來說：</p>
-<ol>
-<li><p><strong>響應式物件</strong>：Pinia利用Vue的響應式系統，將store中的狀態轉換為響應式物件。這意味著當狀態發生變化時，所有依賴於該狀態的元件都會自動更新。</p>
-</li>
-<li><p><strong>JavaScript執行環境</strong>：這些響應式物件存在於JavaScript的執行環境中，也就是說，它們存在於瀏覽器的記憶體中（對於客戶端應用），或者伺服器的記憶體中（對於伺服器端渲染）。</p>
-</li>
-</ol>
-<h2 id="持久化儲存"><a href="#持久化儲存" class="headerlink" title="持久化儲存"></a>持久化儲存</h2><p>雖然Pinia預設將資料儲存在記憶體中，但在實際應用中，我們常常需要將部分資料持久化儲存。這可以透過以下方式實現：</p>
-<ol>
-<li><p><strong>本地儲存</strong>：使用<code>localStorage</code>或<code>sessionStorage</code>來持久化儲存資料。可以使用外掛如<code>pinia-plugin-persistedstate</code>來自動化這個過程。</p>
-</li>
-<li><p><strong>IndexedDB</strong>：對於較大量的客戶端資料，可以考慮使用IndexedDB進行儲存。</p>
-</li>
-<li><p><strong>伺服器儲存</strong>：對於需要在工作階段之間或跨裝置保存的資料，可以將其發送到伺服器進行儲存，例如存入資料庫。</p>
-</li>
-</ol>
-<h2 id="資料流動過程"><a href="#資料流動過程" class="headerlink" title="資料流動過程"></a>資料流動過程</h2><ol>
-<li><p><strong>初始化</strong>：當應用啟動時，Pinia會初始化各個store，將初始狀態載入記憶體中。</p>
-</li>
-<li><p><strong>更新</strong>：透過actions或直接修改state，資料在記憶體中被更新。</p>
-</li>
-<li><p><strong>回應</strong>：由於Pinia利用了Vue的響應式系統，資料的變化會自動觸發相關元件的重新渲染。</p>
-</li>
-<li><p><strong>持久化</strong>（可選）：如果配置了持久化外掛，資料變化還會被同步到持久化儲存中。</p>
-</li>
-</ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>總的來說，Pinia主要將資料儲存在應用程式的記憶體中，以響應式物件的形式存在。這種方式保證了高效的資料存取和更新。而對於需要持久化的資料，我們可以透過額外的機制將其儲存到本地儲存或遠端伺服器中。</p>
-<p>理解Pinia的資料儲存機制，有助於我們更好地設計和最佳化Vue應用的狀態管理策略，從而打造出更高效、更可靠的網頁應用。</p>
+          Pinia的資料儲存機制：深入探討
+在Vue.js生態系統中，Pinia作為一個強大的狀態管理函式庫，為開發者提供了簡潔而高效的資料管理方案。但是，當我們使用Pinia進行資料儲存時，這些資料最終儲存在哪裡呢？讓我們深入探討Pinia的運作原理，以及它如何處理資料儲存。
 
+Pinia的核心概念
+首先，我們需要了解Pinia的核心概念。Pinia將應用程式的狀態分割成不同的"store"，每個store負責管理特定的狀態片段。這種設計使得狀態管理更加模組化和易於維護。
+
+記憶體中的資料儲存
+當我們使用Pinia時，它主要將資料儲存在應用程式的記憶體中。具體來說：
+
+ 1. 響應式物件：Pinia
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -627,95 +581,25 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="Pinia與Vuex的區別-詳細比較"><a href="#Pinia與Vuex的區別-詳細比較" class="headerlink" title="Pinia與Vuex的區別:詳細比較"></a>Pinia與Vuex的區別:詳細比較</h1><p>在Vue.js的狀態管理領域中,Pinia和Vuex是兩個主要的選擇。儘管它們都旨在解決相同的問題,但它們在設計理念和使用方式上有顯著的差異。本文將深入探討Pinia和Vuex的區別,幫助開發者做出明智的選擇。</p>
-<h2 id="1-起源與發展"><a href="#1-起源與發展" class="headerlink" title="1. 起源與發展"></a>1. 起源與發展</h2><h3 id="Vuex"><a href="#Vuex" class="headerlink" title="Vuex"></a>Vuex</h3><ul>
-<li>Vuex是Vue.js的官方狀態管理庫,於2015年發布。</li>
-<li>它遵循Flux架構,設計初衷是為了處理大型複雜應用的狀態管理。</li>
-</ul>
-<h3 id="Pinia"><a href="#Pinia" class="headerlink" title="Pinia"></a>Pinia</h3><ul>
-<li>Pinia是由Vue核心團隊成員Eduardo San Martin Morote開發的新一代狀態管理工具。</li>
-<li>它最初是作為Vuex 5的概念驗證而創建的,後來發展成為一個獨立的項目。</li>
-<li>在Vue 3發布後,Pinia迅速獲得了社區的青睞,並最終成為Vue的官方推薦狀態管理解決方案。</li>
-</ul>
-<h2 id="2-核心概念"><a href="#2-核心概念" class="headerlink" title="2. 核心概念"></a>2. 核心概念</h2><h3 id="Vuex-1"><a href="#Vuex-1" class="headerlink" title="Vuex"></a>Vuex</h3><ul>
-<li><strong>Store</strong>: 單一狀態樹,作為應用的唯一數據源。</li>
-<li><strong>State</strong>: 存儲應用的響應式狀態。</li>
-<li><strong>Getters</strong>: 從store中派生出的狀態。</li>
-<li><strong>Mutations</strong>: 用於修改狀態的同步函數。</li>
-<li><strong>Actions</strong>: 可包含異步操作的函數,用於提交mutation。</li>
-<li><strong>Modules</strong>: 將store分割成模塊,每個模塊擁有自己的state、mutation、action等。</li>
-</ul>
-<h3 id="Pinia-1"><a href="#Pinia-1" class="headerlink" title="Pinia"></a>Pinia</h3><ul>
-<li><strong>Store</strong>: 可以創建多個store,每個store都是獨立的。</li>
-<li><strong>State</strong>: 定義store的初始狀態。</li>
-<li><strong>Getters</strong>: 類似於computed屬性,用於派生狀態。</li>
-<li><strong>Actions</strong>: 可以是同步或異步的函數,用於修改狀態。</li>
-</ul>
-<h2 id="3-主要區別"><a href="#3-主要區別" class="headerlink" title="3. 主要區別"></a>3. 主要區別</h2><ol>
-<li><p><strong>結構複雜度</strong></p>
-<ul>
-<li>Vuex: 強制使用mutation來修改狀態,導致代碼結構較為複雜。</li>
-<li>Pinia: 簡化了狀態管理的結構,直接通過action修改狀態,無需mutation。</li>
-</ul>
-</li>
-<li><p><strong>TypeScript支持</strong></p>
-<ul>
-<li>Vuex: 對TypeScript的支持相對有限。</li>
-<li>Pinia: 設計之初就考慮到了TypeScript,提供了出色的類型推斷。</li>
-</ul>
-</li>
-<li><p><strong>模塊化</strong></p>
-<ul>
-<li>Vuex: 使用嵌套模塊來組織大型store,可能導致命名空間的複雜性。</li>
-<li>Pinia: 每個store都是獨立的,naturally支持模塊化,無需額外配置。</li>
-</ul>
-</li>
-<li><p><strong>開發者工具</strong></p>
-<ul>
-<li>Vuex: 有專門的Vuex開發者工具。</li>
-<li>Pinia: 與Vue開發者工具深度集成,提供更直觀的調試體驗。</li>
-</ul>
-</li>
-<li><p><strong>代碼分割</strong></p>
-<ul>
-<li>Vuex: 需要額外配置才能實現代碼分割。</li>
-<li>Pinia: 天生支持代碼分割,每個store可以按需導入。</li>
-</ul>
-</li>
-<li><p><strong>靈活性</strong></p>
-<ul>
-<li>Vuex: 相對固定的結構和使用模式。</li>
-<li>Pinia: 提供更大的靈活性,允許直接修改狀態,更符合Vue 3的組合式API風格。</li>
-</ul>
-</li>
-<li><p><strong>性能</strong></p>
-<ul>
-<li>Vuex: 在大型應用中可能面臨性能挑戰。</li>
-<li>Pinia: 採用了更高效的實現方式,在大型應用中表現更佳。</li>
-</ul>
-</li>
-</ol>
-<h2 id="4-使用場景"><a href="#4-使用場景" class="headerlink" title="4. 使用場景"></a>4. 使用場景</h2><h3 id="適合使用Vuex的情況"><a href="#適合使用Vuex的情況" class="headerlink" title="適合使用Vuex的情況"></a>適合使用Vuex的情況</h3><ul>
-<li>大型、複雜的Vue 2應用。</li>
-<li>需要嚴格的狀態變更追蹤。</li>
-<li>團隊已經熟悉Vuex的使用模式。</li>
-</ul>
-<h3 id="適合使用Pinia的情況"><a href="#適合使用Pinia的情況" class="headerlink" title="適合使用Pinia的情況"></a>適合使用Pinia的情況</h3><ul>
-<li>Vue 3項目(也支持Vue 2)。</li>
-<li>需要更簡潔、直觀的狀態管理解決方案。</li>
-<li>重視TypeScript支持和開發體驗。</li>
-<li>需要更好的性能和可擴展性。</li>
-</ul>
-<h2 id="5-遷移考慮"><a href="#5-遷移考慮" class="headerlink" title="5. 遷移考慮"></a>5. 遷移考慮</h2><p>如果您正在考慮從Vuex遷移到Pinia,以下幾點值得注意:</p>
-<ol>
-<li>Pinia提供了與Vuex相似的API,大部分概念可以直接映射。</li>
-<li>遷移過程可以漸進式進行,Pinia可以與Vuex共存。</li>
-<li>需要重構mutation為action,因為Pinia不再區分兩者。</li>
-<li>利用Pinia的組合式API風格,可以使代碼更加模塊化和可維護。</li>
-</ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>Pinia代表了Vue生態系統中狀態管理的未來方向。它簡化了開發流程,提高了性能,並為Vue 3項目提供了更現代化的解決方案。然而,Vuex仍然是一個成熟且可靠的選擇,特別是對於現有的Vue 2項目。</p>
-<p>選擇Pinia還是Vuex,最終應該基於您的項目需求、團隊熟悉度以及未來的技術路線圖來決定。無論如何,兩者都能夠有效地解決Vue應用中的狀態管理問題。</p>
+          Pinia與Vuex的區別:詳細比較
+在Vue.js的狀態管理領域中,Pinia和Vuex是兩個主要的選擇。儘管它們都旨在解決相同的問題,但它們在設計理念和使用方式上有顯著的差異。本文將深入探討Pinia和Vuex的區別,幫助開發者做出明智的選擇。
 
+1. 起源與發展
+Vuex
+ * Vuex是Vue.js的官方狀態管理庫,於2015年發布。
+ * 它遵循Flux架構,設計初衷是為了處理大型複雜應用的狀態管理。
+
+Pinia
+ * Pinia是由Vue核心團隊成員Eduardo San Martin Morote開發的新一代狀態管理工具。
+ * 它最初是作為Vuex 5的概念驗證而創建的,後來
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -821,51 +705,25 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="Promise-和-setTimeout-的深入解析"><a href="#Promise-和-setTimeout-的深入解析" class="headerlink" title="Promise 和 setTimeout 的深入解析"></a>Promise 和 setTimeout 的深入解析</h1><p>在 JavaScript 中，Promise 和 setTimeout 是處理非同步操作的兩個重要工具。雖然它們都用於處理非同步事件，但它們的工作方式和使用場景有所不同。讓我們深入探討這兩個概念。</p>
-<h2 id="Promise"><a href="#Promise" class="headerlink" title="Promise"></a>Promise</h2><p>Promise 是 JavaScript 中用於處理非同步操作的對象。它代表了一個可能尚未完成的操作，但在未來的某個時間點會完成。Promise 有三種狀態：</p>
-<ol>
-<li>Pending（進行中）：初始狀態，既未完成也未拒絕。</li>
-<li>Fulfilled（已完成）：操作成功完成。</li>
-<li>Rejected（已拒絕）：操作失敗。</li>
-</ol>
-<p>Promise 的優點包括：</p>
-<ul>
-<li>可以將非同步操作以同步操作的流程表達出來，避免了回調地獄。</li>
-<li>提供了 <code>.then()</code>、<code>.catch()</code> 和 <code>.finally()</code> 方法，使得處理非同步操作的結果更加直觀。</li>
-</ul>
-<h3 id="Promise-的基本用法"><a href="#Promise-的基本用法" class="headerlink" title="Promise 的基本用法"></a>Promise 的基本用法</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> myPromise = <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 非同步操作</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="comment">/* 操作成功 */</span>) &#123;</span><br><span class="line">    <span class="title function_">resolve</span>(result);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="title function_">reject</span>(error);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">myPromise.<span class="title function_">then</span>(<span class="function"><span class="params">result</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 處理成功的結果</span></span><br><span class="line">&#125;).<span class="title function_">catch</span>(<span class="function"><span class="params">error</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 處理錯誤</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+          Promise 和 setTimeout 的深入解析
+在 JavaScript 中，Promise 和 setTimeout 是處理非同步操作的兩個重要工具。雖然它們都用於處理非同步事件，但它們的工作方式和使用場景有所不同。讓我們深入探討這兩個概念。
 
-<h2 id="setTimeout"><a href="#setTimeout" class="headerlink" title="setTimeout"></a>setTimeout</h2><p>setTimeout 是一個全局函數，用於在指定的毫秒數後執行一段代碼。它是 JavaScript 非同步編程的基礎之一。</p>
-<p>setTimeout 的基本語法如下：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">setTimeout</span>(callback, delay);</span><br></pre></td></tr></table></figure>
+Promise
+Promise 是 JavaScript 中用於處理非同步操作的對象。它代表了一個可能尚未完成的操作，但在未來的某個時間點會完成。Promise 有三種狀態：
 
-<p>其中，<code>callback</code> 是要執行的函數，<code>delay</code> 是延遲的毫秒數。</p>
-<h3 id="setTimeout-的特性"><a href="#setTimeout-的特性" class="headerlink" title="setTimeout 的特性"></a>setTimeout 的特性</h3><ol>
-<li>非阻塞：setTimeout 不會阻塞代碼的執行。它會將回調函數加入到事件佇列中，等待執行。</li>
-<li>最小延遲：即使設置延遲為 0，回調函數也不會立即執行。它會在當前執行棧清空後才執行。</li>
-<li>計時器精度：由於 JavaScript 的單執行緒特性和事件循環機制，setTimeout 的實際延遲可能會比指定的時間長。</li>
-</ol>
-<h2 id="Promise-和-setTimeout-的結合使用"><a href="#Promise-和-setTimeout-的結合使用" class="headerlink" title="Promise 和 setTimeout 的結合使用"></a>Promise 和 setTimeout 的結合使用</h2><p>Promise 和 setTimeout 可以結合使用，創建一個在指定時間後解決的 Promise：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">delay</span>(<span class="params">ms</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> <span class="built_in">setTimeout</span>(resolve, ms));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">delay</span>(<span class="number">2000</span>).<span class="title function_">then</span>(<span class="function">() =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;2 秒後執行&#x27;</span>));</span><br></pre></td></tr></table></figure>
+ 1. Pending（進行中）：初始狀態，既未完成也未拒絕。
+ 2. Fulfilled（已完成）：操作成功完成。
+ 3. Rejected（已拒絕）：操作失敗。
 
-<h2 id="事件循環和執行順序"><a href="#事件循環和執行順序" class="headerlink" title="事件循環和執行順序"></a>事件循環和執行順序</h2><p>理解 Promise 和 setTimeout 的執行順序，需要了解 JavaScript 的事件循環機制：</p>
-<ol>
-<li>同步代碼優先執行。</li>
-<li>微任務（如 Promise 的 then/catch/finally）在當前任務結束後立即執行。</li>
-<li>宏任務（如 setTimeout、setInterval）在下一次事件循環中執行。</li>
-</ol>
-<p>以下面的代碼為例：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;1&#x27;</span>);</span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;2&#x27;</span>), <span class="number">0</span>);</span><br><span class="line"><span class="title class_">Promise</span>.<span class="title function_">resolve</span>().<span class="title function_">then</span>(<span class="function">() =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;3&#x27;</span>));</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;4&#x27;</span>);</span><br></pre></td></tr></table></figure>
 
-<p>輸出順序將會是：1, 4, 3, 2</p>
-<p>這是因為：</p>
-<ul>
-<li>&#39;1&#39; 和 &#39;4&#39; 是同步代碼，立即執行。</li>
-<li>Promise.then 是微任務，在同步代碼執行完後立即執行。</li>
-<li>setTimeout 是宏任務，在下一次事件循環中執行。</li>
-</ul>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>Promise 和 setTimeout 都是處理 JavaScript 非同步操作的重要工具。Promise 提供了更強大和靈活的方式來處理非同步操作的結果，而 setTimeout 則用於延遲執行代碼。理解這兩個概念以及它們在事件循環中的行為，對於編寫高效且可靠的 JavaScript 代碼至關重要。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -971,64 +829,24 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="Vue中的Pinia狀態管理：全面指南"><a href="#Vue中的Pinia狀態管理：全面指南" class="headerlink" title="Vue中的Pinia狀態管理：全面指南"></a>Vue中的Pinia狀態管理：全面指南</h1><h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>在Vue應用程序中管理狀態是一個重要的話題。隨著應用程序的增長，有效地管理和共享狀態變得越來越具有挑戰性。Pinia作為Vue的官方狀態管理庫，提供了一種簡單、直觀且類型安全的方式來管理全局狀態。本文將深入探討Pinia的核心概念、特性以及如何在Vue項目中有效地使用它。</p>
-<h2 id="什麼是Pinia"><a href="#什麼是Pinia" class="headerlink" title="什麼是Pinia?"></a>什麼是Pinia?</h2><p>Pinia是新一代的Vue狀態管理庫，設計用於替代Vuex。它由Vue核心團隊成員Eduardo San Martin Morote創建，並在Vue 3中成為官方推薦的狀態管理解決方案。</p>
-<h3 id="Pinia的主要特性"><a href="#Pinia的主要特性" class="headerlink" title="Pinia的主要特性:"></a>Pinia的主要特性:</h3><ol>
-<li>直觀且簡潔的API</li>
-<li>完整的TypeScript支持</li>
-<li>支持Vue 2和Vue 3</li>
-<li>極小的包大小</li>
-<li>支持多個Store</li>
-<li>支持熱模塊替換(HMR)</li>
-<li>支持Vue DevTools</li>
-<li>可擴展性強</li>
-</ol>
-<h2 id="安裝和設置"><a href="#安裝和設置" class="headerlink" title="安裝和設置"></a>安裝和設置</h2><p>首先，讓我們看看如何在Vue項目中安裝和設置Pinia。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install pinia</span><br></pre></td></tr></table></figure>
+          Vue中的Pinia狀態管理：全面指南
+引言
+在Vue應用程序中管理狀態是一個重要的話題。隨著應用程序的增長，有效地管理和共享狀態變得越來越具有挑戰性。Pinia作為Vue的官方狀態管理庫，提供了一種簡單、直觀且類型安全的方式來管理全局狀態。本文將深入探討Pinia的核心概念、特性以及如何在Vue項目中有效地使用它。
 
-<p>在Vue應用中引入Pinia:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createApp &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; createPinia &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">App</span> <span class="keyword">from</span> <span class="string">&#x27;./App.vue&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> pinia = <span class="title function_">createPinia</span>()</span><br><span class="line"><span class="keyword">const</span> app = <span class="title function_">createApp</span>(<span class="title class_">App</span>)</span><br><span class="line"></span><br><span class="line">app.<span class="title function_">use</span>(pinia)</span><br><span class="line">app.<span class="title function_">mount</span>(<span class="string">&#x27;#app&#x27;</span>)</span><br></pre></td></tr></table></figure>
+什麼是Pinia?
+Pinia是新一代的Vue狀態管理庫，設計用於替代Vuex。它由Vue核心團隊成員Eduardo San Martin Morote創建，並在Vue 3中成為官方推薦的狀態管理解決方案。
 
-<h2 id="Pinia的核心概念"><a href="#Pinia的核心概念" class="headerlink" title="Pinia的核心概念"></a>Pinia的核心概念</h2><h3 id="Store"><a href="#Store" class="headerlink" title="Store"></a>Store</h3><p>Store是Pinia的核心概念，它包含了狀態(state)、getter和action。</p>
-<p>創建一個基本的Store:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; defineStore &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useCounterStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;counter&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">state</span>: <span class="function">() =&gt;</span> (&#123; <span class="attr">count</span>: <span class="number">0</span> &#125;),</span><br><span class="line">  <span class="attr">getters</span>: &#123;</span><br><span class="line">    <span class="attr">doubleCount</span>: <span class="function">(<span class="params">state</span>) =&gt;</span> state.<span class="property">count</span> * <span class="number">2</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">actions</span>: &#123;</span><br><span class="line">    <span class="title function_">increment</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">count</span>++</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<h3 id="組合式API風格的Store"><a href="#組合式API風格的Store" class="headerlink" title="組合式API風格的Store"></a>組合式API風格的Store</h3><p>Pinia也支持使用組合式API風格定義Store:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; ref, computed &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; defineStore &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useCounterStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;counter&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> count = <span class="title function_">ref</span>(<span class="number">0</span>)</span><br><span class="line">  <span class="keyword">const</span> doubleCount = <span class="title function_">computed</span>(<span class="function">() =&gt;</span> count.<span class="property">value</span> * <span class="number">2</span>)</span><br><span class="line">  <span class="keyword">function</span> <span class="title function_">increment</span>(<span class="params"></span>) &#123;</span><br><span class="line">    count.<span class="property">value</span>++</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> &#123; count, doubleCount, increment &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<h2 id="在組件中使用Store"><a href="#在組件中使用Store" class="headerlink" title="在組件中使用Store"></a>在組件中使用Store</h2><p>在Vue組件中使用Pinia Store非常簡單:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;Count: &#123;&#123; counter.count &#125;&#125;&lt;/p&gt;</span><br><span class="line">    &lt;p&gt;Double Count: &#123;&#123; counter.doubleCount &#125;&#125;&lt;/p&gt;</span><br><span class="line">    &lt;button @click=&quot;counter.increment&quot;&gt;Increment&lt;/button&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script setup&gt;</span><br><span class="line">import &#123; useCounterStore &#125; from &#x27;@/stores/counter&#x27;</span><br><span class="line"></span><br><span class="line">const counter = useCounterStore()</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
-<h2 id="Pinia的高級特性"><a href="#Pinia的高級特性" class="headerlink" title="Pinia的高級特性"></a>Pinia的高級特性</h2><h3 id="1-訂閱狀態變化"><a href="#1-訂閱狀態變化" class="headerlink" title="1. 訂閱狀態變化"></a>1. 訂閱狀態變化</h3><p>Pinia允許你訂閱store的變化:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> unsubscribe = someStore.$subscribe(<span class="function">(<span class="params">mutation, state</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 每次state變化時觸發</span></span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(mutation.<span class="property">type</span>)</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(mutation.<span class="property">storeId</span>)</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(mutation.<span class="property">payload</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-持久化"><a href="#2-持久化" class="headerlink" title="2. 持久化"></a>2. 持久化</h3><p>結合插件，可以輕鬆實現狀態持久化:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createPinia &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; createPersistedState &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia-plugin-persistedstate&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> pinia = <span class="title function_">createPinia</span>()</span><br><span class="line">pinia.<span class="title function_">use</span>(<span class="title function_">createPersistedState</span>())</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-插件系統"><a href="#3-插件系統" class="headerlink" title="3. 插件系統"></a>3. 插件系統</h3><p>Pinia提供了強大的插件系統，允許你擴展Store的功能:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pinia.<span class="title function_">use</span>(<span class="function">(<span class="params">&#123; store &#125;</span>) =&gt;</span> &#123;</span><br><span class="line">  store.<span class="property">customValue</span> = <span class="string">&#x27;Hello&#x27;</span></span><br><span class="line">  store.<span class="property">customMethod</span> = <span class="function">() =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Custom method&#x27;</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<h2 id="與Vuex的比較"><a href="#與Vuex的比較" class="headerlink" title="與Vuex的比較"></a>與Vuex的比較</h2><p>Pinia相比Vuex有以下優勢:</p>
-<ol>
-<li>更簡潔的API</li>
-<li>更好的TypeScript支持</li>
-<li>不需要嵌套模塊</li>
-<li>更輕量級</li>
-</ol>
-<h2 id="最佳實踐"><a href="#最佳實踐" class="headerlink" title="最佳實踐"></a>最佳實踐</h2><ol>
-<li>將相關的狀態分組到不同的store中</li>
-<li>使用組合式API風格可以獲得更好的TypeScript推斷</li>
-<li>善用Pinia的插件系統擴展功能</li>
-<li>在大型應用中，考慮按功能模塊拆分store</li>
-</ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>Pinia為Vue應用提供了一個強大、靈活且易於使用的狀態管理解決方案。它簡化了全局狀態的管理，同時保持了出色的開發體驗和性能。無論是小型項目還是大型應用，Pinia都是一個值得考慮的選擇。</p>
-<p>隨著Vue生態系統的不斷發展，Pinia很可能會成為未來Vue項目中狀態管理的首選方案。掌握Pinia不僅能提高你的Vue開發效率，還能為你的應用帶來更好的可維護性和擴展性。</p>
-<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://pinia.vuejs.org/">Pinia 官方文檔</a></li>
-<li><a target="_blank" rel="noopener" href="https://vuejs.org/">Vue 官方網站</a></li>
-<li><a target="_blank" rel="noopener" href="https://pinia.vuejs.org/introduction.html#comparison-with-vuex">Comparison with Vuex</a></li>
-</ul>
-
+Pinia的主要特性:
+ 1. 直觀且簡潔的API
+ 2. 完整的T
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1134,18 +952,22 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="JS防抖與節流教學"><a href="#JS防抖與節流教學" class="headerlink" title="JS防抖與節流教學"></a>JS防抖與節流教學</h1><p>在Javascript開發過程中，我們經常需要處理一些高頻事件，比如滾動、窗口縮放、鍵盤輸入等。如果這些事件的處理函數直接綁定到事件上，可能會導致瀏覽器的性能問題。為了優化性能和用戶體驗，我們通常會使用兩種技術：防抖（Debouncing）和節流（Throttling）。接下來，我們將深入了解它們的差異、使用時機和實現方法。</p>
-<h2 id="防抖-Debouncing"><a href="#防抖-Debouncing" class="headerlink" title="防抖 (Debouncing)"></a>防抖 (Debouncing)</h2><p>防抖技術指的是觸發事件後，在指定時間內只執行一次事件處理函數。如果在指定時間內再次觸發了事件，則重新計算等待時間。這樣可以確保事件處理函數在一系列快速的事件觸發中只被執行一次。</p>
-<h3 id="使用時機"><a href="#使用時機" class="headerlink" title="使用時機"></a>使用時機</h3><p>防抖技術適用於那些觸發頻率高，但不需要立即響應每次觸發的場景。例如：</p>
-<p>搜索框輸入（用戶停止輸入後再進行搜索）<br>窗口大小調整（調整結束後再計算布局）</p>
-<p>範例</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">debounce</span>(<span class="params">func, wait</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> timeout;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">function</span>(<span class="params">...args</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> context = <span class="variable language_">this</span>;</span><br><span class="line">        <span class="built_in">clearTimeout</span>(timeout);</span><br><span class="line">        timeout = <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> func.<span class="title function_">apply</span>(context, args), wait);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用防抖</span></span><br><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;resize&#x27;</span>, <span class="title function_">debounce</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;窗口大小調整完成&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">500</span>));</span><br></pre></td></tr></table></figure>
-<h2 id="節流-Throttling"><a href="#節流-Throttling" class="headerlink" title="節流 (Throttling)"></a>節流 (Throttling)</h2><p>節流技術指的是在指定時間內最多只執行一次事件處理函數，即使在這段時間內觸發了多次事件，事件處理函數也只會被執行一次。</p>
-<h3 id="使用時機-1"><a href="#使用時機-1" class="headerlink" title="使用時機"></a>使用時機</h3><p>節流技術適用於那些需要實時控制事件處理頻率的場景。例如：</p>
-<p>滾動事件處理（比如無限滾動的加載更多）<br>游戲中的按鍵響應<br>範例</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">throttle</span>(<span class="params">func, wait</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> lastTime = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">function</span>(<span class="params">...args</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> now = <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getTime</span>();</span><br><span class="line">        <span class="keyword">if</span> (now - lastTime &gt; wait) &#123;</span><br><span class="line">            lastTime = now;</span><br><span class="line">            func.<span class="title function_">apply</span>(<span class="variable language_">this</span>, args);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用節流</span></span><br><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;scroll&#x27;</span>, <span class="title function_">throttle</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;滾動事件被觸發&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">1000</span>));</span><br></pre></td></tr></table></figure>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>防抖和節流都是優化Javascript性能的重要手段，選擇適合的策略可以大大提高應用程序的響應性和性能。總的來說，當你需要限制函數在短時間內被頻繁調用時，應該考慮使用這兩種技術。防抖適用於那些對響應時機要求不高的情況，而節流則適用於需要穩定控制調用頻率的場景。</p>
+          JS防抖與節流教學
+在Javascript開發過程中，我們經常需要處理一些高頻事件，比如滾動、窗口縮放、鍵盤輸入等。如果這些事件的處理函數直接綁定到事件上，可能會導致瀏覽器的性能問題。為了優化性能和用戶體驗，我們通常會使用兩種技術：防抖（Debouncing）和節流（Throttling）。接下來，我們將深入了解它們的差異、使用時機和實現方法。
 
+防抖 (Debouncing)
+防抖技術指的是觸發事件後，在指定時間內只執行一次事件處理函數。如果在指定時間內再次觸發了事件，則重新計算等待時間。這樣可以確保事件處理函數在一系列快速的事件觸發中只被執行一次。
+
+使用時機
+防抖技術適用於那些觸發頻率高
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1251,121 +1073,31 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="圖片懶加載技術：提升網站效能的七大方法"><a href="#圖片懶加載技術：提升網站效能的七大方法" class="headerlink" title="圖片懶加載技術：提升網站效能的七大方法"></a>圖片懶加載技術：提升網站效能的七大方法</h1><p>在現今的網路世界中，網站效能對用戶體驗至關重要。而圖片往往是影響網頁載入速度的主要因素之一。本文將為您介紹六種實用的圖片懶加載技術，幫助您大幅提升網站效能。</p>
-<h2 id="什麼是圖片懶加載？"><a href="#什麼是圖片懶加載？" class="headerlink" title="什麼是圖片懶加載？"></a>什麼是圖片懶加載？</h2><p>圖片懶加載是一種網頁優化技術，它延遲加載暫時不可見的圖片。簡單來說，只有當用戶滾動到圖片位置時，圖片才會開始載入。這種方法可以顯著減少初始頁面載入時間和頻寬使用。</p>
-<h2 id="七種圖片懶加載方法"><a href="#七種圖片懶加載方法" class="headerlink" title="七種圖片懶加載方法"></a>七種圖片懶加載方法</h2><h3 id="1-原生懶加載"><a href="#1-原生懶加載" class="headerlink" title="1. 原生懶加載"></a>1. 原生懶加載</h3><p>HTML5 引入的 <code>loading</code> 屬性讓懶加載變得異常簡單：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;image.jpg&quot;</span> <span class="attr">loading</span>=<span class="string">&quot;lazy&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;懶加載圖片&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+          圖片懶加載技術：提升網站效能的七大方法
+在現今的網路世界中，網站效能對用戶體驗至關重要。而圖片往往是影響網頁載入速度的主要因素之一。本文將為您介紹六種實用的圖片懶加載技術，幫助您大幅提升網站效能。
 
-<p><strong>優點：</strong></p>
-<ul>
-<li>實施簡單</li>
-<li>瀏覽器原生支援，效能佳</li>
-<li>無需 JavaScript</li>
-</ul>
-<p><strong>缺點：</strong></p>
-<ul>
-<li>舊版瀏覽器可能不支援</li>
-</ul>
-<h3 id="2-Intersection-Observer-API"><a href="#2-Intersection-Observer-API" class="headerlink" title="2. Intersection Observer API"></a>2. Intersection Observer API</h3><p>這是一個強大的 JavaScript API，用於監測元素是否進入視口：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> observer = <span class="keyword">new</span> <span class="title class_">IntersectionObserver</span>(<span class="function">(<span class="params">entries</span>) =&gt;</span> &#123;</span><br><span class="line">  entries.<span class="title function_">forEach</span>(<span class="function">(<span class="params">entry</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (entry.<span class="property">isIntersecting</span>) &#123;</span><br><span class="line">      <span class="keyword">const</span> image = entry.<span class="property">target</span>;</span><br><span class="line">      image.<span class="property">src</span> = image.<span class="property">dataset</span>.<span class="property">src</span>;</span><br><span class="line">      observer.<span class="title function_">unobserve</span>(image);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;img[data-src]&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">img</span>) =&gt;</span> observer.<span class="title function_">observe</span>(img));</span><br></pre></td></tr></table></figure>
+什麼是圖片懶加載？
+圖片懶加載是一種網頁優化技術，它延遲加載暫時不可見的圖片。簡單來說，只有當用戶滾動到圖片位置時，圖片才會開始載入。這種方法可以顯著減少初始頁面載入時間和頻寬使用。
 
-<p><strong>優點：</strong></p>
-<ul>
-<li>高度可自訂</li>
-<li>效能優異</li>
-<li>可用於其他元素的懶加載</li>
-</ul>
-<p><strong>缺點：</strong></p>
-<ul>
-<li>需要較多程式碼</li>
-<li>部分舊版瀏覽器不支援</li>
-</ul>
-<h3 id="3-滾動事件監聽"><a href="#3-滾動事件監聽" class="headerlink" title="3. 滾動事件監聽"></a>3. 滾動事件監聽</h3><p>這是一種傳統但仍然有效的方法：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">lazyLoad</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> images = <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;img[data-src]&#x27;</span>);</span><br><span class="line">  images.<span class="title function_">forEach</span>(<span class="function">(<span class="params">img</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_">isInViewport</span>(img)) &#123;</span><br><span class="line">      img.<span class="property">src</span> = img.<span class="property">dataset</span>.<span class="property">src</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;scroll&#x27;</span>, lazyLoad);</span><br><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;load&#x27;</span>, lazyLoad);</span><br></pre></td></tr></table></figure>
+七種圖片懶加載方法
+1. 原生懶加載
+HTML5 引入的 loading 屬性讓懶加載變得異常簡單：
 
-<p><strong>優點：</strong></p>
-<ul>
-<li>兼容性好</li>
-<li>實施相對簡單</li>
-</ul>
-<p><strong>缺點：</strong></p>
-<ul>
-<li>可能影響滾動效能</li>
-<li>需要額外函數判斷元素是否在視口內</li>
-</ul>
-<h3 id="4-使用第三方庫"><a href="#4-使用第三方庫" class="headerlink" title="4. 使用第三方庫"></a>4. 使用第三方庫</h3><p>許多成熟的懶加載庫如 lazysizes、lozad.js 等提供了豐富的功能：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;lazysizes.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">data-src</span>=<span class="string">&quot;image.jpg&quot;</span> <span class="attr">class</span>=<span class="string">&quot;lazyload&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;懶加載圖片&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+1
 
-<p><strong>優點：</strong></p>
-<ul>
-<li>功能豐富</li>
-<li>兼容性好</li>
-<li>持續更新和維護</li>
-</ul>
-<p><strong>缺點：</strong></p>
-<ul>
-<li>增加額外的檔案大小</li>
-<li>可能引入不需要的功能</li>
-</ul>
-<h3 id="5-漸進式圖片加載"><a href="#5-漸進式圖片加載" class="headerlink" title="5. 漸進式圖片加載"></a>5. 漸進式圖片加載</h3><p>結合懶加載和漸進式加載的技術：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;low-quality.jpg&quot;</span> <span class="attr">data-src</span>=<span class="string">&quot;high-quality.jpg&quot;</span> <span class="attr">class</span>=<span class="string">&quot;lazyload&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;漸進式加載圖片&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p><strong>優點：</strong></p>
-<ul>
-<li>提供更好的用戶體驗</li>
-<li>適合大圖片或高質量圖片</li>
-</ul>
-<p><strong>缺點：</strong></p>
-<ul>
-<li>需要準備多個版本的圖片</li>
-<li>實施較為複雜</li>
-</ul>
-<h3 id="6-CSS-中的背景圖片懶加載"><a href="#6-CSS-中的背景圖片懶加載" class="headerlink" title="6. CSS 中的背景圖片懶加載"></a>6. CSS 中的背景圖片懶加載</h3><p>對於背景圖片，可以使用 CSS 和 JavaScript 結合的方式：</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.lazy-background</span> &#123;</span><br><span class="line">  <span class="attribute">background-image</span>: none;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#f1f1f1</span>; <span class="comment">/* 佔位背景色 */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<img src="image.jpg" loading="lazy" alt="懶加載圖片">
 
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">document</span>.<span class="title function_">addEventListener</span>(<span class="string">&quot;DOMContentLoaded&quot;</span>, <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">var</span> lazyBackgrounds = [].<span class="property">slice</span>.<span class="title function_">call</span>(<span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&quot;.lazy-background&quot;</span>));</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (<span class="string">&quot;IntersectionObserver&quot;</span> <span class="keyword">in</span> <span class="variable language_">window</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> lazyBackgroundObserver = <span class="keyword">new</span> <span class="title class_">IntersectionObserver</span>(<span class="keyword">function</span>(<span class="params">entries, observer</span>) &#123;</span><br><span class="line">      entries.<span class="title function_">forEach</span>(<span class="keyword">function</span>(<span class="params">entry</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (entry.<span class="property">isIntersecting</span>) &#123;</span><br><span class="line">          entry.<span class="property">target</span>.<span class="property">style</span>.<span class="property">backgroundImage</span> = <span class="string">&quot;url(&quot;</span> + entry.<span class="property">target</span>.<span class="property">dataset</span>.<span class="property">background</span> + <span class="string">&quot;)&quot;</span>;</span><br><span class="line">          lazyBackgroundObserver.<span class="title function_">unobserve</span>(entry.<span class="property">target</span>);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    lazyBackgrounds.<span class="title function_">forEach</span>(<span class="keyword">function</span>(<span class="params">lazyBackground</span>) &#123;</span><br><span class="line">      lazyBackgroundObserver.<span class="title function_">observe</span>(lazyBackground);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
-<p><strong>優點：</strong></p>
-<ul>
-<li>適用於背景圖片</li>
-<li>可以與其他懶加載技術結合</li>
-</ul>
-<p><strong>缺點：</strong></p>
-<ul>
-<li>實施較為複雜</li>
-<li>需要同時修改 HTML、CSS 和 JavaScript</li>
-</ul>
-<h3 id="7-Vue-js-中使用-v-if-實現懶加載"><a href="#7-Vue-js-中使用-v-if-實現懶加載" class="headerlink" title="7. Vue.js 中使用 v-if 實現懶加載"></a>7. Vue.js 中使用 v-if 實現懶加載</h3><p>在 Vue.js 框架中，我們可以利用 <code>v-if</code> 指令配合 <code>Intersection Observer API</code> 來實現一種簡單有效的懶加載方式：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;img v-if=&quot;isVisible&quot; :src=&quot;imageUrl&quot; :alt=&quot;imageAlt&quot;&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">export default &#123;</span><br><span class="line">  props: &#123;</span><br><span class="line">    imageUrl: String,</span><br><span class="line">    imageAlt: String</span><br><span class="line">  &#125;,</span><br><span class="line">  data() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      isVisible: false</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  mounted() &#123;</span><br><span class="line">    const observer = new IntersectionObserver((entries) =&gt; &#123;</span><br><span class="line">      if (entries[0].isIntersecting) &#123;</span><br><span class="line">        this.isVisible = true;</span><br><span class="line">        observer.disconnect();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    observer.observe(this.$el);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
 
-<p>使用方式：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;lazy-image </span><br><span class="line">      v-for=&quot;image in images&quot; </span><br><span class="line">      :key=&quot;image.id&quot;</span><br><span class="line">      :image-url=&quot;image.url&quot;</span><br><span class="line">      :image-alt=&quot;image.alt&quot;</span><br><span class="line">    /&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>優點：</strong></p>
-<ul>
-<li>與 Vue.js 框架完美整合</li>
-<li>可重用性高，易於在不同組件中使用</li>
-<li>結合了 Vue 的響應式特性和 Intersection Observer 的效能</li>
-</ul>
-<p><strong>缺點：</strong></p>
-<ul>
-<li>需要額外的組件封裝</li>
-<li>對於大量圖片，可能需要優化 Observer 的使用</li>
-</ul>
-<p>這種方法特別適合於 Vue.js 開發的單頁應用（SPA）或大型應用。它不僅實現了懶加載，還充分利用了 Vue 的組件化特性，使得懶加載邏輯可以輕鬆地在整個應用中重複使用。</p>
-<h2 id="實施建議"><a href="#實施建議" class="headerlink" title="實施建議"></a>實施建議</h2><ol>
-<li><strong>選擇適合的方法：</strong> 根據您的網站需求和目標用戶群選擇合適的懶加載技術。</li>
-<li><strong>提供後備方案：</strong> 確保在不支援懶加載的瀏覽器中也能正常顯示圖片。</li>
-<li><strong>使用現代圖片格式：</strong> 考慮使用 WebP 等現代圖片格式，進一步提升載入速度。</li>
-<li><strong>設置圖片尺寸：</strong> 為所有圖片設置適當的 <code>width</code> 和 <code>height</code> 屬性，避免版面跳動。</li>
-<li><strong>注意 SEO：</strong> 確保重要圖片能被搜尋引擎正確索引。</li>
-<li><strong>框架整合：</strong> 如果您使用諸如 Vue.js、React 或 Angular 等前端框架，考慮如何將懶加載邏輯整合到組件系統中，以提高代碼的可重用性和可維護性。<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2></li>
-</ol>
-<p>隨著前端技術的不斷發展，圖片懶加載的實現方式也在不斷演進。從最初的滾動事件監聽，到現代化的 Intersection Observer API，再到各種框架特定的實現方式，我們現在有了更多選擇來優化網站的圖片加載。</p>
-<p>無論您選擇哪種方法，圖片懶加載都是提升網站效能、改善用戶體驗的有效手段。特別是對於圖片密集型的網站，實施懶加載可以帶來顯著的效能提升。</p>
-<p>在選擇和實施懶加載方案時，記得考慮您的具體需求、目標用戶群以及技術棧。同時，不要忘記持續監測和優化您的實施效果，確保它真正為您的網站帶來效能提升。</p>
-<p>最後，隨著網頁技術的不斷發展，保持對新技術和最佳實踐的關注也是非常重要的。也許在不久的將來，我們會看到更多創新的懶加載技術出現！</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1471,64 +1203,28 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="深入理解-JavaScript-的-async-await"><a href="#深入理解-JavaScript-的-async-await" class="headerlink" title="深入理解 JavaScript 的 async/await"></a>深入理解 JavaScript 的 async/await</h1><p>在我們之前討論的 Promise 和 setTimeout 的基礎上，async/await 是 JavaScript 中處理非同步操作的更高層次抽象。它提供了一種更直觀、更類似同步程式碼的方式來處理非同步操作。</p>
-<h2 id="async-await-的基本概念"><a href="#async-await-的基本概念" class="headerlink" title="async/await 的基本概念"></a>async/await 的基本概念</h2><ol>
-<li><p><code>async</code> 函式</p>
-<ul>
-<li>使用 <code>async</code> 關鍵字宣告的函式。</li>
-<li>總是返回一個 Promise。</li>
-<li>允許在其中使用 <code>await</code> 關鍵字。</li>
-</ul>
-</li>
-<li><p><code>await</code> 運算符</p>
-<ul>
-<li>只能在 <code>async</code> 函式內部使用。</li>
-<li>用於等待一個 Promise 解決（或拒絕）。</li>
-<li>暫停 <code>async</code> 函式的執行，直到 Promise 完成。</li>
-</ul>
-</li>
-</ol>
-<h2 id="與-Promise-的關係"><a href="#與-Promise-的關係" class="headerlink" title="與 Promise 的關係"></a>與 Promise 的關係</h2><p>async/await 本質上是 Promise 的語法糖。它讓我們可以用更簡潔、更易讀的方式編寫基於 Promise 的程式碼。讓我們看一個例子來比較：</p>
-<p>使用 Promise：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">fetchData</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">fetch</span>(<span class="string">&#x27;https://api.example.com/data&#x27;</span>)</span><br><span class="line">    .<span class="title function_">then</span>(<span class="function"><span class="params">response</span> =&gt;</span> response.<span class="title function_">json</span>())</span><br><span class="line">    .<span class="title function_">then</span>(<span class="function"><span class="params">data</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(data);</span><br><span class="line">      <span class="keyword">return</span> data;</span><br><span class="line">    &#125;)</span><br><span class="line">    .<span class="title function_">catch</span>(<span class="function"><span class="params">error</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&#x27;發生錯誤：&#x27;</span>, error);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          深入理解 JavaScript 的 async/await
+在我們之前討論的 Promise 和 setTimeout 的基礎上，async/await 是 JavaScript 中處理非同步操作的更高層次抽象。它提供了一種更直觀、更類似同步程式碼的方式來處理非同步操作。
 
-<p>使用 async/await：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">fetchData</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> response = <span class="keyword">await</span> <span class="title function_">fetch</span>(<span class="string">&#x27;https://api.example.com/data&#x27;</span>);</span><br><span class="line">    <span class="keyword">const</span> data = <span class="keyword">await</span> response.<span class="title function_">json</span>();</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(data);</span><br><span class="line">    <span class="keyword">return</span> data;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (error) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&#x27;發生錯誤：&#x27;</span>, error);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>可以看到，async/await 版本的程式碼結構更加清晰，更像是同步程式碼的寫法。</p>
-<h2 id="async-await-與事件循環"><a href="#async-await-與事件循環" class="headerlink" title="async/await 與事件循環"></a>async/await 與事件循環</h2><p>雖然 async/await 讓程式碼看起來像是同步執行的，但實際上它仍然是非同步的。當遇到 <code>await</code> 時，函式會暫停執行，但不會阻塞整個程式。這與我們之前討論的事件循環機制密切相關：</p>
-<ol>
-<li>同步程式碼優先執行。</li>
-<li>遇到 <code>await</code> 時，程式會釋放控制權，允許其他程式碼執行。</li>
-<li>當 <code>await</code> 的 Promise 解決時，函式會在適當的時機恢復執行。</li>
-</ol>
-<h2 id="async-await-與-setTimeout"><a href="#async-await-與-setTimeout" class="headerlink" title="async/await 與 setTimeout"></a>async/await 與 setTimeout</h2><p>我們可以結合 async/await 和 setTimeout 來創建更易讀的延遲函式：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">delay</span>(<span class="params">ms</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> <span class="built_in">setTimeout</span>(resolve, ms));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">delayedGreeting</span>(<span class="params">name</span>) &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;開始等待...&#x27;</span>);</span><br><span class="line">  <span class="keyword">await</span> <span class="title function_">delay</span>(<span class="number">2000</span>);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`你好，<span class="subst">$&#123;name&#125;</span>！`</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">delayedGreeting</span>(<span class="string">&#x27;小明&#x27;</span>);</span><br></pre></td></tr></table></figure>
-
-<p>這個例子展示了如何使用 async/await 來處理 setTimeout 創建的延遲，使得程式碼更加直觀。</p>
-<h2 id="async-await-的錯誤處理"><a href="#async-await-的錯誤處理" class="headerlink" title="async/await 的錯誤處理"></a>async/await 的錯誤處理</h2><p>async/await 提供了更直觀的錯誤處理方式。我們可以使用普通的 try/catch 語句：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">fetchData</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> response = <span class="keyword">await</span> <span class="title function_">fetch</span>(<span class="string">&#x27;https://api.example.com/data&#x27;</span>);</span><br><span class="line">    <span class="keyword">if</span> (!response.<span class="property">ok</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&#x27;網路回應不正確&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> response.<span class="title function_">json</span>();</span><br><span class="line">  &#125; <span class="keyword">catch</span> (error) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&#x27;發生錯誤：&#x27;</span>, error);</span><br><span class="line">    <span class="comment">// 可以在這裡進行錯誤處理，例如顯示錯誤消息給用戶</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>這比使用 <code>.catch()</code> 方法更容易理解和維護。</p>
-<h2 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h2><ol>
-<li><p>不要濫用 await：</p>
-<ul>
-<li>如果多個非同步操作之間沒有依賴關係，考慮使用 <code>Promise.all()</code> 同時執行它們。</li>
-</ul>
-</li>
-<li><p>async 函式總是返回 Promise：</p>
-<ul>
-<li>即使你的函式看起來返回的是普通值，它實際上會被自動包裝成 Promise。</li>
-</ul>
-</li>
-<li><p>瀏覽器支援：</p>
-<ul>
-<li>大部分現代瀏覽器都支援 async/await，但在支援舊版瀏覽器時可能需要使用轉譯工具。</li>
-</ul>
-</li>
-</ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>async/await 是 JavaScript 中處理非同步操作的強大工具。它建立在 Promise 的基礎上，提供了更簡潔、更易讀的語法。通過結合我們之前討論的 Promise 和事件循環的知識，以及本文介紹的 async/await，你可以更有效地處理 JavaScript 中的非同步流程，寫出更加清晰、易維護的程式碼。</p>
-
+async/await 的基本概念
+ 1. async 函式
+    
+     * 使用 async 關鍵字宣告的函式。
+     * 總是返回一個 Promise。
+     * 允許在其中使用 await 關鍵字。
+    
+    
+ 2. await 運算符
+    
+     * 只能在 async 函式內部使
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1634,31 +1330,21 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="setTimeout-和-JavaScript-的-Event-Loop-運作原理"><a href="#setTimeout-和-JavaScript-的-Event-Loop-運作原理" class="headerlink" title="setTimeout 和 JavaScript 的 Event Loop 運作原理"></a>setTimeout 和 JavaScript 的 Event Loop 運作原理</h1><p>JavaScript 是一種單執行緒語言，但它能夠執行非同步操作，這要歸功於事件循環（Event Loop）機制。在本文中，我們將深入探討 <code>setTimeout</code> 函式的運作原理，以及它如何與 JavaScript 的事件循環相互作用。</p>
-<h2 id="JavaScript-的單執行緒特性"><a href="#JavaScript-的單執行緒特性" class="headerlink" title="JavaScript 的單執行緒特性"></a>JavaScript 的單執行緒特性</h2><p>首先，我們需要理解 JavaScript 是單執行緒的。這意味著它一次只能執行一個操作。但是，如果所有操作都是同步的，那麼長時間運行的任務就會阻塞整個程式，導致糟糕的使用者體驗。這就是非同步程式設計發揮作用的地方。</p>
-<h2 id="非同步程式設計和事件循環"><a href="#非同步程式設計和事件循環" class="headerlink" title="非同步程式設計和事件循環"></a>非同步程式設計和事件循環</h2><p>JavaScript 使用事件循環來處理非同步操作。事件循環負責執行程式碼、收集和處理事件，以及執行排隊的子任務。以下是事件循環的基本組成部分：</p>
-<ol>
-<li>呼叫堆疊（Call Stack）</li>
-<li>Web API</li>
-<li>回呼佇列（Callback Queue）</li>
-<li>事件循環（Event Loop）</li>
-</ol>
-<h2 id="setTimeout-的運作原理"><a href="#setTimeout-的運作原理" class="headerlink" title="setTimeout 的運作原理"></a>setTimeout 的運作原理</h2><p><code>setTimeout</code> 是一個常用的非同步函式，它允許我們延遲執行一段程式碼。讓我們看看它是如何運作的：</p>
-<ol>
-<li>當 <code>setTimeout</code> 被呼叫時，JavaScript 引擎會將它交給 Web API 來處理計時器。</li>
-<li>同時，JavaScript 繼續執行後面的程式碼，不會等待 <code>setTimeout</code> 中的延遲。</li>
-<li>當計時器到期時，Web API 會將回呼函式放入回呼佇列。</li>
-<li>事件循環持續檢查呼叫堆疊是否為空。一旦為空，它就會從回呼佇列中取出第一個任務並將其放入呼叫堆疊中執行。</li>
-</ol>
-<h2 id="範例程式碼"><a href="#範例程式碼" class="headerlink" title="範例程式碼"></a>範例程式碼</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;開始&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;setTimeout 回呼&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;結束&#x27;</span>);</span><br></pre></td></tr></table></figure>
+          setTimeout 和 JavaScript 的 Event Loop 運作原理
+JavaScript 是一種單執行緒語言，但它能夠執行非同步操作，這要歸功於事件循環（Event Loop）機制。在本文中，我們將深入探討 setTimeout 函式的運作原理，以及它如何與 JavaScript 的事件循環相互作用。
 
-<p>輸出結果：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">開始</span><br><span class="line">結束</span><br><span class="line">setTimeout 回呼</span><br></pre></td></tr></table></figure>
+JavaScript 的單執行緒特性
+首先，我們需要理解 JavaScript 是單執行緒的。這意味著它一次只能執行一個操作。但是，如果所有操作都是同步的，那麼長時間運行的任務就會阻塞整個程式，導致糟糕的使用者體驗。這就是非同步程式設計發揮作用的地方。
 
-<p>即使我們將 <code>setTimeout</code> 的延遲設定為 0，回呼函式仍然會在最後執行。這是因為它首先被發送到 Web API，然後被放入回呼佇列，只有在呼叫堆疊清空後才會被執行。</p>
-<h2 id="事件循環的重要性"><a href="#事件循環的重要性" class="headerlink" title="事件循環的重要性"></a>事件循環的重要性</h2><p>事件循環使 JavaScript 能夠執行非阻塞操作，這對於創建回應式使用者介面和處理大量並行操作至關重要。通過將耗時的任務推遲到未來執行，JavaScript 可以保持對使用者輸入的回應，並有效地管理資源。</p>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>理解 <code>setTimeout</code> 和事件循環的運作原理對於掌握 JavaScript 的非同步程式設計至關重要。它不僅幫助我們撰寫更高效的程式碼，還能夠更好地理解和除錯複雜的非同步操作。隨著 JavaScript 在前端和後端開發中的廣泛應用，這些知識將成為每個開發者的寶貴資產。</p>
-
+非同步程式設計和事件循
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1764,55 +1450,23 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="Vue-3-資料傳遞"><a href="#Vue-3-資料傳遞" class="headerlink" title="Vue 3 資料傳遞"></a>Vue 3 資料傳遞</h1><p>Vue 3 為前端開發者提供了強大的功能來建構互動式網頁應用程序。在組件化的架構中,資料的傳遞是重要的一環。本文將介紹在 Vue 3 中,如何實現父元件與子元件之間的資料傳遞,包括父元件傳資料給子元件、子元件傳資料給父元件,以及子元件間的資料傳遞。</p>
-<blockquote>
-<ul>
-<li>Props: 用於父元件向子元件傳遞資料。</li>
-<li>Emit: 子元件可以通過發射事件來向父元件傳遞資料。</li>
-<li>Provide/Inject: 這是一種跨越多個層級的元件間通信方法,特別適用於那些不是直接父子關係的元件間的資料傳輸。</li>
-</ul>
-</blockquote>
-<h2 id="1-父元件傳資料到子元件"><a href="#1-父元件傳資料到子元件" class="headerlink" title="1. 父元件傳資料到子元件"></a>1. 父元件傳資料到子元件</h2><p>在 Vue 3 中,父元件可以透過 props 向子元件傳遞資料。props 是子元件用來接收來自父元件資料的一種機制。</p>
-<h3 id="1-1-父元件"><a href="#1-1-父元件" class="headerlink" title="1.1 父元件"></a>1.1 父元件</h3><p>假設我們有一個父元件,想要傳遞一個名為 message 的資料到子元件。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;ChildComponent :message=&quot;messageFromParent&quot; /&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">import ChildComponent from &#x27;./ChildComponent.vue&#x27;;</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">  components: &#123;</span><br><span class="line">    ChildComponent</span><br><span class="line">  &#125;,</span><br><span class="line">  data() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      messageFromParent: &#x27;Hello from Parent&#x27;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="1-2-子元件"><a href="#1-2-子元件" class="headerlink" title="1.2 子元件"></a>1.2 子元件</h3><p>子元件需要定義一個 props 來接收來自父元件的資料。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;&#123;&#123; message &#125;&#125;&lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">export default &#123;</span><br><span class="line">  props: &#123;</span><br><span class="line">    message: &#123;</span><br><span class="line">      type: String,</span><br><span class="line">      required: true</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<h2 id="2-子元件傳資料到父元件"><a href="#2-子元件傳資料到父元件" class="headerlink" title="2. 子元件傳資料到父元件"></a>2. 子元件傳資料到父元件</h2><p>子元件可以透過發射事件 (emit) 的方式將資料傳回父元件。</p>
-<h3 id="2-1-子元件"><a href="#2-1-子元件" class="headerlink" title="2.1 子元件"></a>2.1 子元件</h3><p>在子元件中,我們可以使用 $emit 方法發射一個自定義事件,並附帶需要傳遞的資料。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;button @click=&quot;sendMessageToParent&quot;&gt;Send to Parent&lt;/button&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">export default &#123;</span><br><span class="line">  methods: &#123;</span><br><span class="line">    sendMessageToParent() &#123;</span><br><span class="line">      this.$emit(&#x27;message-from-child&#x27;, &#x27;Hello from Child&#x27;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="2-2-父元件"><a href="#2-2-父元件" class="headerlink" title="2.2 父元件"></a>2.2 父元件</h3><p>父元件需要在使用子元件的標記上綁定一個事件監聽器來接收這個資料。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;ChildComponent @message-from-child=&quot;handleMessageFromChild&quot; /&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">import ChildComponent from &#x27;./ChildComponent.vue&#x27;;</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">  components: &#123;</span><br><span class="line">    ChildComponent</span><br><span class="line">  &#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    handleMessageFromChild(message) &#123;</span><br><span class="line">      console.log(&#x27;Received message from child:&#x27;, message);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<h2 id="3-跨組件讀寫資料"><a href="#3-跨組件讀寫資料" class="headerlink" title="3. 跨組件讀寫資料"></a>3. 跨組件讀寫資料</h2><h3 id="3-1-使用-Provide-Inject-進行資料傳輸"><a href="#3-1-使用-Provide-Inject-進行資料傳輸" class="headerlink" title="3.1 使用 Provide/Inject 進行資料傳輸"></a>3.1 使用 Provide/Inject 進行資料傳輸</h3><p>provide 和 inject 的概念是,父元件可以 provide 一些資料(可以是任何東西:物件、數據、函數等),而任何子元件(不論是直接或間接的子元件)都可以選擇性地 inject 這些資料。這種方式適合於那些不是直接父子關係的組件傳遞數據的場景。</p>
-<p>需要注意的是,由於 provide/inject 導致了組件實例的高度耦合,所以它們僅適合在較小型的項目中使用。對於大型項目來說,我們更推薦使用 Vuex 或 Pinia 等全局狀態管理工具。</p>
-<h4 id="3-1-1-父元件"><a href="#3-1-1-父元件" class="headerlink" title="3.1.1 父元件"></a>3.1.1 父元件</h4><p>首先,在父元件中使用 provide 來定義你想要共享的資料。在 Vue 3 中,provide 通常在 setup() 函數中使用。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">import &#123; provide, ref &#125; from &#x27;vue&#x27;;</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">  setup() &#123;</span><br><span class="line">    const sharedData = ref(&#x27;這是要共享的資料&#x27;);</span><br><span class="line"></span><br><span class="line">    provide(&#x27;sharedDataKey&#x27;, sharedData);</span><br><span class="line"></span><br><span class="line">    return &#123;&#125;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<h4 id="3-1-2-子元件"><a href="#3-1-2-子元件" class="headerlink" title="3.1.2 子元件"></a>3.1.2 子元件</h4><p>然後,在任何子元件中,你可以使用 inject 來接收這些資料。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">import &#123; inject &#125; from &#x27;vue&#x27;;</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">  setup() &#123;</span><br><span class="line">    const sharedData = inject(&#x27;sharedDataKey&#x27;);</span><br><span class="line"></span><br><span class="line">    return &#123;</span><br><span class="line">      sharedData</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<p>這樣,子元件就可以訪問由父元件提供的資料了。需要注意的是,provide 和 inject 的鍵(在這個例子中是 sharedDataKey)必須匹配,才能正確地傳遞和接收資料。</p>
-<h3 id="3-2-Vuex-與-Pinia"><a href="#3-2-Vuex-與-Pinia" class="headerlink" title="3.2 Vuex 與 Pinia"></a>3.2 Vuex 與 Pinia</h3><p>當面對一個父元件底下有多個子元件,且需要在子元件之間進行資料傳輸的情況,我們可以採用 Vuex 或 Pinia 這樣的全局狀態管理解決方案。</p>
-<h4 id="3-2-1-Vuex"><a href="#3-2-1-Vuex" class="headerlink" title="3.2.1 Vuex"></a>3.2.1 Vuex</h4><p>Vuex 提供了一個集中管理應用的所有組件的狀態的機制。使用 Vuex,你可以在一個集中的地方定義全局狀態,然後讓任何組件根據需要讀取或修改這些狀態。</p>
-<p>步驟1: 安裝 Vuex</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install vuex@next --save</span><br><span class="line">步驟2: 創建 Vuex Store</span><br></pre></td></tr></table></figure>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// store/index.js</span></span><br><span class="line"><span class="keyword">import</span> &#123; createStore &#125; <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title function_">createStore</span>(&#123;</span><br><span class="line">  <span class="title function_">state</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      <span class="attr">sharedData</span>: <span class="string">&#x27;&#x27;</span></span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">mutations</span>: &#123;</span><br><span class="line">    <span class="title function_">updateSharedData</span>(<span class="params">state, payload</span>) &#123;</span><br><span class="line">      state.<span class="property">sharedData</span> = payload;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">getters</span>: &#123;</span><br><span class="line">    <span class="attr">sharedData</span>: <span class="function"><span class="params">state</span> =&gt;</span> state.<span class="property">sharedData</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<p>步驟3: 在 Vue 應用中使用 Store</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"><span class="keyword">import</span> &#123; createApp &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">App</span> <span class="keyword">from</span> <span class="string">&#x27;./App.vue&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> store <span class="keyword">from</span> <span class="string">&#x27;./store&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="title function_">createApp</span>(<span class="title class_">App</span>).<span class="title function_">use</span>(store).<span class="title function_">mount</span>(<span class="string">&#x27;#app&#x27;</span>);</span><br></pre></td></tr></table></figure>
-<p>步驟4: 在組件中讀取和修改狀態<br>子元件可以通過 this.$store 訪問 store 中的狀態和 mutations。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 子元件</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="attr">computed</span>: &#123;</span><br><span class="line">    <span class="title function_">sharedData</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">$store</span>.<span class="property">getters</span>.<span class="property">sharedData</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">methods</span>: &#123;</span><br><span class="line">    <span class="title function_">updateData</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">$store</span>.<span class="title function_">commit</span>(<span class="string">&#x27;updateSharedData&#x27;</span>, <span class="string">&#x27;新的共享資料&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h4 id="3-2-2-Pinia"><a href="#3-2-2-Pinia" class="headerlink" title="3.2.2 Pinia"></a>3.2.2 Pinia</h4><p>Pinia 是 Vue 官方推薦的一種更現代化的狀態管理解決方案,相比 Vuex 而言,它具有更簡潔的 API 和更好的 TypeScript 支持。</p>
-<p>步驟1: 安裝 Pinia</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install pinia</span><br></pre></td></tr></table></figure>
-<p>步驟2: 創建 Pinia Store</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// stores/counterStore.js</span></span><br><span class="line"><span class="keyword">import</span> &#123; defineStore &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useCounterStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;counter&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">state</span>: <span class="function">() =&gt;</span> (&#123;</span><br><span class="line">    <span class="attr">count</span>: <span class="number">0</span></span><br><span class="line">  &#125;),</span><br><span class="line">  <span class="attr">actions</span>: &#123;</span><br><span class="line">    <span class="title function_">increment</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">count</span>++;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<p>步驟3: 在 Vue 應用中使用 Pinia Store</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"><span class="keyword">import</span> &#123; createApp &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; createPinia &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">App</span> <span class="keyword">from</span> <span class="string">&#x27;./App.vue&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> app = <span class="title function_">createApp</span>(<span class="title class_">App</span>);</span><br><span class="line"><span class="keyword">const</span> pinia = <span class="title function_">createPinia</span>();</span><br><span class="line"></span><br><span class="line">app.<span class="title function_">use</span>(pinia);</span><br><span class="line">app.<span class="title function_">mount</span>(<span class="string">&#x27;#app&#x27;</span>);</span><br></pre></td></tr></table></figure>
-<p>步驟4: 在組件中使用 Pinia Store</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 任何子元件</span></span><br><span class="line">&lt;script setup&gt;</span><br><span class="line"><span class="keyword">import</span> &#123; useCounterStore &#125; <span class="keyword">from</span> <span class="string">&#x27;./stores/counterStore&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> counterStore = <span class="title function_">useCounterStore</span>();</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>&#123;&#123; counterStore.count &#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">  <span class="tag">&lt;<span class="name">button</span> @<span class="attr">click</span>=<span class="string">&quot;counterStore.increment&quot;</span>&gt;</span>Increment<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
-<p>使用 Vuex 或 Pinia,子元件之間可以很容易地共享和修改狀態,因為所有的狀態都被集中管理了。當一個子元件修改了狀態,其他引用了這個狀態的子元件會自動更新,從而實現了跨元件的資料共享和通信。</p>
-<h2 id="4-最佳實踐建議"><a href="#4-最佳實踐建議" class="headerlink" title="4. 最佳實踐建議"></a>4. 最佳實踐建議</h2><p>保持單向數據流: 儘量使用 props 向下傳遞資料,避免直接修改 props,這樣可以防止子組件意外改變了父組件的狀態。<br>適當使用 provide/inject: 雖然 provide/inject 很方便,但它會增加組件實例之間的耦合性,使重構變得更加困難。對於大型項目,建議使用 Vuex 或 Pinia 進行狀態管理。<br>模塊化管理狀態: 當使用 Vuex 或 Pinia 時,建議按功能將應用程序狀態劃分為多個模塊,每個模塊管理與該功能相關的狀態。這樣可以更好地解耦和重用代碼。<br>在適當的層級傳遞數據:對於父子組件通信,請使用 props 和 events; 對於更深層級的通信,請考慮使用 provide/inject 或者全局狀態管理。避免在應用程序的多個位置直接導入和修改狀態。<br>編寫單元測試: 不論你選擇使用哪種通信方式,都應該為這些功能編寫單元測試,以確保代碼的正確性和維護性。</p>
-<h1 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h1><p>選擇適合的組件間通信方式取決於你的具體需求:</p>
-<p>對於簡單的父子組件通信,props 和 emit 是最直接且常用的方法。<br>當需要在祖先和後代組件間共享資料時,provide 和 inject 提供了一個更為靈活的解決方案。<br>對於複雜的應用,需要全局狀態管理或跨多個組件共享狀態時,Vuex 或 Pinia 是更好的選擇,它們提供了集中管理和高度靈活的狀態管理方案。</p>
-<p>合理利用這些工具和概念,可以幫助你建立一個結構清晰、易於維護的 Vue 應用。</p>
+          Vue 3 資料傳遞
+Vue 3 為前端開發者提供了強大的功能來建構互動式網頁應用程序。在組件化的架構中,資料的傳遞是重要的一環。本文將介紹在 Vue 3 中,如何實現父元件與子元件之間的資料傳遞,包括父元件傳資料給子元件、子元件傳資料給父元件,以及子元件間的資料傳遞。
 
+ * Props: 用於父元件向子元件傳遞資料。
+ * Emit: 子元件可以通過發射事件來向父元件傳遞資料。
+ * Provide/Inject: 這是一種跨越多個層級的元件間通信方法,特別適用於那些不是直接父子關係的元件間的資料傳輸。
+
+1. 父元件傳資料到子元件
+在 Vue 3 中,父元件可以透過 props 向子元件
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/undefined/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1855,7 +1509,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">303k</span>
+    <span title="總字數">302k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
