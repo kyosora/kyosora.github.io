@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="還記得那種半夜被電話吵醒，客服說網站掛了的恐懼嗎？還是每次看到網站載入速度慢得像蝸牛爬行，就想直接砸電腦的衝動？如果你也有這些困擾，那你絕對需要認識 Cloudflare 這個神器。  什麼是 Cloudflare？為什麼工程師都在用它？ Cloudflare 簡單來說就是你網站的「超級保鑣兼快遞員」。它是全球最大的連接雲網路之一，擁有超過 330 個數據中心遍布世界各地。當使用者想要瀏覽你的網站">
+<meta property="og:type" content="article">
+<meta property="og:title" content="別再讓你的網站裸奔了！Cloudflare 讓你 5 分鐘變身網路防護高手">
+<meta property="og:url" content="https://kyosora.github.io/posts/781156c4/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="還記得那種半夜被電話吵醒，客服說網站掛了的恐懼嗎？還是每次看到網站載入速度慢得像蝸牛爬行，就想直接砸電腦的衝動？如果你也有這些困擾，那你絕對需要認識 Cloudflare 這個神器。  什麼是 Cloudflare？為什麼工程師都在用它？ Cloudflare 簡單來說就是你網站的「超級保鑣兼快遞員」。它是全球最大的連接雲網路之一，擁有超過 330 個數據中心遍布世界各地。當使用者想要瀏覽你的網站">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2025-05-27T02:30:00.000Z">
+<meta property="article:modified_time" content="2025-05-27T06:00:27.430Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="DNS">
+<meta property="article:tag" content="SSL">
+<meta property="article:tag" content="Cloudflare">
+<meta property="article:tag" content="CDN">
+<meta property="article:tag" content="DDoS防護">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/781156c4/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/781156c4/","path":"posts/781156c4/","title":"別再讓你的網站裸奔了！Cloudflare 讓你 5 分鐘變身網路防護高手"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>別再讓你的網站裸奔了！Cloudflare 讓你 5 分鐘變身網路防護高手 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AF-Cloudflare%EF%BC%9F%E7%82%BA%E4%BB%80%E9%BA%BC%E5%B7%A5%E7%A8%8B%E5%B8%AB%E9%83%BD%E5%9C%A8%E7%94%A8%E5%AE%83%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">什麼是 Cloudflare？為什麼工程師都在用它？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%8D%E8%B2%BB%E6%96%B9%E6%A1%88%E5%B0%B1%E5%BE%88%E5%A4%A0%E7%94%A8%EF%BC%9FCloudflare-%E4%B8%8D%E8%97%8F%E7%A7%81%E5%A4%A7%E5%85%AC%E9%96%8B"><span class="nav-number">2.</span> <span class="nav-text">免費方案就很夠用？Cloudflare 不藏私大公開</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8B%95%E6%89%8B%E8%A8%AD%E5%AE%9A-Cloudflare%EF%BC%9A%E6%AF%94%E6%B3%A1%E6%B3%A1%E9%BA%B5%E9%82%84%E7%B0%A1%E5%96%AE%E7%9A%84-5-%E6%AD%A5%E9%A9%9F"><span class="nav-number">3.</span> <span class="nav-text">動手設定 Cloudflare：比泡泡麵還簡單的 5 步驟</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F-1%EF%BC%9A%E8%A8%BB%E5%86%8A-Cloudflare-%E5%B8%B3%E8%99%9F"><span class="nav-number">3.1.</span> <span class="nav-text">步驟 1：註冊 Cloudflare 帳號</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F-2%EF%BC%9A%E6%96%B0%E5%A2%9E%E4%BD%A0%E7%9A%84%E7%B6%B2%E5%9F%9F"><span class="nav-number">3.2.</span> <span class="nav-text">步驟 2：新增你的網域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F-3%EF%BC%9A%E9%81%B8%E6%93%87%E6%96%B9%E6%A1%88"><span class="nav-number">3.3.</span> <span class="nav-text">步驟 3：選擇方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F-4%EF%BC%9A%E7%A2%BA%E8%AA%8D-DNS-%E8%A8%98%E9%8C%84"><span class="nav-number">3.4.</span> <span class="nav-text">步驟 4：確認 DNS 記錄</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F-5%EF%BC%9A%E6%9B%B4%E6%96%B0-Nameserver"><span class="nav-number">3.5.</span> <span class="nav-text">步驟 5：更新 Nameserver</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%B2%E9%9A%8E%E8%A8%AD%E5%AE%9A%EF%BC%9A%E8%AE%93%E4%BD%A0%E7%9A%84%E7%B6%B2%E7%AB%99%E9%A3%9B%E8%B5%B7%E4%BE%86%E7%9A%84%E7%A7%98%E5%AF%86%E6%AD%A6%E5%99%A8"><span class="nav-number">4.</span> <span class="nav-text">進階設定：讓你的網站飛起來的秘密武器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSL-TLS-%E8%A8%AD%E5%AE%9A"><span class="nav-number">4.1.</span> <span class="nav-text">SSL&#x2F;TLS 設定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BF%AB%E5%8F%96%E8%A8%AD%E5%AE%9A"><span class="nav-number">4.2.</span> <span class="nav-text">快取設定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%88%E8%83%BD%E5%84%AA%E5%8C%96"><span class="nav-number">4.3.</span> <span class="nav-text">效能優化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E9%9A%9B%E6%B8%AC%E8%A9%A6%EF%BC%9A%E7%9C%8B%E7%9C%8B%E6%95%88%E6%9E%9C%E6%9C%89%E5%A4%9A%E9%A9%9A%E4%BA%BA"><span class="nav-number">5.</span> <span class="nav-text">實際測試：看看效果有多驚人</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A6%8B%E5%95%8F%E9%A1%8C%E8%A7%A3%E7%AD%94"><span class="nav-number">6.</span> <span class="nav-text">常見問題解答</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B8%BD%E7%B5%90%EF%BC%9A%E7%82%BA%E4%BB%80%E9%BA%BC%E4%BD%A0%E7%8F%BE%E5%9C%A8%E5%B0%B1%E8%A9%B2%E9%96%8B%E5%A7%8B%E7%94%A8-Cloudflare"><span class="nav-number">7.</span> <span class="nav-text">總結：為什麼你現在就該開始用 Cloudflare</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/781156c4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="別再讓你的網站裸奔了！Cloudflare 讓你 5 分鐘變身網路防護高手 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          別再讓你的網站裸奔了！Cloudflare 讓你 5 分鐘變身網路防護高手
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2025-05-27 10:30:00 / 修改時間：14:00:27" itemprop="dateCreated datePublished" datetime="2025-05-27T10:30:00+08:00">2025-05-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%B6%B2%E7%AB%99%E6%95%88%E8%83%BD/" itemprop="url" rel="index"><span itemprop="name">網站效能</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%B6%B2%E7%AB%99%E6%95%88%E8%83%BD/%E7%B6%B2%E8%B7%AF%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">網路安全</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1.9k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>還記得那種半夜被電話吵醒，客服說網站掛了的恐懼嗎？還是每次看到網站載入速度慢得像蝸牛爬行，就想直接砸電腦的衝動？如果你也有這些困擾，那你絕對需要認識 Cloudflare 這個神器。</p>
+<h2 id="什麼是-Cloudflare？為什麼工程師都在用它？"><a href="#什麼是-Cloudflare？為什麼工程師都在用它？" class="headerlink" title="什麼是 Cloudflare？為什麼工程師都在用它？"></a>什麼是 Cloudflare？為什麼工程師都在用它？</h2><p>Cloudflare 簡單來說就是你網站的「超級保鑣兼快遞員」。它是全球最大的連接雲網路之一，擁有超過 330 個數據中心遍布世界各地。當使用者想要瀏覽你的網站時，Cloudflare 會：</p>
+<ol>
+<li><strong>當保鑣</strong>：阻擋惡意攻擊，包括 DDoS 攻擊和駭客入侵</li>
+<li><strong>當快遞員</strong>：把你的網站內容快取在全球各地，讓使用者存取更快速</li>
+<li><strong>當翻譯機</strong>：提供 SSL 憑證，讓你的網站自動升級為 HTTPS</li>
+</ol>
+<p>根據 <a target="_blank" rel="noopener" href="https://blog.cloudflare.com/ddos-threat-report-for-2025-q1/">Cloudflare 2025 年第一季報告</a>，他們在短短三個月內就阻擋了 2,050 萬次 DDoS 攻擊，這數字比去年同期增長了 358%！而且他們擁有 388 Tbps 的網路容量，是史上最大 DDoS 攻擊的 23 倍。</p>
+<h2 id="免費方案就很夠用？Cloudflare-不藏私大公開"><a href="#免費方案就很夠用？Cloudflare-不藏私大公開" class="headerlink" title="免費方案就很夠用？Cloudflare 不藏私大公開"></a>免費方案就很夠用？Cloudflare 不藏私大公開</h2><p>很多人對「免費」總是心存疑慮，但 Cloudflare 的免費方案真的很佛心。根據 <a target="_blank" rel="noopener" href="https://www.cloudflare.com/plans/free/">Cloudflare 官方文件</a>，免費方案包含：</p>
+<ul>
+<li><strong>無限制的 DDoS 防護</strong>：不管攻擊多大，都幫你擋下來</li>
+<li><strong>全球 CDN</strong>：網站速度直接提升 300%</li>
+<li><strong>免費 SSL 憑證</strong>：HTTPS 不用錢，搜尋引擎還會給你加分</li>
+<li><strong>基本的 DNS 管理</strong>：告別龜速的 DNS 解析</li>
+</ul>
+<p>當然，如果你的網站流量很大，或是需要更進階的功能，他們也有 Pro（$20/月）、Business（$200/月）和 Enterprise 方案可以選擇。</p>
+<h2 id="動手設定-Cloudflare：比泡泡麵還簡單的-5-步驟"><a href="#動手設定-Cloudflare：比泡泡麵還簡單的-5-步驟" class="headerlink" title="動手設定 Cloudflare：比泡泡麵還簡單的 5 步驟"></a>動手設定 Cloudflare：比泡泡麵還簡單的 5 步驟</h2><h3 id="步驟-1：註冊-Cloudflare-帳號"><a href="#步驟-1：註冊-Cloudflare-帳號" class="headerlink" title="步驟 1：註冊 Cloudflare 帳號"></a>步驟 1：註冊 Cloudflare 帳號</h3><p>前往 <a target="_blank" rel="noopener" href="https://www.cloudflare.com/">Cloudflare 官網</a>，註冊一個免費帳號。填入你的 Email 和密碼，就這麼簡單。</p>
+<h3 id="步驟-2：新增你的網域"><a href="#步驟-2：新增你的網域" class="headerlink" title="步驟 2：新增你的網域"></a>步驟 2：新增你的網域</h3><p>登入後，點擊「Add a site」，輸入你的網域名稱（例如：example.com）。記得不要加 www 或 http://，就單純的網域名稱就好。</p>
+<h3 id="步驟-3：選擇方案"><a href="#步驟-3：選擇方案" class="headerlink" title="步驟 3：選擇方案"></a>步驟 3：選擇方案</h3><p>對於大部分的個人網站和小型企業，免費方案就非常夠用了。如果你需要更多功能，再考慮升級。</p>
+<h3 id="步驟-4：確認-DNS-記錄"><a href="#步驟-4：確認-DNS-記錄" class="headerlink" title="步驟 4：確認 DNS 記錄"></a>步驟 4：確認 DNS 記錄</h3><p>Cloudflare 會自動掃描你現有的 DNS 記錄，並顯示給你確認。檢查一下是否有遺漏的記錄，特別是 A 記錄和 CNAME 記錄。</p>
+<h3 id="步驟-5：更新-Nameserver"><a href="#步驟-5：更新-Nameserver" class="headerlink" title="步驟 5：更新 Nameserver"></a>步驟 5：更新 Nameserver</h3><p>這是最關鍵的一步！Cloudflare 會提供兩個 nameserver 給你，像是：</p>
+<ul>
+<li><code>ns1.cloudflare.com</code></li>
+<li><code>ns2.cloudflare.com</code></li>
+</ul>
+<p>你需要到你的網域註冊商（如 GoDaddy、Namecheap 等）的控制面板，把原本的 nameserver 替換成 Cloudflare 提供的。</p>
+<p><strong>小提醒</strong>：DNS 更新通常需要 24 小時才會完全生效，但大部分情況下幾小時就搞定了。</p>
+<h2 id="進階設定：讓你的網站飛起來的秘密武器"><a href="#進階設定：讓你的網站飛起來的秘密武器" class="headerlink" title="進階設定：讓你的網站飛起來的秘密武器"></a>進階設定：讓你的網站飛起來的秘密武器</h2><h3 id="SSL-TLS-設定"><a href="#SSL-TLS-設定" class="headerlink" title="SSL/TLS 設定"></a>SSL/TLS 設定</h3><p>在 Cloudflare 控制面板中，前往「SSL/TLS」頁面，建議選擇「Full」模式。這樣可以確保從使用者到 Cloudflare，再從 Cloudflare 到你的伺服器，整個連線都是加密的。</p>
+<h3 id="快取設定"><a href="#快取設定" class="headerlink" title="快取設定"></a>快取設定</h3><p>到「Caching」頁面，啟用以下功能：</p>
+<ul>
+<li><strong>Browser Cache TTL</strong>：設定瀏覽器快取時間，減少重複請求</li>
+<li><strong>Always Online</strong>：當你的伺服器掛掉時，Cloudflare 會顯示快取版本</li>
+</ul>
+<h3 id="效能優化"><a href="#效能優化" class="headerlink" title="效能優化"></a>效能優化</h3><p>在「Speed」頁面，啟用：</p>
+<ul>
+<li><strong>Auto Minify</strong>：自動壓縮 HTML、CSS、JavaScript</li>
+<li><strong>Brotli 壓縮</strong>：比 Gzip 更高效的壓縮演算法</li>
+</ul>
+<h2 id="實際測試：看看效果有多驚人"><a href="#實際測試：看看效果有多驚人" class="headerlink" title="實際測試：看看效果有多驚人"></a>實際測試：看看效果有多驚人</h2><p>設定完成後，你可以用以下工具測試網站效能：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://gtmetrix.com/">GTmetrix</a>：綜合效能分析</li>
+<li><a target="_blank" rel="noopener" href="https://pagespeed.web.dev/">Google PageSpeed Insights</a>：Google 官方的速度測試工具</li>
+</ul>
+<p>通常使用 Cloudflare 後，你會看到：</p>
+<ul>
+<li>網站載入速度提升 50-300%</li>
+<li>SSL 評級變成 A+</li>
+<li>DDoS 攻擊被自動阻擋</li>
+</ul>
+<h2 id="常見問題解答"><a href="#常見問題解答" class="headerlink" title="常見問題解答"></a>常見問題解答</h2><p><strong>Q：使用 Cloudflare 會影響 SEO 嗎？</strong><br>A：完全相反！更快的載入速度和 HTTPS 加密都會提升你的 SEO 排名。</p>
+<p><strong>Q：免費方案有流量限制嗎？</strong><br>A：沒有！不管你的網站有多少流量，免費方案都沒有限制。</p>
+<p><strong>Q：如果我不滿意，可以隨時停用嗎？</strong><br>A：當然可以！只要把 nameserver 改回原本的設定就行了。</p>
+<h2 id="總結：為什麼你現在就該開始用-Cloudflare"><a href="#總結：為什麼你現在就該開始用-Cloudflare" class="headerlink" title="總結：為什麼你現在就該開始用 Cloudflare"></a>總結：為什麼你現在就該開始用 Cloudflare</h2><p>在這個網路攻擊日益頻繁的時代，不使用 Cloudflare 就像是開車不繫安全帶一樣危險。而且它的免費方案已經涵蓋了大部分網站需要的功能，CP 值簡直破表。</p>
+<p>現在就動手設定吧！5 分鐘的時間投資，換來的是網站效能和安全性的大幅提升。你的使用者會感謝你，搜尋引擎也會給你更好的排名。</p>
+<p>別再猶豫了，讓 Cloudflare 成為你網站的最佳夥伴！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/DNS/" rel="tag"># DNS</a>
+              <a href="/tags/SSL/" rel="tag"># SSL</a>
+              <a href="/tags/Cloudflare/" rel="tag"># Cloudflare</a>
+              <a href="/tags/CDN/" rel="tag"># CDN</a>
+              <a href="/tags/DDoS%E9%98%B2%E8%AD%B7/" rel="tag"># DDoS防護</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/9ec606a6/" rel="prev" title="Context7mcp：為你的 AI 開發助手注入最新文件庫的即時知識">
+                  <i class="fa fa-angle-left"></i> Context7mcp：為你的 AI 開發助手注入最新文件庫的即時知識
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/25b31ce7/" rel="next" title="前端架構大亂鬥：讓 React 和 Vue 在同一個專案中和平共處的黑科技">
+                  前端架構大亂鬥：讓 React 和 Vue 在同一個專案中和平共處的黑科技 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

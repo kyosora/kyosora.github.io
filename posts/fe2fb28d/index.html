@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="前言：你是否也深陷「需求變更地獄」？ 身為工程師，你是否遇過這種狀況：PM 拍拍肩膀說「這功能很簡單，兩天就能做完吧？」結果兩週後你還在改 bug，因為需求根本沒講清楚？  或是專案開發到一半，突然有人問「這個功能為什麼要這樣設計？」然後你發現...根本沒有人記得當初的設計理念？  如果以上情境讓你會心一笑（或想哭），那麼 spec-workflow-mcp 這個工具絕對值得你關注。  什麼是 S">
+<meta property="og:type" content="article">
+<meta property="og:title" content="告別需求地獄：這個MCP工具讓你的開發流程終於有章法了">
+<meta property="og:url" content="https://kyosora.github.io/posts/fe2fb28d/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="前言：你是否也深陷「需求變更地獄」？ 身為工程師，你是否遇過這種狀況：PM 拍拍肩膀說「這功能很簡單，兩天就能做完吧？」結果兩週後你還在改 bug，因為需求根本沒講清楚？  或是專案開發到一半，突然有人問「這個功能為什麼要這樣設計？」然後你發現...根本沒有人記得當初的設計理念？  如果以上情境讓你會心一笑（或想哭），那麼 spec-workflow-mcp 這個工具絕對值得你關注。  什麼是 S">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2025-09-10T07:30:00.000Z">
+<meta property="article:modified_time" content="2025-09-10T10:21:08.758Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="專案管理">
+<meta property="article:tag" content="spec-workflow-mcp">
+<meta property="article:tag" content="開發流程">
+<meta property="article:tag" content="VSCode">
+<meta property="article:tag" content="AI輔助開發">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/fe2fb28d/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/fe2fb28d/","path":"posts/fe2fb28d/","title":"告別需求地獄：這個MCP工具讓你的開發流程終於有章法了"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>告別需求地獄：這個MCP工具讓你的開發流程終於有章法了 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80%EF%BC%9A%E4%BD%A0%E6%98%AF%E5%90%A6%E4%B9%9F%E6%B7%B1%E9%99%B7%E3%80%8C%E9%9C%80%E6%B1%82%E8%AE%8A%E6%9B%B4%E5%9C%B0%E7%8D%84%E3%80%8D%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">前言：你是否也深陷「需求變更地獄」？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AF-Spec-Workflow-MCP%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">什麼是 Spec Workflow MCP？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD%E4%B8%80%E8%A6%BD"><span class="nav-number">3.</span> <span class="nav-text">核心功能一覽</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%96%A5%EF%B8%8F-%E9%9B%99%E4%BB%8B%E9%9D%A2%E6%94%AF%E6%8F%B4%EF%BC%8C%E9%96%8B%E7%99%BC%E8%80%85%E5%8F%8B%E5%96%84"><span class="nav-number">3.1.</span> <span class="nav-text">🖥️ 雙介面支援，開發者友善</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%93%8B-%E7%B5%90%E6%A7%8B%E5%8C%96%E7%9A%84%E9%96%8B%E7%99%BC%E6%B5%81%E7%A8%8B"><span class="nav-number">3.2.</span> <span class="nav-text">📋 結構化的開發流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%8C%8D-%E5%A4%9A%E8%AA%9E%E8%A8%80%E6%94%AF%E6%8F%B4"><span class="nav-number">3.3.</span> <span class="nav-text">🌍 多語言支援</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E4%BD%A0%E9%9C%80%E8%A6%81%E9%80%99%E5%80%8B%E5%B7%A5%E5%85%B7%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">為什麼你需要這個工具？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E6%B1%BA%E7%9C%9F%E5%AF%A6%E5%AD%98%E5%9C%A8%E7%9A%84%E9%96%8B%E7%99%BC%E7%97%9B%E9%BB%9E"><span class="nav-number">4.1.</span> <span class="nav-text">解決真實存在的開發痛點</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%98%E9%9A%8A%E5%8D%94%E4%BD%9C%E6%9B%B4%E9%A0%86%E6%9A%A2"><span class="nav-number">4.2.</span> <span class="nav-text">團隊協作更順暢</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E9%9A%9B%E4%BD%BF%E7%94%A8%E5%A0%B4%E6%99%AF"><span class="nav-number">5.</span> <span class="nav-text">實際使用場景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%83%85%E5%A2%83%E4%B8%80%EF%BC%9A%E6%96%B0%E5%8A%9F%E8%83%BD%E9%96%8B%E7%99%BC"><span class="nav-number">5.1.</span> <span class="nav-text">情境一：新功能開發</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%83%85%E5%A2%83%E4%BA%8C%EF%BC%9A%E6%97%A2%E6%9C%89%E5%B0%88%E6%A1%88%E7%B6%AD%E8%AD%B7"><span class="nav-number">5.2.</span> <span class="nav-text">情境二：既有專案維護</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%9D%E8%88%87%E8%A8%AD%E5%AE%9A"><span class="nav-number">6.</span> <span class="nav-text">安裝與設定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%80%8B%E4%BA%BA%E4%BD%BF%E7%94%A8%E5%BF%83%E5%BE%97"><span class="nav-number">7.</span> <span class="nav-text">個人使用心得</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">8.</span> <span class="nav-text">結論</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/fe2fb28d/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="告別需求地獄：這個MCP工具讓你的開發流程終於有章法了 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          告別需求地獄：這個MCP工具讓你的開發流程終於有章法了
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2025-09-10 15:30:00 / 修改時間：18:21:08" itemprop="dateCreated datePublished" datetime="2025-09-10T15:30:00+08:00">2025-09-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E9%96%8B%E7%99%BC%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">開發工具</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E9%96%8B%E7%99%BC%E5%B7%A5%E5%85%B7/%E5%B0%88%E6%A1%88%E7%AE%A1%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">專案管理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1.7k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言：你是否也深陷「需求變更地獄」？"><a href="#前言：你是否也深陷「需求變更地獄」？" class="headerlink" title="前言：你是否也深陷「需求變更地獄」？"></a>前言：你是否也深陷「需求變更地獄」？</h2><p>身為工程師，你是否遇過這種狀況：PM 拍拍肩膀說「這功能很簡單，兩天就能做完吧？」結果兩週後你還在改 bug，因為需求根本沒講清楚？</p>
+<p>或是專案開發到一半，突然有人問「這個功能為什麼要這樣設計？」然後你發現...根本沒有人記得當初的設計理念？</p>
+<p>如果以上情境讓你會心一笑（或想哭），那麼 <code>spec-workflow-mcp</code> 這個工具絕對值得你關注。</p>
+<h2 id="什麼是-Spec-Workflow-MCP？"><a href="#什麼是-Spec-Workflow-MCP？" class="headerlink" title="什麼是 Spec Workflow MCP？"></a>什麼是 Spec Workflow MCP？</h2><p>Spec Workflow MCP 是一個專門為軟體開發設計的<strong>規格驅動工作流管理工具</strong>。簡單來說，它就是要解決一個核心問題：<strong>讓開發團隊在寫程式之前，先把要做什麼搞清楚</strong>。</p>
+<p>這個工具遵循一個很簡單但有效的三階段流程：</p>
+<ol>
+<li><strong>Requirements（需求）</strong> - 確定要做什麼</li>
+<li><strong>Design（設計）</strong> - 決定怎麼做  </li>
+<li><strong>Tasks（任務）</strong> - 拆解執行步驟</li>
+</ol>
+<p>聽起來很理所當然對吧？但現實是，大部分專案都是直接跳到第三步開始寫程式，然後在需求不明確的泥沼中掙扎。</p>
+<h2 id="核心功能一覽"><a href="#核心功能一覽" class="headerlink" title="核心功能一覽"></a>核心功能一覽</h2><h3 id="🖥️-雙介面支援，開發者友善"><a href="#🖥️-雙介面支援，開發者友善" class="headerlink" title="🖥️ 雙介面支援，開發者友善"></a>🖥️ 雙介面支援，開發者友善</h3><p><strong>Web Dashboard</strong></p>
+<ul>
+<li>即時專案總覽，一眼掌握進度</li>
+<li>文件檢視器，所有規格文件集中管理</li>
+<li>任務進度追蹤，不再漏掉任何細節</li>
+</ul>
+<p><strong>VSCode Extension</strong></p>
+<ul>
+<li>編輯器內整合，不用切換視窗</li>
+<li>原生對話框支援</li>
+<li>右鍵選單快速操作</li>
+<li>甚至還有聲音通知（適合重度 VSCode 用戶）</li>
+</ul>
+<h3 id="📋-結構化的開發流程"><a href="#📋-結構化的開發流程" class="headerlink" title="📋 結構化的開發流程"></a>📋 結構化的開發流程</h3><p>這個工具最棒的地方，就是強制你按照邏輯順序進行開發：</p>
+<ol>
+<li><strong>先寫需求文件</strong> - 這個功能要解決什麼問題？使用者會如何使用？</li>
+<li><strong>再寫設計文件</strong> - 技術架構怎麼規劃？資料庫怎麼設計？API 怎麼定義？</li>
+<li><strong>最後拆分任務</strong> - 具體要寫哪些程式？測試案例有哪些？</li>
+</ol>
+<p>每個階段都可以經過審核確認，避免後續大改的悲劇。</p>
+<h3 id="🌍-多語言支援"><a href="#🌍-多語言支援" class="headerlink" title="🌍 多語言支援"></a>🌍 多語言支援</h3><p>支援包括中文在內的 11 種語言，真正的國際化工具。</p>
+<h2 id="為什麼你需要這個工具？"><a href="#為什麼你需要這個工具？" class="headerlink" title="為什麼你需要這個工具？"></a>為什麼你需要這個工具？</h2><h3 id="解決真實存在的開發痛點"><a href="#解決真實存在的開發痛點" class="headerlink" title="解決真實存在的開發痛點"></a>解決真實存在的開發痛點</h3><p><strong>痛點 1：需求不明確</strong></p>
+<ul>
+<li>以前：「這功能怎麼做？」「我也不知道，先寫看看吧」</li>
+<li>現在：強制要求先寫需求文件，釐清所有細節</li>
+</ul>
+<p><strong>痛點 2：設計缺失</strong></p>
+<ul>
+<li>以前：寫到一半發現架構有問題，只能重新來</li>
+<li>現在：設計階段就把技術細節想清楚</li>
+</ul>
+<p><strong>痛點 3：任務優先級混亂</strong></p>
+<ul>
+<li>以前：不知道先做哪個功能，東改西改沒效率</li>
+<li>現在：任務清單一目瞭然，按重要性排序</li>
+</ul>
+<h3 id="團隊協作更順暢"><a href="#團隊協作更順暢" class="headerlink" title="團隊協作更順暢"></a>團隊協作更順暢</h3><p>當所有人都看著同一份規格文件工作時，溝通成本大幅降低。不會再有「我以為你知道我知道」的尷尬情況。</p>
+<h2 id="實際使用場景"><a href="#實際使用場景" class="headerlink" title="實際使用場景"></a>實際使用場景</h2><h3 id="情境一：新功能開發"><a href="#情境一：新功能開發" class="headerlink" title="情境一：新功能開發"></a>情境一：新功能開發</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. PM 提出需求 → 寫需求文件</span><br><span class="line">2. Tech Lead 評估 → 寫設計文件</span><br><span class="line">3. 開發團隊 → 拆分具體任務</span><br><span class="line">4. 逐步實作 → 追蹤進度</span><br></pre></td></tr></table></figure>
+
+<h3 id="情境二：既有專案維護"><a href="#情境二：既有專案維護" class="headerlink" title="情境二：既有專案維護"></a>情境二：既有專案維護</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. 發現 Bug → 分析根本原因（需求？設計？實作？）</span><br><span class="line">2. 更新對應文件</span><br><span class="line">3. 修正程式碼</span><br><span class="line">4. 確保文件與程式碼同步</span><br></pre></td></tr></table></figure>
+
+<h2 id="安裝與設定"><a href="#安裝與設定" class="headerlink" title="安裝與設定"></a>安裝與設定</h2><p>如果你使用 Claude Code，安裝超簡單：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">claude mcp add spec-workflow-mcp -s user -- npx -y spec-workflow-mcp@latest</span><br></pre></td></tr></table></figure>
+
+<p>安裝完成後，你就可以在 Claude Code 中直接使用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 初始化新專案</span></span><br><span class="line">mcp specs-workflow init <span class="string">&quot;My New Feature&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看專案狀態</span></span><br><span class="line">mcp specs-workflow check</span><br><span class="line"></span><br><span class="line"><span class="comment"># 標記任務完成</span></span><br><span class="line">mcp specs-workflow complete_task <span class="string">&quot;implement-user-auth&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="個人使用心得"><a href="#個人使用心得" class="headerlink" title="個人使用心得"></a>個人使用心得</h2><p>我使用這個工具幾週下來，最大的感受是：<strong>開發變得有節奏了</strong>。</p>
+<p>以前寫程式常常有種「不知道自己在幹嘛」的焦慮感，現在每個階段都有明確的目標和檢查點，心理壓力小很多。</p>
+<p>而且當有人問「這個功能為什麼要這樣設計？」時，不用再憑記憶回答，直接翻文件就好。這種感覺真的很爽。</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>Spec Workflow MCP 不是又一個複雜的專案管理工具，它專注做好一件事：<strong>讓開發團隊有系統地思考和記錄</strong>。</p>
+<p>如果你正在為混亂的開發流程所苦，或是想讓團隊協作更有效率，真的建議試試看這個工具。</p>
+<p>畢竟，與其在寫完程式後才發現需求理解錯誤，不如一開始就把事情想清楚。你說對吧？</p>
+<hr>
+<p><em>工具連結：<a target="_blank" rel="noopener" href="https://github.com/Pimzino/spec-workflow-mcp">spec-workflow-mcp GitHub</a></em></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%B0%88%E6%A1%88%E7%AE%A1%E7%90%86/" rel="tag"># 專案管理</a>
+              <a href="/tags/spec-workflow-mcp/" rel="tag"># spec-workflow-mcp</a>
+              <a href="/tags/%E9%96%8B%E7%99%BC%E6%B5%81%E7%A8%8B/" rel="tag"># 開發流程</a>
+              <a href="/tags/VSCode/" rel="tag"># VSCode</a>
+              <a href="/tags/AI%E8%BC%94%E5%8A%A9%E9%96%8B%E7%99%BC/" rel="tag"># AI輔助開發</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/9b217823/" rel="prev" title="當 IIS 遇到代理伺服器：如何在複雜網路環境下實現真實 IP 白名單控制">
+                  <i class="fa fa-angle-left"></i> 當 IIS 遇到代理伺服器：如何在複雜網路環境下實現真實 IP 白名單控制
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

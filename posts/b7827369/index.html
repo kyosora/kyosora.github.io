@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="如何快速查詢資料庫檢視表(View)的欄位資訊 今天遇到長官要求提供所需的資料訊息，因為要求的資料欄位是由多個資料表組合而成時，要一個一個去查看原始資料表相當費時。本文將介紹如何使用 SQL 指令快速查詢檢視表的欄位資訊。  為什麼需要這個查詢？  * 快速了解檢視表的結構  * 檢查欄位的資料類型和限制  * 節省查看原始資料表的時間  * 方便進行資料庫文件製作  各資料庫系統的查詢方式 Mi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何快速查詢資料庫檢視表(View)的欄位資訊">
+<meta property="og:url" content="https://kyosora.github.io/posts/b7827369/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="如何快速查詢資料庫檢視表(View)的欄位資訊 今天遇到長官要求提供所需的資料訊息，因為要求的資料欄位是由多個資料表組合而成時，要一個一個去查看原始資料表相當費時。本文將介紹如何使用 SQL 指令快速查詢檢視表的欄位資訊。  為什麼需要這個查詢？  * 快速了解檢視表的結構  * 檢查欄位的資料類型和限制  * 節省查看原始資料表的時間  * 方便進行資料庫文件製作  各資料庫系統的查詢方式 Mi">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-10-23T03:19:17.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:42:14.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="SQL">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/b7827369/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/b7827369/","path":"posts/b7827369/","title":"如何快速查詢資料庫檢視表(View)的欄位資訊"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>如何快速查詢資料庫檢視表(View)的欄位資訊 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E6%9F%A5%E8%A9%A2%E8%B3%87%E6%96%99%E5%BA%AB%E6%AA%A2%E8%A6%96%E8%A1%A8-View-%E7%9A%84%E6%AC%84%E4%BD%8D%E8%B3%87%E8%A8%8A"><span class="nav-number">1.</span> <span class="nav-text">如何快速查詢資料庫檢視表(View)的欄位資訊</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E9%9C%80%E8%A6%81%E9%80%99%E5%80%8B%E6%9F%A5%E8%A9%A2%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">為什麼需要這個查詢？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%84%E8%B3%87%E6%96%99%E5%BA%AB%E7%B3%BB%E7%B5%B1%E7%9A%84%E6%9F%A5%E8%A9%A2%E6%96%B9%E5%BC%8F"><span class="nav-number">1.2.</span> <span class="nav-text">各資料庫系統的查詢方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Microsoft-SQL-Server"><span class="nav-number">1.2.1.</span> <span class="nav-text">Microsoft SQL Server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL-MariaDB"><span class="nav-number">1.2.2.</span> <span class="nav-text">MySQL&#x2F;MariaDB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Oracle"><span class="nav-number">1.2.3.</span> <span class="nav-text">Oracle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PostgreSQL"><span class="nav-number">1.2.4.</span> <span class="nav-text">PostgreSQL</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%A9%A2%E7%B5%90%E6%9E%9C%E8%AA%AA%E6%98%8E"><span class="nav-number">1.3.</span> <span class="nav-text">查詢結果說明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7"><span class="nav-number">1.4.</span> <span class="nav-text">使用技巧</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AA%9E"><span class="nav-number">1.5.</span> <span class="nav-text">結語</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/b7827369/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="如何快速查詢資料庫檢視表(View)的欄位資訊 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          如何快速查詢資料庫檢視表(View)的欄位資訊
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-10-23 11:19:17" itemprop="dateCreated datePublished" datetime="2024-10-23T11:19:17+08:00">2024-10-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-11-27 14:42:14" itemprop="dateModified" datetime="2024-11-27T14:42:14+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1.8k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="如何快速查詢資料庫檢視表-View-的欄位資訊"><a href="#如何快速查詢資料庫檢視表-View-的欄位資訊" class="headerlink" title="如何快速查詢資料庫檢視表(View)的欄位資訊"></a>如何快速查詢資料庫檢視表(View)的欄位資訊</h1><p>今天遇到長官要求提供所需的資料訊息，因為要求的資料欄位是由多個資料表組合而成時，要一個一個去查看原始資料表相當費時。本文將介紹如何使用 SQL 指令快速查詢檢視表的欄位資訊。</p>
+<h2 id="為什麼需要這個查詢？"><a href="#為什麼需要這個查詢？" class="headerlink" title="為什麼需要這個查詢？"></a>為什麼需要這個查詢？</h2><ul>
+<li>快速了解檢視表的結構</li>
+<li>檢查欄位的資料類型和限制</li>
+<li>節省查看原始資料表的時間</li>
+<li>方便進行資料庫文件製作</li>
+</ul>
+<h2 id="各資料庫系統的查詢方式"><a href="#各資料庫系統的查詢方式" class="headerlink" title="各資料庫系統的查詢方式"></a>各資料庫系統的查詢方式</h2><h3 id="Microsoft-SQL-Server"><a href="#Microsoft-SQL-Server" class="headerlink" title="Microsoft SQL Server"></a>Microsoft SQL Server</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    c.name <span class="keyword">AS</span> ColumnName,</span><br><span class="line">    t.name <span class="keyword">AS</span> DataType,</span><br><span class="line">    c.max_length <span class="keyword">AS</span> MaxLength,</span><br><span class="line">    c.precision <span class="keyword">AS</span> NumericPrecision,</span><br><span class="line">    c.scale <span class="keyword">AS</span> NumericScale,</span><br><span class="line">    c.is_nullable <span class="keyword">AS</span> IsNullable,</span><br><span class="line">    ISNULL(dc.definition, <span class="string">&#x27;&#x27;</span>) <span class="keyword">AS</span> DefaultValue</span><br><span class="line"><span class="keyword">FROM</span> sys.views v</span><br><span class="line"><span class="keyword">INNER</span> <span class="keyword">JOIN</span> sys.columns c <span class="keyword">ON</span> v.object_id <span class="operator">=</span> c.object_id</span><br><span class="line"><span class="keyword">INNER</span> <span class="keyword">JOIN</span> sys.types t <span class="keyword">ON</span> c.user_type_id <span class="operator">=</span> t.user_type_id</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> sys.default_constraints dc <span class="keyword">ON</span> c.default_object_id <span class="operator">=</span> dc.object_id</span><br><span class="line"><span class="keyword">WHERE</span> v.name <span class="operator">=</span> <span class="string">&#x27;檢視表名稱&#x27;</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> c.column_id;</span><br></pre></td></tr></table></figure>
+
+<h3 id="MySQL-MariaDB"><a href="#MySQL-MariaDB" class="headerlink" title="MySQL/MariaDB"></a>MySQL/MariaDB</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    COLUMN_NAME,</span><br><span class="line">    DATA_TYPE,</span><br><span class="line">    CHARACTER_MAXIMUM_LENGTH,</span><br><span class="line">    NUMERIC_PRECISION,</span><br><span class="line">    NUMERIC_SCALE,</span><br><span class="line">    IS_NULLABLE,</span><br><span class="line">    COLUMN_DEFAULT</span><br><span class="line"><span class="keyword">FROM</span> INFORMATION_SCHEMA.COLUMNS</span><br><span class="line"><span class="keyword">WHERE</span> TABLE_SCHEMA <span class="operator">=</span> <span class="string">&#x27;資料庫名稱&#x27;</span></span><br><span class="line"><span class="keyword">AND</span> TABLE_NAME <span class="operator">=</span> <span class="string">&#x27;檢視表名稱&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Oracle"><a href="#Oracle" class="headerlink" title="Oracle"></a>Oracle</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    COLUMN_NAME,</span><br><span class="line">    DATA_TYPE,</span><br><span class="line">    DATA_LENGTH,</span><br><span class="line">    DATA_PRECISION,</span><br><span class="line">    DATA_SCALE,</span><br><span class="line">    NULLABLE,</span><br><span class="line">    DATA_DEFAULT</span><br><span class="line"><span class="keyword">FROM</span> ALL_TAB_COLUMNS</span><br><span class="line"><span class="keyword">WHERE</span> TABLE_NAME <span class="operator">=</span> <span class="string">&#x27;檢視表名稱&#x27;</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> COLUMN_ID;</span><br></pre></td></tr></table></figure>
+
+<h3 id="PostgreSQL"><a href="#PostgreSQL" class="headerlink" title="PostgreSQL"></a>PostgreSQL</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    a.attname <span class="keyword">AS</span> column_name,</span><br><span class="line">    pg_catalog.format_type(a.atttypid, a.atttypmod) <span class="keyword">AS</span> data_type,</span><br><span class="line">    a.attnotnull <span class="keyword">AS</span> is_not_null,</span><br><span class="line">    pg_catalog.pg_get_expr(d.adbin, d.adrelid) <span class="keyword">AS</span> default_value</span><br><span class="line"><span class="keyword">FROM</span> pg_catalog.pg_attribute a</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> pg_catalog.pg_attrdef d <span class="keyword">ON</span> (a.attrelid, a.attnum) <span class="operator">=</span> (d.adrelid, d.adnum)</span><br><span class="line"><span class="keyword">WHERE</span> a.attrelid <span class="operator">=</span> <span class="string">&#x27;檢視表名稱&#x27;</span>::regclass</span><br><span class="line"><span class="keyword">AND</span> a.attnum <span class="operator">&gt;</span> <span class="number">0</span> </span><br><span class="line"><span class="keyword">AND</span> <span class="keyword">NOT</span> a.attisdropped</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> a.attnum;</span><br></pre></td></tr></table></figure>
+
+<h2 id="查詢結果說明"><a href="#查詢結果說明" class="headerlink" title="查詢結果說明"></a>查詢結果說明</h2><p>執行上述查詢後，你會得到以下資訊：</p>
+<ol>
+<li><strong>欄位名稱</strong>（Column Name）：該欄位的名稱</li>
+<li><strong>資料型態</strong>（Data Type）：如 varchar、int、decimal 等</li>
+<li><strong>最大長度</strong>（Max Length）：文字類型的最大長度</li>
+<li><strong>數值精確度</strong>（Numeric Precision）：數值類型的精確度</li>
+<li><strong>小數位數</strong>（Numeric Scale）：數值類型的小數位數</li>
+<li><strong>是否可為空值</strong>（Is Nullable）：該欄位是否允許 NULL</li>
+<li><strong>預設值</strong>（Default Value）：欄位的預設值</li>
+</ol>
+<h2 id="使用技巧"><a href="#使用技巧" class="headerlink" title="使用技巧"></a>使用技巧</h2><ol>
+<li>請根據你使用的資料庫系統選擇對應的查詢語法</li>
+<li>將查詢中的「檢視表名稱」替換為你要查詢的檢視表名稱</li>
+<li>若使用 MySQL/MariaDB，記得也要替換「資料庫名稱」</li>
+<li>查詢結果可以匯出成 Excel 方便記錄</li>
+</ol>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>這個查詢方式可以讓我們快速了解檢視表的結構，特別適合處理複雜的檢視表或需要製作資料庫文件時使用。善用這些系統表格查詢，可以大幅提升資料庫管理的效率。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SQL/" rel="tag"># SQL</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/726c8317/" rel="prev" title="SQL Server 備份檔案異常增長的排查指南">
+                  <i class="fa fa-angle-left"></i> SQL Server 備份檔案異常增長的排查指南
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/8688d8e/" rel="next" title="資料庫連線池爆掉救火秘笈！如何優雅地處理 SQL Server 連線危機">
+                  資料庫連線池爆掉救火秘笈！如何優雅地處理 SQL Server 連線危機 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

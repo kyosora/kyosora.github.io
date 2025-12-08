@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="前言 在管理大型SQL Server資料庫時,SQLCMD是一個不可或缺的命令列工具。無論是執行日常維護工作、資料匯入匯出,還是建立自動化作業,SQLCMD都能幫助我們更有效率地完成這些任務。本文將詳細介紹SQLCMD的各種應用方式,幫助你掌握這個強大的工具。  SQLCMD 功能概觀 SQLCMD 資料匯入匯出 執行SQL指令 資料庫備份 自動化排程 SQLCMD基本語法 SQLCMD的基本語法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL Server管理員必學：SQLCMD完整應用指南">
+<meta property="og:url" content="https://kyosora.github.io/posts/690f008/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="前言 在管理大型SQL Server資料庫時,SQLCMD是一個不可或缺的命令列工具。無論是執行日常維護工作、資料匯入匯出,還是建立自動化作業,SQLCMD都能幫助我們更有效率地完成這些任務。本文將詳細介紹SQLCMD的各種應用方式,幫助你掌握這個強大的工具。  SQLCMD 功能概觀 SQLCMD 資料匯入匯出 執行SQL指令 資料庫備份 自動化排程 SQLCMD基本語法 SQLCMD的基本語法">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-12-14T10:28:35.000Z">
+<meta property="article:modified_time" content="2024-12-19T03:44:38.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="SQL Server">
+<meta property="article:tag" content="SQLCMD">
+<meta property="article:tag" content="資料庫維護">
+<meta property="article:tag" content="自動化工具">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/690f008/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/690f008/","path":"posts/690f008/","title":"SQL Server管理員必學：SQLCMD完整應用指南"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SQL Server管理員必學：SQLCMD完整應用指南 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQLCMD%E5%9F%BA%E6%9C%AC%E8%AA%9E%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">SQLCMD基本語法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E6%87%89%E7%94%A8%E5%A0%B4%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">主要應用場景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E8%B3%87%E6%96%99%E5%8C%AF%E5%85%A5%E5%8C%AF%E5%87%BA"><span class="nav-number">3.1.</span> <span class="nav-text">1. 資料匯入匯出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%9F%B7%E8%A1%8CSQL%E6%8C%87%E4%BB%A4%E6%AA%94"><span class="nav-number">3.2.</span> <span class="nav-text">2. 執行SQL指令檔</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%B3%87%E6%96%99%E5%BA%AB%E5%82%99%E4%BB%BD"><span class="nav-number">3.3.</span> <span class="nav-text">3. 資料庫備份</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E8%87%AA%E5%8B%95%E5%8C%96%E4%BD%9C%E6%A5%AD%E6%8E%92%E7%A8%8B"><span class="nav-number">3.4.</span> <span class="nav-text">4. 自動化作業排程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%B2%E9%9A%8E%E6%8A%80%E5%B7%A7"><span class="nav-number">4.</span> <span class="nav-text">進階技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%8A%E6%95%B8%E4%BD%BF%E7%94%A8"><span class="nav-number">4.1.</span> <span class="nav-text">變數使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%8C%AF%E8%AA%A4%E8%99%95%E7%90%86"><span class="nav-number">4.2.</span> <span class="nav-text">錯誤處理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85"><span class="nav-number">5.</span> <span class="nav-text">注意事項</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">6.</span> <span class="nav-text">結論</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/690f008/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SQL Server管理員必學：SQLCMD完整應用指南 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SQL Server管理員必學：SQLCMD完整應用指南
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-12-14 18:28:35" itemprop="dateCreated datePublished" datetime="2024-12-14T18:28:35+08:00">2024-12-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-12-19 11:44:38" itemprop="dateModified" datetime="2024-12-19T11:44:38+08:00">2024-12-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB%E7%AE%A1%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">資料庫管理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1.8k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在管理大型SQL Server資料庫時,SQLCMD是一個不可或缺的命令列工具。無論是執行日常維護工作、資料匯入匯出,還是建立自動化作業,SQLCMD都能幫助我們更有效率地完成這些任務。本文將詳細介紹SQLCMD的各種應用方式,幫助你掌握這個強大的工具。</p>
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <text x="400" y="40" text-anchor="middle" font-size="24" fill="#333">SQLCMD 功能概觀</text>
+  <circle cx="400" cy="200" r="60" fill="#4A90E2"/>
+  <text x="400" y="205" text-anchor="middle" font-size="16" fill="white">SQLCMD</text>
+  <g>
+    <circle cx="200" cy="100" r="50" fill="#81C784"/>
+    <text x="200" y="105" text-anchor="middle" font-size="14" fill="white">資料匯入匯出</text>
+    <line x1="340" y1="170" x2="240" y2="120" stroke="#666" stroke-width="2"/>
+    <circle cx="600" cy="100" r="50" fill="#81C784"/>
+    <text x="600" y="105" text-anchor="middle" font-size="14" fill="white">執行SQL指令</text>
+    <line x1="460" y1="170" x2="560" y2="120" stroke="#666" stroke-width="2"/>
+    <circle cx="200" cy="300" r="50" fill="#81C784"/>
+    <text x="200" y="305" text-anchor="middle" font-size="14" fill="white">資料庫備份</text>
+    <line x1="340" y1="230" x2="240" y2="280" stroke="#666" stroke-width="2"/>
+    <circle cx="600" cy="300" r="50" fill="#81C784"/>
+    <text x="600" y="305" text-anchor="middle" font-size="14" fill="white">自動化排程</text>
+    <line x1="460" y1="230" x2="560" y2="280" stroke="#666" stroke-width="2"/>
+  </g>
+</svg>
+
+<h2 id="SQLCMD基本語法"><a href="#SQLCMD基本語法" class="headerlink" title="SQLCMD基本語法"></a>SQLCMD基本語法</h2><p>SQLCMD的基本語法結構如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sqlcmd </span><br><span class="line"><span class="operator">-</span>S <span class="operator">&lt;</span>伺服器名稱<span class="operator">&gt;</span>          <span class="comment">-- 指定SQL Server執行個體</span></span><br><span class="line"><span class="operator">-</span>U <span class="operator">&lt;</span>使用者名稱<span class="operator">&gt;</span>          <span class="comment">-- 指定登入帳號</span></span><br><span class="line"><span class="operator">-</span>P <span class="operator">&lt;</span>密碼<span class="operator">&gt;</span>                <span class="comment">-- 指定密碼</span></span><br><span class="line"><span class="operator">-</span>d <span class="operator">&lt;</span>資料庫名稱<span class="operator">&gt;</span>          <span class="comment">-- 指定要使用的資料庫</span></span><br><span class="line"><span class="operator">-</span>i <span class="operator">&lt;</span>輸入檔案<span class="operator">&gt;</span>            <span class="comment">-- 指定要執行的SQL指令檔</span></span><br><span class="line"><span class="operator">-</span>o <span class="operator">&lt;</span>輸出檔案<span class="operator">&gt;</span>            <span class="comment">-- 指定輸出結果的檔案</span></span><br><span class="line"><span class="operator">-</span>r                       <span class="comment">-- 將錯誤訊息輸出到stderr</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="主要應用場景"><a href="#主要應用場景" class="headerlink" title="主要應用場景"></a>主要應用場景</h2><h3 id="1-資料匯入匯出"><a href="#1-資料匯入匯出" class="headerlink" title="1. 資料匯入匯出"></a>1. 資料匯入匯出</h3><p>大型資料庫的匯入是SQLCMD最常見的應用之一。以下是一個完整的匯入範例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 匯入資料庫備份</span></span><br><span class="line">sqlcmd <span class="operator">-</span>S <span class="number">192.168</span><span class="number">.0</span><span class="number">.3</span> <span class="operator">-</span>U DBAdmin <span class="operator">-</span>P MyPassword <span class="operator">-</span>d TargetDB <span class="operator">-</span>r <span class="operator">-</span>i D:\backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 匯出查詢結果</span></span><br><span class="line">sqlcmd <span class="operator">-</span>S ServerName <span class="operator">-</span>U DBAdmin <span class="operator">-</span>P MyPassword <span class="operator">-</span>d SourceDB <span class="operator">-</span>Q &quot;SELECT * FROM Users&quot; <span class="operator">-</span>o &quot;D:\export.txt&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-執行SQL指令檔"><a href="#2-執行SQL指令檔" class="headerlink" title="2. 執行SQL指令檔"></a>2. 執行SQL指令檔</h3><p>SQLCMD可以執行預先準備好的SQL指令檔：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 執行單一SQL檔案</span></span><br><span class="line">sqlcmd <span class="operator">-</span>S ServerName <span class="operator">-</span>U DBAdmin <span class="operator">-</span>P MyPassword <span class="operator">-</span>i &quot;D:\scripts\maintenance.sql&quot;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 執行多個SQL檔案並記錄結果</span></span><br><span class="line">sqlcmd <span class="operator">-</span>S ServerName <span class="operator">-</span>U DBAdmin <span class="operator">-</span>P MyPassword <span class="operator">-</span>i &quot;D:\script1.sql&quot; <span class="operator">-</span>i &quot;D:\script2.sql&quot; <span class="operator">-</span>o &quot;D:\log.txt&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-資料庫備份"><a href="#3-資料庫備份" class="headerlink" title="3. 資料庫備份"></a>3. 資料庫備份</h3><p>透過SQLCMD進行資料庫備份：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 完整備份</span></span><br><span class="line">sqlcmd <span class="operator">-</span>S ServerName <span class="operator">-</span>U DBAdmin <span class="operator">-</span>P MyPassword <span class="operator">-</span>Q &quot;BACKUP DATABASE MyDB TO DISK=&#x27;D:\Backups\MyDB.bak&#x27;&quot;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 差異備份</span></span><br><span class="line">sqlcmd <span class="operator">-</span>S ServerName <span class="operator">-</span>U DBAdmin <span class="operator">-</span>P MyPassword <span class="operator">-</span>Q &quot;BACKUP DATABASE MyDB TO DISK=&#x27;D:\Backups\MyDB_Diff.bak&#x27; WITH DIFFERENTIAL&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-自動化作業排程"><a href="#4-自動化作業排程" class="headerlink" title="4. 自動化作業排程"></a>4. 自動化作業排程</h3><p>結合Windows排程器使用SQLCMD：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 建立批次檔案(.bat)</span></span><br><span class="line"><span class="variable">@echo</span> off</span><br><span class="line">sqlcmd <span class="operator">-</span>S ServerName <span class="operator">-</span>U DBAdmin <span class="operator">-</span>P MyPassword <span class="operator">-</span>d MyDB <span class="operator">-</span>i &quot;D:\DailyMaintenance.sql&quot;</span><br></pre></td></tr></table></figure>
+
+<h2 id="進階技巧"><a href="#進階技巧" class="headerlink" title="進階技巧"></a>進階技巧</h2><h3 id="變數使用"><a href="#變數使用" class="headerlink" title="變數使用"></a>變數使用</h3><p>SQLCMD支援使用變數,讓指令更具彈性：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 使用變數</span></span><br><span class="line">sqlcmd <span class="operator">-</span>S $(Server) <span class="operator">-</span>U $(<span class="keyword">User</span>) <span class="operator">-</span>P $(Password) <span class="operator">-</span>v DB<span class="operator">=</span>&quot;MyDatabase&quot; <span class="operator">-</span>Q &quot;SELECT * FROM $(DB).dbo.Users&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="錯誤處理"><a href="#錯誤處理" class="headerlink" title="錯誤處理"></a>錯誤處理</h3><p>加入錯誤處理機制：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 設定錯誤處理</span></span><br><span class="line">:<span class="keyword">on</span> error exit</span><br><span class="line">:setvar ErrorLevel <span class="number">0</span></span><br><span class="line"><span class="keyword">BEGIN</span> TRY</span><br><span class="line">    <span class="comment">-- 你的SQL指令</span></span><br><span class="line"><span class="keyword">END</span> TRY</span><br><span class="line"><span class="keyword">BEGIN</span> CATCH</span><br><span class="line">    <span class="keyword">SELECT</span> ERROR_MESSAGE() <span class="keyword">AS</span> ErrorMessage</span><br><span class="line">    :setvar ErrorLevel <span class="number">1</span></span><br><span class="line"><span class="keyword">END</span> CATCH</span><br><span class="line">GO</span><br></pre></td></tr></table></figure>
+
+<h2 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h2><ol>
+<li>密碼安全性：避免在指令中直接寫入密碼,建議使用環境變數或設定檔</li>
+<li>效能考量：大型檔案匯入時,建議使用批次處理</li>
+<li>錯誤記錄：務必加入適當的錯誤處理與記錄機制</li>
+<li>權限控制：確保SQLCMD執行帳號擁有適當的權限</li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>SQLCMD是一個功能強大的命令列工具,透過本文的介紹,相信你已經對它的各種應用有了深入的了解。善用SQLCMD不只能提升工作效率,更能建立更穩定的資料庫維護機制。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SQL-Server/" rel="tag"># SQL Server</a>
+              <a href="/tags/SQLCMD/" rel="tag"># SQLCMD</a>
+              <a href="/tags/%E8%B3%87%E6%96%99%E5%BA%AB%E7%B6%AD%E8%AD%B7/" rel="tag"># 資料庫維護</a>
+              <a href="/tags/%E8%87%AA%E5%8B%95%E5%8C%96%E5%B7%A5%E5%85%B7/" rel="tag"># 自動化工具</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/25bb4d85/" rel="prev" title="SQL Server管理技巧：批量更新資料的神奇小法術">
+                  <i class="fa fa-angle-left"></i> SQL Server管理技巧：批量更新資料的神奇小法術
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/6e1c490b/" rel="next" title="SQL Server管理員必學：SQLCMD實戰指南">
+                  SQL Server管理員必學：SQLCMD實戰指南 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

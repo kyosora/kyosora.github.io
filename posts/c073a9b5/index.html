@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="C# 常用命名空間參考指南 筆記一些常用到的命名空間  1. 基礎核心命名空間 1 2 3 4 5 6 7 8 9 10   using System;                     &#x2F;&#x2F; 基礎類型、例外處理 using System.Collections;         &#x2F;&#x2F; 非泛型集合 using System.Collections.Generic; &#x2F;&#x2F; 泛型集合 using">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C# 常用命名空間參考指南">
+<meta property="og:url" content="https://kyosora.github.io/posts/c073a9b5/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="C# 常用命名空間參考指南 筆記一些常用到的命名空間  1. 基礎核心命名空間 1 2 3 4 5 6 7 8 9 10   using System;                     &#x2F;&#x2F; 基礎類型、例外處理 using System.Collections;         &#x2F;&#x2F; 非泛型集合 using System.Collections.Generic; &#x2F;&#x2F; 泛型集合 using">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-09-05T10:36:45.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:39:50.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="C#">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/c073a9b5/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/c073a9b5/","path":"posts/c073a9b5/","title":"C# 常用命名空間參考指南"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>C# 常用命名空間參考指南 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#C-%E5%B8%B8%E7%94%A8%E5%91%BD%E5%90%8D%E7%A9%BA%E9%96%93%E5%8F%83%E8%80%83%E6%8C%87%E5%8D%97"><span class="nav-number">1.</span> <span class="nav-text">C# 常用命名空間參考指南</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%9F%BA%E7%A4%8E%E6%A0%B8%E5%BF%83%E5%91%BD%E5%90%8D%E7%A9%BA%E9%96%93"><span class="nav-number">1.1.</span> <span class="nav-text">1. 基礎核心命名空間</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%AA%94%E6%A1%88%E8%88%87-I-O-%E8%99%95%E7%90%86"><span class="nav-number">1.2.</span> <span class="nav-text">2. 檔案與 I&#x2F;O 處理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%B6%B2%E8%B7%AF%E8%88%87-Web-%E9%96%8B%E7%99%BC"><span class="nav-number">1.3.</span> <span class="nav-text">3. 網路與 Web 開發</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E8%B3%87%E6%96%99%E5%BA%AB%E5%AD%98%E5%8F%96"><span class="nav-number">1.4.</span> <span class="nav-text">4. 資料庫存取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E8%A8%8A%E6%81%AF%E4%BD%87%E5%88%97%E8%88%87%E4%BA%8B%E4%BB%B6%E5%8C%AF%E6%B5%81%E6%8E%92"><span class="nav-number">1.5.</span> <span class="nav-text">5. 訊息佇列與事件匯流排</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E9%9B%B2%E7%AB%AF%E6%9C%8D%E5%8B%99%E6%95%B4%E5%90%88"><span class="nav-number">1.6.</span> <span class="nav-text">6. 雲端服務整合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E6%95%88%E8%83%BD%E8%88%87%E7%9B%A3%E6%8E%A7"><span class="nav-number">1.7.</span> <span class="nav-text">7. 效能與監控</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-%E5%BF%AB%E5%8F%96"><span class="nav-number">1.8.</span> <span class="nav-text">8. 快取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-%E8%83%8C%E6%99%AF%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.9.</span> <span class="nav-text">9. 背景工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-%E6%B8%AC%E8%A9%A6%E7%9B%B8%E9%97%9C"><span class="nav-number">1.10.</span> <span class="nav-text">10. 測試相關</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%83%85%E5%A2%83%E7%AF%84%E4%BE%8B"><span class="nav-number">1.11.</span> <span class="nav-text">使用情境範例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%AA%94%E6%A1%88%E6%93%8D%E4%BD%9C"><span class="nav-number">1.11.1.</span> <span class="nav-text">1. 檔案操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%B3%87%E6%96%99%E5%BA%AB%E6%93%8D%E4%BD%9C"><span class="nav-number">1.11.2.</span> <span class="nav-text">2. 資料庫操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-HTTP-%E8%AB%8B%E6%B1%82"><span class="nav-number">1.11.3.</span> <span class="nav-text">3. HTTP 請求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-JSON-%E8%99%95%E7%90%86"><span class="nav-number">1.11.4.</span> <span class="nav-text">4. JSON 處理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BE%9D%E8%B3%B4%E6%B3%A8%E5%85%A5%E8%A8%AD%E5%AE%9A"><span class="nav-number">1.11.5.</span> <span class="nav-text">4. 依賴注入設定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E9%9D%9E%E5%90%8C%E6%AD%A5%E6%93%8D%E4%BD%9C%E8%88%87%E5%8F%96%E6%B6%88"><span class="nav-number">1.11.6.</span> <span class="nav-text">5. 非同步操作與取消</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E5%88%86%E6%95%A3%E5%BC%8F%E5%BF%AB%E5%8F%96"><span class="nav-number">1.11.7.</span> <span class="nav-text">6. 分散式快取</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E4%BD%B3%E5%AF%A6%E8%B8%90%E5%BB%BA%E8%AD%B0"><span class="nav-number">1.12.</span> <span class="nav-text">最佳實踐建議</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/c073a9b5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="C# 常用命名空間參考指南 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C# 常用命名空間參考指南
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-09-05 18:36:45" itemprop="dateCreated datePublished" datetime="2024-09-05T18:36:45+08:00">2024-09-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-11-27 14:39:50" itemprop="dateModified" datetime="2024-11-27T14:39:50+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>4.1k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>4 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="C-常用命名空間參考指南"><a href="#C-常用命名空間參考指南" class="headerlink" title="C# 常用命名空間參考指南"></a>C# 常用命名空間參考指南</h1><p>筆記一些常用到的命名空間</p>
+<h2 id="1-基礎核心命名空間"><a href="#1-基礎核心命名空間" class="headerlink" title="1. 基礎核心命名空間"></a>1. 基礎核心命名空間</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;                     <span class="comment">// 基礎類型、例外處理</span></span><br><span class="line"><span class="keyword">using</span> System.Collections;         <span class="comment">// 非泛型集合</span></span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic; <span class="comment">// 泛型集合</span></span><br><span class="line"><span class="keyword">using</span> System.Linq;               <span class="comment">// LINQ 查詢</span></span><br><span class="line"><span class="keyword">using</span> System.ComponentModel;      <span class="comment">// 資料綁定、型別轉換</span></span><br><span class="line"><span class="keyword">using</span> System.Text;               <span class="comment">// 文字處理</span></span><br><span class="line"><span class="keyword">using</span> System.Text.RegularExpressions; <span class="comment">// 正則表達式</span></span><br><span class="line"><span class="keyword">using</span> System.Globalization;      <span class="comment">// 地區和文化資訊</span></span><br><span class="line"><span class="keyword">using</span> System.Configuration;      <span class="comment">// 應用程式配置</span></span><br><span class="line"><span class="keyword">using</span> System.Runtime.Serialization; <span class="comment">// 序列化</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-檔案與-I-O-處理"><a href="#2-檔案與-I-O-處理" class="headerlink" title="2. 檔案與 I/O 處理"></a>2. 檔案與 I/O 處理</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.IO;                 <span class="comment">// 檔案與目錄操作</span></span><br><span class="line"><span class="keyword">using</span> System.IO.Compression;     <span class="comment">// 檔案壓縮</span></span><br><span class="line"><span class="keyword">using</span> System.IO.Ports;          <span class="comment">// 序列埠通訊</span></span><br><span class="line"><span class="keyword">using</span> System.Xml;               <span class="comment">// XML 處理</span></span><br><span class="line"><span class="keyword">using</span> System.Xml.Linq;          <span class="comment">// LINQ to XML</span></span><br><span class="line"><span class="keyword">using</span> System.Xml.Serialization; <span class="comment">// XML 序列化</span></span><br><span class="line"><span class="keyword">using</span> System.Xml.Schema;        <span class="comment">// XML Schema</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-網路與-Web-開發"><a href="#3-網路與-Web-開發" class="headerlink" title="3. 網路與 Web 開發"></a>3. 網路與 Web 開發</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Net;               <span class="comment">// 基礎網路功能</span></span><br><span class="line"><span class="keyword">using</span> System.Net.Http;          <span class="comment">// HTTP 客戶端</span></span><br><span class="line"><span class="keyword">using</span> System.Net.Mail;          <span class="comment">// 電子郵件</span></span><br><span class="line"><span class="keyword">using</span> System.Net.Sockets;       <span class="comment">// TCP/IP 網路</span></span><br><span class="line"><span class="keyword">using</span> System.Web;               <span class="comment">// Web 應用程式</span></span><br><span class="line"><span class="keyword">using</span> System.Web.Http;          <span class="comment">// Web API</span></span><br><span class="line"><span class="keyword">using</span> System.Web.Mvc;           <span class="comment">// ASP.NET MVC</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore;     <span class="comment">// .NET Core Web 應用</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.SignalR; <span class="comment">// 即時通訊</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Authentication; <span class="comment">// 身份驗證</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Authorization;  <span class="comment">// 授權</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.DependencyInjection; <span class="comment">// 依賴注入</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Configuration;  <span class="comment">// 配置</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Logging;        <span class="comment">// 日誌</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="4-資料庫存取"><a href="#4-資料庫存取" class="headerlink" title="4. 資料庫存取"></a>4. 資料庫存取</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Data;              <span class="comment">// 資料庫通用功能</span></span><br><span class="line"><span class="keyword">using</span> System.Data.SqlClient;    <span class="comment">// SQL Server 連線</span></span><br><span class="line"><span class="keyword">using</span> System.Data.Entity;       <span class="comment">// Entity Framework</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.EntityFrameworkCore; <span class="comment">// EF Core</span></span><br><span class="line"><span class="keyword">using</span> Dapper;                  <span class="comment">// Dapper ORM</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.Data.Sqlite;   <span class="comment">// SQLite</span></span><br><span class="line"><span class="keyword">using</span> Npgsql;                  <span class="comment">// PostgreSQL</span></span><br><span class="line"><span class="keyword">using</span> MongoDB.Driver;          <span class="comment">// MongoDB</span></span><br><span class="line"><span class="keyword">using</span> StackExchange.Redis;     <span class="comment">// Redis</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="5-訊息佇列與事件匯流排"><a href="#5-訊息佇列與事件匯流排" class="headerlink" title="5. 訊息佇列與事件匯流排"></a>5. 訊息佇列與事件匯流排</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> RabbitMQ.Client;         <span class="comment">// RabbitMQ</span></span><br><span class="line"><span class="keyword">using</span> Azure.Messaging.ServiceBus; <span class="comment">// Azure Service Bus</span></span><br><span class="line"><span class="keyword">using</span> MassTransit;             <span class="comment">// MassTransit</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.Azure.EventHubs; <span class="comment">// Azure Event Hubs</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="6-雲端服務整合"><a href="#6-雲端服務整合" class="headerlink" title="6. 雲端服務整合"></a>6. 雲端服務整合</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Azure.Storage.Blobs;     <span class="comment">// Azure Blob Storage</span></span><br><span class="line"><span class="keyword">using</span> Azure.Identity;          <span class="comment">// Azure 身份認證</span></span><br><span class="line"><span class="keyword">using</span> Amazon.S3;               <span class="comment">// AWS S3</span></span><br><span class="line"><span class="keyword">using</span> Amazon.SQS;              <span class="comment">// AWS SQS</span></span><br><span class="line"><span class="keyword">using</span> Google.Cloud.Storage.V1; <span class="comment">// Google Cloud Storage</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="7-效能與監控"><a href="#7-效能與監控" class="headerlink" title="7. 效能與監控"></a>7. 效能與監控</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Diagnostics;       <span class="comment">// 效能監控、事件記錄</span></span><br><span class="line"><span class="keyword">using</span> OpenTelemetry;           <span class="comment">// 分散式追蹤</span></span><br><span class="line"><span class="keyword">using</span> OpenTelemetry.Metrics;   <span class="comment">// 指標收集</span></span><br><span class="line"><span class="keyword">using</span> App.Metrics;             <span class="comment">// 應用程式指標</span></span><br><span class="line"><span class="keyword">using</span> Prometheus;              <span class="comment">// Prometheus 監控</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="8-快取"><a href="#8-快取" class="headerlink" title="8. 快取"></a>8. 快取</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Caching.Memory;  <span class="comment">// 記憶體快取</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Caching.Redis;   <span class="comment">// Redis 快取</span></span><br><span class="line"><span class="keyword">using</span> LazyCache;               <span class="comment">// 延遲快取</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="9-背景工作"><a href="#9-背景工作" class="headerlink" title="9. 背景工作"></a>9. 背景工作</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Hangfire;               <span class="comment">// 背景工作排程</span></span><br><span class="line"><span class="keyword">using</span> Quartz;                 <span class="comment">// 工作排程</span></span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Hosting; <span class="comment">// 託管服務</span></span><br><span class="line"><span class="keyword">using</span> System.Reactive;        <span class="comment">// 反應式程式設計</span></span><br><span class="line"><span class="keyword">using</span> System.Reactive.Linq;   <span class="comment">// Rx.NET</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="10-測試相關"><a href="#10-測試相關" class="headerlink" title="10. 測試相關"></a>10. 測試相關</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Microsoft.VisualStudio.TestTools.UnitTesting; <span class="comment">// MSTest</span></span><br><span class="line"><span class="keyword">using</span> Xunit;                  <span class="comment">// xUnit</span></span><br><span class="line"><span class="keyword">using</span> NUnit.Framework;        <span class="comment">// NUnit</span></span><br><span class="line"><span class="keyword">using</span> Moq;                   <span class="comment">// Mock 框架</span></span><br><span class="line"><span class="keyword">using</span> FluentAssertions;      <span class="comment">// 流暢的斷言</span></span><br><span class="line"><span class="keyword">using</span> AutoFixture;           <span class="comment">// 測試資料產生</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="使用情境範例"><a href="#使用情境範例" class="headerlink" title="使用情境範例"></a>使用情境範例</h2><h3 id="1-檔案操作"><a href="#1-檔案操作" class="headerlink" title="1. 檔案操作"></a>1. 檔案操作</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> System.Text;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 讀取文字檔</span></span><br><span class="line"><span class="built_in">string</span> content = File.ReadAllText(<span class="string">&quot;file.txt&quot;</span>, Encoding.UTF8);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 寫入檔案</span></span><br><span class="line">File.WriteAllText(<span class="string">&quot;output.txt&quot;</span>, <span class="string">&quot;內容&quot;</span>, Encoding.UTF8);</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-資料庫操作"><a href="#2-資料庫操作" class="headerlink" title="2. 資料庫操作"></a>2. 資料庫操作</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Data.SqlClient;</span><br><span class="line"></span><br><span class="line"><span class="built_in">string</span> connectionString = <span class="string">&quot;連線字串&quot;</span>;</span><br><span class="line"><span class="keyword">using</span> (<span class="keyword">var</span> connection = <span class="keyword">new</span> SqlConnection(connectionString))</span><br><span class="line">&#123;</span><br><span class="line">    connection.Open();</span><br><span class="line">    <span class="comment">// 執行 SQL 命令</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-HTTP-請求"><a href="#3-HTTP-請求" class="headerlink" title="3. HTTP 請求"></a>3. HTTP 請求</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Net.Http;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> (<span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient())</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> response = <span class="keyword">await</span> client.GetAsync(<span class="string">&quot;https://api.example.com&quot;</span>);</span><br><span class="line">    <span class="built_in">string</span> content = <span class="keyword">await</span> response.Content.ReadAsStringAsync();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-JSON-處理"><a href="#4-JSON-處理" class="headerlink" title="4. JSON 處理"></a>4. JSON 處理</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Newtonsoft.Json;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 序列化</span></span><br><span class="line"><span class="built_in">string</span> json = JsonConvert.SerializeObject(<span class="built_in">object</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 反序列化</span></span><br><span class="line"><span class="keyword">var</span> obj = JsonConvert.DeserializeObject&lt;Type&gt;(json);</span><br></pre></td></tr></table></figure>
+<h3 id="4-依賴注入設定"><a href="#4-依賴注入設定" class="headerlink" title="4. 依賴注入設定"></a>4. 依賴注入設定</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Microsoft.Extensions.DependencyInjection;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ConfigureServices</span>(<span class="params">IServiceCollection services</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    services.AddScoped&lt;IUserService, UserService&gt;();</span><br><span class="line">    services.AddSingleton&lt;ICacheService, RedisCacheService&gt;();</span><br><span class="line">    services.AddTransient&lt;IEmailSender, SmtpEmailSender&gt;();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-非同步操作與取消"><a href="#5-非同步操作與取消" class="headerlink" title="5. 非同步操作與取消"></a>5. 非同步操作與取消</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Threading;</span><br><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task <span class="title">ProcessDataAsync</span>(<span class="params">CancellationToken cancellationToken</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">await</span> Task.WhenAll(</span><br><span class="line">        Task1Async(cancellationToken),</span><br><span class="line">        Task2Async(cancellationToken)</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-分散式快取"><a href="#6-分散式快取" class="headerlink" title="6. 分散式快取"></a>6. 分散式快取</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Caching.Distributed;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task&lt;<span class="built_in">string</span>&gt; <span class="title">GetCachedDataAsync</span>(<span class="params">IDistributedCache cache, <span class="built_in">string</span> key</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> cache.GetStringAsync(key) ?? </span><br><span class="line">           <span class="keyword">await</span> FetchAndCacheDataAsync(cache, key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="最佳實踐建議"><a href="#最佳實踐建議" class="headerlink" title="最佳實踐建議"></a>最佳實踐建議</h2><ol>
+<li><p>命名空間組織</p>
+<ul>
+<li>按功能領域組織命名空間</li>
+<li>避免循環依賴</li>
+<li>保持命名空間結構扁平化</li>
+</ul>
+</li>
+<li><p>效能考量</p>
+<ul>
+<li>使用 <code>global using</code> 統一管理常用命名空間</li>
+<li>避免在熱路徑中動態載入組件</li>
+<li>注意命名空間引用對編譯時間的影響</li>
+</ul>
+</li>
+<li><p>相容性管理</p>
+<ul>
+<li>使用 <code>#if</code> 條件編譯符號處理不同框架版本</li>
+<li>定期更新套件版本</li>
+<li>維護最小相依性原則</li>
+</ul>
+</li>
+<li><p>安全性考量</p>
+<ul>
+<li>優先使用最新的安全性API</li>
+<li>避免使用已棄用的命名空間</li>
+<li>遵循最小權限原則</li>
+</ul>
+</li>
+<li><p>套件管理</p>
+<ul>
+<li>使用中央化的套件版本管理</li>
+<li>定期審查第三方套件的安全性更新</li>
+<li>建立套件使用規範</li>
+</ul>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C#</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/a955718e/" rel="prev" title="2024年CSS終於實現垂直置中">
+                  <i class="fa fa-angle-left"></i> 2024年CSS終於實現垂直置中
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/89c8bd9a/" rel="next" title="Vue3 SFC Loader 深入解析：輕鬆加載">
+                  Vue3 SFC Loader 深入解析：輕鬆加載 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

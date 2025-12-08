@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="setTimeout 和 JavaScript 的 Event Loop 運作原理 JavaScript 是一種單執行緒語言，但它能夠執行非同步操作，這要歸功於事件循環（Event Loop）機制。在本文中，我們將深入探討 setTimeout 函式的運作原理，以及它如何與 JavaScript 的事件循環相互作用。  JavaScript 的單執行緒特性 首先，我們需要理解 JavaScript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="setTimeout 和 JavaScript 的 Event Loop 運作原理">
+<meta property="og:url" content="https://kyosora.github.io/posts/47ffc215/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="setTimeout 和 JavaScript 的 Event Loop 運作原理 JavaScript 是一種單執行緒語言，但它能夠執行非同步操作，這要歸功於事件循環（Event Loop）機制。在本文中，我們將深入探討 setTimeout 函式的運作原理，以及它如何與 JavaScript 的事件循環相互作用。  JavaScript 的單執行緒特性 首先，我們需要理解 JavaScript">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-03-08T10:33:42.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:38:58.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="JavaScript">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/47ffc215/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/47ffc215/","path":"posts/47ffc215/","title":"setTimeout 和 JavaScript 的 Event Loop 運作原理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>setTimeout 和 JavaScript 的 Event Loop 運作原理 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#setTimeout-%E5%92%8C-JavaScript-%E7%9A%84-Event-Loop-%E9%81%8B%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">setTimeout 和 JavaScript 的 Event Loop 運作原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaScript-%E7%9A%84%E5%96%AE%E5%9F%B7%E8%A1%8C%E7%B7%92%E7%89%B9%E6%80%A7"><span class="nav-number">1.1.</span> <span class="nav-text">JavaScript 的單執行緒特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E5%90%8C%E6%AD%A5%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88%E5%92%8C%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%92%B0"><span class="nav-number">1.2.</span> <span class="nav-text">非同步程式設計和事件循環</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#setTimeout-%E7%9A%84%E9%81%8B%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">1.3.</span> <span class="nav-text">setTimeout 的運作原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AF%84%E4%BE%8B%E7%A8%8B%E5%BC%8F%E7%A2%BC"><span class="nav-number">1.4.</span> <span class="nav-text">範例程式碼</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%92%B0%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7"><span class="nav-number">1.5.</span> <span class="nav-text">事件循環的重要性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.6.</span> <span class="nav-text">結論</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/47ffc215/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="setTimeout 和 JavaScript 的 Event Loop 運作原理 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          setTimeout 和 JavaScript 的 Event Loop 運作原理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-03-08 18:33:42" itemprop="dateCreated datePublished" datetime="2024-03-08T18:33:42+08:00">2024-03-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-11-27 14:38:58" itemprop="dateModified" datetime="2024-11-27T14:38:58+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1.1k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>1 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="setTimeout-和-JavaScript-的-Event-Loop-運作原理"><a href="#setTimeout-和-JavaScript-的-Event-Loop-運作原理" class="headerlink" title="setTimeout 和 JavaScript 的 Event Loop 運作原理"></a>setTimeout 和 JavaScript 的 Event Loop 運作原理</h1><p>JavaScript 是一種單執行緒語言，但它能夠執行非同步操作，這要歸功於事件循環（Event Loop）機制。在本文中，我們將深入探討 <code>setTimeout</code> 函式的運作原理，以及它如何與 JavaScript 的事件循環相互作用。</p>
+<h2 id="JavaScript-的單執行緒特性"><a href="#JavaScript-的單執行緒特性" class="headerlink" title="JavaScript 的單執行緒特性"></a>JavaScript 的單執行緒特性</h2><p>首先，我們需要理解 JavaScript 是單執行緒的。這意味著它一次只能執行一個操作。但是，如果所有操作都是同步的，那麼長時間運行的任務就會阻塞整個程式，導致糟糕的使用者體驗。這就是非同步程式設計發揮作用的地方。</p>
+<h2 id="非同步程式設計和事件循環"><a href="#非同步程式設計和事件循環" class="headerlink" title="非同步程式設計和事件循環"></a>非同步程式設計和事件循環</h2><p>JavaScript 使用事件循環來處理非同步操作。事件循環負責執行程式碼、收集和處理事件，以及執行排隊的子任務。以下是事件循環的基本組成部分：</p>
+<ol>
+<li>呼叫堆疊（Call Stack）</li>
+<li>Web API</li>
+<li>回呼佇列（Callback Queue）</li>
+<li>事件循環（Event Loop）</li>
+</ol>
+<h2 id="setTimeout-的運作原理"><a href="#setTimeout-的運作原理" class="headerlink" title="setTimeout 的運作原理"></a>setTimeout 的運作原理</h2><p><code>setTimeout</code> 是一個常用的非同步函式，它允許我們延遲執行一段程式碼。讓我們看看它是如何運作的：</p>
+<ol>
+<li>當 <code>setTimeout</code> 被呼叫時，JavaScript 引擎會將它交給 Web API 來處理計時器。</li>
+<li>同時，JavaScript 繼續執行後面的程式碼，不會等待 <code>setTimeout</code> 中的延遲。</li>
+<li>當計時器到期時，Web API 會將回呼函式放入回呼佇列。</li>
+<li>事件循環持續檢查呼叫堆疊是否為空。一旦為空，它就會從回呼佇列中取出第一個任務並將其放入呼叫堆疊中執行。</li>
+</ol>
+<h2 id="範例程式碼"><a href="#範例程式碼" class="headerlink" title="範例程式碼"></a>範例程式碼</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;開始&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;setTimeout 回呼&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;結束&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>輸出結果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">開始</span><br><span class="line">結束</span><br><span class="line">setTimeout 回呼</span><br></pre></td></tr></table></figure>
+
+<p>即使我們將 <code>setTimeout</code> 的延遲設定為 0，回呼函式仍然會在最後執行。這是因為它首先被發送到 Web API，然後被放入回呼佇列，只有在呼叫堆疊清空後才會被執行。</p>
+<h2 id="事件循環的重要性"><a href="#事件循環的重要性" class="headerlink" title="事件循環的重要性"></a>事件循環的重要性</h2><p>事件循環使 JavaScript 能夠執行非阻塞操作，這對於創建回應式使用者介面和處理大量並行操作至關重要。通過將耗時的任務推遲到未來執行，JavaScript 可以保持對使用者輸入的回應，並有效地管理資源。</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>理解 <code>setTimeout</code> 和事件循環的運作原理對於掌握 JavaScript 的非同步程式設計至關重要。它不僅幫助我們撰寫更高效的程式碼，還能夠更好地理解和除錯複雜的非同步操作。隨著 JavaScript 在前端和後端開發中的廣泛應用，這些知識將成為每個開發者的寶貴資產。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/8589441f/" rel="prev" title="Vue 3 資料傳遞">
+                  <i class="fa fa-angle-left"></i> Vue 3 資料傳遞
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/941b0eb3/" rel="next" title="深入理解 JavaScript 的 async&#x2F;await">
+                  深入理解 JavaScript 的 async/await <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

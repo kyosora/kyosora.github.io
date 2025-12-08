@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="API 介面限流完整技術指南 目錄  1. 前言  2. 為什麼需要限流  3. 常見限流策略  4. .NET Core 實作方案  5. 分散式限流方案  6. 最佳實踐建議  7. 環境配置建議  8. 效能測試方法  9. 結論  前言 在現代微服務架構中，API 限流（Rate Limiting）是一個不可或缺的重要機制。它能確保系統的穩定性和可用性，防止API被過度使用或遭受惡意攻擊。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="API 介面限流完整技術指南">
+<meta property="og:url" content="https://kyosora.github.io/posts/2cbb7640/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="API 介面限流完整技術指南 目錄  1. 前言  2. 為什麼需要限流  3. 常見限流策略  4. .NET Core 實作方案  5. 分散式限流方案  6. 最佳實踐建議  7. 環境配置建議  8. 效能測試方法  9. 結論  前言 在現代微服務架構中，API 限流（Rate Limiting）是一個不可或缺的重要機制。它能確保系統的穩定性和可用性，防止API被過度使用或遭受惡意攻擊。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-11-20T08:49:38.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:21:36.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="API限流">
+<meta property="article:tag" content="Net">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/2cbb7640/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/2cbb7640/","path":"posts/2cbb7640/","title":"API 介面限流完整技術指南"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>API 介面限流完整技術指南 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#API-%E4%BB%8B%E9%9D%A2%E9%99%90%E6%B5%81%E5%AE%8C%E6%95%B4%E6%8A%80%E8%A1%93%E6%8C%87%E5%8D%97"><span class="nav-number">1.</span> <span class="nav-text">API 介面限流完整技術指南</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E9%8C%84"><span class="nav-number">1.1.</span> <span class="nav-text">目錄</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E9%9C%80%E8%A6%81%E9%99%90%E6%B5%81"><span class="nav-number">1.3.</span> <span class="nav-text">為什麼需要限流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A6%8B%E9%99%90%E6%B5%81%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.</span> <span class="nav-text">常見限流策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9B%BA%E5%AE%9A%E7%AA%97%E5%8F%A3%E8%A8%88%E6%95%B8%E5%99%A8%EF%BC%88Fixed-Window-Counter%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. 固定窗口計數器（Fixed Window Counter）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%BB%91%E5%8B%95%E7%AA%97%E5%8F%A3%E8%A8%88%E6%95%B8%E5%99%A8%EF%BC%88Sliding-Window-Counter%EF%BC%89"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 滑動窗口計數器（Sliding Window Counter）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%BB%A4%E7%89%8C%E6%A1%B6%E7%AE%97%E6%B3%95%EF%BC%88Token-Bucket%EF%BC%89"><span class="nav-number">1.4.3.</span> <span class="nav-text">3. 令牌桶算法（Token Bucket）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%BC%8F%E6%A1%B6%E7%AE%97%E6%B3%95%EF%BC%88Leaky-Bucket%EF%BC%89"><span class="nav-number">1.4.4.</span> <span class="nav-text">4. 漏桶算法（Leaky Bucket）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NET-Core-%E5%AF%A6%E4%BD%9C%E6%96%B9%E6%A1%88"><span class="nav-number">1.5.</span> <span class="nav-text">.NET Core 實作方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-AspNetCoreRateLimit-%E5%A5%97%E4%BB%B6"><span class="nav-number">1.5.1.</span> <span class="nav-text">使用 AspNetCoreRateLimit 套件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E7%BE%A9%E4%B8%AD%E4%BB%8B%E8%BB%9F%E9%AB%94%E5%AF%A6%E4%BD%9C"><span class="nav-number">1.5.2.</span> <span class="nav-text">自定義中介軟體實作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%95%A3%E5%BC%8F%E9%99%90%E6%B5%81%E6%96%B9%E6%A1%88"><span class="nav-number">1.6.</span> <span class="nav-text">分散式限流方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E4%BD%B3%E5%AF%A6%E8%B8%90%E5%BB%BA%E8%AD%B0"><span class="nav-number">1.7.</span> <span class="nav-text">最佳實踐建議</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%92%B0%E5%A2%83%E9%85%8D%E7%BD%AE%E5%BB%BA%E8%AD%B0"><span class="nav-number">1.8.</span> <span class="nav-text">環境配置建議</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%96%8B%E7%99%BC%E7%92%B0%E5%A2%83"><span class="nav-number">1.8.1.</span> <span class="nav-text">開發環境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B8%AC%E8%A9%A6%E7%92%B0%E5%A2%83"><span class="nav-number">1.8.2.</span> <span class="nav-text">測試環境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E7%94%A2%E7%92%B0%E5%A2%83"><span class="nav-number">1.8.3.</span> <span class="nav-text">生產環境</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%88%E8%83%BD%E6%B8%AC%E8%A9%A6%E6%96%B9%E6%B3%95"><span class="nav-number">1.9.</span> <span class="nav-text">效能測試方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-Apache-JMeter-%E9%80%B2%E8%A1%8C%E6%B8%AC%E8%A9%A6"><span class="nav-number">1.9.1.</span> <span class="nav-text">使用 Apache JMeter 進行測試</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-K6-%E9%80%B2%E8%A1%8C%E6%95%88%E8%83%BD%E6%B8%AC%E8%A9%A6"><span class="nav-number">1.9.2.</span> <span class="nav-text">使用 K6 進行效能測試</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%88%E8%83%BD%E6%B8%AC%E8%A9%A6%E9%87%8D%E9%BB%9E"><span class="nav-number">1.9.3.</span> <span class="nav-text">效能測試重點</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.10.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%83%E8%80%83%E8%B3%87%E6%96%99"><span class="nav-number">1.11.</span> <span class="nav-text">參考資料</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/2cbb7640/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="API 介面限流完整技術指南 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          API 介面限流完整技術指南
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-11-20 16:49:38" itemprop="dateCreated datePublished" datetime="2024-11-20T16:49:38+08:00">2024-11-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-11-27 14:21:36" itemprop="dateModified" datetime="2024-11-27T14:21:36+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%A8%8B%E5%BC%8F%E9%96%8B%E7%99%BC/" itemprop="url" rel="index"><span itemprop="name">程式開發</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>15k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>14 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="API-介面限流完整技術指南"><a href="#API-介面限流完整技術指南" class="headerlink" title="API 介面限流完整技術指南"></a>API 介面限流完整技術指南</h1><h2 id="目錄"><a href="#目錄" class="headerlink" title="目錄"></a>目錄</h2><ol>
+<li><a href="#%E5%89%8D%E8%A8%80">前言</a></li>
+<li><a href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E9%9C%80%E8%A6%81%E9%99%90%E6%B5%81">為什麼需要限流</a></li>
+<li><a href="#%E5%B8%B8%E8%A6%8B%E9%99%90%E6%B5%81%E7%AD%96%E7%95%A5">常見限流策略</a></li>
+<li><a href="#net-core-%E5%AF%A6%E4%BD%9C%E6%96%B9%E6%A1%88">.NET Core 實作方案</a></li>
+<li><a href="#%E5%88%86%E6%95%A3%E5%BC%8F%E9%99%90%E6%B5%81%E6%96%B9%E6%A1%88">分散式限流方案</a></li>
+<li><a href="#%E6%9C%80%E4%BD%B3%E5%AF%A6%E8%B8%90%E5%BB%BA%E8%AD%B0">最佳實踐建議</a></li>
+<li><a href="#%E7%92%B0%E5%A2%83%E9%85%8D%E7%BD%AE%E5%BB%BA%E8%AD%B0">環境配置建議</a></li>
+<li><a href="#%E6%95%88%E8%83%BD%E6%B8%AC%E8%A9%A6%E6%96%B9%E6%B3%95">效能測試方法</a></li>
+<li><a href="#%E7%B5%90%E8%AB%96">結論</a></li>
+</ol>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在現代微服務架構中，API 限流（Rate Limiting）是一個不可或缺的重要機制。它能確保系統的穩定性和可用性，防止API被過度使用或遭受惡意攻擊。本文將詳細介紹 API 限流的概念、策略以及在 .NET Core 中的具體實作方法。</p>
+<h2 id="為什麼需要限流"><a href="#為什麼需要限流" class="headerlink" title="為什麼需要限流"></a>為什麼需要限流</h2><p>實作 API 限流有以下幾個重要原因：</p>
+<ol>
+<li><strong>保護系統資源</strong>：防止單一客戶端消耗過多系統資源</li>
+<li><strong>確保服務品質</strong>：為所有使用者提供穩定的服務體驗</li>
+<li><strong>防止惡意攻擊</strong>：降低 DDoS 攻擊的影響</li>
+<li><strong>控制成本</strong>：特別是在使用雲端服務時，可以有效控制資源使用成本</li>
+</ol>
+<h2 id="常見限流策略"><a href="#常見限流策略" class="headerlink" title="常見限流策略"></a>常見限流策略</h2><table style="width:100%; border-collapse: collapse; margin: 20px 0;">
+  <thead>
+    <tr style="background-color: #f0f0f0;">
+      <th style="padding: 12px; border: 1px solid #ddd;">限流策略</th>
+      <th style="padding: 12px; border: 1px solid #ddd;">實現複雜度</th>
+      <th style="padding: 12px; border: 1px solid #ddd;">內存消耗</th>
+      <th style="padding: 12px; border: 1px solid #ddd;">精確度</th>
+      <th style="padding: 12px; border: 1px solid #ddd;">突發流量處理</th>
+      <th style="padding: 12px; border: 1px solid #ddd;">分佈式實現</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="padding: 12px; border: 1px solid #ddd;">固定窗口</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #e6ffe6;">低</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #e6ffe6;">低</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #ffe6e6;">低</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #ffe6e6;">差</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #e6ffe6;">易</td>
+    </tr>
+    <tr>
+      <td style="padding: 12px; border: 1px solid #ddd;">滑動窗口</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #fff0e6;">中</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #fff0e6;">中</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #e6ffe6;">高</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #fff0e6;">中</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #fff0e6;">中</td>
+    </tr>
+    <tr>
+      <td style="padding: 12px; border: 1px solid #ddd;">令牌桶</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #fff0e6;">中</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #fff0e6;">中</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #e6ffe6;">高</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #e6ffe6;">優</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #fff0e6;">中</td>
+    </tr>
+    <tr>
+      <td style="padding: 12px; border: 1px solid #ddd;">漏桶</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #ffe6e6;">高</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #ffe6e6;">高</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #e6ffe6;">高</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #ffe6e6;">差</td>
+      <td style="padding: 12px; border: 1px solid #ddd; background-color: #ffe6e6;">難</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="1-固定窗口計數器（Fixed-Window-Counter）"><a href="#1-固定窗口計數器（Fixed-Window-Counter）" class="headerlink" title="1. 固定窗口計數器（Fixed Window Counter）"></a>1. 固定窗口計數器（Fixed Window Counter）</h3><p>最簡單的限流策略，在固定的時間窗口內計算請求次數。<br>基本原理：</p>
+<ol>
+<li>設定一個固定的時間窗口（比如1分鐘）</li>
+<li>在這個窗口內允許的最大請求數（比如100次）</li>
+<li>每當有新請求時，檢查當前窗口內的請求數是否超過限制<br>舉個例子：<br>假設我們限制每分鐘最多100個請求：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># 簡單示意</span><br><span class="line">current_minute = 13:01</span><br><span class="line">最大請求數 = 100</span><br><span class="line">當前計數 = 0</span><br><span class="line"></span><br><span class="line">當收到請求時:</span><br><span class="line">    如果 current_minute 還沒過:</span><br><span class="line">        當前計數 += 1</span><br><span class="line">        如果 當前計數 &lt;= 最大請求數:</span><br><span class="line">            允許請求</span><br><span class="line">        否則:</span><br><span class="line">            拒絕請求</span><br><span class="line">    否則:</span><br><span class="line">        重設計數器為1</span><br><span class="line">        更新current_minute</span><br><span class="line">        允許請求</span><br></pre></td></tr></table></figure>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">FixedWindowRateLimiter</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="built_in">int</span> _limit;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> TimeSpan _window;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">int</span> _counter;</span><br><span class="line">    <span class="keyword">private</span> DateTime _lastReset;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="built_in">object</span> _lock = <span class="keyword">new</span> <span class="built_in">object</span>(); <span class="comment">// 加入鎖以支援併發</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FixedWindowRateLimiter</span>(<span class="params"><span class="built_in">int</span> limit, TimeSpan window</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _limit = limit;</span><br><span class="line">        _window = window;</span><br><span class="line">        _lastReset = DateTime.UtcNow;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">bool</span> <span class="title">ShouldAllowRequest</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">lock</span> (_lock) <span class="comment">// 確保線程安全</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> now = DateTime.UtcNow;</span><br><span class="line">            <span class="keyword">if</span> (now - _lastReset &gt; _window)</span><br><span class="line">            &#123;</span><br><span class="line">                _counter = <span class="number">0</span>;</span><br><span class="line">                _lastReset = now;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (_counter &gt;= _limit)</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">            _counter++;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 創建限流器：每分鐘最多100個請求</span></span><br><span class="line"><span class="keyword">var</span> limiter = <span class="keyword">new</span> FixedWindowRateLimiter(<span class="number">100</span>, TimeSpan.FromMinutes(<span class="number">1</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用</span></span><br><span class="line"><span class="keyword">if</span> (limiter.ShouldAllowRequest())</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 處理請求</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 拒絕請求</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>優點：</p>
+<ol>
+<li>實現簡單</li>
+<li>內存佔用少</li>
+<li>容易理解</li>
+</ol>
+<p>缺點：</p>
+<ol>
+<li><p>邊界問題：<br>假設限制是每分鐘100次請求<br>用戶可能在 13:00:59 發送100個請求<br>然後在 13:01:01 又發送100個請求<br>實際上在2秒內發送了200個請求，可能造成系統壓力</p>
+</li>
+<li><p>突發流量不平滑：<br>窗口切換時會立即重設計數器，可能導致流量不均勻</p>
+</li>
+</ol>
+<p>適用場景：</p>
+<ol>
+<li>簡單的 API 限流</li>
+<li>單機應用的資源控制</li>
+<li>對精確度要求不高的場景</li>
+<li>適合做為快速原型或簡單實現</li>
+</ol>
+<p>不適用場景：</p>
+<ol>
+<li>分佈式系統</li>
+<li>高併發環境</li>
+<li>需要平滑限流的場景</li>
+<li>對限流精確度要求高的場景</li>
+</ol>
+<p>可能的優化方向：</p>
+<ol>
+<li>使用 Redis 實現分佈式限流</li>
+<li>新增監控和統計功能</li>
+<li>實現重試機制</li>
+<li>加入日誌記錄</li>
+</ol>
+<p>程式碼實現注意事項：</p>
+<ol>
+<li>使用 UTC 時間避免時區問題</li>
+<li>考慮併發安全</li>
+<li>注意時間計算的精確度</li>
+<li>考慮記憶體使用效率</li>
+</ol>
+<p>與其他限流演算法比較：</p>
+<ol>
+<li>比滑動窗口簡單，但精確度低</li>
+<li>比令牌桶少佔用記憶體</li>
+<li>比漏桶實現簡單，但控制粒度較粗</li>
+</ol>
+<p>實際應用建議：</p>
+<ol>
+<li>在簡單場景下使用</li>
+<li>配合監控系統</li>
+<li>根據實際需求調整窗口大小</li>
+<li>考慮是否需要持久化計數器</li>
+</ol>
+<h3 id="2-滑動窗口計數器（Sliding-Window-Counter）"><a href="#2-滑動窗口計數器（Sliding-Window-Counter）" class="headerlink" title="2. 滑動窗口計數器（Sliding Window Counter）"></a>2. 滑動窗口計數器（Sliding Window Counter）</h3><p>比固定窗口更精確的限流方式，能避免窗口邊界問題。<br>基本原理：</p>
+<ol>
+<li>把時間窗口分成更小的時間片（bucket）</li>
+<li>使用滾動方式統計，保持更平滑的限流效果</li>
+</ol>
+<p>舉個具體例子：<br>假設要限制每分鐘最多100個請求，我們可以：</p>
+<ul>
+<li>把1分鐘分成6個10秒的小窗口</li>
+<li>持續記錄最近6個小窗口的請求數</li>
+<li>隨著時間推移，持續滾動更新這些小窗口</li>
+</ul>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 可能的優化點：</span></span><br><span class="line"><span class="comment">// 1. 使用 ConcurrentDictionary 代替 Dictionary + lock</span></span><br><span class="line"><span class="comment">// 2. 使用快取來減少 Sum() 操作的頻率</span></span><br><span class="line"><span class="comment">// 3. 定期清理而不是每次請求時清理過期數據</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">SlidingWindowRateLimiter</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> Dictionary&lt;<span class="built_in">long</span>, <span class="built_in">int</span>&gt; _windows = <span class="keyword">new</span>();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="built_in">int</span> _limit;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="built_in">int</span> _windowMilliseconds;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="built_in">int</span> _bucketSizeMillis;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="built_in">object</span> _lock = <span class="keyword">new</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SlidingWindowRateLimiter</span>(<span class="params"><span class="built_in">int</span> limit, <span class="built_in">int</span> windowSeconds, <span class="built_in">int</span> bucketSizeMillis = <span class="number">1000</span></span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _limit = limit;</span><br><span class="line">        _windowMilliseconds = windowSeconds * <span class="number">1000</span>;</span><br><span class="line">        _bucketSizeMillis = bucketSizeMillis;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">bool</span> <span class="title">ShouldAllowRequest</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">lock</span> (_lock)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();</span><br><span class="line">            <span class="keyword">var</span> currentBucket = now - (now % _bucketSizeMillis);</span><br><span class="line">            <span class="keyword">var</span> windowStart = now - _windowMilliseconds;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 清除過期的窗口</span></span><br><span class="line">            _windows.Keys.Where(k =&gt; k &lt; windowStart).ToList()</span><br><span class="line">                .ForEach(k =&gt; _windows.Remove(k));</span><br><span class="line">                </span><br><span class="line">            <span class="comment">// 計算當前窗口內的請求總數</span></span><br><span class="line">            <span class="keyword">var</span> requestCount = _windows.Values.Sum();</span><br><span class="line">            <span class="keyword">if</span> (requestCount &gt;= _limit)</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">                </span><br><span class="line">            <span class="comment">// 新增新請求到當前bucket</span></span><br><span class="line">            <span class="keyword">if</span> (!_windows.ContainsKey(currentBucket))</span><br><span class="line">                _windows[currentBucket] = <span class="number">0</span>;</span><br><span class="line">            _windows[currentBucket]++;</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 創建一個限流器：每分鐘最多100個請求，bucket大小為1秒</span></span><br><span class="line"><span class="keyword">var</span> rateLimiter = <span class="keyword">new</span> SlidingWindowRateLimiter(<span class="number">100</span>, <span class="number">60</span>, <span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用</span></span><br><span class="line"><span class="keyword">if</span> (rateLimiter.ShouldAllowRequest())</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 處理請求</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 拒絕請求</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">時間軸：  [10s] [10s] [10s] [10s] [10s] [10s]</span><br><span class="line">初始：    [12]  [20]  [15]  [13]  [10]  [5]   = 75個請求</span><br><span class="line"></span><br><span class="line">滑動後：        [20]  [15]  [13]  [10]  [5]   [8]   = 71個請求</span><br></pre></td></tr></table></figure>
+
+<p>優點：</p>
+<ol>
+<li>更平滑的限流效果</li>
+<li>避免了固定窗口的邊界問題</li>
+<li>更精確的流量控制</li>
+</ol>
+<p>使用場景：</p>
+<ol>
+<li>API限流：每分鐘限制用戶API調用次數</li>
+<li>流量控制：限制每秒數據庫查詢次數</li>
+<li>服務保護：限制單一IP的訪問頻率</li>
+<li>資源訪問控制：限制檔案下載速率</li>
+</ol>
+<p>注意事項：</p>
+<ol>
+<li>需要更多的內存來存儲各個小窗口的計數</li>
+<li>實現相對複雜</li>
+<li>需要定期清理過期的計數數據</li>
+</ol>
+<p>實際應用建議：</p>
+<ol>
+<li>根據實際需求選擇合適的窗口大小和小窗口大小</li>
+<li>考慮使用 Redis 等分佈式存儲來實現分佈式環境下的限流</li>
+<li>可以配合其他限流演算法一起使用，達到更好的效果</li>
+</ol>
+<p>實際應用中的數值參考：</p>
+<ul>
+<li>小窗口大小建議值：100ms ~ 1s</li>
+<li>總窗口大小建議值：<ul>
+<li>API限流：1s ~ 60s</li>
+<li>爬蟲限流：1min ~ 1hour</li>
+<li>業務限流：根據具體場景定義</li>
+</ul>
+</li>
+</ul>
+<p>比較：</p>
+<ul>
+<li>比固定窗口更平滑</li>
+<li>比令牌桶實現稍簡單</li>
+<li>比漏桶更靈活</li>
+</ul>
+<h3 id="3-令牌桶算法（Token-Bucket）"><a href="#3-令牌桶算法（Token-Bucket）" class="headerlink" title="3. 令牌桶算法（Token Bucket）"></a>3. 令牌桶算法（Token Bucket）</h3><p>令牌桶算法是一種更靈活的限流策略，特別適合處理突發流量。<br>基本原理：</p>
+<ol>
+<li>系統以固定速率往桶中放入令牌</li>
+<li>桶可以儲存固定數量的令牌（桶容量）</li>
+<li>每個請求需要消耗一個或多個令牌</li>
+<li>如果桶中令牌不足，請求將被拒絕</li>
+<li>即使桶是空的，令牌仍會持續生成並加入桶中</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">TokenBucketRateLimiter</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="built_in">int</span> _bucketCapacity;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="built_in">int</span> _tokensPerSecond;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">double</span> _currentTokens;</span><br><span class="line">    <span class="keyword">private</span> DateTime _lastRefillTime;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="built_in">object</span> _lock = <span class="keyword">new</span> <span class="built_in">object</span>();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TokenBucketRateLimiter</span>(<span class="params"><span class="built_in">int</span> bucketCapacity, <span class="built_in">int</span> tokensPerSecond</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _bucketCapacity = bucketCapacity;</span><br><span class="line">        _tokensPerSecond = tokensPerSecond;</span><br><span class="line">        _currentTokens = bucketCapacity;</span><br><span class="line">        _lastRefillTime = DateTime.UtcNow;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">bool</span> <span class="title">ShouldAllowRequest</span>(<span class="params"><span class="built_in">int</span> tokens = <span class="number">1</span></span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">lock</span> (_lock)</span><br><span class="line">        &#123;</span><br><span class="line">            RefillTokens();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (_currentTokens &gt;= tokens)</span><br><span class="line">            &#123;</span><br><span class="line">                _currentTokens -= tokens;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">RefillTokens</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> now = DateTime.UtcNow;</span><br><span class="line">        <span class="keyword">var</span> timeElapsed = (now - _lastRefillTime).TotalSeconds;</span><br><span class="line">        <span class="keyword">var</span> tokensToAdd = timeElapsed * _tokensPerSecond;</span><br><span class="line"></span><br><span class="line">        _currentTokens = Math.Min(_bucketCapacity, _currentTokens + tokensToAdd);</span><br><span class="line">        _lastRefillTime = now;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 獲取當前令牌數量（用於監控）</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">double</span> <span class="title">GetCurrentTokens</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">lock</span> (_lock)</span><br><span class="line">        &#123;</span><br><span class="line">            RefillTokens();</span><br><span class="line">            <span class="keyword">return</span> _currentTokens;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 創建限流器：桶容量100，每秒產生10個令牌</span></span><br><span class="line"><span class="keyword">var</span> rateLimiter = <span class="keyword">new</span> TokenBucketRateLimiter(<span class="number">100</span>, <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 基本使用</span></span><br><span class="line"><span class="keyword">if</span> (rateLimiter.ShouldAllowRequest())</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 處理請求</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 消耗多個令牌的使用場景</span></span><br><span class="line"><span class="keyword">if</span> (rateLimiter.ShouldAllowRequest(<span class="number">5</span>)) <span class="comment">// 大請求消耗5個令牌</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 處理大請求</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>優點：</p>
+<ol>
+<li>支援突發流量（最大允許突發等於桶容量）</li>
+<li>令牌生成速率穩定，可以更好地保護系統</li>
+<li>支援不同權重的請求（可消耗不同數量的令牌）</li>
+<li>實現相對簡單，容易理解</li>
+</ol>
+<p>缺點：</p>
+<ol>
+<li>令牌桶容量和生成速率的設置需要經驗</li>
+<li>分佈式環境實現相對複雜</li>
+<li>可能存在輕微的時間精度問題</li>
+</ol>
+<p>適用場景：</p>
+<ol>
+<li>API 限流</li>
+<li>網絡流量控制</li>
+<li>需要處理突發流量的場景</li>
+<li>需要對不同請求進行差異化處理的場景</li>
+</ol>
+<p>實現注意事項：</p>
+<ol>
+<li>時間計算要使用 UTC 時間</li>
+<li>需要考慮併發安全</li>
+<li>浮點數計算可能存在精度問題</li>
+<li>令牌生成速率要根據系統能力設置</li>
+</ol>
+<p>分佈式實現建議：</p>
+<ol>
+<li>使用 Redis 實現：<ul>
+<li>INCR：計數器</li>
+<li>EXPIRE：設置過期時間</li>
+<li>Lua 腳本：保證原子性</li>
+</ul>
+</li>
+<li>使用 Redis 時間戳記錄上次更新時間</li>
+<li>分佈式鎖確保併發安全</li>
+</ol>
+<p>效能優化建議：</p>
+<ol>
+<li>使用批次令牌生成</li>
+<li>緩存當前令牌數量</li>
+<li>使用異步方式生成令牌</li>
+<li>實現令牌預熱機制</li>
+</ol>
+<p>監控指標：</p>
+<ol>
+<li>令牌生成速率</li>
+<li>當前桶內令牌數量</li>
+<li>請求被拒絕率</li>
+<li>令牌使用率</li>
+</ol>
+<p>與其他限流演算法比較：</p>
+<ol>
+<li>比固定窗口更平滑</li>
+<li>比滑動窗口更靈活</li>
+<li>比漏桶允許更多突發流量</li>
+</ol>
+<h3 id="4-漏桶算法（Leaky-Bucket）"><a href="#4-漏桶算法（Leaky-Bucket）" class="headerlink" title="4. 漏桶算法（Leaky Bucket）"></a>4. 漏桶算法（Leaky Bucket）</h3><p>漏桶算法提供了最嚴格的速率控制，適合需要穩定輸出的場景。<br>基本原理：</p>
+<ol>
+<li>請求先進入桶中，桶有固定容量</li>
+<li>桶以固定速率漏出請求</li>
+<li>如果桶滿了，新請求會被拒絕</li>
+<li>不論輸入速率如何，輸出速率都是恆定的</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">LeakyBucketRateLimiter</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> Queue&lt;DateTime&gt; _bucket = <span class="keyword">new</span>();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="built_in">int</span> _bucketCapacity;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> TimeSpan _leakInterval;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="built_in">object</span> _lock = <span class="keyword">new</span> <span class="built_in">object</span>();</span><br><span class="line">    <span class="keyword">private</span> DateTime _lastLeakTime;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LeakyBucketRateLimiter</span>(<span class="params"><span class="built_in">int</span> bucketCapacity, TimeSpan leakInterval</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _bucketCapacity = bucketCapacity;</span><br><span class="line">        _leakInterval = leakInterval;</span><br><span class="line">        _lastLeakTime = DateTime.UtcNow;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">bool</span> <span class="title">ShouldAllowRequest</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">lock</span> (_lock)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> now = DateTime.UtcNow;</span><br><span class="line">            LeakRequests(now);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (_bucket.Count &lt; _bucketCapacity)</span><br><span class="line">            &#123;</span><br><span class="line">                _bucket.Enqueue(now);</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">LeakRequests</span>(<span class="params">DateTime now</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 計算從上次漏水到現在應該漏出多少請求</span></span><br><span class="line">        <span class="keyword">var</span> elapsedTime = now - _lastLeakTime;</span><br><span class="line">        <span class="keyword">var</span> leaksCount = (<span class="built_in">int</span>)(elapsedTime.TotalMilliseconds / _leakInterval.TotalMilliseconds);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (leaksCount &gt; <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 最多漏出當前桶中的所有請求</span></span><br><span class="line">            leaksCount = Math.Min(leaksCount, _bucket.Count);</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; leaksCount; i++)</span><br><span class="line">            &#123;</span><br><span class="line">                _bucket.Dequeue();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            _lastLeakTime = now;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 獲取當前桶中請求數（用於監控）</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">int</span> <span class="title">GetCurrentQueueSize</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">lock</span> (_lock)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> _bucket.Count;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 創建限流器：桶容量100，每100ms處理一個請求</span></span><br><span class="line"><span class="keyword">var</span> rateLimiter = <span class="keyword">new</span> LeakyBucketRateLimiter(<span class="number">100</span>, TimeSpan.FromMilliseconds(<span class="number">100</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用</span></span><br><span class="line"><span class="keyword">if</span> (rateLimiter.ShouldAllowRequest())</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 處理請求</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 請求被拒絕</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>優點：</p>
+<ol>
+<li>固定的流出速率，很好的流量整形效果</li>
+<li>可以平滑地處理突發流量</li>
+<li>具備削峰填谷的能力</li>
+<li>保護下游系統的穩定性</li>
+</ol>
+<p>缺點：</p>
+<ol>
+<li>不支援突發流量</li>
+<li>實現相對複雜</li>
+<li>需要額外的隊列空間</li>
+<li>可能造成請求的額外延遲</li>
+</ol>
+<p>適用場景：</p>
+<ol>
+<li>需要固定處理速率的場景</li>
+<li>需要保護下游系統的場景</li>
+<li>視頻流處理</li>
+<li>消息佇列處理</li>
+<li>數據庫寫入限流</li>
+</ol>
+<p>實現注意事項：</p>
+<ol>
+<li>時間計算精度</li>
+<li>併發安全處理</li>
+<li>記憶體使用效率</li>
+<li>過期請求清理策略</li>
+</ol>
+<p>分佈式實現建議：</p>
+<ol>
+<li>Redis 實現方案：<ul>
+<li>List 作為請求隊列</li>
+<li>Sorted Set 存儲時間戳</li>
+<li>Lua 腳本保證原子性</li>
+</ul>
+</li>
+<li>使用消息隊列系統</li>
+<li>分佈式鎖確保一致性</li>
+</ol>
+<p>效能優化建議：</p>
+<ol>
+<li>批次處理漏出的請求</li>
+<li>使用更高效的數據結構</li>
+<li>實現請求優先級</li>
+<li>動態調整漏出速率</li>
+</ol>
+<p>監控指標：</p>
+<ol>
+<li>當前桶內請求數</li>
+<li>請求被拒絕率</li>
+<li>平均處理延遲</li>
+<li>漏出速率穩定性</li>
+</ol>
+<p>與其他限流演算法比較：</p>
+<ol>
+<li>比固定窗口更穩定</li>
+<li>比滑動窗口實現複雜</li>
+<li>比令牌桶更嚴格</li>
+</ol>
+<h2 id="NET-Core-實作方案"><a href="#NET-Core-實作方案" class="headerlink" title=".NET Core 實作方案"></a>.NET Core 實作方案</h2><h3 id="使用-AspNetCoreRateLimit-套件"><a href="#使用-AspNetCoreRateLimit-套件" class="headerlink" title="使用 AspNetCoreRateLimit 套件"></a>使用 AspNetCoreRateLimit 套件</h3><p>最簡單的方式是使用現成的 AspNetCoreRateLimit 套件：</p>
+<ol>
+<li><p>首先安裝套件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dotnet add package AspNetCoreRateLimit</span><br></pre></td></tr></table></figure></li>
+<li><p>在 <code>Program.cs</code> 中設定服務：</p>
+</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(<span class="keyword">args</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 加入記憶體快取</span></span><br><span class="line">builder.Services.AddMemoryCache();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 設定限流選項</span></span><br><span class="line">builder.Services.Configure&lt;IpRateLimitOptions&gt;(builder.Configuration.GetSection(<span class="string">&quot;IpRateLimiting&quot;</span>));</span><br><span class="line">builder.Services.Configure&lt;IpRateLimitPolicies&gt;(builder.Configuration.GetSection(<span class="string">&quot;IpRateLimitPolicies&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 加入相依服務</span></span><br><span class="line">builder.Services.AddInMemoryRateLimiting();</span><br><span class="line">builder.Services.AddSingleton&lt;IRateLimitConfiguration, RateLimitConfiguration&gt;();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 啟用 IP 限流中介軟體</span></span><br><span class="line">app.UseIpRateLimiting();</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>在 <code>appsettings.json</code> 中設定限流規則：</li>
+</ol>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;IpRateLimiting&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;EnableEndpointRateLimiting&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;StackBlockedRequests&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;RealIpHeader&quot;</span><span class="punctuation">:</span> <span class="string">&quot;X-Real-IP&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;ClientIdHeader&quot;</span><span class="punctuation">:</span> <span class="string">&quot;X-ClientId&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;HttpStatusCode&quot;</span><span class="punctuation">:</span> <span class="number">429</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;IpWhitelist&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span> <span class="string">&quot;127.0.0.1&quot;</span><span class="punctuation">,</span> <span class="string">&quot;192.168.0.0/24&quot;</span> <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;ClientWhitelist&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span> <span class="string">&quot;dev-id&quot;</span><span class="punctuation">,</span> <span class="string">&quot;trusted-app&quot;</span> <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;GeneralRules&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">      <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;Endpoint&quot;</span><span class="punctuation">:</span> <span class="string">&quot;*&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;Period&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1s&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;Limit&quot;</span><span class="punctuation">:</span> <span class="number">10</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;Endpoint&quot;</span><span class="punctuation">:</span> <span class="string">&quot;*&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;Period&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1m&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;Limit&quot;</span><span class="punctuation">:</span> <span class="number">100</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="自定義中介軟體實作"><a href="#自定義中介軟體實作" class="headerlink" title="自定義中介軟體實作"></a>自定義中介軟體實作</h3><p>如果需要更靈活的控制，可以實作自己的限流中介軟體：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">RateLimitMiddleware</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> RequestDelegate _next;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> IMemoryCache _cache;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="built_in">string</span> _cacheKey = <span class="string">&quot;RateLimit&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RateLimitMiddleware</span>(<span class="params">RequestDelegate next, IMemoryCache cache</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _next = next;</span><br><span class="line">        _cache = cache;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task <span class="title">InvokeAsync</span>(<span class="params">HttpContext context</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> ipAddress = context.Connection.RemoteIpAddress?.ToString();</span><br><span class="line">        <span class="keyword">var</span> cacheKey = <span class="string">$&quot;<span class="subst">&#123;_cacheKey&#125;</span>_<span class="subst">&#123;ipAddress&#125;</span>&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> rateLimiter = _cache.GetOrCreate(cacheKey, entry =&gt;</span><br><span class="line">        &#123;</span><br><span class="line">            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(<span class="number">1</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> FixedWindowRateLimiter(<span class="number">100</span>, TimeSpan.FromMinutes(<span class="number">1</span>));</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!rateLimiter.ShouldAllowRequest())</span><br><span class="line">        &#123;</span><br><span class="line">            context.Response.StatusCode = StatusCodes.Status429TooManyRequests;</span><br><span class="line">            context.Response.Headers.Add(<span class="string">&quot;Retry-After&quot;</span>, <span class="string">&quot;60&quot;</span>);</span><br><span class="line">            context.Response.Headers.Add(<span class="string">&quot;X-RateLimit-Limit&quot;</span>, <span class="string">&quot;100&quot;</span>);</span><br><span class="line">            context.Response.Headers.Add(<span class="string">&quot;X-RateLimit-Remaining&quot;</span>, <span class="string">&quot;0&quot;</span>);</span><br><span class="line">            context.Response.Headers.Add(<span class="string">&quot;X-RateLimit-Reset&quot;</span>, </span><br><span class="line">                DateTimeOffset.UtcNow.AddMinutes(<span class="number">1</span>).ToUnixTimeSeconds().ToString());</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">await</span> context.Response.WriteAsync(<span class="string">&quot;Too many requests. Please try again later.&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">await</span> _next(context);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="分散式限流方案"><a href="#分散式限流方案" class="headerlink" title="分散式限流方案"></a>分散式限流方案</h2><p>在分散式系統中，建議使用 Redis 來實作限流機制：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">RedisRateLimiter</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> IConnectionMultiplexer _redis;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="built_in">string</span> _keyPrefix;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RedisRateLimiter</span>(<span class="params">IConnectionMultiplexer redis, <span class="built_in">string</span> keyPrefix</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _redis = redis;</span><br><span class="line">        _keyPrefix = keyPrefix;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task&lt;<span class="built_in">bool</span>&gt; <span class="title">ShouldAllowRequestAsync</span>(<span class="params"><span class="built_in">string</span> clientId, <span class="built_in">int</span> limit, TimeSpan window</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> db = _redis.GetDatabase();</span><br><span class="line">        <span class="keyword">var</span> key = <span class="string">$&quot;<span class="subst">&#123;_keyPrefix&#125;</span>:<span class="subst">&#123;clientId&#125;</span>&quot;</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 使用 Redis 的 MULTI 指令確保原子性</span></span><br><span class="line">        <span class="keyword">var</span> tran = db.CreateTransaction();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 獲取當前計數</span></span><br><span class="line">        <span class="keyword">var</span> countTask = db.StringGetAsync(key);</span><br><span class="line">        <span class="keyword">var</span> count = <span class="built_in">int</span>.Parse((<span class="keyword">await</span> countTask).ToString() ?? <span class="string">&quot;0&quot;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (count &gt;= limit)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            </span><br><span class="line">        <span class="comment">// 增加計數並設置過期時間</span></span><br><span class="line">        <span class="keyword">await</span> db.StringIncrementAsync(key);</span><br><span class="line">        <span class="keyword">await</span> db.KeyExpireAsync(key, window);</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用範例：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">DistributedRateLimitMiddleware</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> RequestDelegate _next;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> RedisRateLimiter _rateLimiter;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DistributedRateLimitMiddleware</span>(<span class="params">RequestDelegate next, </span></span></span><br><span class="line"><span class="params"><span class="function">        IConnectionMultiplexer redis</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _next = next;</span><br><span class="line">        _rateLimiter = <span class="keyword">new</span> RedisRateLimiter(redis, <span class="string">&quot;ratelimit&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task <span class="title">InvokeAsync</span>(<span class="params">HttpContext context</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> clientId = context.Connection.RemoteIpAddress?.ToString() ?? <span class="string">&quot;unknown&quot;</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">await</span> _rateLimiter.ShouldAllowRequestAsync(clientId, <span class="number">100</span>, </span><br><span class="line">            TimeSpan.FromMinutes(<span class="number">1</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            context.Response.StatusCode = StatusCodes.Status429TooManyRequests;</span><br><span class="line">            <span class="keyword">await</span> context.Response.WriteAsync(<span class="string">&quot;Rate limit exceeded&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">await</span> _next(context);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="最佳實踐建議"><a href="#最佳實踐建議" class="headerlink" title="最佳實踐建議"></a>最佳實踐建議</h2><ol>
+<li><p><strong>適當的限流閾值</strong></p>
+<ul>
+<li>根據系統資源和業務需求設定合理的限流閾值</li>
+<li>可以為不同的 API 端點設定不同的限制</li>
+<li>考慮系統的實際承載能力進行設定</li>
+</ul>
+</li>
+<li><p><strong>分層限流</strong></p>
+<ul>
+<li>IP 位址限流</li>
+<li>使用者身份限流</li>
+<li>API 端點限流</li>
+<li>全域限流</li>
+</ul>
+</li>
+<li><p><strong>監控和警報</strong></p>
+<ul>
+<li>設置監控系統追蹤限流情況</li>
+<li>當限流次數異常時發出警報</li>
+<li>記錄限流事件以便分析</li>
+</ul>
+</li>
+<li><p><strong>優雅的處理</strong></p>
+<ul>
+<li>返回適當的 HTTP 429 狀態碼</li>
+<li>在響應標頭中提供重試時間建議</li>
+<li>提供清晰的錯誤訊息</li>
+<li>實作退避策略</li>
+</ul>
+</li>
+<li><p><strong>快取考量</strong></p>
+<ul>
+<li>使用分散式快取來支援水平擴展</li>
+<li>定期清理過期的限流記錄</li>
+<li>設置適當的快取過期時間</li>
+</ul>
+</li>
+</ol>
+<h2 id="環境配置建議"><a href="#環境配置建議" class="headerlink" title="環境配置建議"></a>環境配置建議</h2><h3 id="開發環境"><a href="#開發環境" class="headerlink" title="開發環境"></a>開發環境</h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;RateLimiting&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;Enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;WhitelistEnabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;DefaultLimit&quot;</span><span class="punctuation">:</span> <span class="number">1000</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;Period&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1m&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="測試環境"><a href="#測試環境" class="headerlink" title="測試環境"></a>測試環境</h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;RateLimiting&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;Enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;WhitelistEnabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;DefaultLimit&quot;</span><span class="punctuation">:</span> <span class="number">100</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;Period&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1m&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;MonitoringEnabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="生產環境"><a href="#生產環境" class="headerlink" title="生產環境"></a>生產環境</h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;RateLimiting&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;Enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;WhitelistEnabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;DefaultLimit&quot;</span><span class="punctuation">:</span> <span class="number">60</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;Period&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1m&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;MonitoringEnabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;AlertingEnabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;Rules&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">      <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;Endpoint&quot;</span><span class="punctuation">:</span> <span class="string">&quot;/api/public/*&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;Limit&quot;</span><span class="punctuation">:</span> <span class="number">30</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;Period&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1m&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;Endpoint&quot;</span><span class="punctuation">:</span> <span class="string">&quot;/api/authenticated/*&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;Limit&quot;</span><span class="punctuation">:</span> <span class="number">100</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;Period&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1m&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;IpWhitelist&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;ClientWhitelist&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;internal-service&quot;</span><span class="punctuation">,</span> <span class="string">&quot;monitoring-service&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;AlertThresholds&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;RejectionRate&quot;</span><span class="punctuation">:</span> <span class="number">0.1</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;RequestCount&quot;</span><span class="punctuation">:</span> <span class="number">1000</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>生產環境配置重點：</p>
+<ol>
+<li>較嚴格的限流規則</li>
+<li>針對不同 API 路徑設定不同限制</li>
+<li>啟用監控和警報機制</li>
+<li>最小化白名單範圍</li>
+<li>設定警報閾值</li>
+</ol>
+<h2 id="效能測試方法"><a href="#效能測試方法" class="headerlink" title="效能測試方法"></a>效能測試方法</h2><h3 id="使用-Apache-JMeter-進行測試"><a href="#使用-Apache-JMeter-進行測試" class="headerlink" title="使用 Apache JMeter 進行測試"></a>使用 Apache JMeter 進行測試</h3><ol>
+<li><p><strong>基本測試計劃</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">jmeterTestPlan</span> <span class="attr">version</span>=<span class="string">&quot;1.2&quot;</span> <span class="attr">properties</span>=<span class="string">&quot;5.0&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ThreadGroup</span> <span class="attr">guiclass</span>=<span class="string">&quot;ThreadGroupGui&quot;</span> <span class="attr">testname</span>=<span class="string">&quot;API Rate Limit Test&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">elementProp</span> <span class="attr">name</span>=<span class="string">&quot;ThreadGroup.main_controller&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">stringProp</span> <span class="attr">name</span>=<span class="string">&quot;LoopController.loops&quot;</span>&gt;</span>100<span class="tag">&lt;/<span class="name">stringProp</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">stringProp</span> <span class="attr">name</span>=<span class="string">&quot;ThreadGroup.num_threads&quot;</span>&gt;</span>50<span class="tag">&lt;/<span class="name">stringProp</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">stringProp</span> <span class="attr">name</span>=<span class="string">&quot;ThreadGroup.ramp_time&quot;</span>&gt;</span>10<span class="tag">&lt;/<span class="name">stringProp</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">elementProp</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ThreadGroup</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">jmeterTestPlan</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p><strong>測試場景</strong></p>
+<ul>
+<li>正常負載測試：模擬正常使用情況</li>
+<li>突發負載測試：短時間內大量請求</li>
+<li>持續高負載測試：長時間維持高請求量</li>
+<li>限流觸發測試：確認限流機制生效</li>
+</ul>
+</li>
+<li><p><strong>監控指標</strong></p>
+<ul>
+<li>響應時間</li>
+<li>請求成功率</li>
+<li>限流觸發率</li>
+<li>系統資源使用情況</li>
+</ul>
+</li>
+</ol>
+<h3 id="使用-K6-進行效能測試"><a href="#使用-K6-進行效能測試" class="headerlink" title="使用 K6 進行效能測試"></a>使用 K6 進行效能測試</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> http <span class="keyword">from</span> <span class="string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; check, sleep &#125; <span class="keyword">from</span> <span class="string">&#x27;k6&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> options = &#123;</span><br><span class="line">  <span class="attr">stages</span>: [</span><br><span class="line">    &#123; <span class="attr">duration</span>: <span class="string">&#x27;30s&#x27;</span>, <span class="attr">target</span>: <span class="number">20</span> &#125;,  <span class="comment">// 正常負載</span></span><br><span class="line">    &#123; <span class="attr">duration</span>: <span class="string">&#x27;1m&#x27;</span>, <span class="attr">target</span>: <span class="number">100</span> &#125;,  <span class="comment">// 逐漸增加</span></span><br><span class="line">    &#123; <span class="attr">duration</span>: <span class="string">&#x27;30s&#x27;</span>, <span class="attr">target</span>: <span class="number">100</span> &#125;, <span class="comment">// 維持高負載</span></span><br><span class="line">    &#123; <span class="attr">duration</span>: <span class="string">&#x27;30s&#x27;</span>, <span class="attr">target</span>: <span class="number">0</span> &#125;,   <span class="comment">// 緩慢降低</span></span><br><span class="line">  ],</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> res = http.<span class="title function_">get</span>(<span class="string">&#x27;http://api.example.com/test&#x27;</span>);</span><br><span class="line">  </span><br><span class="line">  <span class="title function_">check</span>(res, &#123;</span><br><span class="line">    <span class="string">&#x27;is status 200&#x27;</span>: <span class="function">(<span class="params">r</span>) =&gt;</span> r.<span class="property">status</span> === <span class="number">200</span>,</span><br><span class="line">    <span class="string">&#x27;is rate limited&#x27;</span>: <span class="function">(<span class="params">r</span>) =&gt;</span> r.<span class="property">status</span> !== <span class="number">429</span>,</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  <span class="title function_">sleep</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="效能測試重點"><a href="#效能測試重點" class="headerlink" title="效能測試重點"></a>效能測試重點</h3><ol>
+<li><p><strong>基準測試</strong></p>
+<ul>
+<li>在無限流情況下測試系統基準性能</li>
+<li>記錄關鍵指標作為參考值</li>
+</ul>
+</li>
+<li><p><strong>限流閾值驗證</strong></p>
+<ul>
+<li>驗證限流規則是否如預期運作</li>
+<li>測試不同限流策略的效果</li>
+</ul>
+</li>
+<li><p><strong>系統穩定性測試</strong></p>
+<ul>
+<li>長時間運行測試</li>
+<li>監控系統資源使用情況</li>
+<li>評估記憶體洩漏風險</li>
+</ul>
+</li>
+<li><p><strong>擴展性測試</strong></p>
+<ul>
+<li>測試分散式限流的效果</li>
+<li>評估系統橫向擴展能力</li>
+</ul>
+</li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>API 限流是確保系統穩定性和可用性的關鍵機制。通過本文介紹的各種限流策略和實作方式，開發者可以根據實際需求選擇合適的解決方案。重點建議：</p>
+<ol>
+<li><p><strong>選擇適當的限流策略</strong></p>
+<ul>
+<li>固定窗口：簡單直接，適合基本場景</li>
+<li>滑動窗口：更精確的控制，避免邊界問題</li>
+<li>令牌桶：適合處理突發流量</li>
+<li>漏桶：適合需要穩定出口速率的場景</li>
+</ul>
+</li>
+<li><p><strong>分散式架構考量</strong></p>
+<ul>
+<li>使用 Redis 等分散式解決方案</li>
+<li>確保限流規則在叢集中同步</li>
+<li>考慮資料一致性問題</li>
+</ul>
+</li>
+<li><p><strong>監控和維護</strong></p>
+<ul>
+<li>即時監控限流情況</li>
+<li>定期評估和調整限流規則</li>
+<li>建立完善的警報機制</li>
+</ul>
+</li>
+<li><p><strong>持續優化</strong></p>
+<ul>
+<li>根據監控數據調整限流策略</li>
+<li>定期進行效能測試</li>
+<li>及時應對新的挑戰</li>
+</ul>
+</li>
+</ol>
+<p>最後，記住限流不僅是一個技術問題，也是一個業務問題。在實作限流時，需要根據具體的業務需求和系統資源來制定合適的限流策略。通過合理的限流機制，我們可以在保護系統的同時，為使用者提供穩定且可靠的服務。</p>
+<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-tw/aspnet/core/performance/rate-limit">ASP.NET Core 中的速率限制中介軟體</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/stefanprodan/AspNetCoreRateLimit">AspNetCoreRateLimit GitHub</a></li>
+<li><a target="_blank" rel="noopener" href="https://redis.io/commands/INCR">Redis 官方文件 - 限流指南</a></li>
+<li><a target="_blank" rel="noopener" href="https://jmeter.apache.org/usermanual/get-started.html">Apache JMeter 官方文件</a></li>
+<li><a target="_blank" rel="noopener" href="https://k6.io/docs/">K6 負載測試指南</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/API%E9%99%90%E6%B5%81/" rel="tag"># API限流</a>
+              <a href="/tags/Net/" rel="tag"># Net</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/c2b8c278/" rel="prev" title="在 .NET Core + Vue.js 專案中實作 CSRF 防護">
+                  <i class="fa fa-angle-left"></i> 在 .NET Core + Vue.js 專案中實作 CSRF 防護
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/a80d2a02/" rel="next" title="Git Filter Repo 使用指南 - 更安全有效率的 Git 歷史重寫工具">
+                  Git Filter Repo 使用指南 - 更安全有效率的 Git 歷史重寫工具 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

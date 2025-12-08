@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="喚醒沉睡的潛能：Claude桌面版的隱藏神器 還記得科幻電影中，AI助手能夠幫你整理檔案、搜尋資料、管理電腦嗎？這不再是科幻，而是現實。Anthropic最近悄悄為Claude桌面版添加了一項革命性功能——MCP（Model Context Protocol），讓你的AI助手終於能夠「看見」並「操作」你電腦中的檔案。  我第一次發現這功能時，簡直驚呆了：「等等，這是說Claude現在可以幫我整理桌">
+<meta property="og:type" content="article">
+<meta property="og:title" content="讓你的Claude如虎添翼：MCP功能實戰筆記">
+<meta property="og:url" content="https://kyosora.github.io/posts/a6b782ce/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="喚醒沉睡的潛能：Claude桌面版的隱藏神器 還記得科幻電影中，AI助手能夠幫你整理檔案、搜尋資料、管理電腦嗎？這不再是科幻，而是現實。Anthropic最近悄悄為Claude桌面版添加了一項革命性功能——MCP（Model Context Protocol），讓你的AI助手終於能夠「看見」並「操作」你電腦中的檔案。  我第一次發現這功能時，簡直驚呆了：「等等，這是說Claude現在可以幫我整理桌">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://mintlify.s3.us-west-1.amazonaws.com/mcp/images/quickstart-menu.png">
+<meta property="og:image" content="https://mintlify.s3.us-west-1.amazonaws.com/mcp/images/quickstart-hammer.png">
+<meta property="og:image" content="https://mintlify.s3.us-west-1.amazonaws.com/mcp/images/quickstart-tools.png">
+<meta property="og:image" content="https://mintlify.s3.us-west-1.amazonaws.com/mcp/images/quickstart-approve.png">
+<meta property="article:published_time" content="2025-03-21T04:00:00.000Z">
+<meta property="article:modified_time" content="2025-03-31T07:16:02.054Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="MCP">
+<meta property="article:tag" content="Claude">
+<meta property="article:tag" content="AI助手">
+<meta property="article:tag" content="桌面應用">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mintlify.s3.us-west-1.amazonaws.com/mcp/images/quickstart-menu.png">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/a6b782ce/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/a6b782ce/","path":"posts/a6b782ce/","title":"讓你的Claude如虎添翼：MCP功能實戰筆記"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>讓你的Claude如虎添翼：MCP功能實戰筆記 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%96%9A%E9%86%92%E6%B2%89%E7%9D%A1%E7%9A%84%E6%BD%9B%E8%83%BD%EF%BC%9AClaude%E6%A1%8C%E9%9D%A2%E7%89%88%E7%9A%84%E9%9A%B1%E8%97%8F%E7%A5%9E%E5%99%A8"><span class="nav-number">1.</span> <span class="nav-text">喚醒沉睡的潛能：Claude桌面版的隱藏神器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MCP%E6%98%AF%E4%BB%80%E9%BA%BC%EF%BC%9F%E7%82%BA%E4%BD%95%E4%BD%A0%E6%87%89%E8%A9%B2%E7%AB%8B%E5%88%BB%E9%96%8B%E5%95%9F%E5%AE%83"><span class="nav-number">2.</span> <span class="nav-text">MCP是什麼？為何你應該立刻開啟它</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%96%8B%E5%95%9F%E8%B6%85%E8%83%BD%E5%8A%9B%EF%BC%9A%E8%A8%AD%E5%AE%9A%E6%AD%A5%E9%A9%9F%E5%85%A8%E6%94%BB%E7%95%A5"><span class="nav-number">3.</span> <span class="nav-text">開啟超能力：設定步驟全攻略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F1%EF%BC%9A%E7%A2%BA%E8%AA%8D%E4%BD%A0%E6%9C%89%E6%9C%80%E6%96%B0%E7%89%88%E7%9A%84Claude%E6%A1%8C%E9%9D%A2%E6%87%89%E7%94%A8"><span class="nav-number">3.1.</span> <span class="nav-text">步驟1：確認你有最新版的Claude桌面應用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F2%EF%BC%9A%E8%A8%AD%E5%AE%9AMCP%E6%9C%8D%E5%8B%99%E5%99%A8"><span class="nav-number">3.2.</span> <span class="nav-text">步驟2：設定MCP服務器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F3%EF%BC%9A%E5%AE%89%E8%A3%9D%E5%BF%85%E8%A6%81%E7%9A%84%E4%BE%9D%E8%B3%B4-Node-js"><span class="nav-number">3.3.</span> <span class="nav-text">步驟3：安裝必要的依賴 - Node.js</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F4%EF%BC%9A%E9%87%8D%E5%95%9FClaude%EF%BC%8C%E8%A6%8B%E8%AD%89%E5%A5%87%E8%B9%9F%E6%99%82%E5%88%BB"><span class="nav-number">3.4.</span> <span class="nav-text">步驟4：重啟Claude，見證奇蹟時刻</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E9%9A%9B%E9%AB%94%E9%A9%97%EF%BC%9A%E8%AE%93Claude%E5%B1%95%E7%A4%BA%E5%AE%83%E7%9A%84%E6%96%B0%E8%83%BD%E5%8A%9B"><span class="nav-number">4.</span> <span class="nav-text">實際體驗：讓Claude展示它的新能力</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%85%E9%9A%9C%E6%8E%92%E9%99%A4%EF%BC%9A%E5%B8%B8%E8%A6%8B%E5%95%8F%E9%A1%8C%E8%88%87%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88"><span class="nav-number">5.</span> <span class="nav-text">故障排除：常見問題與解決方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%95%8F%E9%A1%8C1%EF%BC%9A%E8%A8%AD%E5%AE%9A%E5%BE%8C%E7%9C%8B%E4%B8%8D%E5%88%B0%E9%8C%98%E5%AD%90%E5%9C%96%E6%A8%99"><span class="nav-number">5.1.</span> <span class="nav-text">問題1：設定後看不到錘子圖標</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%95%8F%E9%A1%8C2%EF%BC%9AWindows%E7%94%A8%E6%88%B6%E5%87%BA%E7%8F%BEENOENT%E9%8C%AF%E8%AA%A4"><span class="nav-number">5.2.</span> <span class="nav-text">問題2：Windows用戶出現ENOENT錯誤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%95%8F%E9%A1%8C3%EF%BC%9A%E5%A6%82%E4%BD%95%E6%9F%A5%E7%9C%8B%E9%8C%AF%E8%AA%A4%E6%97%A5%E8%AA%8C"><span class="nav-number">5.3.</span> <span class="nav-text">問題3：如何查看錯誤日誌</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E8%80%83%E9%87%8F%EF%BC%9A%E5%80%BC%E5%BE%97%E6%B3%A8%E6%84%8F%E7%9A%84%E4%BA%8B%E9%A0%85"><span class="nav-number">6.</span> <span class="nav-text">安全考量：值得注意的事項</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%95%E6%9C%9B%E6%9C%AA%E4%BE%86%EF%BC%9AMCP%E7%9A%84%E7%84%A1%E9%99%90%E5%8F%AF%E8%83%BD"><span class="nav-number">7.</span> <span class="nav-text">展望未來：MCP的無限可能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AA%9E%EF%BC%9A%E8%88%87%E6%9C%AA%E4%BE%86%E5%85%B1%E8%88%9E"><span class="nav-number">8.</span> <span class="nav-text">結語：與未來共舞</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/a6b782ce/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="讓你的Claude如虎添翼：MCP功能實戰筆記 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          讓你的Claude如虎添翼：MCP功能實戰筆記
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2025-03-21 12:00:00" itemprop="dateCreated datePublished" datetime="2025-03-21T12:00:00+08:00">2025-03-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2025-03-31 15:16:02" itemprop="dateModified" datetime="2025-03-31T15:16:02+08:00">2025-03-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">AI工具</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI%E5%B7%A5%E5%85%B7/Claude/" itemprop="url" rel="index"><span itemprop="name">Claude</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>3.1k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>3 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="喚醒沉睡的潛能：Claude桌面版的隱藏神器"><a href="#喚醒沉睡的潛能：Claude桌面版的隱藏神器" class="headerlink" title="喚醒沉睡的潛能：Claude桌面版的隱藏神器"></a>喚醒沉睡的潛能：Claude桌面版的隱藏神器</h2><p>還記得科幻電影中，AI助手能夠幫你整理檔案、搜尋資料、管理電腦嗎？這不再是科幻，而是現實。Anthropic最近悄悄為Claude桌面版添加了一項革命性功能——MCP（Model Context Protocol），讓你的AI助手終於能夠「看見」並「操作」你電腦中的檔案。</p>
+<p>我第一次發現這功能時，簡直驚呆了：「等等，這是說Claude現在可以幫我整理桌面上的混亂檔案？」沒錯，而且還能做更多。</p>
+<p>這篇文章將帶你一步步解鎖Claude的這項隱藏能力，讓你的AI助手真正成為你的數位管家。</p>
+<h2 id="MCP是什麼？為何你應該立刻開啟它"><a href="#MCP是什麼？為何你應該立刻開啟它" class="headerlink" title="MCP是什麼？為何你應該立刻開啟它"></a>MCP是什麼？為何你應該立刻開啟它</h2><p>MCP（Model Context Protocol）簡單來說，就是一種讓Claude能夠與你電腦系統交互的協議。它創建了一個安全的橋樑，使Claude能夠獲得你授權的資料和執行你批准的操作。</p>
+<p>最棒的是什麼？Claude絕不會偷偷行動。每次操作前，它都會徵求你的同意，讓你保持完全的控制權。</p>
+<p>透過啟用MCP，你的Claude桌面版將能夠：</p>
+<ul>
+<li>讀取你指定資料夾中的檔案</li>
+<li>創建並儲存新檔案</li>
+<li>移動和整理檔案</li>
+<li>搜尋符合特定條件的檔案</li>
+</ul>
+<p>如此一來，當你要求Claude「幫我整理桌面上的所有PDF檔案」或「幫我在下載資料夾中找出所有與專案相關的文件」時，它真的能做到！</p>
+<h2 id="開啟超能力：設定步驟全攻略"><a href="#開啟超能力：設定步驟全攻略" class="headerlink" title="開啟超能力：設定步驟全攻略"></a>開啟超能力：設定步驟全攻略</h2><h3 id="步驟1：確認你有最新版的Claude桌面應用"><a href="#步驟1：確認你有最新版的Claude桌面應用" class="headerlink" title="步驟1：確認你有最新版的Claude桌面應用"></a>步驟1：確認你有最新版的Claude桌面應用</h3><p>首先，前往<a target="_blank" rel="noopener" href="https://claude.ai/download">Claude官方網站</a>下載桌面版。如果已經安裝，請點擊電腦上的Claude選單，選擇「Check for Updates...」確保使用最新版本。</p>
+<p>目前MCP功能僅支援Windows和macOS，Linux用戶可能需要再等等（抱歉了，企鵝黨）。</p>
+<h3 id="步驟2：設定MCP服務器"><a href="#步驟2：設定MCP服務器" class="headerlink" title="步驟2：設定MCP服務器"></a>步驟2：設定MCP服務器</h3><p>這是關鍵一步，也是最容易出錯的地方。別擔心，我們一起來：</p>
+<ol>
+<li>點擊電腦上的Claude選單（注意：不是應用程式視窗內的選單）</li>
+<li>選擇「Settings...」</li>
+<li>在左側欄位中點擊「Developer」</li>
+<li>點擊「Edit Config」按鈕</li>
+</ol>
+<p><img src="https://mintlify.s3.us-west-1.amazonaws.com/mcp/images/quickstart-menu.png" alt="Claude設定選單"></p>
+<p>這時系統會打開一個配置檔案。視你的作業系統不同，檔案路徑會是：</p>
+<ul>
+<li>macOS: <code>~/Library/Application Support/Claude/claude_desktop_config.json</code></li>
+<li>Windows: <code>%APPDATA%\Claude\claude_desktop_config.json</code></li>
+</ul>
+<p>現在，將檔案內容替換為以下代碼（記得修改路徑）：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;mcpServers&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;filesystem&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;npx&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;args&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="string">&quot;-y&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;@modelcontextprotocol/server-filesystem&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;/Users/你的用戶名/Desktop&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;/Users/你的用戶名/Downloads&quot;</span></span><br><span class="line">      <span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>將上面的<code>你的用戶名</code>替換為你電腦的實際用戶名。這些路徑指定了你希望Claude能夠訪問的資料夾。你可以根據需求添加更多路徑，但建議從桌面和下載資料夾開始體驗。</p>
+<h3 id="步驟3：安裝必要的依賴-Node-js"><a href="#步驟3：安裝必要的依賴-Node-js" class="headerlink" title="步驟3：安裝必要的依賴 - Node.js"></a>步驟3：安裝必要的依賴 - Node.js</h3><p>Claude的MCP功能依賴於Node.js。檢查你是否已安裝Node.js：</p>
+<ol>
+<li>打開終端機（macOS）或命令提示字元（Windows）</li>
+<li>輸入以下命令：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node --version</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>如果系統返回類似<code>v16.14.2</code>的版本號，則表示已安裝。如果出現「命令未找到」的錯誤，請前往<a target="_blank" rel="noopener" href="https://nodejs.org/">Node.js官網</a>下載並安裝。</p>
+<p>Node.js就像是Claude與你電腦溝通的翻譯官，沒有它，Claude將無法執行你的請求。</p>
+<h3 id="步驟4：重啟Claude，見證奇蹟時刻"><a href="#步驟4：重啟Claude，見證奇蹟時刻" class="headerlink" title="步驟4：重啟Claude，見證奇蹟時刻"></a>步驟4：重啟Claude，見證奇蹟時刻</h3><p>完成以上設定後，重新啟動Claude桌面版。如果一切順利，你會在輸入框右下角看到一個小錘子圖標：</p>
+<p><img src="https://mintlify.s3.us-west-1.amazonaws.com/mcp/images/quickstart-hammer.png" alt="Claude的錘子圖標"></p>
+<p>點擊這個圖標，你會看到文件系統MCP服務器提供的各種工具選項：</p>
+<p><img src="https://mintlify.s3.us-west-1.amazonaws.com/mcp/images/quickstart-tools.png" alt="MCP工具選項"></p>
+<p>恭喜你！你的Claude現在已經進化成具有文件操作能力的超級助手了。</p>
+<h2 id="實際體驗：讓Claude展示它的新能力"><a href="#實際體驗：讓Claude展示它的新能力" class="headerlink" title="實際體驗：讓Claude展示它的新能力"></a>實際體驗：讓Claude展示它的新能力</h2><p>現在你可以向Claude提出各種與檔案系統相關的請求，例如：</p>
+<ul>
+<li>「能幫我寫一首詩並儲存到桌面嗎？」</li>
+<li>「請幫我檢查下載資料夾中的Excel檔案，並分析其中的數據」</li>
+<li>「能把桌面上的所有圖片檔案移動到一個名為『我的圖片』的新資料夾嗎？」</li>
+</ul>
+<p>當Claude需要執行檔案操作時，它會先徵求你的許可：</p>
+<p><img src="https://mintlify.s3.us-west-1.amazonaws.com/mcp/images/quickstart-approve.png" alt="Claude徵求操作許可"></p>
+<p>這確保了所有操作都在你的控制之下，安全無虞。</p>
+<h2 id="故障排除：常見問題與解決方案"><a href="#故障排除：常見問題與解決方案" class="headerlink" title="故障排除：常見問題與解決方案"></a>故障排除：常見問題與解決方案</h2><h3 id="問題1：設定後看不到錘子圖標"><a href="#問題1：設定後看不到錘子圖標" class="headerlink" title="問題1：設定後看不到錘子圖標"></a>問題1：設定後看不到錘子圖標</h3><p>可能的原因和解決方法：</p>
+<ul>
+<li><strong>Claude未完全重啟</strong>：完全關閉Claude應用後再重新開啟</li>
+<li><strong>配置檔案語法錯誤</strong>：檢查JSON格式是否正確</li>
+<li><strong>路徑問題</strong>：確保使用絕對路徑而非相對路徑，且路徑存在</li>
+<li><strong>Node.js未安裝</strong>：確認Node.js已正確安裝</li>
+</ul>
+<h3 id="問題2：Windows用戶出現ENOENT錯誤"><a href="#問題2：Windows用戶出現ENOENT錯誤" class="headerlink" title="問題2：Windows用戶出現ENOENT錯誤"></a>問題2：Windows用戶出現ENOENT錯誤</h3><p>這通常與環境變數有關。在配置檔案中添加環境變數設定：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;mcpServers&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;filesystem&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;npx&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;args&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="string">&quot;-y&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;@modelcontextprotocol/server-filesystem&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;C:\\Users\\你的用戶名\\Desktop&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;C:\\Users\\你的用戶名\\Downloads&quot;</span></span><br><span class="line">      <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;env&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;APPDATA&quot;</span><span class="punctuation">:</span> <span class="string">&quot;C:\\Users\\你的用戶名\\AppData\\Roaming\\&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="問題3：如何查看錯誤日誌"><a href="#問題3：如何查看錯誤日誌" class="headerlink" title="問題3：如何查看錯誤日誌"></a>問題3：如何查看錯誤日誌</h3><p>日誌文件位於：</p>
+<ul>
+<li>macOS: <code>~/Library/Logs/Claude</code></li>
+<li>Windows: <code>%APPDATA%\Claude\logs</code></li>
+</ul>
+<p>查看最近的日誌（macOS）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail -n 20 -f ~/Library/Logs/Claude/mcp*.log</span><br></pre></td></tr></table></figure>
+
+<h2 id="安全考量：值得注意的事項"><a href="#安全考量：值得注意的事項" class="headerlink" title="安全考量：值得注意的事項"></a>安全考量：值得注意的事項</h2><p>開啟MCP功能實際上是讓Claude獲得了有限的檔案系統存取權限。雖然每次操作前Claude都會徵求你的許可，但仍有一些安全注意事項：</p>
+<ol>
+<li>只添加你願意讓Claude訪問的資料夾路徑</li>
+<li>定期檢查你的配置檔案，確保未被意外修改</li>
+<li>不要讓Claude訪問包含敏感資訊的資料夾</li>
+</ol>
+<h2 id="展望未來：MCP的無限可能"><a href="#展望未來：MCP的無限可能" class="headerlink" title="展望未來：MCP的無限可能"></a>展望未來：MCP的無限可能</h2><p>MCP功能目前仍處於初期階段，只是冰山一角。根據Anthropic的發展路線，未來可能會有更多類型的MCP服務器，讓Claude能夠：</p>
+<ul>
+<li>與其他應用程式整合</li>
+<li>幫助你自動化工作流程</li>
+<li>處理和分析更複雜的本地數據</li>
+<li>甚至可能成為你電腦上的智能代理</li>
+</ul>
+<h2 id="結語：與未來共舞"><a href="#結語：與未來共舞" class="headerlink" title="結語：與未來共舞"></a>結語：與未來共舞</h2><p>啟用Claude的MCP功能就像是提前體驗了AI助手的未來形態。它不再只是一個聊天框，而是真正能夠理解和操作你數位世界的智能助手。</p>
+<p>我已經開始用Claude整理我雜亂的桌面、分析我的數據文件，甚至幫我草擬並儲存文章草稿。每天下班前，我都會請Claude幫我整理當天的工作文件，效率提升明顯。</p>
+<p>如果你也是Claude桌面版的使用者，強烈建議你花幾分鐘設定這個功能。就像我的同事說的：「用過MCP功能後，你會懷疑自己以前是怎麼沒有它的」。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/MCP/" rel="tag"># MCP</a>
+              <a href="/tags/Claude/" rel="tag"># Claude</a>
+              <a href="/tags/AI%E5%8A%A9%E6%89%8B/" rel="tag"># AI助手</a>
+              <a href="/tags/%E6%A1%8C%E9%9D%A2%E6%87%89%E7%94%A8/" rel="tag"># 桌面應用</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/8b54f310/" rel="prev" title="Chocolatey 神技：兩行 PowerShell 搞定所有軟體重裝的煩惱">
+                  <i class="fa fa-angle-left"></i> Chocolatey 神技：兩行 PowerShell 搞定所有軟體重裝的煩惱
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/bf4f4549/" rel="next" title="IIS 401.3 權限錯誤完全解析：為什麼新增 IUSR 是救命關鍵">
+                  IIS 401.3 權限錯誤完全解析：為什麼新增 IUSR 是救命關鍵 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

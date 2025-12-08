@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="Notion MCP 使用教學：讓 Claude 直接操作你的 Notion 工作區 你是不是經常在 Notion 和 Claude 之間來回複製貼上，覺得很麻煩？現在有了 Notion MCP（Model Context Protocol），Claude 可以直接連接你的 Notion 工作區，就像有了一個貼心的 AI 助手，能幫你建立頁面、整理資料、查詢內容，完全不用再手動操作了！  什麼是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Notion MCP 使用教學：讓 Claude 直接操作你的 Notion 工作區">
+<meta property="og:url" content="https://kyosora.github.io/posts/6a7b2e15/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="Notion MCP 使用教學：讓 Claude 直接操作你的 Notion 工作區 你是不是經常在 Notion 和 Claude 之間來回複製貼上，覺得很麻煩？現在有了 Notion MCP（Model Context Protocol），Claude 可以直接連接你的 Notion 工作區，就像有了一個貼心的 AI 助手，能幫你建立頁面、整理資料、查詢內容，完全不用再手動操作了！  什麼是">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2025-06-23T03:50:00.000Z">
+<meta property="article:modified_time" content="2025-06-23T03:54:41.544Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="MCP">
+<meta property="article:tag" content="Notion">
+<meta property="article:tag" content="Claude">
+<meta property="article:tag" content="自動化">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/6a7b2e15/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/6a7b2e15/","path":"posts/6a7b2e15/","title":"Notion MCP 使用教學：讓 Claude 直接操作你的 Notion 工作區"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Notion MCP 使用教學：讓 Claude 直接操作你的 Notion 工作區 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Notion-MCP-%E4%BD%BF%E7%94%A8%E6%95%99%E5%AD%B8%EF%BC%9A%E8%AE%93-Claude-%E7%9B%B4%E6%8E%A5%E6%93%8D%E4%BD%9C%E4%BD%A0%E7%9A%84-Notion-%E5%B7%A5%E4%BD%9C%E5%8D%80"><span class="nav-number">1.</span> <span class="nav-text">Notion MCP 使用教學：讓 Claude 直接操作你的 Notion 工作區</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AF-Notion-MCP%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">什麼是 Notion MCP？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A8%AD%E7%BD%AE%E5%89%8D%E7%9A%84%E6%BA%96%E5%82%99%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.2.</span> <span class="nav-text">設置前的準備工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E5%BB%BA%E7%AB%8B-Notion-Integration"><span class="nav-number">1.3.</span> <span class="nav-text">第一步：建立 Notion Integration</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E9%85%8D%E7%BD%AE-Claude-Desktop"><span class="nav-number">1.4.</span> <span class="nav-text">第二步：配置 Claude Desktop</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#macOS-%E7%94%A8%E6%88%B6"><span class="nav-number">1.4.1.</span> <span class="nav-text">macOS 用戶</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Windows-%E7%94%A8%E6%88%B6"><span class="nav-number">1.4.2.</span> <span class="nav-text">Windows 用戶</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E9%80%A3%E6%8E%A5%E9%A0%81%E9%9D%A2%E5%88%B0-Integration"><span class="nav-number">1.5.</span> <span class="nav-text">第三步：連接頁面到 Integration</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E9%87%8D%E5%95%9F-Claude-Desktop"><span class="nav-number">1.6.</span> <span class="nav-text">第四步：重啟 Claude Desktop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E9%9A%9B%E6%87%89%E7%94%A8%E5%A0%B4%E6%99%AF"><span class="nav-number">1.7.</span> <span class="nav-text">實際應用場景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%93%9D-%E5%85%A7%E5%AE%B9%E7%AE%A1%E7%90%86"><span class="nav-number">1.7.1.</span> <span class="nav-text">📝 內容管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%93%8A-%E8%B3%87%E6%96%99%E6%95%B4%E7%90%86"><span class="nav-number">1.7.2.</span> <span class="nav-text">📊 資料整理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%94%8D-%E8%B3%87%E8%A8%8A%E6%AA%A2%E7%B4%A2"><span class="nav-number">1.7.3.</span> <span class="nav-text">🔍 資訊檢索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%93%8B-%E5%B0%88%E6%A1%88%E7%AE%A1%E7%90%86"><span class="nav-number">1.7.4.</span> <span class="nav-text">📋 專案管理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A6%8B%E5%95%8F%E9%A1%8C%E6%8E%92%E9%99%A4"><span class="nav-number">1.8.</span> <span class="nav-text">常見問題排除</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9C%8B%E4%B8%8D%E5%88%B0%E5%B7%A5%E5%85%B7%E5%9C%96%E7%A4%BA%EF%BC%9F"><span class="nav-number">1.8.1.</span> <span class="nav-text">看不到工具圖示？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Claude-%E8%AA%AA%E6%89%BE%E4%B8%8D%E5%88%B0%E9%A0%81%E9%9D%A2%EF%BC%9F"><span class="nav-number">1.8.2.</span> <span class="nav-text">Claude 說找不到頁面？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#M1-Mac-%E7%94%A8%E6%88%B6%E9%81%87%E5%88%B0%E5%95%8F%E9%A1%8C%EF%BC%9F"><span class="nav-number">1.8.3.</span> <span class="nav-text">M1 Mac 用戶遇到問題？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7%E6%8F%90%E9%86%92"><span class="nav-number">1.9.</span> <span class="nav-text">安全性提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%B2%E9%9A%8E%E7%8E%A9%E6%B3%95"><span class="nav-number">1.10.</span> <span class="nav-text">進階玩法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AA%9E"><span class="nav-number">1.11.</span> <span class="nav-text">結語</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/6a7b2e15/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Notion MCP 使用教學：讓 Claude 直接操作你的 Notion 工作區 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Notion MCP 使用教學：讓 Claude 直接操作你的 Notion 工作區
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2025-06-23 11:50:00 / 修改時間：11:54:41" itemprop="dateCreated datePublished" datetime="2025-06-23T11:50:00+08:00">2025-06-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%94%9F%E7%94%A2%E5%8A%9B%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">生產力工具</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%94%9F%E7%94%A2%E5%8A%9B%E5%B7%A5%E5%85%B7/AI-%E6%87%89%E7%94%A8/" itemprop="url" rel="index"><span itemprop="name">AI 應用</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.5k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="Notion-MCP-使用教學：讓-Claude-直接操作你的-Notion-工作區"><a href="#Notion-MCP-使用教學：讓-Claude-直接操作你的-Notion-工作區" class="headerlink" title="Notion MCP 使用教學：讓 Claude 直接操作你的 Notion 工作區"></a>Notion MCP 使用教學：讓 Claude 直接操作你的 Notion 工作區</h1><p>你是不是經常在 Notion 和 Claude 之間來回複製貼上，覺得很麻煩？現在有了 Notion MCP（Model Context Protocol），Claude 可以直接連接你的 Notion 工作區，就像有了一個貼心的 AI 助手，能幫你建立頁面、整理資料、查詢內容，完全不用再手動操作了！</p>
+<h2 id="什麼是-Notion-MCP？"><a href="#什麼是-Notion-MCP？" class="headerlink" title="什麼是 Notion MCP？"></a>什麼是 Notion MCP？</h2><p>想像一下，如果 Claude 能直接「看到」你的 Notion 工作區，不僅能讀取你的筆記內容，還能幫你新增頁面、整理資料庫，甚至建立複雜的專案管理系統。這就是 Notion MCP 帶來的魔力！</p>
+<p>MCP 就像是 Claude 和 Notion 之間的橋梁，讓 AI 不再只是聊天工具，而是真正能幫你「做事」的智能助手。</p>
+<h2 id="設置前的準備工作"><a href="#設置前的準備工作" class="headerlink" title="設置前的準備工作"></a>設置前的準備工作</h2><p>在開始之前，你需要準備這些東西：</p>
+<ul>
+<li>Claude Desktop 應用程式（必須是桌面版）</li>
+<li>一個 Notion 帳戶</li>
+<li>基本的終端操作能力（不用怕，我們會一步步教你）</li>
+<li>大約 15 分鐘的耐心</li>
+</ul>
+<h2 id="第一步：建立-Notion-Integration"><a href="#第一步：建立-Notion-Integration" class="headerlink" title="第一步：建立 Notion Integration"></a>第一步：建立 Notion Integration</h2><p>首先我們需要告訴 Notion「歡迎 Claude 來串門子」。</p>
+<ol>
+<li><p><strong>前往 Notion Integrations 頁面</strong><br>打開 <a target="_blank" rel="noopener" href="https://www.notion.so/profile/integrations">https://www.notion.so/profile/integrations</a></p>
+</li>
+<li><p><strong>建立新的 Integration</strong></p>
+<ul>
+<li>點擊「New Integration」</li>
+<li>給它取個名字，比如「Claude MCP」</li>
+<li>選擇你的工作區</li>
+<li>類型保持「Internal」就好</li>
+</ul>
+</li>
+<li><p><strong>複製 Integration Token</strong><br>建立完成後，你會看到一串以 <code>ntn_</code> 開頭的神秘字串，這就是你的金鑰。小心保管，等會要用到！</p>
+</li>
+<li><p><strong>設定權限</strong><br>在 Capabilities 頁面中，建議至少開啟：</p>
+<ul>
+<li>Read content（讀取內容）</li>
+<li>Update content（更新內容）  </li>
+<li>Insert content（新增內容）</li>
+</ul>
+</li>
+</ol>
+<h2 id="第二步：配置-Claude-Desktop"><a href="#第二步：配置-Claude-Desktop" class="headerlink" title="第二步：配置 Claude Desktop"></a>第二步：配置 Claude Desktop</h2><p>現在要讓 Claude Desktop 知道如何連接到你的 Notion。</p>
+<h3 id="macOS-用戶"><a href="#macOS-用戶" class="headerlink" title="macOS 用戶"></a>macOS 用戶</h3><p>打開終端，輸入：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">code ~/Library/Application\ Support/Claude/claude_desktop_config.json</span><br></pre></td></tr></table></figure>
+
+<h3 id="Windows-用戶"><a href="#Windows-用戶" class="headerlink" title="Windows 用戶"></a>Windows 用戶</h3><p>打開命令提示字元，輸入：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">notepad %APPDATA%\Claude\claude_desktop_config.json</span><br></pre></td></tr></table></figure>
+
+<p>在這個設定檔中加入以下內容：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;mcpServers&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;notion&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;npx&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;args&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;-y&quot;</span><span class="punctuation">,</span> <span class="string">&quot;@notionhq/notion-mcp-server&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;env&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;OPENAPI_MCP_HEADERS&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&#123;\&quot;Authorization\&quot;: \&quot;Bearer ntn_你的金鑰\&quot;, \&quot;Notion-Version\&quot;: \&quot;2022-06-28\&quot;&#125;&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>記得把 <code>ntn_你的金鑰</code> 替換成剛才複製的 Integration Token！</p>
+<h2 id="第三步：連接頁面到-Integration"><a href="#第三步：連接頁面到-Integration" class="headerlink" title="第三步：連接頁面到 Integration"></a>第三步：連接頁面到 Integration</h2><p>設定完 Integration 後，你還需要告訴 Notion 哪些頁面可以讓 Claude 存取。</p>
+<ol>
+<li><strong>進入你想要 Claude 存取的頁面</strong></li>
+<li><strong>點擊右上角的「⋯」選單</strong></li>
+<li><strong>選擇「Connect to」→ 你的 Integration 名稱</strong></li>
+</ol>
+<p>完成這步後，Claude 就能看到並操作這個頁面了！</p>
+<h2 id="第四步：重啟-Claude-Desktop"><a href="#第四步：重啟-Claude-Desktop" class="headerlink" title="第四步：重啟 Claude Desktop"></a>第四步：重啟 Claude Desktop</h2><p>配置完成後，記得<strong>完全關閉</strong>Claude Desktop 應用程式，然後重新打開。這樣 MCP 設定才會生效。</p>
+<p>如果一切順利，你應該會在 Claude 介面中看到工具圖示，這表示 Notion MCP 已經連接成功！</p>
+<h2 id="實際應用場景"><a href="#實際應用場景" class="headerlink" title="實際應用場景"></a>實際應用場景</h2><p>設置完成後，你可以這樣使用：</p>
+<h3 id="📝-內容管理"><a href="#📝-內容管理" class="headerlink" title="📝 內容管理"></a>📝 內容管理</h3><p>「幫我在個人筆記頁面建立一篇關於今天學到的 Python 技巧的筆記」</p>
+<h3 id="📊-資料整理"><a href="#📊-資料整理" class="headerlink" title="📊 資料整理"></a>📊 資料整理</h3><p>「把我昨天的會議記錄整理成待辦事項，並新增到專案管理資料庫」</p>
+<h3 id="🔍-資訊檢索"><a href="#🔍-資訊檢索" class="headerlink" title="🔍 資訊檢索"></a>🔍 資訊檢索</h3><p>「幫我找出所有標記為『重要』的筆記內容」</p>
+<h3 id="📋-專案管理"><a href="#📋-專案管理" class="headerlink" title="📋 專案管理"></a>📋 專案管理</h3><p>「建立本月的工作計劃，包含優先級和預計完成時間」</p>
+<h2 id="常見問題排除"><a href="#常見問題排除" class="headerlink" title="常見問題排除"></a>常見問題排除</h2><h3 id="看不到工具圖示？"><a href="#看不到工具圖示？" class="headerlink" title="看不到工具圖示？"></a>看不到工具圖示？</h3><ul>
+<li>確認配置檔案格式正確（JSON 語法很挑剔）</li>
+<li>檢查 Integration Token 是否正確</li>
+<li>重啟 Claude Desktop</li>
+</ul>
+<h3 id="Claude-說找不到頁面？"><a href="#Claude-說找不到頁面？" class="headerlink" title="Claude 說找不到頁面？"></a>Claude 說找不到頁面？</h3><ul>
+<li>確認頁面已經連接到 Integration</li>
+<li>檢查 Integration 權限設定</li>
+<li>試著重新連接頁面</li>
+</ul>
+<h3 id="M1-Mac-用戶遇到問題？"><a href="#M1-Mac-用戶遇到問題？" class="headerlink" title="M1 Mac 用戶遇到問題？"></a>M1 Mac 用戶遇到問題？</h3><ul>
+<li>安裝 Rosetta 2：<code>softwareupdate --install-rosetta</code></li>
+<li>確保使用最新版本的 Node.js</li>
+</ul>
+<h2 id="安全性提醒"><a href="#安全性提醒" class="headerlink" title="安全性提醒"></a>安全性提醒</h2><p>雖然 Notion MCP 很方便，但也要注意安全：</p>
+<ul>
+<li>Integration Token 要妥善保管，不要分享給別人</li>
+<li>只連接必要的頁面到 Integration</li>
+<li>可以設定唯讀權限，避免意外修改重要資料</li>
+<li>定期檢查 Integration 的存取記錄</li>
+</ul>
+<h2 id="進階玩法"><a href="#進階玩法" class="headerlink" title="進階玩法"></a>進階玩法</h2><p>熟悉基本操作後，你還可以嘗試：</p>
+<ul>
+<li><strong>批量資料處理</strong>：讓 Claude 幫你整理大量筆記</li>
+<li><strong>自動化工作流程</strong>：設定固定的頁面結構和內容模板  </li>
+<li><strong>智能資料分析</strong>：分析你的筆記習慣和知識結構</li>
+<li><strong>多工作區管理</strong>：在不同專案間快速切換和整理</li>
+</ul>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>Notion MCP 真的是生產力的一大躍進！它不只是把兩個工具連接起來，而是創造了全新的工作方式。你的 Notion 不再只是靜態的筆記本，而是變成了一個智能的知識夥伴。</p>
+<p>現在就動手設定吧！相信我，一旦體驗過 Claude 直接幫你整理 Notion 的便利，你就再也回不去手動複製貼上的日子了。</p>
+<p>有任何問題歡迎在留言區討論，我們一起探索 AI 與生產力工具結合的無限可能！</p>
+<hr>
+<p><em>本文基於 2025 年 6 月的 Notion MCP 最新版本撰寫，設置方法可能會隨著版本更新而調整。</em></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/MCP/" rel="tag"># MCP</a>
+              <a href="/tags/Notion/" rel="tag"># Notion</a>
+              <a href="/tags/Claude/" rel="tag"># Claude</a>
+              <a href="/tags/%E8%87%AA%E5%8B%95%E5%8C%96/" rel="tag"># 自動化</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/25b31ce7/" rel="prev" title="前端架構大亂鬥：讓 React 和 Vue 在同一個專案中和平共處的黑科技">
+                  <i class="fa fa-angle-left"></i> 前端架構大亂鬥：讓 React 和 Vue 在同一個專案中和平共處的黑科技
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/9b217823/" rel="next" title="當 IIS 遇到代理伺服器：如何在複雜網路環境下實現真實 IP 白名單控制">
+                  當 IIS 遇到代理伺服器：如何在複雜網路環境下實現真實 IP 白名單控制 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

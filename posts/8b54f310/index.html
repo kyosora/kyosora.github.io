@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="還在為重灌電腦後需要一一下載安裝軟體而頭痛嗎？每次環境設定都像一場馬拉松般耗時費力？別擔心，今天我要介紹的 Chocolatey 神技，讓你只需準備兩行 PowerShell 指令，就能一鍵還原所有常用軟體，省下寶貴的時間來做更重要的事！  Chocolatey 是什麼？為何我現在才知道？ Chocolatey 是 Windows 平台上的套件管理工具，如果你用過 Linux 的 apt 或 Ma">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Chocolatey 神技：兩行 PowerShell 搞定所有軟體重裝的煩惱">
+<meta property="og:url" content="https://kyosora.github.io/posts/8b54f310/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="還在為重灌電腦後需要一一下載安裝軟體而頭痛嗎？每次環境設定都像一場馬拉松般耗時費力？別擔心，今天我要介紹的 Chocolatey 神技，讓你只需準備兩行 PowerShell 指令，就能一鍵還原所有常用軟體，省下寶貴的時間來做更重要的事！  Chocolatey 是什麼？為何我現在才知道？ Chocolatey 是 Windows 平台上的套件管理工具，如果你用過 Linux 的 apt 或 Ma">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2025-03-20T02:30:00.000Z">
+<meta property="article:modified_time" content="2025-03-31T01:41:01.275Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Chocolatey">
+<meta property="article:tag" content="PowerShell">
+<meta property="article:tag" content="軟體管理">
+<meta property="article:tag" content="系統還原">
+<meta property="article:tag" content="開發環境配置">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/8b54f310/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/8b54f310/","path":"posts/8b54f310/","title":"Chocolatey 神技：兩行 PowerShell 搞定所有軟體重裝的煩惱"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Chocolatey 神技：兩行 PowerShell 搞定所有軟體重裝的煩惱 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Chocolatey-%E6%98%AF%E4%BB%80%E9%BA%BC%EF%BC%9F%E7%82%BA%E4%BD%95%E6%88%91%E7%8F%BE%E5%9C%A8%E6%89%8D%E7%9F%A5%E9%81%93%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">Chocolatey 是什麼？為何我現在才知道？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%9D-Chocolatey%EF%BC%9A%E9%96%8B%E5%A7%8B%E4%BD%A0%E7%9A%84%E5%A5%97%E4%BB%B6%E7%AE%A1%E7%90%86%E4%B9%8B%E6%97%85"><span class="nav-number">2.</span> <span class="nav-text">安裝 Chocolatey：開始你的套件管理之旅</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8-Chocolatey-%E5%AE%89%E8%A3%9D%E8%BB%9F%E9%AB%94%EF%BC%9A%E5%86%8D%E8%A6%8B%EF%BC%8C%E4%B8%8B%E4%B8%80%E6%AD%A5%E6%8C%89%E9%88%95%EF%BC%81"><span class="nav-number">3.</span> <span class="nav-text">用 Chocolatey 安裝軟體：再見，下一步按鈕！</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-PowerShell-%E5%82%99%E4%BB%BD%E4%BD%A0%E7%9A%84%E8%BB%9F%E9%AB%94%E6%B8%85%E5%96%AE%EF%BC%9A%E6%99%BA%E6%85%A7%E5%B7%A5%E7%A8%8B%E5%B8%AB%E7%9A%84%E8%87%AA%E4%BF%9D%E4%B9%8B%E9%81%93"><span class="nav-number">4.</span> <span class="nav-text">使用 PowerShell 備份你的軟體清單：智慧工程師的自保之道</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E9%82%84%E5%8E%9F%E6%89%80%E6%9C%89%E8%BB%9F%E9%AB%94%EF%BC%9A%E9%9B%BB%E8%85%A6%E9%87%8D%E7%81%8C%E4%B8%8D%E5%86%8D%E6%98%AF%E5%99%A9%E5%A4%A2"><span class="nav-number">5.</span> <span class="nav-text">快速還原所有軟體：電腦重灌不再是噩夢</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%B2%E9%9A%8E%E6%8A%80%E5%B7%A7%EF%BC%9A%E5%89%B5%E5%BB%BA%E4%B8%80%E5%80%8B%E4%B8%80%E9%8D%B5%E5%AE%89%E8%A3%9D%E8%85%B3%E6%9C%AC"><span class="nav-number">6.</span> <span class="nav-text">進階技巧：創建一個一鍵安裝腳本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%82%99%E4%BB%BD%E8%85%B3%E6%9C%AC-backup-packages-ps1"><span class="nav-number">6.1.</span> <span class="nav-text">備份腳本 (backup-packages.ps1)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8D%B2%E5%8F%96%E6%9B%B4%E5%A5%BD%E7%9A%84%E9%AB%94%E9%A9%97%EF%BC%9AChocolatey-GUI"><span class="nav-number">7.</span> <span class="nav-text">獲取更好的體驗：Chocolatey GUI</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AA%9E%EF%BC%9A%E5%B7%A5%E4%BD%9C%E6%95%88%E7%8E%87%E7%9A%84%E5%B0%8F%E9%9D%A9%E5%91%BD"><span class="nav-number">8.</span> <span class="nav-text">結語：工作效率的小革命</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/8b54f310/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Chocolatey 神技：兩行 PowerShell 搞定所有軟體重裝的煩惱 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Chocolatey 神技：兩行 PowerShell 搞定所有軟體重裝的煩惱
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2025-03-20 10:30:00" itemprop="dateCreated datePublished" datetime="2025-03-20T10:30:00+08:00">2025-03-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2025-03-31 09:41:01" itemprop="dateModified" datetime="2025-03-31T09:41:01+08:00">2025-03-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E5%85%B7%E6%8A%80%E5%B7%A7/" itemprop="url" rel="index"><span itemprop="name">工具技巧</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E5%85%B7%E6%8A%80%E5%B7%A7/Windows/" itemprop="url" rel="index"><span itemprop="name">Windows</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>4.9k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>4 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>還在為重灌電腦後需要一一下載安裝軟體而頭痛嗎？每次環境設定都像一場馬拉松般耗時費力？別擔心，今天我要介紹的 Chocolatey 神技，讓你只需準備兩行 PowerShell 指令，就能一鍵還原所有常用軟體，省下寶貴的時間來做更重要的事！</p>
+<h2 id="Chocolatey-是什麼？為何我現在才知道？"><a href="#Chocolatey-是什麼？為何我現在才知道？" class="headerlink" title="Chocolatey 是什麼？為何我現在才知道？"></a>Chocolatey 是什麼？為何我現在才知道？</h2><p>Chocolatey 是 Windows 平台上的套件管理工具，如果你用過 Linux 的 apt 或 Mac 的 Homebrew，就會覺得 Chocolatey 相當親切。它讓你能透過命令列來安裝、更新和管理各種軟體，不必再手動下載安裝檔、點擊下一步、同意條款⋯⋯這些繁瑣的步驟。</p>
+<p>想想看，你是否曾經歷過這樣的情境：</p>
+<blockquote>
+<p>週一早上，筆電突然藍屏，送修後技術人員告訴你：「已經重灌系統了，資料都在，軟體得自己裝回去。」你內心OS：「天啊，又要花一整天重新下載安裝所有工作用軟體...」</p>
+</blockquote>
+<p>有了 Chocolatey，你只需執行一個指令檔，就能自動安裝回 Chrome、7-Zip、VS Code、Notepad++、Everything 等所有你日常使用的軟體。不只省時間，還能確保你不會忘記安裝某些不常用但關鍵時刻需要的工具。</p>
+<h2 id="安裝-Chocolatey：開始你的套件管理之旅"><a href="#安裝-Chocolatey：開始你的套件管理之旅" class="headerlink" title="安裝 Chocolatey：開始你的套件管理之旅"></a>安裝 Chocolatey：開始你的套件管理之旅</h2><p>安裝 Chocolatey 超級簡單。只要開啟 PowerShell（以系統管理員身分執行），然後貼上以下指令：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Set-ExecutionPolicy</span> Bypass <span class="literal">-Scope</span> <span class="keyword">Process</span> <span class="literal">-Force</span></span><br><span class="line">[<span class="type">System.Net.ServicePointManager</span>]::SecurityProtocol = [<span class="type">System.Net.ServicePointManager</span>]::SecurityProtocol <span class="operator">-bor</span> <span class="number">3072</span></span><br><span class="line"><span class="built_in">iex</span> ((<span class="built_in">New-Object</span> System.Net.WebClient).DownloadString(<span class="string">&#x27;https://community.chocolatey.org/install.ps1&#x27;</span>))</span><br></pre></td></tr></table></figure>
+
+<p>輸入完指令後，按下 Enter 鍵，PowerShell 會自動下載並安裝 Chocolatey。安裝完成後，你可以輸入 <code>choco -v</code> 來確認是否安裝成功以及查看版本號。</p>
+<h2 id="用-Chocolatey-安裝軟體：再見，下一步按鈕！"><a href="#用-Chocolatey-安裝軟體：再見，下一步按鈕！" class="headerlink" title="用 Chocolatey 安裝軟體：再見，下一步按鈕！"></a>用 Chocolatey 安裝軟體：再見，下一步按鈕！</h2><p>有了 Chocolatey 後，安裝軟體變得超簡單。例如，如果你想安裝 Google Chrome，只需在 PowerShell 中輸入：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">choco install googlechrome <span class="literal">-y</span></span><br></pre></td></tr></table></figure>
+
+<p>這個指令會自動下載並安裝 Chrome 瀏覽器，<code>-y</code> 參數表示自動同意所有提示，讓安裝過程完全自動化。</p>
+<p>你也可以一次安裝多個軟體：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">choco install <span class="number">7</span>zip vscode notepadplusplus everything googlechrome <span class="literal">-y</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣就能一次安裝 7-Zip、VS Code、Notepad++、Everything 和 Chrome 五個軟體，省去了逐一下載安裝的麻煩。</p>
+<h2 id="使用-PowerShell-備份你的軟體清單：智慧工程師的自保之道"><a href="#使用-PowerShell-備份你的軟體清單：智慧工程師的自保之道" class="headerlink" title="使用 PowerShell 備份你的軟體清單：智慧工程師的自保之道"></a>使用 PowerShell 備份你的軟體清單：智慧工程師的自保之道</h2><p>這才是今天的重點！你可以使用 PowerShell 指令來備份已安裝的 Chocolatey 套件清單，以便在新電腦或重灌後快速還原。</p>
+<p>首先，開啟 PowerShell，輸入以下指令來匯出所有已安裝的套件：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">choco list <span class="literal">--local-only</span> <span class="literal">--id-only</span> | <span class="built_in">Select-Object</span> <span class="literal">-Skip</span> <span class="number">1</span> | <span class="built_in">Where-Object</span> &#123; <span class="variable">$_</span> <span class="operator">-ne</span> <span class="string">&quot;&quot;</span> &#125; | <span class="built_in">Out-File</span> <span class="literal">-FilePath</span> <span class="string">&quot;<span class="variable">$env:USERPROFILE</span>\Desktop\chocolatey-packages.txt&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>這個指令會建立一個名為 <code>chocolatey-packages.txt</code> 的檔案在你的桌面上，裡面包含了所有通過 Chocolatey 安裝的軟體名稱。</p>
+<p>我們來解析一下這個指令：</p>
+<ul>
+<li><code>choco list --local-only --id-only</code>：列出所有本機安裝的 Chocolatey 套件，只顯示 ID</li>
+<li><code>Select-Object -Skip 1</code>：跳過第一行（通常是標題行）</li>
+<li><code>Where-Object &#123; $_ -ne &quot;&quot; &#125;</code>：過濾掉空行</li>
+<li><code>Out-File -FilePath &quot;$env:USERPROFILE\Desktop\chocolatey-packages.txt&quot;</code>：將結果輸出到桌面的檔案中</li>
+</ul>
+<h2 id="快速還原所有軟體：電腦重灌不再是噩夢"><a href="#快速還原所有軟體：電腦重灌不再是噩夢" class="headerlink" title="快速還原所有軟體：電腦重灌不再是噩夢"></a>快速還原所有軟體：電腦重灌不再是噩夢</h2><p>當你需要在新電腦或重灌系統後還原軟體時，只需執行以下步驟：</p>
+<ol>
+<li>安裝 Chocolatey（見上文）</li>
+<li>將之前備份的 <code>chocolatey-packages.txt</code> 檔案複製到新電腦上</li>
+<li>開啟 PowerShell（以系統管理員身分執行），然後執行以下指令：</li>
+</ol>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-Content</span> <span class="literal">-Path</span> <span class="string">&quot;檔案路徑\chocolatey-packages.txt&quot;</span> | <span class="built_in">ForEach-Object</span> &#123; choco install <span class="variable">$_</span> <span class="literal">-y</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>將「檔案路徑」替換為你存放 <code>chocolatey-packages.txt</code> 的實際路徑。例如，如果檔案在桌面上：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-Content</span> <span class="literal">-Path</span> <span class="string">&quot;<span class="variable">$env:USERPROFILE</span>\Desktop\chocolatey-packages.txt&quot;</span> | <span class="built_in">ForEach-Object</span> &#123; choco install <span class="variable">$_</span> <span class="literal">-y</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>這個指令會讀取檔案中的每一行，並使用 Chocolatey 安裝對應的軟體，<code>-y</code> 參數確保安裝過程中自動同意所有提示。</p>
+<h2 id="進階技巧：創建一個一鍵安裝腳本"><a href="#進階技巧：創建一個一鍵安裝腳本" class="headerlink" title="進階技巧：創建一個一鍵安裝腳本"></a>進階技巧：創建一個一鍵安裝腳本</h2><p>你也可以創建一個更完整的 PowerShell 腳本，將備份和還原過程進一步自動化。以下是一個範例腳本：</p>
+<h3 id="備份腳本-backup-packages-ps1"><a href="#備份腳本-backup-packages-ps1" class="headerlink" title="備份腳本 (backup-packages.ps1)"></a>備份腳本 (backup-packages.ps1)</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 確認是否以管理員權限運行</span></span><br><span class="line"><span class="keyword">if</span> (<span class="operator">-NOT</span> ([<span class="type">Security.Principal.WindowsPrincipal</span>][<span class="type">Security.Principal.WindowsIdentity</span>]::GetCurrent()).IsInRole([<span class="type">Security.Principal.WindowsBuiltInRole</span>]::Administrator)) &#123;</span><br><span class="line">    <span class="built_in">Write-Warning</span> <span class="string">&quot;請以系統管理員身分執行此腳本&quot;</span></span><br><span class="line">    <span class="keyword">break</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 備份路徑，這裡設定為桌面</span></span><br><span class="line"><span class="variable">$backupPath</span> = <span class="string">&quot;<span class="variable">$env:USERPROFILE</span>\Desktop\chocolatey-backup&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果備份資料夾不存在則創建</span></span><br><span class="line"><span class="keyword">if</span> (!(<span class="built_in">Test-Path</span> <span class="literal">-Path</span> <span class="variable">$backupPath</span>)) &#123;</span><br><span class="line">    <span class="built_in">New-Item</span> <span class="literal">-ItemType</span> Directory <span class="literal">-Path</span> <span class="variable">$backupPath</span> | <span class="built_in">Out-Null</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 備份已安裝的套件</span></span><br><span class="line"><span class="variable">$packagesFile</span> = <span class="string">&quot;<span class="variable">$backupPath</span>\packages.txt&quot;</span></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;正在備份已安裝的 Chocolatey 套件...&quot;</span></span><br><span class="line">choco list <span class="literal">--local-only</span> <span class="literal">--id-only</span> | <span class="built_in">Select-Object</span> <span class="literal">-Skip</span> <span class="number">1</span> | <span class="built_in">Where-Object</span> &#123; <span class="variable">$_</span> <span class="operator">-ne</span> <span class="string">&quot;&quot;</span> &#125; | <span class="built_in">Out-File</span> <span class="literal">-FilePath</span> <span class="variable">$packagesFile</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 創建還原腳本</span></span><br><span class="line"><span class="variable">$restoreScriptPath</span> = <span class="string">&quot;<span class="variable">$backupPath</span>\restore-packages.ps1&quot;</span></span><br><span class="line"><span class="variable">$restoreScript</span> = <span class="string">@&quot;</span></span><br><span class="line"><span class="string"># 確認是否以管理員權限運行</span></span><br><span class="line"><span class="string">if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) &#123;</span></span><br><span class="line"><span class="string">    Write-Warning &quot;請以系統管理員身分執行此腳本&quot;</span></span><br><span class="line"><span class="string">    break</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 檢查 Chocolatey 是否已安裝</span></span><br><span class="line"><span class="string">if (!(Get-Command choco -ErrorAction SilentlyContinue)) &#123;</span></span><br><span class="line"><span class="string">    Write-Host &quot;正在安裝 Chocolatey...&quot;</span></span><br><span class="line"><span class="string">    Set-ExecutionPolicy Bypass -Scope Process -Force</span></span><br><span class="line"><span class="string">    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072</span></span><br><span class="line"><span class="string">    iex ((New-Object System.Net.WebClient).DownloadString(&#x27;https://community.chocolatey.org/install.ps1&#x27;))</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 還原套件</span></span><br><span class="line"><span class="string">Write-Host &quot;正在還原 Chocolatey 套件...&quot;</span></span><br><span class="line"><span class="string">Get-Content -Path &quot;<span class="variable">$</span>((Get-Item -Path `$PSScriptRoot).FullName)\packages.txt&quot; | ForEach-Object &#123; </span></span><br><span class="line"><span class="string">    Write-Host &quot;安裝套件: `$_&quot; -ForegroundColor Cyan</span></span><br><span class="line"><span class="string">    choco install `$_ -y</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Write-Host &quot;所有套件已還原完成！&quot; -ForegroundColor Green</span></span><br><span class="line"><span class="string">Read-Host &quot;按 Enter 鍵結束&quot;</span></span><br><span class="line"><span class="string">&quot;@</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$restoreScript</span> | <span class="built_in">Out-File</span> <span class="literal">-FilePath</span> <span class="variable">$restoreScriptPath</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;備份完成！&quot;</span> <span class="literal">-ForegroundColor</span> Green</span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;備份檔案和還原腳本已保存到: <span class="variable">$backupPath</span>&quot;</span> <span class="literal">-ForegroundColor</span> Yellow</span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;在新系統上，只需執行 restore-packages.ps1 腳本即可還原所有軟體。&quot;</span> <span class="literal">-ForegroundColor</span> Yellow</span><br><span class="line"><span class="built_in">Read-Host</span> <span class="string">&quot;按 Enter 鍵結束&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>這個進階腳本不只會備份你的套件清單，還會自動產生一個還原腳本，讓整個還原過程更加簡單。你只需要將整個 <code>chocolatey-backup</code> 資料夾複製到新電腦，然後執行 <code>restore-packages.ps1</code> 即可。</p>
+<h2 id="獲取更好的體驗：Chocolatey-GUI"><a href="#獲取更好的體驗：Chocolatey-GUI" class="headerlink" title="獲取更好的體驗：Chocolatey GUI"></a>獲取更好的體驗：Chocolatey GUI</h2><p>如果你不太喜歡命令列界面，Chocolatey 也提供了圖形界面版本 Chocolatey GUI，讓你可以用更直觀的方式管理套件。安裝方法很簡單：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">choco install chocolateygui <span class="literal">-y</span></span><br></pre></td></tr></table></figure>
+
+<p>安裝完成後，你可以在開始選單中找到 Chocolatey GUI，透過它來搜尋、安裝、更新和移除軟體，就像使用應用商店一樣簡單。</p>
+<h2 id="結語：工作效率的小革命"><a href="#結語：工作效率的小革命" class="headerlink" title="結語：工作效率的小革命"></a>結語：工作效率的小革命</h2><p>當我第一次使用 Chocolatey 時，才發現原來電腦重灌後的軟體安裝可以如此輕鬆。這個小工具徹底改變了我管理 Windows 軟體的方式，節省了大量的時間和精力。不只是對個人用戶，對於 IT 部門來說，Chocolatey 也是批量部署軟體的強大工具。</p>
+<p>下次當你的電腦需要重灌，或者當你幫朋友設定新電腦時，不妨試試 Chocolatey 和這篇文章中提到的 PowerShell 指令，你會發現，原來電腦設定也可以如此簡單高效！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Chocolatey/" rel="tag"># Chocolatey</a>
+              <a href="/tags/PowerShell/" rel="tag"># PowerShell</a>
+              <a href="/tags/%E8%BB%9F%E9%AB%94%E7%AE%A1%E7%90%86/" rel="tag"># 軟體管理</a>
+              <a href="/tags/%E7%B3%BB%E7%B5%B1%E9%82%84%E5%8E%9F/" rel="tag"># 系統還原</a>
+              <a href="/tags/%E9%96%8B%E7%99%BC%E7%92%B0%E5%A2%83%E9%85%8D%E7%BD%AE/" rel="tag"># 開發環境配置</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/38af2cdf/" rel="prev" title="使用Google Search Console驗證與修復遭受DNS污染的IIS網站">
+                  <i class="fa fa-angle-left"></i> 使用Google Search Console驗證與修復遭受DNS污染的IIS網站
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/a6b782ce/" rel="next" title="讓你的Claude如虎添翼：MCP功能實戰筆記">
+                  讓你的Claude如虎添翼：MCP功能實戰筆記 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

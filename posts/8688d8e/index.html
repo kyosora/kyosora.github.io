@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="前言 身為後端工程師，你是否遇過這樣的情況：   * 系統突然變得超級慢  * 網頁一直轉圈圈  * 收到「已超過連線逾時的設定」錯誤訊息  如果有，恭喜你！你可能遇到了資料庫連線池爆掉的問題。今天就來分享一個真實案例，看看如何從診斷到解決這個棘手的問題。  問題診斷 當你遇到以下錯誤訊息時，很可能是連線池出問題了：  1   System.InvalidOperationException: &#39;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="資料庫連線池爆掉救火秘笈！如何優雅地處理 SQL Server 連線危機">
+<meta property="og:url" content="https://kyosora.github.io/posts/8688d8e/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="前言 身為後端工程師，你是否遇過這樣的情況：   * 系統突然變得超級慢  * 網頁一直轉圈圈  * 收到「已超過連線逾時的設定」錯誤訊息  如果有，恭喜你！你可能遇到了資料庫連線池爆掉的問題。今天就來分享一個真實案例，看看如何從診斷到解決這個棘手的問題。  問題診斷 當你遇到以下錯誤訊息時，很可能是連線池出問題了：  1   System.InvalidOperationException: &#39;">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-10-27T06:30:00.000Z">
+<meta property="article:modified_time" content="2024-11-27T07:55:40.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="SQL Server">
+<meta property="article:tag" content="效能優化">
+<meta property="article:tag" content="資料庫管理">
+<meta property="article:tag" content="連線池">
+<meta property="article:tag" content="程式碼優化">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/8688d8e/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/8688d8e/","path":"posts/8688d8e/","title":"資料庫連線池爆掉救火秘笈！如何優雅地處理 SQL Server 連線危機"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>資料庫連線池爆掉救火秘笈！如何優雅地處理 SQL Server 連線危機 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%95%8F%E9%A1%8C%E8%A8%BA%E6%96%B7"><span class="nav-number">2.</span> <span class="nav-text">問題診斷</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E8%A8%BA%E6%96%B7%E6%96%B9%E6%B3%95"><span class="nav-number">2.1.</span> <span class="nav-text">快速診斷方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B7%8A%E6%80%A5%E8%99%95%E7%90%86%E6%96%B9%E6%A1%88"><span class="nav-number">3.</span> <span class="nav-text">緊急處理方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A2%BC%E5%84%AA%E5%8C%96%E5%BB%BA%E8%AD%B0"><span class="nav-number">4.</span> <span class="nav-text">代碼優化建議</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A0%90%E9%98%B2%E6%8E%AA%E6%96%BD"><span class="nav-number">5.</span> <span class="nav-text">預防措施</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">6.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%83%E8%80%83%E8%B3%87%E6%BA%90"><span class="nav-number">7.</span> <span class="nav-text">參考資源</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/8688d8e/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="資料庫連線池爆掉救火秘笈！如何優雅地處理 SQL Server 連線危機 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          資料庫連線池爆掉救火秘笈！如何優雅地處理 SQL Server 連線危機
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-10-27 14:30:00" itemprop="dateCreated datePublished" datetime="2024-10-27T14:30:00+08:00">2024-10-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-11-27 15:55:40" itemprop="dateModified" datetime="2024-11-27T15:55:40+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/" itemprop="url" rel="index"><span itemprop="name">後端開發</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/%E8%B3%87%E6%96%99%E5%BA%AB%E5%84%AA%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">資料庫優化</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.6k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>身為後端工程師，你是否遇過這樣的情況：</p>
+<ul>
+<li>系統突然變得超級慢</li>
+<li>網頁一直轉圈圈</li>
+<li>收到「已超過連線逾時的設定」錯誤訊息</li>
+</ul>
+<p>如果有，恭喜你！你可能遇到了資料庫連線池爆掉的問題。今天就來分享一個真實案例，看看如何從診斷到解決這個棘手的問題。</p>
+<h2 id="問題診斷"><a href="#問題診斷" class="headerlink" title="問題診斷"></a>問題診斷</h2><p>當你遇到以下錯誤訊息時，很可能是連線池出問題了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.InvalidOperationException: &#x27;已超過連線逾時的設定。在取得集區連線之前超過逾時等待的時間，可能的原因為所有的共用連線已在使用中，並已達共用集區大小的最大值。&#x27;</span><br></pre></td></tr></table></figure>
+
+<h3 id="快速診斷方法"><a href="#快速診斷方法" class="headerlink" title="快速診斷方法"></a>快速診斷方法</h3><p>首先，我們可以使用以下 SQL 指令來查看目前的連線狀況：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    DB_NAME(dbid) <span class="keyword">as</span> DatabaseName,</span><br><span class="line">    <span class="built_in">COUNT</span>(dbid) <span class="keyword">as</span> NumberOfConnections,</span><br><span class="line">    loginame <span class="keyword">as</span> LoginName,</span><br><span class="line">    status,</span><br><span class="line">    hostname <span class="keyword">as</span> HostName,</span><br><span class="line">    program_name <span class="keyword">as</span> ProgramName</span><br><span class="line"><span class="keyword">FROM</span> sys.sysprocesses</span><br><span class="line"><span class="keyword">WHERE</span> dbid <span class="operator">&gt;</span> <span class="number">0</span></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> dbid, loginame, status, hostname, program_name;</span><br></pre></td></tr></table></figure>
+
+<h2 id="緊急處理方案"><a href="#緊急處理方案" class="headerlink" title="緊急處理方案"></a>緊急處理方案</h2><p>發現問題後，可以使用以下步驟處理：</p>
+<ol>
+<li><strong>檢視問題連線</strong><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 1. 首先查看當前的連接詳情</span></span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    spid <span class="keyword">as</span> <span class="string">&#x27;處理序 ID&#x27;</span>,</span><br><span class="line">    db_name(dbid) <span class="keyword">as</span> <span class="string">&#x27;數據庫&#x27;</span>,</span><br><span class="line">    loginame <span class="keyword">as</span> <span class="string">&#x27;登入名稱&#x27;</span>,</span><br><span class="line">    hostname <span class="keyword">as</span> <span class="string">&#x27;主機名&#x27;</span>,</span><br><span class="line">    program_name <span class="keyword">as</span> <span class="string">&#x27;程式名稱&#x27;</span>,</span><br><span class="line">    login_time <span class="keyword">as</span> <span class="string">&#x27;登入時間&#x27;</span>,</span><br><span class="line">    last_batch <span class="keyword">as</span> <span class="string">&#x27;最後執行時間&#x27;</span>,</span><br><span class="line">    status <span class="keyword">as</span> <span class="string">&#x27;狀態&#x27;</span></span><br><span class="line"><span class="keyword">FROM</span> sys.sysprocesses </span><br><span class="line"><span class="keyword">WHERE</span> dbid <span class="operator">=</span> DB_ID(<span class="string">&#x27;資料庫名稱&#x27;</span>)  <span class="comment">-- 替換成你的數據庫名</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> login_time <span class="keyword">DESC</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 2. 查看具體在執行什麼 SQL</span></span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    spid,</span><br><span class="line">    blocked <span class="keyword">as</span> <span class="string">&#x27;被阻塞源&#x27;</span>,</span><br><span class="line">    hostname <span class="keyword">as</span> <span class="string">&#x27;主機名&#x27;</span>,</span><br><span class="line">    program_name <span class="keyword">as</span> <span class="string">&#x27;程式名稱&#x27;</span>,</span><br><span class="line">    cmd <span class="keyword">as</span> <span class="string">&#x27;指令&#x27;</span>,</span><br><span class="line">    cpu <span class="keyword">as</span> <span class="string">&#x27;CPU時間&#x27;</span>,</span><br><span class="line">    physical_io <span class="keyword">as</span> <span class="string">&#x27;實體IO&#x27;</span>,</span><br><span class="line">    last_batch <span class="keyword">as</span> <span class="string">&#x27;最後執行時間&#x27;</span>,</span><br><span class="line">    [text] <span class="keyword">as</span> <span class="string">&#x27;SQL內容&#x27;</span></span><br><span class="line"><span class="keyword">FROM</span> sys.sysprocesses sp</span><br><span class="line"><span class="keyword">CROSS</span> APPLY sys.dm_exec_sql_text(sql_handle)</span><br><span class="line"><span class="keyword">WHERE</span> dbid <span class="operator">=</span> DB_ID(<span class="string">&#x27;資料庫名稱&#x27;</span>)  <span class="comment">-- 替換成你的數據庫名</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 3. 殺掉特定連接 (請小心使用)</span></span><br><span class="line"><span class="comment">-- KILL 52;  -- 替換成你要關閉的 SPID</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 4. 如果確定要關閉所有用戶連接，可以使用動態 SQL (需要特別小心)</span></span><br><span class="line"><span class="keyword">DECLARE</span> <span class="variable">@kill</span> <span class="type">varchar</span>(<span class="number">8000</span>) <span class="operator">=</span> <span class="string">&#x27;&#x27;</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="variable">@kill</span> <span class="operator">=</span> <span class="variable">@kill</span> <span class="operator">+</span> <span class="string">&#x27;KILL &#x27;</span> <span class="operator">+</span> <span class="keyword">CONVERT</span>(<span class="type">varchar</span>(<span class="number">5</span>), spid) <span class="operator">+</span> <span class="string">&#x27;;&#x27;</span></span><br><span class="line"><span class="keyword">FROM</span> sys.sysprocesses </span><br><span class="line"><span class="keyword">WHERE</span> dbid <span class="operator">=</span> DB_ID(<span class="string">&#x27;資料庫名稱&#x27;</span>)  <span class="comment">-- 替換成你的數據庫名</span></span><br><span class="line"><span class="keyword">AND</span> spid <span class="operator">&gt;</span> <span class="number">50</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 執行前先確認要關閉的連接</span></span><br><span class="line">PRINT <span class="variable">@kill</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 如果確認無誤，則可以執行（請小心使用）</span></span><br><span class="line"><span class="comment">-- EXEC(@kill);</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 5. 如果要切換數據庫到單一用戶模式</span></span><br><span class="line"><span class="comment">-- 這會強制斷開所有現有連接</span></span><br><span class="line"><span class="keyword">ALTER</span> DATABASE 資料庫名稱</span><br><span class="line"><span class="keyword">SET</span> SINGLE_USER </span><br><span class="line"><span class="keyword">WITH</span> <span class="keyword">ROLLBACK</span> IMMEDIATE;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 完成後切換回多用戶模式</span></span><br><span class="line"><span class="comment">-- ALTER DATABASE 資料庫名稱 SET MULTI_USER;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="代碼優化建議"><a href="#代碼優化建議" class="headerlink" title="代碼優化建議"></a>代碼優化建議</h2><p>這次發生的問題最後定位問題發現是很久以前前人寫的VB程式碼資料庫連接沒有正確的釋放導致的，為了避免類似問題再次發生，對程式碼進行以下優化：</p>
+<ol>
+<li><p><strong>使用 Using 區塊確保資源釋放</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Using connection As New SqlConnection(connectionString)</span><br><span class="line">    &#x27; 資料庫操作</span><br><span class="line">End Using</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>避免全域宣告資料庫連線</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#x27; 不建議</span><br><span class="line">Dim conn As New SqlConnection  &#x27;全域變數</span><br><span class="line"></span><br><span class="line">&#x27; 建議</span><br><span class="line">Private Function GetData() As DataTable</span><br><span class="line">    Using conn As New SqlConnection(connectionString)</span><br><span class="line">        &#x27; 程式碼</span><br><span class="line">    End Using</span><br><span class="line">End Function</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>設定適當的連線池參數</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">connectionStrings</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">add</span> <span class="attr">name</span>=<span class="string">&quot;MyConnection&quot;</span> </span></span><br><span class="line"><span class="tag">         <span class="attr">connectionString</span>=<span class="string">&quot;Server=myserver;Database=mydb;</span></span></span><br><span class="line"><span class="string"><span class="tag">         Max Pool Size=100;Min Pool Size=5;</span></span></span><br><span class="line"><span class="string"><span class="tag">         Connection Timeout=30;&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">providerName</span>=<span class="string">&quot;System.Data.SqlClient&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">connectionStrings</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="預防措施"><a href="#預防措施" class="headerlink" title="預防措施"></a>預防措施</h2><ol>
+<li><p><strong>定期監控連線數</strong></p>
+<ul>
+<li>設置警示機制</li>
+<li>監控連線成長趨勢</li>
+</ul>
+</li>
+<li><p><strong>程式碼審查重點</strong></p>
+<ul>
+<li>確認所有資料庫連線都有正確釋放</li>
+<li>避免無限期保持連線</li>
+</ul>
+</li>
+<li><p><strong>效能調校建議</strong></p>
+<ul>
+<li>適當設定 Max Pool Size</li>
+<li>配置合理的 Connection Timeout</li>
+<li>實作重試機制</li>
+</ul>
+</li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>資料庫連線池問題雖然棘手，但只要掌握正確的診斷和處理方法，就能夠優雅地解決。預防永遠勝於治療，建議定期檢查程式碼和監控系統狀態，及早發現潛在問題。</p>
+<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/sql/connect/ado-net/sql-server-connection-pooling">Microsoft Docs - SQL Server 連線集區</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/dotnet/framework/data/adonet/connection-pooling">ASP.NET Connection Pooling</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SQL-Server/" rel="tag"># SQL Server</a>
+              <a href="/tags/%E6%95%88%E8%83%BD%E5%84%AA%E5%8C%96/" rel="tag"># 效能優化</a>
+              <a href="/tags/%E8%B3%87%E6%96%99%E5%BA%AB%E7%AE%A1%E7%90%86/" rel="tag"># 資料庫管理</a>
+              <a href="/tags/%E9%80%A3%E7%B7%9A%E6%B1%A0/" rel="tag"># 連線池</a>
+              <a href="/tags/%E7%A8%8B%E5%BC%8F%E7%A2%BC%E5%84%AA%E5%8C%96/" rel="tag"># 程式碼優化</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/b7827369/" rel="prev" title="如何快速查詢資料庫檢視表(View)的欄位資訊">
+                  <i class="fa fa-angle-left"></i> 如何快速查詢資料庫檢視表(View)的欄位資訊
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/e5401adb/" rel="next" title="SQL Server 空間查詢操作指南">
+                  SQL Server 空間查詢操作指南 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

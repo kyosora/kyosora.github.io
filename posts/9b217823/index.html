@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="前情提要：突如其來的測試環境危機 最近台電因為白帽滲透測試的關係，需要暫時關閉測試機。但開發團隊偶爾還是需要測試環境來驗證功能，於是我們決定把程式架在其他環境上。原本想說簡單設個 IIS IP 白名單就能解決，沒想到踩到了一個大坑...  問題出現：IP 白名單完全失效 當我興高采烈地在 IIS 管理器中設定「IP 位址及網域限制」，把信任的 IP 加入白名單後，發現一個詭異的現象：   * 設定">
+<meta property="og:type" content="article">
+<meta property="og:title" content="當 IIS 遇到代理伺服器：如何在複雜網路環境下實現真實 IP 白名單控制">
+<meta property="og:url" content="https://kyosora.github.io/posts/9b217823/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="前情提要：突如其來的測試環境危機 最近台電因為白帽滲透測試的關係，需要暫時關閉測試機。但開發團隊偶爾還是需要測試環境來驗證功能，於是我們決定把程式架在其他環境上。原本想說簡單設個 IIS IP 白名單就能解決，沒想到踩到了一個大坑...  問題出現：IP 白名單完全失效 當我興高采烈地在 IIS 管理器中設定「IP 位址及網域限制」，把信任的 IP 加入白名單後，發現一個詭異的現象：   * 設定">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2025-07-01T07:30:00.000Z">
+<meta property="article:modified_time" content="2025-07-03T01:50:56.717Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="IIS">
+<meta property="article:tag" content="IP Restriction">
+<meta property="article:tag" content="Proxy">
+<meta property="article:tag" content="Security">
+<meta property="article:tag" content="URL Rewrite">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/9b217823/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/9b217823/","path":"posts/9b217823/","title":"當 IIS 遇到代理伺服器：如何在複雜網路環境下實現真實 IP 白名單控制"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>當 IIS 遇到代理伺服器：如何在複雜網路環境下實現真實 IP 白名單控制 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E6%83%85%E6%8F%90%E8%A6%81%EF%BC%9A%E7%AA%81%E5%A6%82%E5%85%B6%E4%BE%86%E7%9A%84%E6%B8%AC%E8%A9%A6%E7%92%B0%E5%A2%83%E5%8D%B1%E6%A9%9F"><span class="nav-number">1.</span> <span class="nav-text">前情提要：突如其來的測試環境危機</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%95%8F%E9%A1%8C%E5%87%BA%E7%8F%BE%EF%BC%9AIP-%E7%99%BD%E5%90%8D%E5%96%AE%E5%AE%8C%E5%85%A8%E5%A4%B1%E6%95%88"><span class="nav-number">2.</span> <span class="nav-text">問題出現：IP 白名單完全失效</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B1%E5%85%A5%E8%BF%BD%E6%9F%A5%EF%BC%9A%E5%B0%8B%E6%89%BE%E7%9C%9F%E5%AF%A6-IP-%E7%9A%84%E8%B9%A4%E8%B7%A1"><span class="nav-number">3.</span> <span class="nav-text">深入追查：尋找真實 IP 的蹤跡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88%E4%B8%80%EF%BC%9AURL-Rewrite-%E6%94%B9%E5%AF%AB-REMOTE-ADDR"><span class="nav-number">4.</span> <span class="nav-text">解決方案一：URL Rewrite 改寫 REMOTE_ADDR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%84%8F%E5%A4%96%E7%99%BC%E7%8F%BE%EF%BC%9AIIS-IP-%E9%99%90%E5%88%B6%E7%9A%84%E5%9F%B7%E8%A1%8C%E6%99%82%E6%A9%9F%E9%99%B7%E9%98%B1"><span class="nav-number">5.</span> <span class="nav-text">意外發現：IIS IP 限制的執行時機陷阱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88%E4%BA%8C%EF%BC%9A%E7%A8%8B%E5%BC%8F%E7%A2%BC%E5%B1%A4%E9%9D%A2%E7%9A%84-IP-%E6%8E%A7%E5%88%B6"><span class="nav-number">6.</span> <span class="nav-text">解決方案二：程式碼層面的 IP 控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E4%BD%B3%E5%AF%A6%E5%8B%99%EF%BC%9A%E7%92%B0%E5%A2%83%E5%88%86%E9%9B%A2%E7%9A%84%E8%A8%AD%E5%AE%9A%E7%AE%A1%E7%90%86"><span class="nav-number">7.</span> <span class="nav-text">最佳實務：環境分離的設定管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A0%E7%A2%BC%EF%BC%9AIIS-Log-%E9%A1%AF%E7%A4%BA%E7%9C%9F%E5%AF%A6-IP"><span class="nav-number">8.</span> <span class="nav-text">加碼：IIS Log 顯示真實 IP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B8%A9%E5%9D%91%E7%B8%BD%E7%B5%90"><span class="nav-number">9.</span> <span class="nav-text">踩坑總結</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%8C%E8%A8%98"><span class="nav-number">10.</span> <span class="nav-text">後記</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/9b217823/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="當 IIS 遇到代理伺服器：如何在複雜網路環境下實現真實 IP 白名單控制 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          當 IIS 遇到代理伺服器：如何在複雜網路環境下實現真實 IP 白名單控制
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2025-07-01 15:30:00" itemprop="dateCreated datePublished" datetime="2025-07-01T15:30:00+08:00">2025-07-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2025-07-03 09:50:56" itemprop="dateModified" datetime="2025-07-03T09:50:56+08:00">2025-07-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web-Development/" itemprop="url" rel="index"><span itemprop="name">Web Development</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web-Development/Infrastructure/" itemprop="url" rel="index"><span itemprop="name">Infrastructure</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>3.7k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>3 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前情提要：突如其來的測試環境危機"><a href="#前情提要：突如其來的測試環境危機" class="headerlink" title="前情提要：突如其來的測試環境危機"></a>前情提要：突如其來的測試環境危機</h2><p>最近台電因為白帽滲透測試的關係，需要暫時關閉測試機。但開發團隊偶爾還是需要測試環境來驗證功能，於是我們決定把程式架在其他環境上。原本想說簡單設個 IIS IP 白名單就能解決，沒想到踩到了一個大坑...</p>
+<h2 id="問題出現：IP-白名單完全失效"><a href="#問題出現：IP-白名單完全失效" class="headerlink" title="問題出現：IP 白名單完全失效"></a>問題出現：IP 白名單完全失效</h2><p>當我興高采烈地在 IIS 管理器中設定「IP 位址及網域限制」，把信任的 IP 加入白名單後，發現一個詭異的現象：</p>
+<ul>
+<li>設定為「允許所有」→ 正常運作 ✅</li>
+<li>設定為「拒絕未指定，只允許白名單」→ 所有人都 403 錯誤 ❌</li>
+</ul>
+<p>檢查 IIS Log 後發現真相大白：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">c-ip: 192.168.0.28  # 所有請求都顯示這個 IP！</span><br></pre></td></tr></table></figure>
+
+<p>原來所有外部請求都是透過 <code>192.168.0.28</code> 這台 Proxy Relay 伺服器轉發過來的。IIS 只看得到代理伺服器的 IP，完全拿不到真實的客戶端 IP。</p>
+<h2 id="深入追查：尋找真實-IP-的蹤跡"><a href="#深入追查：尋找真實-IP-的蹤跡" class="headerlink" title="深入追查：尋找真實 IP 的蹤跡"></a>深入追查：尋找真實 IP 的蹤跡</h2><p>建立一個簡單的測試頁面來檢查所有可能的 HTTP 標頭：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ Page Language=&quot;C#&quot; %&gt;</span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;&lt;title&gt;IP 偵測&lt;/title&gt;&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;%</span><br><span class="line">    Response.Write(&quot;REMOTE_ADDR: &quot; + Request.ServerVariables[&quot;REMOTE_ADDR&quot;] + &quot;&lt;br&gt;&quot;);</span><br><span class="line">    Response.Write(&quot;HTTP_X_FORWARDED_FOR: &quot; + Request.ServerVariables[&quot;HTTP_X_FORWARDED_FOR&quot;] + &quot;&lt;br&gt;&quot;);</span><br><span class="line">    Response.Write(&quot;HTTP_X_REAL_IP: &quot; + Request.ServerVariables[&quot;HTTP_X_REAL_IP&quot;] + &quot;&lt;br&gt;&quot;);</span><br><span class="line">    %&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<p>測試結果發現關鍵線索：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">REMOTE_ADDR: 192.168.0.28</span><br><span class="line">HTTP_X_FORWARDED_FOR: 125.228.130.66:12872</span><br></pre></td></tr></table></figure>
+
+<p>太好了！代理伺服器有正確傳送真實 IP，只是格式是 <code>IP:PORT</code>。</p>
+<h2 id="解決方案一：URL-Rewrite-改寫-REMOTE-ADDR"><a href="#解決方案一：URL-Rewrite-改寫-REMOTE-ADDR" class="headerlink" title="解決方案一：URL Rewrite 改寫 REMOTE_ADDR"></a>解決方案一：URL Rewrite 改寫 REMOTE_ADDR</h2><p>首先確認 IIS 已安裝 URL Rewrite 模組，然後在 <code>web.config</code> 中加入：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">rewrite</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rules</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">rule</span> <span class="attr">name</span>=<span class="string">&quot;Extract Real IP&quot;</span> <span class="attr">stopProcessing</span>=<span class="string">&quot;false&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">match</span> <span class="attr">url</span>=<span class="string">&quot;.*&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">conditions</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">add</span> <span class="attr">input</span>=<span class="string">&quot;&#123;HTTP_X_FORWARDED_FOR&#125;&quot;</span> <span class="attr">pattern</span>=<span class="string">&quot;^([^:]+)&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">conditions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">serverVariables</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">set</span> <span class="attr">name</span>=<span class="string">&quot;REMOTE_ADDR&quot;</span> <span class="attr">value</span>=<span class="string">&quot;&#123;C:1&#125;&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">serverVariables</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">type</span>=<span class="string">&quot;None&quot;</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">rule</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">rules</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">rewrite</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>重要：</strong> 需要在 IIS 的「URL 重寫」功能中先新增允許修改的伺服器變數：</p>
+<ol>
+<li>點選「URL 重寫」</li>
+<li>右側「檢視伺服器變數」</li>
+<li>新增 <code>REMOTE_ADDR</code></li>
+</ol>
+<p>設定完成後測試：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">REMOTE_ADDR: 125.228.130.66  # 成功改寫！</span><br></pre></td></tr></table></figure>
+
+<h2 id="意外發現：IIS-IP-限制的執行時機陷阱"><a href="#意外發現：IIS-IP-限制的執行時機陷阱" class="headerlink" title="意外發現：IIS IP 限制的執行時機陷阱"></a>意外發現：IIS IP 限制的執行時機陷阱</h2><p>興奮地以為問題解決了，結果發現 IIS 的「IP 位址及網域限制」還是不行！</p>
+<p>深入研究後發現：<strong>IIS 的 IP 限制功能執行在請求處理管道的早期階段，在 URL Rewrite 之前</strong>。所以它仍然看到的是原始的 <code>c-ip</code>，而不是改寫後的 <code>REMOTE_ADDR</code>。</p>
+<p>這解釋了為什麼 IIS Log 中：</p>
+<ul>
+<li><code>c-ip</code> 仍然是 <code>192.168.0.28</code></li>
+<li><code>X-Forwarded-For</code> 正確顯示真實 IP</li>
+<li>URL Rewrite 成功但 IP 限制失效</li>
+</ul>
+<h2 id="解決方案二：程式碼層面的-IP-控制"><a href="#解決方案二：程式碼層面的-IP-控制" class="headerlink" title="解決方案二：程式碼層面的 IP 控制"></a>解決方案二：程式碼層面的 IP 控制</h2><p>既然 IIS 內建功能不給力，我們就自己來！在 <code>Global.asax.cs</code> 中實作：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">Application_BeginRequest</span>(<span class="params"><span class="built_in">object</span> sender, EventArgs e</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 檢查是否啟用 IP 限制</span></span><br><span class="line">    <span class="built_in">bool</span> enableIPRestriction = ConfigurationManager.AppSettings[<span class="string">&quot;EnableIPRestriction&quot;</span>] == <span class="string">&quot;true&quot;</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (enableIPRestriction &amp;&amp; Request.Url.AbsolutePath.ToLower().StartsWith(<span class="string">&quot;/stationmanager&quot;</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> allowedIPsConfig = ConfigurationManager.AppSettings[<span class="string">&quot;AllowedIPs&quot;</span>] ?? <span class="string">&quot;&quot;</span>;</span><br><span class="line">        <span class="built_in">string</span>[] allowedIPs = allowedIPsConfig.Split(<span class="string">&#x27;,&#x27;</span>).Select(ip =&gt; ip.Trim()).ToArray();</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">string</span> forwardedFor = Request.ServerVariables[<span class="string">&quot;HTTP_X_FORWARDED_FOR&quot;</span>];</span><br><span class="line">        <span class="built_in">string</span> clientIP = <span class="string">&quot;&quot;</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(forwardedFor))</span><br><span class="line">        &#123;</span><br><span class="line">            clientIP = forwardedFor.Split(<span class="string">&#x27;:&#x27;</span>)[<span class="number">0</span>]; <span class="comment">// 移除 port 部分</span></span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (!allowedIPs.Contains(clientIP))</span><br><span class="line">        &#123;</span><br><span class="line">            Response.StatusCode = <span class="number">403</span>;</span><br><span class="line">            Response.Write(<span class="string">&quot;Access Denied&quot;</span>);</span><br><span class="line">            Response.End();</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 其他處理邏輯...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="最佳實務：環境分離的設定管理"><a href="#最佳實務：環境分離的設定管理" class="headerlink" title="最佳實務：環境分離的設定管理"></a>最佳實務：環境分離的設定管理</h2><p>為了避免正式機和測試機搞混，在 <code>web.config</code> 中加入可設定的開關：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">appSettings</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- IP 限制設定 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">add</span> <span class="attr">key</span>=<span class="string">&quot;EnableIPRestriction&quot;</span> <span class="attr">value</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">add</span> <span class="attr">key</span>=<span class="string">&quot;AllowedIPs&quot;</span> <span class="attr">value</span>=<span class="string">&quot;125.228.130.66,另一個IP&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">appSettings</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣就能：</p>
+<ul>
+<li><strong>測試機</strong>：<code>EnableIPRestriction = true</code></li>
+<li><strong>正式機</strong>：<code>EnableIPRestriction = false</code></li>
+</ul>
+<h2 id="加碼：IIS-Log-顯示真實-IP"><a href="#加碼：IIS-Log-顯示真實-IP" class="headerlink" title="加碼：IIS Log 顯示真實 IP"></a>加碼：IIS Log 顯示真實 IP</h2><p>為了方便追蹤，可以讓 IIS Log 也顯示真實 IP：</p>
+<ol>
+<li>IIS 管理器 → 網站 → 「記錄」</li>
+<li>「選取欄位」→ 「自訂欄位」</li>
+<li>新增：<ul>
+<li>欄位名稱：<code>X-Forwarded-For</code></li>
+<li>來源：<code>Request Header</code></li>
+<li>來源名稱：<code>X-Forwarded-For</code></li>
+</ul>
+</li>
+</ol>
+<p>之後 Log 就會顯示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">c-ip: 192.168.0.28  X-Forwarded-For: 125.228.130.66:14185</span><br></pre></td></tr></table></figure>
+
+<h2 id="踩坑總結"><a href="#踩坑總結" class="headerlink" title="踩坑總結"></a>踩坑總結</h2><p>這次解決問題的過程學到幾個重點：</p>
+<p><strong>網路架構很重要</strong><br>有代理伺服器的環境下，要搞清楚真實 IP 的傳遞方式。</p>
+<p><strong>IIS 功能的執行時機</strong><br>不是所有 IIS 功能都能配合 URL Rewrite，要了解請求處理管道的順序。</p>
+<p><strong>設定檔化設計</strong><br>多環境部署時，要設計成可設定的方式，避免程式碼硬編碼。</p>
+<p><strong>善用除錯工具</strong><br>建立簡單的測試頁面可以快速定位問題，比盲目調整設定有效多了。</p>
+<h2 id="後記"><a href="#後記" class="headerlink" title="後記"></a>後記</h2><p>原本以為是個簡單的 IP 白名單設定，結果挖出了代理伺服器、IIS 請求管道、URL Rewrite 等一堆技術細節。雖然過程有點曲折，但最終找到了一個既實用又彈性的解決方案。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/IIS/" rel="tag"># IIS</a>
+              <a href="/tags/IP-Restriction/" rel="tag"># IP Restriction</a>
+              <a href="/tags/Proxy/" rel="tag"># Proxy</a>
+              <a href="/tags/Security/" rel="tag"># Security</a>
+              <a href="/tags/URL-Rewrite/" rel="tag"># URL Rewrite</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/6a7b2e15/" rel="prev" title="Notion MCP 使用教學：讓 Claude 直接操作你的 Notion 工作區">
+                  <i class="fa fa-angle-left"></i> Notion MCP 使用教學：讓 Claude 直接操作你的 Notion 工作區
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/fe2fb28d/" rel="next" title="告別需求地獄：這個MCP工具讓你的開發流程終於有章法了">
+                  告別需求地獄：這個MCP工具讓你的開發流程終於有章法了 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

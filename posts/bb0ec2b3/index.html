@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="從 .NET Framework 到 .NET Core：一個必要的轉變 在談論 .NET Framework 和 .NET Core（現在簡稱為 .NET）時，我們實際上在比較兩個不同時代的技術產品。以下是幾個關鍵領域的比較，解釋為什麼轉向 .NET Core 是一個聰明的選擇。  跨平台支持 .NET Core (.NET) .NET Core 從一開始就被設計為一個跨平台框架，意味著開發者可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="為甚麼應該從.Net Framework跳到.Net Core?">
+<meta property="og:url" content="https://kyosora.github.io/posts/bb0ec2b3/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="從 .NET Framework 到 .NET Core：一個必要的轉變 在談論 .NET Framework 和 .NET Core（現在簡稱為 .NET）時，我們實際上在比較兩個不同時代的技術產品。以下是幾個關鍵領域的比較，解釋為什麼轉向 .NET Core 是一個聰明的選擇。  跨平台支持 .NET Core (.NET) .NET Core 從一開始就被設計為一個跨平台框架，意味著開發者可">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-04-01T05:59:27.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:52:10.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Net">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/bb0ec2b3/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/bb0ec2b3/","path":"posts/bb0ec2b3/","title":"為甚麼應該從.Net Framework跳到.Net Core?"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>為甚麼應該從.Net Framework跳到.Net Core? | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BE%9E-NET-Framework-%E5%88%B0-NET-Core%EF%BC%9A%E4%B8%80%E5%80%8B%E5%BF%85%E8%A6%81%E7%9A%84%E8%BD%89%E8%AE%8A"><span class="nav-number">1.</span> <span class="nav-text">從 .NET Framework 到 .NET Core：一個必要的轉變</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B7%A8%E5%B9%B3%E5%8F%B0%E6%94%AF%E6%8C%81"><span class="nav-number">2.</span> <span class="nav-text">跨平台支持</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#NET-Core-NET"><span class="nav-number">2.1.</span> <span class="nav-text">.NET Core (.NET)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NET-Framework"><span class="nav-number">2.2.</span> <span class="nav-text">.NET Framework</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%A7%E8%83%BD"><span class="nav-number">3.</span> <span class="nav-text">性能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#NET-Core-NET-1"><span class="nav-number">3.1.</span> <span class="nav-text">.NET Core (.NET)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NET-Framework-1"><span class="nav-number">3.2.</span> <span class="nav-text">.NET Framework</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2%E5%92%8C%E7%B6%AD%E8%AD%B7"><span class="nav-number">4.</span> <span class="nav-text">部署和維護</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#NET-Core-NET-2"><span class="nav-number">4.1.</span> <span class="nav-text">.NET Core (.NET)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NET-Framework-2"><span class="nav-number">4.2.</span> <span class="nav-text">.NET Framework</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%96%8B%E7%99%BC%E7%94%9F%E6%85%8B%E7%B3%BB%E7%B5%B1%E5%92%8C%E7%A4%BE%E5%8D%80%E6%94%AF%E6%8C%81"><span class="nav-number">5.</span> <span class="nav-text">開發生態系統和社區支持</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#NET-Core-NET-3"><span class="nav-number">5.1.</span> <span class="nav-text">.NET Core (.NET)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NET-Framework-3"><span class="nav-number">5.2.</span> <span class="nav-text">.NET Framework</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">6.</span> <span class="nav-text">結論</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/bb0ec2b3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="為甚麼應該從.Net Framework跳到.Net Core? | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          為甚麼應該從.Net Framework跳到.Net Core?
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-04-01 13:59:27" itemprop="dateCreated datePublished" datetime="2024-04-01T13:59:27+08:00">2024-04-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-11-27 14:52:10" itemprop="dateModified" datetime="2024-11-27T14:52:10+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E9%96%8B%E7%99%BC%E7%9B%B8%E9%97%9C/" itemprop="url" rel="index"><span itemprop="name">開發相關</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1.1k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>1 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="從-NET-Framework-到-NET-Core：一個必要的轉變"><a href="#從-NET-Framework-到-NET-Core：一個必要的轉變" class="headerlink" title="從 .NET Framework 到 .NET Core：一個必要的轉變"></a>從 .NET Framework 到 .NET Core：一個必要的轉變</h1><p>在談論 .NET Framework 和 .NET Core（現在簡稱為 .NET）時，我們實際上在比較兩個不同時代的技術產品。以下是幾個關鍵領域的比較，解釋為什麼轉向 .NET Core 是一個聰明的選擇。</p>
+<h1 id="跨平台支持"><a href="#跨平台支持" class="headerlink" title="跨平台支持"></a>跨平台支持</h1><h2 id="NET-Core-NET"><a href="#NET-Core-NET" class="headerlink" title=".NET Core (.NET)"></a>.NET Core (.NET)</h2><p>.NET Core 從一開始就被設計為一個跨平台框架，意味著開發者可以在 Windows、Linux 和 macOS 上建立和運行應用程序。這一點對於希望擴大他們應用程序受眾的企業來說是非常吸引人的。</p>
+<ul>
+<li>跨平台能力讓你的應用更加靈活</li>
+<li>可以更容易地達到更廣泛的用戶群<h2 id="NET-Framework"><a href="#NET-Framework" class="headerlink" title=".NET Framework"></a>.NET Framework</h2>.NET Framework 主要針對 Windows 平台，雖然透過某些方式（如 Mono 這樣的實現）可以在其他平台上運行，但並不是微軟官方支持的，且存在兼容性問題。</li>
+</ul>
+<h1 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h1><h2 id="NET-Core-NET-1"><a href="#NET-Core-NET-1" class="headerlink" title=".NET Core (.NET)"></a>.NET Core (.NET)</h2><p>.NET Core 在性能方面進行了大量的優化，讓應用程序運行得更快，更高效。這對於需要處理大量數據或高交易量的應用程序來說尤其重要。</p>
+<ul>
+<li>高效的性能優化</li>
+<li>更好的資源利用率<h2 id="NET-Framework-1"><a href="#NET-Framework-1" class="headerlink" title=".NET Framework"></a>.NET Framework</h2>雖然 .NET Framework 也是一個非常強大的框架，但在某些性能方面它不如 .NET Core 那麼優秀。</li>
+</ul>
+<h1 id="部署和維護"><a href="#部署和維護" class="headerlink" title="部署和維護"></a>部署和維護</h1><h2 id="NET-Core-NET-2"><a href="#NET-Core-NET-2" class="headerlink" title=".NET Core (.NET)"></a>.NET Core (.NET)</h2><p>.NET Core 提供了更多的部署選項，包括自包含部署（SCD）和框架依賴部署（FDD）。這讓開發者可以更容易地在不同環境中部署應用程序，而不必擔心目標系統上的 .NET 版本。</p>
+<ul>
+<li>靈活的部署選項</li>
+<li>更容易的應用程序更新和維護<h2 id="NET-Framework-2"><a href="#NET-Framework-2" class="headerlink" title=".NET Framework"></a>.NET Framework</h2>.NET Framework 應用程序的部署和維護受限於 Windows 更新和 .NET Framework 版本，這可能導致在某些環境中部署上的困難。</li>
+</ul>
+<h1 id="開發生態系統和社區支持"><a href="#開發生態系統和社區支持" class="headerlink" title="開發生態系統和社區支持"></a>開發生態系統和社區支持</h1><h2 id="NET-Core-NET-3"><a href="#NET-Core-NET-3" class="headerlink" title=".NET Core (.NET)"></a>.NET Core (.NET)</h2><p>.NET Core 的出現帶來了現代化的開發工具和框架，以及對開源社區的強大支持。微軟也在不斷更新和改進這個平台，提供新的功能和性能優化。</p>
+<ul>
+<li>廣泛的開源社區支持</li>
+<li>持續的創新和改進<h2 id="NET-Framework-3"><a href="#NET-Framework-3" class="headerlink" title=".NET Framework"></a>.NET Framework</h2>雖然 .NET Framework 擁有一個龐大的開發社區和大量的資源，但它的創新速度可能無法與 .NET Core 相匹配，因為微軟將主要精力放在了後者上。</li>
+</ul>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>轉向 .NET Core (現在的 .NET) 是關於擁抱未來的開發模式，利用更高效的性能，以及在更廣泛的平台上部署應用程序的能力。對於新項目和希望現代化其基礎設施的公司來說，.NET Core 提供了一個有吸引力的選擇。對於現有的 .NET Framework 應用程序，微軟建議評估移轉至 .NET Core，以利用其提供的好處，特別是當考慮到長期的支持和更新時。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Net/" rel="tag"># Net</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/12f680f0/" rel="prev" title="CSS實現DOM節點水平居中的多種方式">
+                  <i class="fa fa-angle-left"></i> CSS實現DOM節點水平居中的多種方式
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/c2810439/" rel="next" title=".NET Core 中的依賴注入和控制反轉">
+                  .NET Core 中的依賴注入和控制反轉 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

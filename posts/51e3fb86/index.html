@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="win-acme: Windows上的自動化SSL&#x2F;TLS證書管理工具 在當今的網路世界中，HTTPS已經成為保護網站安全的標準。然而，對於Windows服務器管理員來說，管理SSL&#x2F;TLS證書可能是一項繁瑣的任務。這就是win-acme發揮作用的地方 - 它為Windows用戶提供了一個簡單而強大的工具來自動化SSL&#x2F;TLS證書的獲取和更新過程。  什麼是win-acme? win-acme (">
+<meta property="og:type" content="article">
+<meta property="og:title" content="win-acme： Windows上的自動化SSL&#x2F;TLS證書管理工具">
+<meta property="og:url" content="https://kyosora.github.io/posts/51e3fb86/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="win-acme: Windows上的自動化SSL&#x2F;TLS證書管理工具 在當今的網路世界中，HTTPS已經成為保護網站安全的標準。然而，對於Windows服務器管理員來說，管理SSL&#x2F;TLS證書可能是一項繁瑣的任務。這就是win-acme發揮作用的地方 - 它為Windows用戶提供了一個簡單而強大的工具來自動化SSL&#x2F;TLS證書的獲取和更新過程。  什麼是win-acme? win-acme (">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/posts/51e3fb86/20241104043419766.png">
+<meta property="og:image" content="https://kyosora.github.io/posts/51e3fb86/20241104043350947.png">
+<meta property="og:image" content="https://kyosora.github.io/posts/51e3fb86/20241104043154272.png">
+<meta property="og:image" content="https://kyosora.github.io/posts/51e3fb86/%E6%8C%89%E7%85%A7%E6%8F%90%E7%A4%BA%E8%BC%B8%E5%85%A5%E5%9F%9F%E5%90%8D%E5%92%8C%E5%85%B6%E4%BB%96%E5%BF%85%E8%A6%81%E4%BF%A1%E6%81%AF%E3%80%82.png">
+<meta property="og:image" content="https://kyosora.github.io/posts/51e3fb86/20241104043635067.png">
+<meta property="og:image" content="https://kyosora.github.io/posts/51e3fb86/20241104043722483.png">
+<meta property="og:image" content="https://kyosora.github.io/posts/51e3fb86/20241104043736437.png">
+<meta property="og:image" content="https://kyosora.github.io/posts/51e3fb86/20241104043832647.png">
+<meta property="og:image" content="https://kyosora.github.io/posts/51e3fb86/20241104043924877.png">
+<meta property="article:published_time" content="2024-05-02T08:17:31.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:52:46.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="SSL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kyosora.github.io/posts/51e3fb86/20241104043419766.png">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/51e3fb86/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/51e3fb86/","path":"posts/51e3fb86/","title":"win-acme： Windows上的自動化SSL/TLS證書管理工具"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>win-acme： Windows上的自動化SSL/TLS證書管理工具 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#win-acme-Windows%E4%B8%8A%E7%9A%84%E8%87%AA%E5%8B%95%E5%8C%96SSL-TLS%E8%AD%89%E6%9B%B8%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7"><span class="nav-number">1.</span> <span class="nav-text">win-acme: Windows上的自動化SSL&#x2F;TLS證書管理工具</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AFwin-acme"><span class="nav-number">1.1.</span> <span class="nav-text">什麼是win-acme?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#win-acme%E7%9A%84%E4%B8%BB%E8%A6%81%E7%89%B9%E9%BB%9E"><span class="nav-number">1.2.</span> <span class="nav-text">win-acme的主要特點</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8win-acme"><span class="nav-number">1.3.</span> <span class="nav-text">如何使用win-acme</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%9D"><span class="nav-number">1.3.1.</span> <span class="nav-text">安裝</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-number">1.3.2.</span> <span class="nav-text">基本使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E7%B4%9A%E9%85%8D%E7%BD%AE"><span class="nav-number">1.3.3.</span> <span class="nav-text">高級配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E7%94%A8%E4%BE%8B"><span class="nav-number">1.4.</span> <span class="nav-text">主要用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#win-acme%E7%9A%84%E5%84%AA%E5%8B%A2"><span class="nav-number">1.5.</span> <span class="nav-text">win-acme的優勢</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85"><span class="nav-number">1.6.</span> <span class="nav-text">注意事項</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.7.</span> <span class="nav-text">結論</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/51e3fb86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="win-acme： Windows上的自動化SSL&#x2F;TLS證書管理工具 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          win-acme： Windows上的自動化SSL/TLS證書管理工具
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-05-02 16:17:31" itemprop="dateCreated datePublished" datetime="2024-05-02T16:17:31+08:00">2024-05-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-11-27 14:52:46" itemprop="dateModified" datetime="2024-11-27T14:52:46+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%BB%9F%E9%AB%94%E4%BB%8B%E7%B4%B9/" itemprop="url" rel="index"><span itemprop="name">軟體介紹</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1.7k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="win-acme-Windows上的自動化SSL-TLS證書管理工具"><a href="#win-acme-Windows上的自動化SSL-TLS證書管理工具" class="headerlink" title="win-acme: Windows上的自動化SSL/TLS證書管理工具"></a>win-acme: Windows上的自動化SSL/TLS證書管理工具</h1><p>在當今的網路世界中，HTTPS已經成為保護網站安全的標準。然而，對於Windows服務器管理員來說，管理SSL/TLS證書可能是一項繁瑣的任務。這就是win-acme發揮作用的地方 - 它為Windows用戶提供了一個簡單而強大的工具來自動化SSL/TLS證書的獲取和更新過程。</p>
+<h2 id="什麼是win-acme"><a href="#什麼是win-acme" class="headerlink" title="什麼是win-acme?"></a>什麼是win-acme?</h2><p>win-acme (Windows ACME Simple Client) 是一個開源的ACME客戶端，專為Windows環境設計。它允許用戶從Let&#39;s Encrypt等ACME兼容的證書頒發機構自動獲取、安裝和更新SSL/TLS證書。</p>
+<p><strong>專案網址</strong>: <a target="_blank" rel="noopener" href="https://github.com/win-acme/win-acme/tree/v2.2.9.1701">https://github.com/win-acme/win-acme/tree/v2.2.9.1701</a></p>
+<h2 id="win-acme的主要特點"><a href="#win-acme的主要特點" class="headerlink" title="win-acme的主要特點"></a>win-acme的主要特點</h2><ol>
+<li><p><strong>自動化</strong>: 自動處理證書的獲取、安裝和更新過程。</p>
+</li>
+<li><p><strong>Windows集成</strong>: 專為Windows環境設計，支持IIS、Exchange、RDP等多種Windows服務。</p>
+</li>
+<li><p><strong>多種驗證方式</strong>: 支持HTTP驗證、DNS驗證等多種域名所有權驗證方式。</p>
+</li>
+<li><p><strong>靈活配置</strong>: 提供命令行界面和圖形用戶界面，滿足不同用戶的需求。</p>
+</li>
+<li><p><strong>插件系統</strong>: 支持自定義插件，可以擴展功能以滿足特定需求。</p>
+</li>
+<li><p><strong>全面文檔</strong>: 提供詳細的文檔和示例，幫助用戶快速上手。</p>
+</li>
+<li><p><strong>開源免費</strong>: 基於Apache License 2.0開源協議，完全免費使用。</p>
+</li>
+</ol>
+<h2 id="如何使用win-acme"><a href="#如何使用win-acme" class="headerlink" title="如何使用win-acme"></a>如何使用win-acme</h2><h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><ol>
+<li>從GitHub releases頁面下載最新版本的win-acme。</li>
+<li>解壓下載的ZIP文件到你選擇的目錄。</li>
+</ol>
+<h3 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h3><ol>
+<li>以管理員身份運行 <code>wacs.exe</code>。<br><img src="20241104043419766.png"></li>
+<li>選擇 &quot;N&quot; 創建新證書。<br><img src="20241104043350947.png"></li>
+<li>運行wacs.exe之後可能出現：No sites with host binding have been configured in IIS<br><img src="20241104043154272.png"><br>要先IIS進行繫結，之後再重跑一次應該就能找到默認網站。</li>
+<li>再次運行Create Certificate，找到了默認網站的binding，選則1<br><img src="%E6%8C%89%E7%85%A7%E6%8F%90%E7%A4%BA%E8%BC%B8%E5%85%A5%E5%9F%9F%E5%90%8D%E5%92%8C%E5%85%B6%E4%BB%96%E5%BF%85%E8%A6%81%E4%BF%A1%E6%81%AF%E3%80%82.png" alt="按照提示輸入域名和其他必要信息。"></li>
+<li>列出默認網站<br><img src="20241104043635067.png"></li>
+<li>繼續介面選擇Y<br><img src="20241104043722483.png"></li>
+<li>證書PDF Y或N都行，Y會打開建立成功的證書PDF<br><img src="20241104043736437.png"></li>
+<li>選擇同意 Y，然後輸入信箱。<br><img src="20241104043832647.png"></li>
+<li>建立成功顯示證書資訊，過期時間和網站資訊。<br><img src="20241104043924877.png"></li>
+<li>IIS會在443 PORT自動連接證書。</li>
+</ol>
+<h3 id="高級配置"><a href="#高級配置" class="headerlink" title="高級配置"></a>高級配置</h3><p>win-acme支持通過命令行參數或配置文件進行高級配置。例如:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wacs.exe --target manual --host example.com --installation iis --websiteroot C:\inetpub\wwwroot</span><br></pre></td></tr></table></figure>
+
+<p>這條命令會為 example.com 獲取證書，並將其安裝到IIS中。</p>
+<h2 id="主要用例"><a href="#主要用例" class="headerlink" title="主要用例"></a>主要用例</h2><ol>
+<li><p><strong>IIS網站</strong>: 自動為IIS託管的網站安裝和更新SSL證書。</p>
+</li>
+<li><p><strong>Exchange服務器</strong>: 為Exchange服務器配置SSL證書，提高郵件傳輸的安全性。</p>
+</li>
+<li><p><strong>遠程桌面服務</strong>: 為RDP服務配置SSL證書，增強遠程連接的安全性。</p>
+</li>
+<li><p><strong>其他Windows服務</strong>: 如FTP、SMTP等服務的SSL證書管理。</p>
+</li>
+</ol>
+<h2 id="win-acme的優勢"><a href="#win-acme的優勢" class="headerlink" title="win-acme的優勢"></a>win-acme的優勢</h2><ol>
+<li><p><strong>簡化證書管理</strong>: 大大減少了手動管理SSL證書的工作量。</p>
+</li>
+<li><p><strong>降低成本</strong>: 通過使用免費的Let&#39;s Encrypt證書，降低了SSL證書的成本。</p>
+</li>
+<li><p><strong>提高安全性</strong>: 自動更新確保了證書始終是最新的，減少了過期風險。</p>
+</li>
+<li><p><strong>靈活性</strong>: 適應各種Windows服務器環境和配置需求。</p>
+</li>
+</ol>
+<h2 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h2><ol>
+<li><p><strong>定期檢查</strong>: 雖然過程是自動化的，但定期檢查證書狀態仍然是好習慣。</p>
+</li>
+<li><p><strong>防火牆設置</strong>: 確保必要的端口(如80和443)是開放的，以便進行驗證。</p>
+</li>
+<li><p><strong>備份</strong>: 在首次使用前，建議備份現有的SSL配置。</p>
+</li>
+<li><p><strong>權限</strong>: 確保win-acme有足夠的權限來修改必要的系統設置。</p>
+</li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>win-acme為Windows服務器管理員提供了一個強大而簡單的工具，以自動化SSL/TLS證書的管理過程。通過簡化證書獲取、安裝和更新的流程，它不僅節省了時間和資源，還提高了網站和服務的安全性。無論您是管理單個網站還是複雜的Windows服務器環境，win-acme都能夠滿足您的SSL證書管理需求。</p>
+<p>如果您正在尋找一個可靠的方法來簡化Windows環境中的SSL證書管理，win-acme絕對值得一試。它不僅能夠節省您的時間和精力，還能確保您的網站和服務始終受到最新SSL/TLS證書的保護。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SSL/" rel="tag"># SSL</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/931f146f/" rel="prev" title="網站圖片路徑大崩潰？一次搞懂網站部署時的圖片路徑問題">
+                  <i class="fa fa-angle-left"></i> 網站圖片路徑大崩潰？一次搞懂網站部署時的圖片路徑問題
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/7f403031/" rel="next" title="JavaScript字串搜索方法比較：indexOf vs includes vs filter">
+                  JavaScript字串搜索方法比較：indexOf vs includes vs filter <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

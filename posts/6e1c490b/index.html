@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="前言 在管理大型SQL Server資料庫時,你是否遇過以下痛點？   * 資料匯入匯出緩慢到讓人抓狂  * 維護作業需要人工執行,常常加班到半夜  * 大型資料庫備份還原總是出問題  * 跨伺服器操作複雜又容易出錯  別擔心！本篇完整剖析SQLCMD的所有實戰技巧,讓你輕鬆應對各種資料庫維運挑戰。無論你是資深DBA還是新手工程師,都能從中學到實用的技巧！  SQLCMD 功能與效能概觀 SQLC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL Server管理員必學：SQLCMD實戰指南">
+<meta property="og:url" content="https://kyosora.github.io/posts/6e1c490b/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="前言 在管理大型SQL Server資料庫時,你是否遇過以下痛點？   * 資料匯入匯出緩慢到讓人抓狂  * 維護作業需要人工執行,常常加班到半夜  * 大型資料庫備份還原總是出問題  * 跨伺服器操作複雜又容易出錯  別擔心！本篇完整剖析SQLCMD的所有實戰技巧,讓你輕鬆應對各種資料庫維運挑戰。無論你是資深DBA還是新手工程師,都能從中學到實用的技巧！  SQLCMD 功能與效能概觀 SQLC">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-12-15T10:52:15.000Z">
+<meta property="article:modified_time" content="2024-12-19T03:45:02.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="SQL Server">
+<meta property="article:tag" content="SQLCMD">
+<meta property="article:tag" content="效能優化">
+<meta property="article:tag" content="資料庫維護">
+<meta property="article:tag" content="自動化工具">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/6e1c490b/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/6e1c490b/","path":"posts/6e1c490b/","title":"SQL Server管理員必學：SQLCMD實戰指南"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SQL Server管理員必學：SQLCMD實戰指南 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E6%88%B0%E7%B6%93%E9%A9%97%E5%88%86%E4%BA%AB"><span class="nav-number">2.</span> <span class="nav-text">實戰經驗分享</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B%E4%B8%80%EF%BC%9A10TB-%E5%A4%A7%E5%9E%8B%E8%B3%87%E6%96%99%E5%BA%AB%E7%9A%84%E5%BF%AB%E9%80%9F%E5%8C%AF%E5%85%A5"><span class="nav-number">2.1.</span> <span class="nav-text">案例一：10TB 大型資料庫的快速匯入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B%E4%BA%8C%EF%BC%9A%E8%87%AA%E5%8B%95%E5%8C%96%E5%82%99%E4%BB%BD%E7%AD%96%E7%95%A5"><span class="nav-number">2.2.</span> <span class="nav-text">案例二：自動化備份策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%B2%E9%9A%8E%E6%95%88%E8%83%BD%E5%84%AA%E5%8C%96%E6%8A%80%E5%B7%A7"><span class="nav-number">3.</span> <span class="nav-text">進階效能優化技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E8%A8%98%E6%86%B6%E9%AB%94%E6%9C%80%E4%BD%B3%E5%8C%96"><span class="nav-number">3.1.</span> <span class="nav-text">1. 記憶體最佳化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%B9%B3%E8%A1%8C%E8%99%95%E7%90%86%E5%84%AA%E5%8C%96"><span class="nav-number">3.2.</span> <span class="nav-text">2. 平行處理優化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%88%86%E5%89%B2%E6%AA%94%E6%A1%88%E5%8C%AF%E5%85%A5%E7%AD%96%E7%95%A5"><span class="nav-number">3.3.</span> <span class="nav-text">3. 分割檔案匯入策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7%E5%BC%B7%E5%8C%96%E8%A8%AD%E5%AE%9A"><span class="nav-number">4.</span> <span class="nav-text">安全性強化設定</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%8A%A0%E5%AF%86%E5%82%B3%E8%BC%B8%E8%A8%AD%E5%AE%9A"><span class="nav-number">4.1.</span> <span class="nav-text">1. 加密傳輸設定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%A8%BD%E6%A0%B8%E8%A8%98%E9%8C%84%E8%A8%AD%E5%AE%9A"><span class="nav-number">4.2.</span> <span class="nav-text">2. 稽核記錄設定</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A6%8B%E5%95%8F%E9%A1%8C%E8%A8%BA%E6%96%B7%E8%88%87%E8%A7%A3%E6%B1%BA"><span class="nav-number">5.</span> <span class="nav-text">常見問題診斷與解決</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">6.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%83%E8%80%83%E8%B3%87%E6%BA%90"><span class="nav-number">7.</span> <span class="nav-text">參考資源</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/6e1c490b/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SQL Server管理員必學：SQLCMD實戰指南 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SQL Server管理員必學：SQLCMD實戰指南
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-12-15 18:52:15" itemprop="dateCreated datePublished" datetime="2024-12-15T18:52:15+08:00">2024-12-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-12-19 11:45:02" itemprop="dateModified" datetime="2024-12-19T11:45:02+08:00">2024-12-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB%E7%AE%A1%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">資料庫管理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>3.1k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>3 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在管理大型SQL Server資料庫時,你是否遇過以下痛點？</p>
+<ul>
+<li>資料匯入匯出緩慢到讓人抓狂</li>
+<li>維護作業需要人工執行,常常加班到半夜</li>
+<li>大型資料庫備份還原總是出問題</li>
+<li>跨伺服器操作複雜又容易出錯</li>
+</ul>
+<p>別擔心！本篇完整剖析SQLCMD的所有實戰技巧,讓你輕鬆應對各種資料庫維運挑戰。無論你是資深DBA還是新手工程師,都能從中學到實用的技巧！</p>
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <text x="400" y="40" text-anchor="middle" font-size="24" fill="#333">SQLCMD 功能與效能概觀</text>
+  <circle cx="400" cy="200" r="60" fill="#4A90E2"/>
+  <text x="400" y="205" text-anchor="middle" font-size="16" fill="white">SQLCMD</text>
+  <g>
+    <circle cx="200" cy="100" r="50" fill="#81C784"/>
+    <text x="200" y="95" text-anchor="middle" font-size="14" fill="white">資料匯入匯出</text>
+    <text x="200" y="115" text-anchor="middle" font-size="12" fill="white">批次處理優化</text>
+    <line x1="340" y1="170" x2="240" y2="120" stroke="#666" stroke-width="2"/>
+    <circle cx="600" cy="100" r="50" fill="#81C784"/>
+    <text x="600" y="95" text-anchor="middle" font-size="14" fill="white">執行SQL指令</text>
+    <text x="600" y="115" text-anchor="middle" font-size="12" fill="white">效能監控</text>
+    <line x1="460" y1="170" x2="560" y2="120" stroke="#666" stroke-width="2"/>
+    <circle cx="200" cy="300" r="50" fill="#81C784"/>
+    <text x="200" y="295" text-anchor="middle" font-size="14" fill="white">資料庫備份</text>
+    <text x="200" y="315" text-anchor="middle" font-size="12" fill="white">壓縮優化</text>
+    <line x1="340" y1="230" x2="240" y2="280" stroke="#666" stroke-width="2"/>
+    <circle cx="600" cy="300" r="50" fill="#81C784"/>
+    <text x="600" y="295" text-anchor="middle" font-size="14" fill="white">自動化排程</text>
+    <text x="600" y="315" text-anchor="middle" font-size="12" fill="white">錯誤處理</text>
+    <line x1="460" y1="230" x2="560" y2="280" stroke="#666" stroke-width="2"/>
+  </g>
+  <g transform="translate(100,400)">
+    <text x="300" y="20" text-anchor="middle" font-size="16" fill="#333">大型資料庫匯入效能比較</text>
+    <line x1="50" y1="150" x2="550" y2="150" stroke="#666" stroke-width="2"/>
+    <line x1="50" y1="150" x2="50" y2="30" stroke="#666" stroke-width="2"/>
+    <rect x="100" y="70" width="40" height="80" fill="#4A90E2" opacity="0.8"/>
+    <rect x="250" y="100" width="40" height="50" fill="#4A90E2" opacity="0.8"/>
+    <rect x="400" y="40" width="40" height="110" fill="#4A90E2" opacity="0.8"/>
+    <text x="120" y="170" text-anchor="middle" font-size="12">一般匯入</text>
+    <text x="270" y="170" text-anchor="middle" font-size="12">批次處理</text>
+    <text x="420" y="170" text-anchor="middle" font-size="12">最佳化設定</text>
+  </g>
+</svg>
+
+<h2 id="實戰經驗分享"><a href="#實戰經驗分享" class="headerlink" title="實戰經驗分享"></a>實戰經驗分享</h2><h3 id="案例一：10TB-大型資料庫的快速匯入"><a href="#案例一：10TB-大型資料庫的快速匯入" class="headerlink" title="案例一：10TB 大型資料庫的快速匯入"></a>案例一：10TB 大型資料庫的快速匯入</h3><p>在某電力公司的專案中,我們需要匯入一個10TB的資料庫。使用傳統方式可能需要數天時間,但透過以下SQLCMD優化技巧,我們將時間縮短到12小時：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 設定最佳化參數</span></span><br><span class="line">sqlcmd <span class="operator">-</span>S ServerName <span class="operator">-</span>U DBAdmin <span class="operator">-</span>P Password <span class="operator">-</span>d TargetDB <span class="operator">-</span>r </span><br><span class="line"><span class="operator">-</span>b                              <span class="comment">-- 遇錯誤終止批次作業</span></span><br><span class="line"><span class="operator">-</span>h<span class="number">-1</span>                            <span class="comment">-- 移除頁首</span></span><br><span class="line"><span class="operator">-</span>k                              <span class="comment">-- 保留格式化字元</span></span><br><span class="line"><span class="operator">-</span>t <span class="number">600</span>                          <span class="comment">-- 設定查詢逾時600秒</span></span><br><span class="line"><span class="operator">-</span>i &quot;D:\import_script.sql&quot;       <span class="comment">-- 指定匯入腳本</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- import_script.sql 內容</span></span><br><span class="line">:setvar BATCHSIZE <span class="number">10000</span>         <span class="comment">-- 設定批次大小</span></span><br><span class="line">:setvar MAXDOP <span class="number">4</span>                <span class="comment">-- 設定平行處理數</span></span><br><span class="line"></span><br><span class="line">USE [TargetDB]</span><br><span class="line">GO</span><br><span class="line"><span class="keyword">SET</span> NOCOUNT <span class="keyword">ON</span></span><br><span class="line">GO</span><br><span class="line"><span class="keyword">BEGIN</span> TRANSACTION</span><br><span class="line">    <span class="comment">-- 在此加入您的資料匯入指令</span></span><br><span class="line">    <span class="comment">-- 建議每10000筆做一次COMMIT</span></span><br><span class="line"><span class="keyword">COMMIT</span></span><br><span class="line">GO</span><br></pre></td></tr></table></figure>
+
+<p>關鍵優化點：</p>
+<ol>
+<li>適當的批次大小設定</li>
+<li>平行處理數調整</li>
+<li>記憶體使用最佳化</li>
+<li>交易記錄管理</li>
+</ol>
+<h3 id="案例二：自動化備份策略"><a href="#案例二：自動化備份策略" class="headerlink" title="案例二：自動化備份策略"></a>案例二：自動化備份策略</h3><p>以下是一個實際運作中的自動化備份方案：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 建立排程備份腳本</span></span><br><span class="line"><span class="comment">-- backup_script.sql</span></span><br><span class="line">:<span class="keyword">on</span> error exit</span><br><span class="line">:setvar LogPath &quot;D:\Logs&quot;</span><br><span class="line">:setvar BackupPath &quot;D:\Backups&quot;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 錯誤處理與記錄</span></span><br><span class="line"><span class="keyword">BEGIN</span> TRY</span><br><span class="line">    <span class="keyword">DECLARE</span> <span class="variable">@StartTime</span> datetime <span class="operator">=</span> GETDATE()</span><br><span class="line">    <span class="keyword">DECLARE</span> <span class="variable">@BackupFile</span> nvarchar(<span class="number">500</span>) <span class="operator">=</span> <span class="string">&#x27;$(BackupPath)\&#x27;</span> <span class="operator">+</span> </span><br><span class="line">           DB_NAME() <span class="operator">+</span> <span class="string">&#x27;_&#x27;</span> <span class="operator">+</span> </span><br><span class="line">           FORMAT(GETDATE(), <span class="string">&#x27;yyyyMMdd_HHmmss&#x27;</span>) <span class="operator">+</span> <span class="string">&#x27;.bak&#x27;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">-- 執行完整備份</span></span><br><span class="line">    BACKUP DATABASE [$(DatabaseName)]</span><br><span class="line">    <span class="keyword">TO</span> DISK <span class="operator">=</span> <span class="variable">@BackupFile</span></span><br><span class="line">    <span class="keyword">WITH</span> COMPRESSION,                 <span class="comment">-- 啟用壓縮</span></span><br><span class="line">         CHECKSUM,                    <span class="comment">-- 檢查備份資料完整性</span></span><br><span class="line">         STATS <span class="operator">=</span> <span class="number">10</span>                   <span class="comment">-- 顯示進度</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">-- 記錄成功訊息</span></span><br><span class="line">    <span class="keyword">DECLARE</span> <span class="variable">@EndTime</span> datetime <span class="operator">=</span> GETDATE()</span><br><span class="line">    <span class="keyword">DECLARE</span> <span class="variable">@Duration</span> <span class="type">int</span> <span class="operator">=</span> DATEDIFF(<span class="keyword">MINUTE</span>, <span class="variable">@StartTime</span>, <span class="variable">@EndTime</span>)</span><br><span class="line">    </span><br><span class="line">    PRINT <span class="string">&#x27;備份完成：&#x27;</span></span><br><span class="line">    PRINT <span class="string">&#x27;開始時間: &#x27;</span> <span class="operator">+</span> <span class="keyword">CONVERT</span>(<span class="type">varchar</span>, <span class="variable">@StartTime</span>, <span class="number">120</span>)</span><br><span class="line">    PRINT <span class="string">&#x27;結束時間: &#x27;</span> <span class="operator">+</span> <span class="keyword">CONVERT</span>(<span class="type">varchar</span>, <span class="variable">@EndTime</span>, <span class="number">120</span>)</span><br><span class="line">    PRINT <span class="string">&#x27;執行時間: &#x27;</span> <span class="operator">+</span> <span class="built_in">CAST</span>(<span class="variable">@Duration</span> <span class="keyword">as</span> <span class="type">varchar</span>) <span class="operator">+</span> <span class="string">&#x27; 分鐘&#x27;</span></span><br><span class="line"><span class="keyword">END</span> TRY</span><br><span class="line"><span class="keyword">BEGIN</span> CATCH</span><br><span class="line">    <span class="comment">-- 錯誤處理</span></span><br><span class="line">    <span class="keyword">DECLARE</span> <span class="variable">@ErrorMessage</span> nvarchar(<span class="number">4000</span>) <span class="operator">=</span> ERROR_MESSAGE()</span><br><span class="line">    <span class="keyword">DECLARE</span> <span class="variable">@ErrorSeverity</span> <span class="type">int</span> <span class="operator">=</span> ERROR_SEVERITY()</span><br><span class="line">    </span><br><span class="line">    <span class="comment">-- 寫入錯誤記錄</span></span><br><span class="line">    PRINT <span class="string">&#x27;備份失敗：&#x27;</span> <span class="operator">+</span> <span class="variable">@ErrorMessage</span></span><br><span class="line">    RAISERROR(<span class="variable">@ErrorMessage</span>, <span class="variable">@ErrorSeverity</span>, <span class="number">1</span>)</span><br><span class="line"><span class="keyword">END</span> CATCH</span><br></pre></td></tr></table></figure>
+
+<h2 id="進階效能優化技巧"><a href="#進階效能優化技巧" class="headerlink" title="進階效能優化技巧"></a>進階效能優化技巧</h2><h3 id="1-記憶體最佳化"><a href="#1-記憶體最佳化" class="headerlink" title="1. 記憶體最佳化"></a>1. 記憶體最佳化</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 設定最佳記憶體使用量</span></span><br><span class="line">sqlcmd <span class="operator">-</span>S ServerName <span class="operator">-</span>b <span class="operator">-</span>m <span class="number">65535</span> <span class="operator">-</span>U DBAdmin <span class="operator">-</span>P Password </span><br></pre></td></tr></table></figure>
+
+<p>記憶體參數說明：</p>
+<ul>
+<li><code>-m</code> 設定最大記憶體使用量</li>
+<li>建議值：可用實體記憶體的 75%</li>
+<li>需考慮同時執行的其他處理程序</li>
+</ul>
+<h3 id="2-平行處理優化"><a href="#2-平行處理優化" class="headerlink" title="2. 平行處理優化"></a>2. 平行處理優化</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 設定平行處理</span></span><br><span class="line">:setvar MAXDOP <span class="number">4</span>              <span class="comment">-- 設定平行處理數</span></span><br><span class="line">GO</span><br><span class="line">sp_configure <span class="string">&#x27;max degree of parallelism&#x27;</span>, $(MAXDOP)</span><br><span class="line">GO</span><br><span class="line">RECONFIGURE <span class="keyword">WITH</span> OVERRIDE</span><br><span class="line">GO</span><br></pre></td></tr></table></figure>
+
+<p>平行處理建議：</p>
+<ul>
+<li>CPU核心數 ≤ 4：使用全部核心</li>
+<li>4 &lt; CPU核心數 ≤ 8：使用核心數的75%</li>
+<li>CPU核心數 &gt; 8：使用8個核心</li>
+</ul>
+<h3 id="3-分割檔案匯入策略"><a href="#3-分割檔案匯入策略" class="headerlink" title="3. 分割檔案匯入策略"></a>3. 分割檔案匯入策略</h3><p>大型檔案建議分割處理：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 分割檔案匯入腳本</span></span><br><span class="line">:<span class="keyword">on</span> error exit</span><br><span class="line">:setvar ChunkSize <span class="number">1000000</span>    <span class="comment">-- 每個分割檔案的資料筆數</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 讀取分割檔案</span></span><br><span class="line">WHILE <span class="keyword">EXISTS</span> (<span class="keyword">SELECT</span> <span class="number">1</span> <span class="keyword">FROM</span> ##TempFileList <span class="keyword">WHERE</span> Processed <span class="operator">=</span> <span class="number">0</span>)</span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line">    <span class="comment">-- 處理單一分割檔案</span></span><br><span class="line">    :r &quot;$(CurrentChunkFile)&quot;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">-- 更新處理狀態</span></span><br><span class="line">    <span class="keyword">UPDATE</span> ##TempFileList </span><br><span class="line">    <span class="keyword">SET</span> Processed <span class="operator">=</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">WHERE</span> FileName <span class="operator">=</span> <span class="string">&#x27;$(CurrentChunkFile)&#x27;</span></span><br><span class="line"><span class="keyword">END</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="安全性強化設定"><a href="#安全性強化設定" class="headerlink" title="安全性強化設定"></a>安全性強化設定</h2><h3 id="1-加密傳輸設定"><a href="#1-加密傳輸設定" class="headerlink" title="1. 加密傳輸設定"></a>1. 加密傳輸設定</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 啟用加密傳輸</span></span><br><span class="line">sqlcmd <span class="operator">-</span>S ServerName <span class="operator">-</span>U DBAdmin <span class="operator">-</span>P Password <span class="operator">-</span>N                <span class="comment">-- 強制加密</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-稽核記錄設定"><a href="#2-稽核記錄設定" class="headerlink" title="2. 稽核記錄設定"></a>2. 稽核記錄設定</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 啟用稽核記錄</span></span><br><span class="line"><span class="keyword">CREATE</span> SERVER AUDIT SQLCMDExecAudit</span><br><span class="line"><span class="keyword">TO</span> FILE (FILEPATH <span class="operator">=</span> <span class="string">&#x27;D:\Audit\&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 設定稽核規格</span></span><br><span class="line"><span class="keyword">CREATE</span> SERVER AUDIT SPECIFICATION SQLCMDExecSpec</span><br><span class="line"><span class="keyword">FOR</span> SERVER AUDIT SQLCMDExecAudit</span><br><span class="line"><span class="keyword">ADD</span> (FAILED_LOGIN_GROUP),</span><br><span class="line"><span class="keyword">ADD</span> (SUCCESSFUL_LOGIN_GROUP),</span><br><span class="line"><span class="keyword">ADD</span> (DATABASE_CHANGE_GROUP)</span><br><span class="line"><span class="keyword">WITH</span> (STATE <span class="operator">=</span> <span class="keyword">ON</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="常見問題診斷與解決"><a href="#常見問題診斷與解決" class="headerlink" title="常見問題診斷與解決"></a>常見問題診斷與解決</h2><ol>
+<li><p>連線逾時</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 增加連線逾時設定</span></span><br><span class="line">sqlcmd <span class="operator">-</span>S ServerName <span class="operator">-</span>U DBAdmin <span class="operator">-</span>P Password <span class="operator">-</span>t <span class="number">600</span>           <span class="comment">-- 設定600秒逾時</span></span><br></pre></td></tr></table></figure></li>
+<li><p>記憶體不足</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 設定最大記憶體使用量</span></span><br><span class="line">sqlcmd <span class="operator">-</span>S ServerName <span class="operator">-</span>U DBAdmin <span class="operator">-</span>P Password <span class="operator">-</span>m <span class="number">65535</span></span><br></pre></td></tr></table></figure></li>
+<li><p>權限問題</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 檢查與設定必要權限</span></span><br><span class="line"><span class="keyword">GRANT</span> CONTROL SERVER <span class="keyword">TO</span> [DBAdmin]                            <span class="comment">-- 設定伺服器層級權限</span></span><br><span class="line"><span class="keyword">GRANT</span> CONTROL <span class="keyword">ON</span> DATABASE::[TargetDB] <span class="keyword">TO</span> [DBAdmin]          <span class="comment">-- 設定資料庫層級權限</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>透過本文介紹的SQLCMD進階技巧,你現在應該能夠：</p>
+<ul>
+<li>大幅提升資料匯入匯出效能</li>
+<li>建立穩定的自動化維護機制</li>
+<li>處理各種大型資料庫維運挑戰</li>
+<li>優化執行效能</li>
+<li>確保作業安全性</li>
+</ul>
+<p>善用這些技巧,讓你的資料庫維運工作更輕鬆、更有效率！</p>
+<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/sql/">Microsoft SQL Server 官方文件</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/sql/relational-databases/performance/performance-center-for-sql-server-database-engine-and-azure-sql-database">SQL Server 效能調校指南</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/sql/relational-databases/security/security-center-for-sql-server-database-engine-and-azure-sql-database">SQL Server 安全性最佳實務</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SQL-Server/" rel="tag"># SQL Server</a>
+              <a href="/tags/SQLCMD/" rel="tag"># SQLCMD</a>
+              <a href="/tags/%E6%95%88%E8%83%BD%E5%84%AA%E5%8C%96/" rel="tag"># 效能優化</a>
+              <a href="/tags/%E8%B3%87%E6%96%99%E5%BA%AB%E7%B6%AD%E8%AD%B7/" rel="tag"># 資料庫維護</a>
+              <a href="/tags/%E8%87%AA%E5%8B%95%E5%8C%96%E5%B7%A5%E5%85%B7/" rel="tag"># 自動化工具</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/690f008/" rel="prev" title="SQL Server管理員必學：SQLCMD完整應用指南">
+                  <i class="fa fa-angle-left"></i> SQL Server管理員必學：SQLCMD完整應用指南
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/dfa16eff/" rel="next" title="SQL Server 資料庫管理必學秘技：快速查詢物件修改時間">
+                  SQL Server 資料庫管理必學秘技：快速查詢物件修改時間 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

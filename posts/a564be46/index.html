@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="排序演算法完整指南 在程式設計的世界裡，排序算法扮演著舉足輕重的角色。讓我們一起深入探討四種經典的排序方法：快速排序、選擇排序、氣泡排序和插入排序。  排序演算法視覺化 快速排序 pivot 選擇排序 氣泡排序 插入排序 圖例： 未排序元素 當前處理元素 已排序元素 快速排序法 快速排序法是一種常用的排序算法，由英國計算機科學家東尼·霍爾(Tony Hoare)於1960年提出。它的主要特點是:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="經典排序演算法指南：快速、選擇、氣泡與插入排序">
+<meta property="og:url" content="https://kyosora.github.io/posts/a564be46/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="排序演算法完整指南 在程式設計的世界裡，排序算法扮演著舉足輕重的角色。讓我們一起深入探討四種經典的排序方法：快速排序、選擇排序、氣泡排序和插入排序。  排序演算法視覺化 快速排序 pivot 選擇排序 氣泡排序 插入排序 圖例： 未排序元素 當前處理元素 已排序元素 快速排序法 快速排序法是一種常用的排序算法，由英國計算機科學家東尼·霍爾(Tony Hoare)於1960年提出。它的主要特點是:">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-04-08T06:02:59.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:49:08.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="排序">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/a564be46/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/a564be46/","path":"posts/a564be46/","title":"經典排序演算法指南：快速、選擇、氣泡與插入排序"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>經典排序演算法指南：快速、選擇、氣泡與插入排序 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%92%E5%BA%8F%E6%BC%94%E7%AE%97%E6%B3%95%E5%AE%8C%E6%95%B4%E6%8C%87%E5%8D%97"><span class="nav-number">1.</span> <span class="nav-text">排序演算法完整指南</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">快速排序法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E6%B3%95%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text">快速排序法的工作原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%81%8B%E4%BD%9C%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.2.</span> <span class="nav-text">運作示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaScript-%E5%AF%A6%E7%8F%BE"><span class="nav-number">2.3.</span> <span class="nav-text">JavaScript 實現</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E7%8F%BE%E6%96%B9%E6%B3%95%E6%AF%94%E8%BC%83"><span class="nav-number">2.4.</span> <span class="nav-text">實現方法比較</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%BA%E9%96%93%E8%A4%87%E9%9B%9C%E5%BA%A6"><span class="nav-number">2.4.1.</span> <span class="nav-text">空間複雜度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%A6%E7%8F%BE%E6%96%B9%E5%BC%8F"><span class="nav-number">2.4.2.</span> <span class="nav-text">實現方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%BA%96%E5%80%BC%E9%81%B8%E6%93%87"><span class="nav-number">2.4.3.</span> <span class="nav-text">基準值選擇</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%8D%80%E7%AD%96%E7%95%A5"><span class="nav-number">2.4.4.</span> <span class="nav-text">分區策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A2%BC%E8%A4%87%E9%9B%9C%E5%BA%A6"><span class="nav-number">2.4.5.</span> <span class="nav-text">代碼複雜度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%88%E7%8E%87"><span class="nav-number">2.4.6.</span> <span class="nav-text">效率</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%9A%84%E6%95%88%E8%83%BD%E8%80%83%E9%87%8F"><span class="nav-number">2.5.</span> <span class="nav-text">快速排序的效能考量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%B5%90"><span class="nav-number">2.6.</span> <span class="nav-text">小結</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%81%B8%E6%93%87%E6%8E%92%E5%BA%8F%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">選擇排序法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%81%B8%E6%93%87%E6%8E%92%E5%BA%8F%E6%B3%95%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">3.1.</span> <span class="nav-text">選擇排序法的工作原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%81%8B%E4%BD%9C%E7%A4%BA%E4%BE%8B-1"><span class="nav-number">3.2.</span> <span class="nav-text">運作示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaScript-%E5%AF%A6%E7%8F%BE-1"><span class="nav-number">3.3.</span> <span class="nav-text">JavaScript 實現</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%B5%90-1"><span class="nav-number">3.4.</span> <span class="nav-text">小結</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B0%A3%E6%B3%A1%E6%8E%92%E5%BA%8F%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">氣泡排序法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B0%A3%E6%B3%A1%E6%8E%92%E5%BA%8F%E6%B3%95%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text">氣泡排序法的工作原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%81%8B%E4%BD%9C%E7%A4%BA%E4%BE%8B-2"><span class="nav-number">4.2.</span> <span class="nav-text">運作示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaScript-%E5%AF%A6%E7%8F%BE-2"><span class="nav-number">4.3.</span> <span class="nav-text">JavaScript 實現</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%B5%90-2"><span class="nav-number">4.4.</span> <span class="nav-text">小結</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">插入排序法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F%E6%B3%95%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">5.1.</span> <span class="nav-text">插入排序法的工作原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%81%8B%E4%BD%9C%E7%A4%BA%E4%BE%8B-3"><span class="nav-number">5.2.</span> <span class="nav-text">運作示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaScript-%E5%AF%A6%E7%8F%BE-3"><span class="nav-number">5.3.</span> <span class="nav-text">JavaScript 實現</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F%E7%9A%84%E6%95%88%E8%83%BD%E5%88%86%E6%9E%90"><span class="nav-number">5.4.</span> <span class="nav-text">插入排序的效能分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%99%82%E9%96%93%E8%A4%87%E9%9B%9C%E5%BA%A6"><span class="nav-number">5.4.1.</span> <span class="nav-text">時間複雜度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%BA%E9%96%93%E8%A4%87%E9%9B%9C%E5%BA%A6-1"><span class="nav-number">5.4.2.</span> <span class="nav-text">空間複雜度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%84%AA%E5%8C%96%E6%96%B9%E5%BC%8F"><span class="nav-number">5.4.3.</span> <span class="nav-text">優化方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%B5%90-3"><span class="nav-number">5.5.</span> <span class="nav-text">小結</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E7%A8%AE%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E7%9A%84%E7%B6%9C%E5%90%88%E6%AF%94%E8%BC%83"><span class="nav-number">6.</span> <span class="nav-text">四種排序算法的綜合比較</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%99%82%E9%96%93%E8%A4%87%E9%9B%9C%E5%BA%A6%E6%AF%94%E8%BC%83"><span class="nav-number">6.1.</span> <span class="nav-text">時間複雜度比較</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A9%BA%E9%96%93%E8%A4%87%E9%9B%9C%E5%BA%A6%E6%AF%94%E8%BC%83"><span class="nav-number">6.2.</span> <span class="nav-text">空間複雜度比較</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E9%BB%9E%E6%AF%94%E8%BC%83"><span class="nav-number">6.3.</span> <span class="nav-text">特點比較</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F"><span class="nav-number">6.3.1.</span> <span class="nav-text">快速排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%B8%E6%93%87%E6%8E%92%E5%BA%8F"><span class="nav-number">6.3.2.</span> <span class="nav-text">選擇排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B0%A3%E6%B3%A1%E6%8E%92%E5%BA%8F"><span class="nav-number">6.3.3.</span> <span class="nav-text">氣泡排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F"><span class="nav-number">6.3.4.</span> <span class="nav-text">插入排序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%81%B8%E6%93%87%E5%90%88%E9%81%A9%E7%9A%84%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95"><span class="nav-number">6.4.</span> <span class="nav-text">如何選擇合適的排序算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B8%BD%E7%B5%90"><span class="nav-number">7.</span> <span class="nav-text">總結</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/a564be46/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="經典排序演算法指南：快速、選擇、氣泡與插入排序 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          經典排序演算法指南：快速、選擇、氣泡與插入排序
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-04-08 14:02:59" itemprop="dateCreated datePublished" datetime="2024-04-08T14:02:59+08:00">2024-04-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-11-27 14:49:08" itemprop="dateModified" datetime="2024-11-27T14:49:08+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%BC%94%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">演算法</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>6.8k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>6 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="排序演算法完整指南"><a href="#排序演算法完整指南" class="headerlink" title="排序演算法完整指南"></a>排序演算法完整指南</h1><p>在程式設計的世界裡，排序算法扮演著舉足輕重的角色。讓我們一起深入探討四種經典的排序方法：快速排序、選擇排序、氣泡排序和插入排序。</p>
+<div width="100%" style="overflow-x: auto;">
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+    <rect width="800" height="600" fill="#f8f9fa"/>
+    <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">排序演算法視覺化</text>
+    <g transform="translate(50,80)">
+        <text x="150" y="20" text-anchor="middle" font-size="18">快速排序</text>
+        <rect x="0" y="40" width="300" height="80" fill="#e9ecef" rx="4"/>
+        <g transform="translate(20,60)">
+            <rect width="30" height="40" fill="#4263eb"/>
+            <rect x="40" width="20" height="25" fill="#4263eb"/>
+            <rect x="70" width="25" height="30" fill="#4263eb"/>
+            <rect x="100" width="15" height="20" fill="#4263eb"/>
+            <path d="M 140,0 L 140,40" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="4"/>
+            <text x="140" y="-5" text-anchor="middle" font-size="12">pivot</text>
+            <rect x="160" width="15" height="20" fill="#51cf66"/>
+            <rect x="185" width="20" height="25" fill="#51cf66"/>
+            <rect x="215" width="25" height="30" fill="#51cf66"/>
+            <rect x="250" width="30" height="40" fill="#51cf66"/>
+        </g>
+    </g>
+    <g transform="translate(450,80)">
+        <text x="150" y="20" text-anchor="middle" font-size="18">選擇排序</text>
+        <rect x="0" y="40" width="300" height="80" fill="#e9ecef" rx="4"/>
+        <g transform="translate(20,60)">
+            <rect width="15" height="20" fill="#51cf66"/>
+            <rect x="25" width="20" height="25" fill="#51cf66"/>
+            <rect x="65" width="25" height="30" fill="#ff6b6b"/>
+            <rect x="100" width="30" height="40" fill="#ff6b6b"/>
+            <rect x="140" width="20" height="25" fill="#4263eb"/>
+            <rect x="170" width="25" height="30" fill="#4263eb"/>
+            <rect x="205" width="15" height="20" fill="#4263eb"/>
+            <rect x="230" width="30" height="40" fill="#4263eb"/>
+        </g>
+    </g>
+    <g transform="translate(50,280)">
+        <text x="150" y="20" text-anchor="middle" font-size="18">氣泡排序</text>
+        <rect x="0" y="40" width="300" height="80" fill="#e9ecef" rx="4"/>
+        <g transform="translate(20,60)">
+            <rect width="30" height="40" fill="#4263eb"/>
+            <rect x="40" width="20" height="25" fill="#4263eb"/>
+            <rect x="70" width="25" height="30" fill="#ff6b6b"/>
+            <rect x="105" width="15" height="20" fill="#ff6b6b"/>
+            <rect x="140" width="20" height="25" fill="#51cf66"/>
+            <rect x="170" width="25" height="30" fill="#51cf66"/>
+            <rect x="205" width="30" height="40" fill="#51cf66"/>
+            <path d="M 80,45 Q 95,55 110,30" fill="none" stroke="#ff6b6b" stroke-width="2" marker-end="url(#arrowhead)"/>
+        </g>
+    </g>
+    <g transform="translate(450,280)">
+        <text x="150" y="20" text-anchor="middle" font-size="18">插入排序</text>
+        <rect x="0" y="40" width="300" height="80" fill="#e9ecef" rx="4"/>
+        <g transform="translate(20,60)">
+            <rect width="15" height="20" fill="#51cf66"/>
+            <rect x="25" width="20" height="25" fill="#51cf66"/>
+            <rect x="55" width="25" height="30" fill="#51cf66"/>
+            <rect x="90" width="15" height="20" fill="#ff6b6b"/>
+            <rect x="140" width="30" height="40" fill="#4263eb"/>
+            <rect x="180" width="20" height="25" fill="#4263eb"/>
+            <rect x="210" width="25" height="30" fill="#4263eb"/>
+            <path d="M 97,45 Q 97,55 65,55" fill="none" stroke="#ff6b6b" stroke-width="2" marker-end="url(#arrowhead)"/>
+        </g>
+    </g>
+    <g transform="translate(50,480)">
+        <text x="0" y="0" font-size="16" font-weight="bold">圖例：</text>
+        <g transform="translate(0,20)">
+            <rect width="20" height="20" fill="#4263eb"/>
+            <text x="30" y="15">未排序元素</text>
+            <rect x="150" width="20" height="20" fill="#ff6b6b"/>
+            <text x="180" y="15">當前處理元素</text>
+            <rect x="300" width="20" height="20" fill="#51cf66"/>
+            <text x="330" y="15">已排序元素</text>
+        </g>
+    </g>
+    <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#ff6b6b"/>
+        </marker>
+    </defs>
+</svg>
+</div>
+
+<h1 id="快速排序法"><a href="#快速排序法" class="headerlink" title="快速排序法"></a>快速排序法</h1><p>快速排序法是一種常用的排序算法，由英國計算機科學家東尼·霍爾(Tony Hoare)於1960年提出。它的主要特點是:</p>
+<ol>
+<li>效率高：在大多數情況下，它比其他排序算法更快。</li>
+<li>原地排序：不需要額外的存儲空間。</li>
+<li>分治法：採用「分而治之」的策略來解決問題。</li>
+</ol>
+<h2 id="快速排序法的工作原理"><a href="#快速排序法的工作原理" class="headerlink" title="快速排序法的工作原理"></a>快速排序法的工作原理</h2><p>想像你有一堆數字卡片需要按照從小到大的順序排列。快速排序法的基本思路是:</p>
+<ol>
+<li>**選擇基準值(Pivot)**：從這堆卡片中選一張作為基準卡。</li>
+<li>**分區(Partition)**：將其他卡片與基準卡比較，分成三組:<ul>
+<li>比基準值小的數</li>
+<li>等於基準值的數</li>
+<li>比基準值大的數</li>
+</ul>
+</li>
+<li>**遞迴(Recursion)**：對「小於」和「大於」的兩組重複步驟1和2，直到每組只剩一張卡片或沒有卡片為止。</li>
+<li><strong>合併</strong>：將所有排序好的小組按順序連接起來，得到最終排序結果。</li>
+</ol>
+<h2 id="運作示例"><a href="#運作示例" class="headerlink" title="運作示例"></a>運作示例</h2><p>假設我們有以下數列需要排序: [64, 34, 25, 12, 22, 11, 90]</p>
+<ol>
+<li><p>選擇基準值(我們選擇中間的數 25):</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[64, 34, 25, 12, 22, 11, 90]</span><br><span class="line">        ^</span><br></pre></td></tr></table></figure></li>
+<li><p>分區:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">小於25: [12, 22, 11]</span><br><span class="line">等於25: [25]</span><br><span class="line">大於25: [64, 34, 90]</span><br></pre></td></tr></table></figure></li>
+<li><p>對 [12, 22, 11] 和 [64, 34, 90] 重複這個過程:</p>
+<p>對 [12, 22, 11] 排序:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">小於12: [11]</span><br><span class="line">等於12: [12]</span><br><span class="line">大於12: [22]</span><br></pre></td></tr></table></figure>
+
+<p>對 [64, 34, 90] 排序:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">小於64: [34]</span><br><span class="line">等於64: [64]</span><br><span class="line">大於64: [90]</span><br></pre></td></tr></table></figure></li>
+<li><p>最後，將所有結果合併:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[11, 12, 22, 25, 34, 64, 90]</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="JavaScript-實現"><a href="#JavaScript-實現" class="headerlink" title="JavaScript 實現"></a>JavaScript 實現</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方法1：使用額外空間的快速排序</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">quickSort1</span>(<span class="params">arr</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (arr.<span class="property">length</span> &lt;= <span class="number">1</span>) <span class="keyword">return</span> arr;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> pivot = arr[<span class="title class_">Math</span>.<span class="title function_">floor</span>(arr.<span class="property">length</span> / <span class="number">2</span>)];</span><br><span class="line">  <span class="keyword">const</span> left = arr.<span class="title function_">filter</span>(<span class="function"><span class="params">x</span> =&gt;</span> x &lt; pivot);</span><br><span class="line">  <span class="keyword">const</span> middle = arr.<span class="title function_">filter</span>(<span class="function"><span class="params">x</span> =&gt;</span> x === pivot);</span><br><span class="line">  <span class="keyword">const</span> right = arr.<span class="title function_">filter</span>(<span class="function"><span class="params">x</span> =&gt;</span> x &gt; pivot);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> [...<span class="title function_">quickSort1</span>(left), ...middle, ...<span class="title function_">quickSort1</span>(right)];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方法2：原地（in-place）快速排序</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">quickSort2</span>(<span class="params">arr, left = <span class="number">0</span>, right = arr.length - <span class="number">1</span></span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (left &lt; right) &#123;</span><br><span class="line">    <span class="keyword">let</span> pivotIndex = <span class="title function_">pivot</span>(arr, left, right);</span><br><span class="line">    <span class="title function_">quickSort2</span>(arr, left, pivotIndex - <span class="number">1</span>);</span><br><span class="line">    <span class="title function_">quickSort2</span>(arr, pivotIndex + <span class="number">1</span>, right);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> arr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">pivot</span>(<span class="params">arr, start = <span class="number">0</span>, end = arr.length - <span class="number">1</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> <span class="title function_">swap</span> = (<span class="params">arr, idx1, idx2</span>) =&gt; &#123;</span><br><span class="line">    [arr[idx1], arr[idx2]] = [arr[idx2], arr[idx1]];</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> pivot = arr[start];</span><br><span class="line">  <span class="keyword">let</span> swapIdx = start;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = start + <span class="number">1</span>; i &lt;= end; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (pivot &gt; arr[i]) &#123;</span><br><span class="line">      swapIdx++;</span><br><span class="line">      <span class="title function_">swap</span>(arr, swapIdx, i);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">swap</span>(arr, start, swapIdx);</span><br><span class="line">  <span class="keyword">return</span> swapIdx;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 測試</span></span><br><span class="line"><span class="keyword">const</span> arr = [<span class="number">64</span>, <span class="number">34</span>, <span class="number">25</span>, <span class="number">12</span>, <span class="number">22</span>, <span class="number">11</span>, <span class="number">90</span>];</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;原始數組:&quot;</span>, arr);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;方法1排序後:&quot;</span>, <span class="title function_">quickSort1</span>([...arr]));</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;方法2排序後:&quot;</span>, <span class="title function_">quickSort2</span>([...arr]));</span><br></pre></td></tr></table></figure>
+
+<h2 id="實現方法比較"><a href="#實現方法比較" class="headerlink" title="實現方法比較"></a>實現方法比較</h2><h3 id="空間複雜度"><a href="#空間複雜度" class="headerlink" title="空間複雜度"></a>空間複雜度</h3><ul>
+<li>方法1：使用額外的陣列來儲存左、中、右三部分，空間複雜度為O(n)。</li>
+<li>方法2：直接在原陣列上進行操作，空間複雜度為O(log n)（因為遞迴調用堆疊的深度）。</li>
+</ul>
+<h3 id="實現方式"><a href="#實現方式" class="headerlink" title="實現方式"></a>實現方式</h3><ul>
+<li>方法1：使用過濾器（filter）創建新的子陣列。</li>
+<li>方法2：使用交換（swap）操作在原陣列中重新排列元素。</li>
+</ul>
+<h3 id="基準值選擇"><a href="#基準值選擇" class="headerlink" title="基準值選擇"></a>基準值選擇</h3><ul>
+<li>方法1：選擇中間元素作為基準。</li>
+<li>方法2：選擇第一個元素作為基準。</li>
+</ul>
+<h3 id="分區策略"><a href="#分區策略" class="headerlink" title="分區策略"></a>分區策略</h3><ul>
+<li>方法1：通過過濾直接生成左、中、右三個部分。</li>
+<li>方法2：通過一次遍歷和交換操作，將小於基準的元素移到左邊。</li>
+</ul>
+<h3 id="代碼複雜度"><a href="#代碼複雜度" class="headerlink" title="代碼複雜度"></a>代碼複雜度</h3><ul>
+<li>方法1：代碼較簡潔，易於理解。</li>
+<li>方法2：代碼稍複雜，但更接近傳統的快速排序實現。</li>
+</ul>
+<h3 id="效率"><a href="#效率" class="headerlink" title="效率"></a>效率</h3><ul>
+<li>方法1：由於創建新陣列，在大規模數據時可能較慢。</li>
+<li>方法2：不創建新陣列，通常在大規模數據時更高效。</li>
+</ul>
+<h2 id="快速排序的效能考量"><a href="#快速排序的效能考量" class="headerlink" title="快速排序的效能考量"></a>快速排序的效能考量</h2><p>快速排序法的平均時間複雜度是 O(n log n)，這使它在大多數情況下比其他排序算法更快。然而，在最壞的情況下(例如，當數列已經排序時)，它的時間複雜度可能退化到 O(n²)。</p>
+<p>效率很大程度上取決於基準值的選擇。常見的選擇方法有:</p>
+<ul>
+<li>選擇第一個元素</li>
+<li>選擇最後一個元素</li>
+<li>選擇中間的元素</li>
+<li>隨機選擇</li>
+</ul>
+<p>其中，隨機選擇通常能提供較好的平均性能。</p>
+<h2 id="小結"><a href="#小結" class="headerlink" title="小結"></a>小結</h2><p>快速排序法是一個既優雅又高效的排序算法。它利用分治的思想，將複雜的問題分解成更小、更容易解決的子問題。雖然它的概念可能初看起來有點複雜，但通過實例和視覺化的說明，我們可以更直觀地理解它的工作原理。</p>
+<h1 id="選擇排序法"><a href="#選擇排序法" class="headerlink" title="選擇排序法"></a>選擇排序法</h1><p>選擇排序法（Selection Sort）是一種簡單直觀的排序算法。</p>
+<h2 id="選擇排序法的工作原理"><a href="#選擇排序法的工作原理" class="headerlink" title="選擇排序法的工作原理"></a>選擇排序法的工作原理</h2><p>選擇排序的基本步驟是：</p>
+<ol>
+<li>找出數列中最小的數字</li>
+<li>將它與第一個位置的數字交換</li>
+<li>在剩下的數字中找出最小的數字</li>
+<li>將它與第二個位置的數字交換</li>
+<li>重複這個過程，直到所有數字都排序完成</li>
+</ol>
+<h2 id="運作示例-1"><a href="#運作示例-1" class="headerlink" title="運作示例"></a>運作示例</h2><p>假設我們要對以下數列進行排序：[64, 34, 25, 12, 22, 11, 90]</p>
+<ol>
+<li><p>第一輪：找到最小值 11 並與第一個位置交換</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[64, 34, 25, 12, 22, 11, 90]  -&gt;  [11, 34, 25, 12, 22, 64, 90]</span><br><span class="line"> ^                    ^</span><br></pre></td></tr></table></figure></li>
+<li><p>第二輪：在剩餘數字中找到最小值 12 並與第二個位置交換</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[11, 34, 25, 12, 22, 64, 90]  -&gt;  [11, 12, 25, 34, 22, 64, 90]</span><br><span class="line">     ^        ^</span><br></pre></td></tr></table></figure></li>
+<li><p>持續這個過程直到排序完成。</p>
+</li>
+</ol>
+<h2 id="JavaScript-實現-1"><a href="#JavaScript-實現-1" class="headerlink" title="JavaScript 實現"></a>JavaScript 實現</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">selectionSort</span>(<span class="params">arr</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; arr.<span class="property">length</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">let</span> minIndex = i;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 在未排序部分找最小值</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> j = i + <span class="number">1</span>; j &lt; arr.<span class="property">length</span>; j++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (arr[j] &lt; arr[minIndex]) &#123;</span><br><span class="line">                minIndex = j;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 如果找到更小的值，進行交換</span></span><br><span class="line">        <span class="keyword">if</span> (minIndex !== i) &#123;</span><br><span class="line">            [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> arr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 測試</span></span><br><span class="line"><span class="keyword">const</span> arr = [<span class="number">64</span>, <span class="number">34</span>, <span class="number">25</span>, <span class="number">12</span>, <span class="number">22</span>, <span class="number">11</span>, <span class="number">90</span>];</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;排序後:&quot;</span>, <span class="title function_">selectionSort</span>([...arr]));</span><br></pre></td></tr></table></figure>
+
+<h2 id="小結-1"><a href="#小結-1" class="headerlink" title="小結"></a>小結</h2><p>選擇排序法雖然效率不是最佳，但它的實現簡單且易於理解，特別適合小規模數據的排序。它的一個重要特點是交換次數最少，這在某些特定場景下可能是有利的。</p>
+<h1 id="氣泡排序法"><a href="#氣泡排序法" class="headerlink" title="氣泡排序法"></a>氣泡排序法</h1><p>氣泡排序法（Bubble Sort）是最簡單的排序算法之一。它的名字來自於較小的元素會像氣泡一樣&quot;浮&quot;到數列的頂端。</p>
+<h2 id="氣泡排序法的工作原理"><a href="#氣泡排序法的工作原理" class="headerlink" title="氣泡排序法的工作原理"></a>氣泡排序法的工作原理</h2><p>氣泡排序的基本步驟是：</p>
+<ol>
+<li>比較相鄰的兩個數字</li>
+<li>如果第一個比第二個大，就交換它們的位置</li>
+<li>對每一對相鄰元素進行同樣的操作</li>
+<li>每一輪比較後，最大的數字會&quot;浮&quot;到最後的位置</li>
+<li>重複這個過程，直到沒有需要交換的元素</li>
+</ol>
+<h2 id="運作示例-2"><a href="#運作示例-2" class="headerlink" title="運作示例"></a>運作示例</h2><p>假設要排序：[64, 34, 25, 12, 22, 11, 90]</p>
+<p>第一輪比較：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[64, 34, 25, 12, 22, 11, 90]</span><br><span class="line"> ^  ^</span><br><span class="line">[34, 64, 25, 12, 22, 11, 90]</span><br><span class="line">    ^  ^</span><br><span class="line">[34, 25, 64, 12, 22, 11, 90]</span><br><span class="line">       ^  ^</span><br></pre></td></tr></table></figure>
+<p>...以此類推</p>
+<h2 id="JavaScript-實現-2"><a href="#JavaScript-實現-2" class="headerlink" title="JavaScript 實現"></a>JavaScript 實現</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">bubbleSort</span>(<span class="params">arr</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> swapped;</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        swapped = <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; arr.<span class="property">length</span> - <span class="number">1</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (arr[i] &gt; arr[i + <span class="number">1</span>]) &#123;</span><br><span class="line">                [arr[i], arr[i + <span class="number">1</span>]] = [arr[i + <span class="number">1</span>], arr[i]];</span><br><span class="line">                swapped = <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">while</span> (swapped);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> arr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 優化版本：記錄最後一次交換的位置</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">bubbleSortOptimized</span>(<span class="params">arr</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> lastSwap;</span><br><span class="line">    <span class="keyword">let</span> len = arr.<span class="property">length</span> - <span class="number">1</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        lastSwap = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; len; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (arr[i] &gt; arr[i + <span class="number">1</span>]) &#123;</span><br><span class="line">                [arr[i], arr[i + <span class="number">1</span>]] = [arr[i + <span class="number">1</span>], arr[i]];</span><br><span class="line">                lastSwap = i;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        len = lastSwap;</span><br><span class="line">    &#125; <span class="keyword">while</span> (lastSwap !== <span class="number">0</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> arr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 測試</span></span><br><span class="line"><span class="keyword">const</span> arr = [<span class="number">64</span>, <span class="number">34</span>, <span class="number">25</span>, <span class="number">12</span>, <span class="number">22</span>, <span class="number">11</span>, <span class="number">90</span>];</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;基本氣泡排序:&quot;</span>, <span class="title function_">bubbleSort</span>([...arr]));</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;優化氣泡排序:&quot;</span>, <span class="title function_">bubbleSortOptimized</span>([...arr]));</span><br></pre></td></tr></table></figure>
+
+<h2 id="小結-2"><a href="#小結-2" class="headerlink" title="小結"></a>小結</h2><p>氣泡排序是最容易理解和實現的排序算法之一。雖然它的效率不高，但在數據量小或者數據已經接近排序狀態時，它仍然是一個實用的選擇。優化版本的氣泡排序通過記錄最後交換位置，可以減少不必要的比較，提高效率。</p>
+<h1 id="插入排序法"><a href="#插入排序法" class="headerlink" title="插入排序法"></a>插入排序法</h1><p>插入排序法（Insertion Sort）的概念源自於人們整理撲克牌的方式。想像你手上的撲克牌：一手拿著已經排序好的牌，另一手拿著待排序的牌，每次將一張新牌插入到已排序的牌堆中適當的位置。</p>
+<h2 id="插入排序法的工作原理"><a href="#插入排序法的工作原理" class="headerlink" title="插入排序法的工作原理"></a>插入排序法的工作原理</h2><ol>
+<li>將第一個元素視為已排序的子陣列</li>
+<li>取出下一個元素，在已排序的子陣列中從後向前掃描</li>
+<li>如果掃描到的元素大於新元素，則將該元素向後移動一個位置</li>
+<li>重複步驟3，直到找到合適的插入位置</li>
+<li>將新元素插入到該位置</li>
+<li>重複步驟2-5，直到所有元素都完成排序</li>
+</ol>
+<h2 id="運作示例-3"><a href="#運作示例-3" class="headerlink" title="運作示例"></a>運作示例</h2><p>假設我們要對以下數列進行排序：[64, 34, 25, 12, 22, 11, 90]</p>
+<ol>
+<li><p>初始狀態：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">已排序 | 未排序</span><br><span class="line">[64] | [34, 25, 12, 22, 11, 90]</span><br></pre></td></tr></table></figure></li>
+<li><p>處理 34：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[34, 64] | [25, 12, 22, 11, 90]</span><br></pre></td></tr></table></figure></li>
+<li><p>處理 25：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[25, 34, 64] | [12, 22, 11, 90]</span><br></pre></td></tr></table></figure></li>
+<li><p>依此類推...</p>
+</li>
+</ol>
+<h2 id="JavaScript-實現-3"><a href="#JavaScript-實現-3" class="headerlink" title="JavaScript 實現"></a>JavaScript 實現</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">insertionSort</span>(<span class="params">arr</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">1</span>; i &lt; arr.<span class="property">length</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">let</span> current = arr[i];</span><br><span class="line">        <span class="keyword">let</span> j = i - <span class="number">1</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 將較大的元素向後移動</span></span><br><span class="line">        <span class="keyword">while</span> (j &gt;= <span class="number">0</span> &amp;&amp; arr[j] &gt; current) &#123;</span><br><span class="line">            arr[j + <span class="number">1</span>] = arr[j];</span><br><span class="line">            j--;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 插入當前元素</span></span><br><span class="line">        arr[j + <span class="number">1</span>] = current;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> arr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 優化版本：使用二分搜尋找插入位置</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">insertionSortWithBinarySearch</span>(<span class="params">arr</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">1</span>; i &lt; arr.<span class="property">length</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">let</span> current = arr[i];</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 使用二分搜尋找到插入位置</span></span><br><span class="line">        <span class="keyword">let</span> left = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">let</span> right = i - <span class="number">1</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span> (left &lt;= right) &#123;</span><br><span class="line">            <span class="keyword">let</span> mid = <span class="title class_">Math</span>.<span class="title function_">floor</span>((left + right) / <span class="number">2</span>);</span><br><span class="line">            <span class="keyword">if</span> (arr[mid] &gt; current) &#123;</span><br><span class="line">                right = mid - <span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                left = mid + <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 移動元素並插入</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> j = i - <span class="number">1</span>; j &gt;= left; j--) &#123;</span><br><span class="line">            arr[j + <span class="number">1</span>] = arr[j];</span><br><span class="line">        &#125;</span><br><span class="line">        arr[left] = current;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> arr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 測試</span></span><br><span class="line"><span class="keyword">const</span> arr = [<span class="number">64</span>, <span class="number">34</span>, <span class="number">25</span>, <span class="number">12</span>, <span class="number">22</span>, <span class="number">11</span>, <span class="number">90</span>];</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;基本插入排序:&quot;</span>, <span class="title function_">insertionSort</span>([...arr]));</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;二分搜尋插入排序:&quot;</span>, <span class="title function_">insertionSortWithBinarySearch</span>([...arr]));</span><br></pre></td></tr></table></figure>
+
+<h2 id="插入排序的效能分析"><a href="#插入排序的效能分析" class="headerlink" title="插入排序的效能分析"></a>插入排序的效能分析</h2><h3 id="時間複雜度"><a href="#時間複雜度" class="headerlink" title="時間複雜度"></a>時間複雜度</h3><ul>
+<li>最佳情況：O(n)，當資料已經排序好時</li>
+<li>平均情況：O(n²)</li>
+<li>最壞情況：O(n²)，當資料完全反序時</li>
+</ul>
+<h3 id="空間複雜度-1"><a href="#空間複雜度-1" class="headerlink" title="空間複雜度"></a>空間複雜度</h3><ul>
+<li>O(1)，只需要一個額外變數來儲存當前處理的元素</li>
+</ul>
+<h3 id="優化方式"><a href="#優化方式" class="headerlink" title="優化方式"></a>優化方式</h3><ol>
+<li><p><strong>二分搜尋最佳插入位置</strong>：</p>
+<ul>
+<li>將線性搜尋改為二分搜尋</li>
+<li>可以減少比較次數</li>
+<li>但移動元素的次數不變</li>
+</ul>
+</li>
+<li><p><strong>跳躍式插入</strong>：</p>
+<ul>
+<li>先比較間隔較大的元素</li>
+<li>逐步縮小間隔</li>
+<li>類似希爾排序的概念</li>
+</ul>
+</li>
+</ol>
+<h2 id="小結-3"><a href="#小結-3" class="headerlink" title="小結"></a>小結</h2><p>插入排序法是一個簡單但實用的排序算法，特別適合：</p>
+<ul>
+<li>小規模資料排序</li>
+<li>幾乎已經排序好的資料</li>
+<li>資料持續輸入的情境</li>
+</ul>
+<h1 id="四種排序算法的綜合比較"><a href="#四種排序算法的綜合比較" class="headerlink" title="四種排序算法的綜合比較"></a>四種排序算法的綜合比較</h1><h2 id="時間複雜度比較"><a href="#時間複雜度比較" class="headerlink" title="時間複雜度比較"></a>時間複雜度比較</h2><table>
+<thead>
+<tr>
+<th>算法</th>
+<th>最佳情況</th>
+<th>平均情況</th>
+<th>最壞情況</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>快速排序</td>
+<td>O(n log n)</td>
+<td>O(n log n)</td>
+<td>O(n²)</td>
+</tr>
+<tr>
+<td>選擇排序</td>
+<td>O(n²)</td>
+<td>O(n²)</td>
+<td>O(n²)</td>
+</tr>
+<tr>
+<td>氣泡排序</td>
+<td>O(n)</td>
+<td>O(n²)</td>
+<td>O(n²)</td>
+</tr>
+<tr>
+<td>插入排序</td>
+<td>O(n)</td>
+<td>O(n²)</td>
+<td>O(n²)</td>
+</tr>
+</tbody></table>
+<h2 id="空間複雜度比較"><a href="#空間複雜度比較" class="headerlink" title="空間複雜度比較"></a>空間複雜度比較</h2><table>
+<thead>
+<tr>
+<th>算法</th>
+<th>空間複雜度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>快速排序</td>
+<td>O(log n)</td>
+</tr>
+<tr>
+<td>選擇排序</td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td>氣泡排序</td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td>插入排序</td>
+<td>O(1)</td>
+</tr>
+</tbody></table>
+<h2 id="特點比較"><a href="#特點比較" class="headerlink" title="特點比較"></a>特點比較</h2><h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><ul>
+<li>優點：<ul>
+<li>平均效能最佳</li>
+<li>實際應用中最常用</li>
+<li>適合大規模數據</li>
+</ul>
+</li>
+<li>缺點：<ul>
+<li>實現較複雜</li>
+<li>在最壞情況下效能不佳</li>
+<li>遞迴實現可能導致堆疊溢出</li>
+</ul>
+</li>
+</ul>
+<h3 id="選擇排序"><a href="#選擇排序" class="headerlink" title="選擇排序"></a>選擇排序</h3><ul>
+<li>優點：<ul>
+<li>實現簡單</li>
+<li>交換次數最少</li>
+<li>適合小規模數據</li>
+</ul>
+</li>
+<li>缺點：<ul>
+<li>效能固定為 O(n²)</li>
+<li>不適合大規模數據</li>
+</ul>
+</li>
+</ul>
+<h3 id="氣泡排序"><a href="#氣泡排序" class="headerlink" title="氣泡排序"></a>氣泡排序</h3><ul>
+<li>優點：<ul>
+<li>最容易理解和實現</li>
+<li>最適合接近排序好的數據</li>
+</ul>
+</li>
+<li>缺點：<ul>
+<li>效率較低</li>
+<li>交換次數多</li>
+<li>不適合大規模數據</li>
+</ul>
+</li>
+</ul>
+<h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><ul>
+<li>優點：<ul>
+<li>實作簡單直觀</li>
+<li>對於近乎排序的資料非常高效</li>
+<li>可以處理資料串流（即時輸入的資料）</li>
+<li>是穩定的排序算法</li>
+</ul>
+</li>
+<li>缺點：<ul>
+<li>平均效能為 O(n²)</li>
+<li>不適合大規模資料</li>
+<li>對完全反序的資料效能最差</li>
+</ul>
+</li>
+</ul>
+<h2 id="如何選擇合適的排序算法"><a href="#如何選擇合適的排序算法" class="headerlink" title="如何選擇合適的排序算法"></a>如何選擇合適的排序算法</h2><ol>
+<li><p>當數據規模小（n &lt; 50）時：</p>
+<ul>
+<li>選擇排序或氣泡排序都是可以接受的選擇</li>
+<li>程式碼簡單，易於實現和維護</li>
+</ul>
+</li>
+<li><p>當數據規模大時：</p>
+<ul>
+<li>快速排序是最好的選擇</li>
+<li>效能優勢明顯</li>
+</ul>
+</li>
+<li><p>當數據接近排序好時：</p>
+<ul>
+<li>優化後的氣泡排序效果好</li>
+<li>時間複雜度接近 O(n)</li>
+</ul>
+</li>
+<li><p>當空間有限時：</p>
+<ul>
+<li>選擇排序或氣泡排序較好</li>
+<li>只需要 O(1) 的額外空間</li>
+</ul>
+</li>
+<li><p>當資料持續輸入時：</p>
+<ul>
+<li>插入排序是最佳選擇</li>
+<li>可以即時維護已排序的序列</li>
+</ul>
+</li>
+<li><p>當需要穩定排序時：</p>
+<ul>
+<li>插入排序和氣泡排序都是好選擇</li>
+<li>保持相等元素的相對順序不變</li>
+</ul>
+</li>
+</ol>
+<h1 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h1><p>透過本文，我們深入了解了四種經典的排序算法：</p>
+<ol>
+<li><strong>快速排序</strong>：效能最優，但實現複雜，適合大規模資料排序</li>
+<li><strong>選擇排序</strong>：簡單穩定，交換次數少，適合小規模資料</li>
+<li><strong>氣泡排序</strong>：最易理解，在接近排序的資料上表現良好</li>
+<li><strong>插入排序</strong>：簡單直觀，適合處理接近排序或持續輸入的資料</li>
+</ol>
+<p>選擇合適的排序算法時，需要綜合考慮以下因素：</p>
+<ol>
+<li>資料規模大小</li>
+<li>可用的記憶體空間</li>
+<li>資料的初始排序狀態</li>
+<li>是否需要穩定排序</li>
+<li>是否有資料持續輸入</li>
+<li>實現的複雜度要求</li>
+</ol>
+<p>每種排序算法都有其適用場景，理解它們的特點和原理，能幫助我們在實際應用中做出最佳選擇。對於初學者來說，建議按照氣泡排序、插入排序、選擇排序、快速排序的順序學習，這樣可以循序漸進地理解排序算法的概念和優化思路。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%8E%92%E5%BA%8F/" rel="tag"># 排序</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/c2810439/" rel="prev" title=".NET Core 中的依賴注入和控制反轉">
+                  <i class="fa fa-angle-left"></i> .NET Core 中的依賴注入和控制反轉
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/4aa29c8e/" rel="next" title=".NET Core 中的中間件（Middleware）">
+                  .NET Core 中的中間件（Middleware） <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

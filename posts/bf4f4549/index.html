@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="當你的網站突然拒絕訪客，顯示 401.3 錯誤 你是否曾經碰到過這樣的情境：辛苦架設好的網站部署到 IIS 上，一切設定看起來都很完美，但當你試著從瀏覽器訪問時，卻看到這樣讓人頭痛的錯誤訊息：  HTTP 錯誤 401.3 - Unauthorized 因為網頁伺服器上此資源的存取控制清單 (ACL) 設定或加密設定的緣故，您沒有檢視此目錄或網頁的權限。  這個讓人抓狂的錯誤往往會讓你懷疑自己是不">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IIS 401.3 權限錯誤完全解析：為什麼新增 IUSR 是救命關鍵">
+<meta property="og:url" content="https://kyosora.github.io/posts/bf4f4549/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="當你的網站突然拒絕訪客，顯示 401.3 錯誤 你是否曾經碰到過這樣的情境：辛苦架設好的網站部署到 IIS 上，一切設定看起來都很完美，但當你試著從瀏覽器訪問時，卻看到這樣讓人頭痛的錯誤訊息：  HTTP 錯誤 401.3 - Unauthorized 因為網頁伺服器上此資源的存取控制清單 (ACL) 設定或加密設定的緣故，您沒有檢視此目錄或網頁的權限。  這個讓人抓狂的錯誤往往會讓你懷疑自己是不">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2025-03-24T07:30:00.000Z">
+<meta property="article:modified_time" content="2025-03-24T10:34:46.607Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="網路安全, 系統管理, 程式設計, 技術筆記">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/bf4f4549/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/bf4f4549/","path":"posts/bf4f4549/","title":"IIS 401.3 權限錯誤完全解析：為什麼新增 IUSR 是救命關鍵"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>IIS 401.3 權限錯誤完全解析：為什麼新增 IUSR 是救命關鍵 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%95%B6%E4%BD%A0%E7%9A%84%E7%B6%B2%E7%AB%99%E7%AA%81%E7%84%B6%E6%8B%92%E7%B5%95%E8%A8%AA%E5%AE%A2%EF%BC%8C%E9%A1%AF%E7%A4%BA-401-3-%E9%8C%AF%E8%AA%A4"><span class="nav-number">1.</span> <span class="nav-text">當你的網站突然拒絕訪客，顯示 401.3 錯誤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%90%86%E8%A7%A3-HTTP-401-3-%E9%8C%AF%E8%AA%A4%E7%9A%84%E7%9C%9F%E6%AD%A3%E5%90%AB%E7%BE%A9"><span class="nav-number">2.</span> <span class="nav-text">理解 HTTP 401.3 錯誤的真正含義</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IUSR%EF%BC%9AIIS-%E4%B8%AD%E9%BB%98%E9%BB%98%E4%BB%98%E5%87%BA%E7%9A%84%E5%8C%BF%E5%90%8D%E8%8B%B1%E9%9B%84"><span class="nav-number">3.</span> <span class="nav-text">IUSR：IIS 中默默付出的匿名英雄</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88%EF%BC%9A%E6%8E%88%E4%BA%88-IUSR-%E9%81%A9%E7%95%B6%E7%9A%84%E6%AC%8A%E9%99%90"><span class="nav-number">4.</span> <span class="nav-text">解決方案：授予 IUSR 適當的權限</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%89%BE%E5%88%B0%E4%BD%A0%E7%9A%84%E7%B6%B2%E7%AB%99%E6%A0%B9%E7%9B%AE%E9%8C%84"><span class="nav-number">4.1.</span> <span class="nav-text">1. 找到你的網站根目錄</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%A8%AD%E5%AE%9A%E8%B3%87%E6%96%99%E5%A4%BE%E6%AC%8A%E9%99%90"><span class="nav-number">4.2.</span> <span class="nav-text">2. 設定資料夾權限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%A8%AD%E5%AE%9A%E9%81%A9%E7%95%B6%E7%9A%84%E6%AC%8A%E9%99%90%E7%B4%9A%E5%88%A5"><span class="nav-number">4.3.</span> <span class="nav-text">3. 設定適當的權限級別</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%87%89%E7%94%A8%E8%AE%8A%E6%9B%B4"><span class="nav-number">4.4.</span> <span class="nav-text">4. 應用變更</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E9%87%8D%E5%95%9F-IIS"><span class="nav-number">4.5.</span> <span class="nav-text">5. 重啟 IIS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IUSR-vs-IIS-IUSRS%EF%BC%9A%E5%85%A9%E7%A8%AE%E5%B8%B3%E6%88%B6%EF%BC%8C%E4%B8%8D%E5%90%8C%E4%BD%BF%E7%94%A8%E6%99%82%E6%A9%9F"><span class="nav-number">5.</span> <span class="nav-text">IUSR vs. IIS_IUSRS：兩種帳戶，不同使用時機</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AF-IIS-IUSRS-%E7%BE%A4%E7%B5%84%EF%BC%9F"><span class="nav-number">5.1.</span> <span class="nav-text">什麼是 IIS_IUSRS 群組？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%95%E6%99%82%E5%8F%AA%E9%9C%80%E8%A6%81-IUSR%EF%BC%9F"><span class="nav-number">5.2.</span> <span class="nav-text">何時只需要 IUSR？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%95%E6%99%82%E9%9C%80%E8%A6%81%E6%B7%BB%E5%8A%A0-IIS-IUSRS%EF%BC%9F"><span class="nav-number">5.3.</span> <span class="nav-text">何時需要添加 IIS_IUSRS？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E8%80%83%E9%87%8F%EF%BC%9A%E6%89%BE%E5%88%B0%E5%B9%B3%E8%A1%A1%E9%BB%9E"><span class="nav-number">5.4.</span> <span class="nav-text">安全考量：找到平衡點</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%B2%E9%9A%8E%E6%AC%8A%E9%99%90%E9%85%8D%E7%BD%AE%EF%BC%9A%E6%9B%B4%E5%85%A8%E9%9D%A2%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88"><span class="nav-number">6.</span> <span class="nav-text">進階權限配置：更全面的解決方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%AA%A2%E6%9F%A5%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F%E9%9B%86%E5%8D%80%E8%BA%AB%E5%88%86"><span class="nav-number">6.1.</span> <span class="nav-text">1. 檢查應用程式集區身分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%89%B9%E6%AE%8A%E8%B3%87%E6%96%99%E5%A4%BE%E7%9A%84%E6%AC%8A%E9%99%90%E8%A8%AD%E5%AE%9A"><span class="nav-number">6.2.</span> <span class="nav-text">2. 特殊資料夾的權限設定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%BD%BF%E7%94%A8%E5%91%BD%E4%BB%A4%E5%88%97%E5%BF%AB%E9%80%9F%E8%A8%AD%E5%AE%9A%E6%AC%8A%E9%99%90"><span class="nav-number">6.3.</span> <span class="nav-text">3. 使用命令列快速設定權限</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7%E6%9C%80%E4%BD%B3%E5%AF%A6%E8%B8%90"><span class="nav-number">7.</span> <span class="nav-text">安全性最佳實踐</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%9C%80%E5%B0%8F%E6%AC%8A%E9%99%90%E5%8E%9F%E5%89%87"><span class="nav-number">7.1.</span> <span class="nav-text">1. 最小權限原則</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%AE%9A%E6%9C%9F%E5%AF%A9%E6%9F%A5%E6%AC%8A%E9%99%90%E8%A8%AD%E5%AE%9A"><span class="nav-number">7.2.</span> <span class="nav-text">2. 定期審查權限設定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%BD%BF%E7%94%A8%E6%9B%B4%E5%AE%89%E5%85%A8%E7%9A%84%E8%AA%8D%E8%AD%89%E6%96%B9%E5%BC%8F"><span class="nav-number">7.3.</span> <span class="nav-text">3. 使用更安全的認證方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%95%9F%E7%94%A8-HTTPS"><span class="nav-number">7.4.</span> <span class="nav-text">4. 啟用 HTTPS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B8%BD%E7%B5%90%EF%BC%9A%E4%B8%8D%E5%8F%AA%E6%98%AF%E4%BF%AE%E5%BE%A9%E9%8C%AF%E8%AA%A4%EF%BC%8C%E8%80%8C%E6%98%AF%E7%90%86%E8%A7%A3%E8%83%8C%E5%BE%8C%E7%9A%84%E5%AE%89%E5%85%A8%E6%A9%9F%E5%88%B6"><span class="nav-number">8.</span> <span class="nav-text">總結：不只是修復錯誤，而是理解背後的安全機制</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/bf4f4549/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="IIS 401.3 權限錯誤完全解析：為什麼新增 IUSR 是救命關鍵 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          IIS 401.3 權限錯誤完全解析：為什麼新增 IUSR 是救命關鍵
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2025-03-24 15:30:00 / 修改時間：18:34:46" itemprop="dateCreated datePublished" datetime="2025-03-24T15:30:00+08:00">2025-03-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%B6%B2%E9%A0%81%E4%BC%BA%E6%9C%8D%E5%99%A8/" itemprop="url" rel="index"><span itemprop="name">網頁伺服器</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%B6%B2%E9%A0%81%E4%BC%BA%E6%9C%8D%E5%99%A8/%E6%95%85%E9%9A%9C%E6%8E%92%E9%99%A4/" itemprop="url" rel="index"><span itemprop="name">故障排除</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.9k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>3 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="當你的網站突然拒絕訪客，顯示-401-3-錯誤"><a href="#當你的網站突然拒絕訪客，顯示-401-3-錯誤" class="headerlink" title="當你的網站突然拒絕訪客，顯示 401.3 錯誤"></a>當你的網站突然拒絕訪客，顯示 401.3 錯誤</h2><p>你是否曾經碰到過這樣的情境：辛苦架設好的網站部署到 IIS 上，一切設定看起來都很完美，但當你試著從瀏覽器訪問時，卻看到這樣讓人頭痛的錯誤訊息：</p>
+<blockquote>
+<p>HTTP 錯誤 401.3 - Unauthorized<br>因為網頁伺服器上此資源的存取控制清單 (ACL) 設定或加密設定的緣故，您沒有檢視此目錄或網頁的權限。</p>
+</blockquote>
+<p>這個讓人抓狂的錯誤往往會讓你懷疑自己是不是漏了什麼重要設定，特別是當你確信已經正確配置網站的其他部分時。今天，我們就要徹底解析這個常見但令人困擾的問題，並解釋為什麼簡單地新增 IUSR 權限往往就能解決它。</p>
+<h2 id="理解-HTTP-401-3-錯誤的真正含義"><a href="#理解-HTTP-401-3-錯誤的真正含義" class="headerlink" title="理解 HTTP 401.3 錯誤的真正含義"></a>理解 HTTP 401.3 錯誤的真正含義</h2><p>在深入解決方案前，讓我們先了解這個錯誤的真正含義。HTTP 401.3 是 IIS 特有的狀態碼，它表示「由於 ACL 限制，您的請求被拒絕」。與一般的 401 錯誤（表示認證失敗）不同，401.3 特別指出這是檔案系統權限問題，而非網站認證機制的問題。</p>
+<p>簡單來說，這個錯誤是在告訴你：「IIS 想要提供你請求的資源，但它沒有足夠的系統權限來讀取或存取這些檔案。」</p>
+<h2 id="IUSR：IIS-中默默付出的匿名英雄"><a href="#IUSR：IIS-中默默付出的匿名英雄" class="headerlink" title="IUSR：IIS 中默默付出的匿名英雄"></a>IUSR：IIS 中默默付出的匿名英雄</h2><p>這就是 IUSR 帳戶登場的時刻。但 IUSR 到底是什麼？為什麼它如此重要？</p>
+<p>IUSR（Internet User）是 IIS 中用於處理匿名訪問的預設帳戶。每當有人在未登入的狀態下訪問你的網站時，IIS 就會以 IUSR 的身分來嘗試存取網站資源。這就像餐廳的服務生：當客人（網站訪客）點餐時，服務生（IUSR）需要有足夠的權限進入廚房（網站檔案）取得所需的菜餚。</p>
+<p>當你的網站資料夾沒有賦予 IUSR 適當的存取權限時，這位「服務生」就無法取得客人所需的資源，從而導致 401.3 錯誤的發生。</p>
+<h2 id="解決方案：授予-IUSR-適當的權限"><a href="#解決方案：授予-IUSR-適當的權限" class="headerlink" title="解決方案：授予 IUSR 適當的權限"></a>解決方案：授予 IUSR 適當的權限</h2><p>解決這個問題的方法很直接：我們需要賦予 IUSR 帳戶足夠的權限來存取網站資源。以下是詳細步驟：</p>
+<h3 id="1-找到你的網站根目錄"><a href="#1-找到你的網站根目錄" class="headerlink" title="1. 找到你的網站根目錄"></a>1. 找到你的網站根目錄</h3><p>首先，找到你的網站檔案所在的實體路徑。通常是在：</p>
+<ul>
+<li><code>C:\inetpub\wwwroot\你的網站名稱</code></li>
+<li>或是你自定義的其他位置</li>
+</ul>
+<h3 id="2-設定資料夾權限"><a href="#2-設定資料夾權限" class="headerlink" title="2. 設定資料夾權限"></a>2. 設定資料夾權限</h3><ol>
+<li>在檔案總管中，右鍵點選該資料夾</li>
+<li>選擇「內容」</li>
+<li>切換到「安全性」頁籤</li>
+<li>點選「編輯」按鈕</li>
+<li>點選「新增」按鈕</li>
+<li>在「輸入物件名稱來選取」欄位中，輸入「IUSR」</li>
+<li>點選「檢查名稱」，系統會自動找到完整的帳戶名稱</li>
+<li>點選「確定」</li>
+</ol>
+<h3 id="3-設定適當的權限級別"><a href="#3-設定適當的權限級別" class="headerlink" title="3. 設定適當的權限級別"></a>3. 設定適當的權限級別</h3><p>對於 IUSR 帳戶，通常建議設定以下權限：</p>
+<ul>
+<li>✅ 讀取與執行</li>
+<li>✅ 列出資料夾內容</li>
+<li>✅ 讀取</li>
+</ul>
+<p>對於大多數靜態網站而言，這些權限已經足夠。如果你的網站需要上傳功能或寫入操作，你可能還需要加上「寫入」權限，但僅限於需要的特定資料夾，避免賦予過多不必要的權限。</p>
+<h3 id="4-應用變更"><a href="#4-應用變更" class="headerlink" title="4. 應用變更"></a>4. 應用變更</h3><p>點選「確定」數次，確保所有變更都已被應用。</p>
+<h3 id="5-重啟-IIS"><a href="#5-重啟-IIS" class="headerlink" title="5. 重啟 IIS"></a>5. 重啟 IIS</h3><ol>
+<li>以管理員身分運行命令提示字元</li>
+<li>輸入 <code>iisreset</code> 命令</li>
+<li>等待 IIS 重新啟動完成</li>
+</ol>
+<p>完成以上步驟後，再次訪問你的網站，401.3 錯誤應該已經消失了。</p>
+<h2 id="IUSR-vs-IIS-IUSRS：兩種帳戶，不同使用時機"><a href="#IUSR-vs-IIS-IUSRS：兩種帳戶，不同使用時機" class="headerlink" title="IUSR vs. IIS_IUSRS：兩種帳戶，不同使用時機"></a>IUSR vs. IIS_IUSRS：兩種帳戶，不同使用時機</h2><p>在處理 IIS 權限問題時，經常會遇到兩個關鍵帳戶：IUSR 和 IIS_IUSRS。很多工程師對這兩者的區別和使用時機感到困惑。如果你已經添加了 IUSR 並解決了問題，你可能會想：「那 IIS_IUSRS 是否必要？」讓我們來澄清這個常見疑問。</p>
+<h3 id="什麼是-IIS-IUSRS-群組？"><a href="#什麼是-IIS-IUSRS-群組？" class="headerlink" title="什麼是 IIS_IUSRS 群組？"></a>什麼是 IIS_IUSRS 群組？</h3><p>如果將 IUSR 比喻為「匿名訪客的服務生」，那麼 IIS_IUSRS 就像是「整個服務團隊」：</p>
+<ul>
+<li><strong>IIS_IUSRS</strong> 是一個 Windows 安全群組，包含了所有 IIS 相關的帳戶</li>
+<li>這個群組中自動包含了 IUSR 以及所有應用程式集區的身分</li>
+<li>在新版 Windows Server 和 IIS 中，它替代了舊版中的 IIS_WPG 群組</li>
+</ul>
+<h3 id="何時只需要-IUSR？"><a href="#何時只需要-IUSR？" class="headerlink" title="何時只需要 IUSR？"></a>何時只需要 IUSR？</h3><p>在以下情況下，只設定 IUSR 權限就足夠了：</p>
+<ul>
+<li>網站只使用匿名驗證模式</li>
+<li>應用程式集區使用預設身分 (ApplicationPoolIdentity)</li>
+<li>網站結構相對簡單，沒有特殊的存取需求</li>
+<li>你希望遵循最小權限原則，只授予必要的最低權限</li>
+</ul>
+<p>大多數基本的靜態網站或簡單的動態網站都屬於這種情況。</p>
+<h3 id="何時需要添加-IIS-IUSRS？"><a href="#何時需要添加-IIS-IUSRS？" class="headerlink" title="何時需要添加 IIS_IUSRS？"></a>何時需要添加 IIS_IUSRS？</h3><p>在以下情況下，添加 IIS_IUSRS 群組可能更為適合：</p>
+<ul>
+<li>網站使用多種驗證方式（匿名 + Windows 驗證 + 表單驗證等）</li>
+<li>使用多個應用程式集區或自定義的應用程式集區身分</li>
+<li>網站結構複雜，有多個需要不同權限的子應用程式</li>
+<li>你希望簡化權限管理，使用「一勞永逸」的方式設定</li>
+</ul>
+<p>企業級應用、複雜的 Web 應用程式或需要整合多個服務的網站通常需要這種設定。</p>
+<h3 id="安全考量：找到平衡點"><a href="#安全考量：找到平衡點" class="headerlink" title="安全考量：找到平衡點"></a>安全考量：找到平衡點</h3><p>從安全角度來看，選擇 IUSR 還是 IIS_IUSRS 實際上是一個權限範圍與管理便利性之間的權衡：</p>
+<ul>
+<li><strong>只使用 IUSR</strong>：權限範圍較小，安全性較高，但可能需要在網站變得複雜時重新設定權限</li>
+<li><strong>使用 IIS_IUSRS</strong>：覆蓋所有 IIS 相關帳戶，管理便利，但權限範圍較廣</li>
+</ul>
+<p>遵循安全最佳實踐，建議先從最小權限開始（只添加 IUSR），如果網站功能需要，再逐步擴展權限。</p>
+<h2 id="進階權限配置：更全面的解決方案"><a href="#進階權限配置：更全面的解決方案" class="headerlink" title="進階權限配置：更全面的解決方案"></a>進階權限配置：更全面的解決方案</h2><p>雖然新增 IUSR 權限是解決 401.3 錯誤的最常見方法，但在某些情況下，你可能需要考慮以下額外的設定：</p>
+<h3 id="1-檢查應用程式集區身分"><a href="#1-檢查應用程式集區身分" class="headerlink" title="1. 檢查應用程式集區身分"></a>1. 檢查應用程式集區身分</h3><p>應用程式集區（Application Pool）的執行身分也會影響檔案存取權限：</p>
+<ol>
+<li>開啟 IIS 管理員</li>
+<li>在左側樹狀目錄中找到「應用程式集區」</li>
+<li>右鍵點選你的網站使用的應用程式集區</li>
+<li>選擇「進階設定」</li>
+<li>檢查「身分」設定</li>
+</ol>
+<p>如果你使用自定義身分，確保該帳戶也具有網站資料夾的適當權限。</p>
+<h3 id="2-特殊資料夾的權限設定"><a href="#2-特殊資料夾的權限設定" class="headerlink" title="2. 特殊資料夾的權限設定"></a>2. 特殊資料夾的權限設定</h3><p>除了網站根目錄外，有些特殊資料夾可能需要額外的權限設定：</p>
+<ul>
+<li><strong>暫存檔資料夾</strong>：需要寫入權限</li>
+<li><strong>上傳資料夾</strong>：需要寫入權限</li>
+<li><strong>日誌資料夾</strong>：需要修改權限</li>
+<li><strong>應用程式資料資料夾</strong>：可能需要完全控制權限（但要謹慎評估）</li>
+</ul>
+<h3 id="3-使用命令列快速設定權限"><a href="#3-使用命令列快速設定權限" class="headerlink" title="3. 使用命令列快速設定權限"></a>3. 使用命令列快速設定權限</h3><p>如果你管理多個站點或需要頻繁設定權限，使用命令列可以提高效率：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">icacls &quot;C:\inetpub\wwwroot\你的網站路徑&quot; /grant &quot;IUSR&quot;:(OI)(CI)(RX) /T</span><br></pre></td></tr></table></figure>
+
+<p>這個命令會遞迴地賦予 IUSR 對指定資料夾及其所有子資料夾和檔案的「讀取與執行」權限。</p>
+<h2 id="安全性最佳實踐"><a href="#安全性最佳實踐" class="headerlink" title="安全性最佳實踐"></a>安全性最佳實踐</h2><p>在解決 401.3 錯誤的同時，別忘了遵循以下安全性最佳實踐：</p>
+<h3 id="1-最小權限原則"><a href="#1-最小權限原則" class="headerlink" title="1. 最小權限原則"></a>1. 最小權限原則</h3><p>只賦予必要的最低權限。例如，如果網站只需要讀取權限，就不要賦予寫入或修改權限。</p>
+<h3 id="2-定期審查權限設定"><a href="#2-定期審查權限設定" class="headerlink" title="2. 定期審查權限設定"></a>2. 定期審查權限設定</h3><p>定期檢查並審查網站資料夾的權限設定，確保沒有不必要的權限被授予。</p>
+<h3 id="3-使用更安全的認證方式"><a href="#3-使用更安全的認證方式" class="headerlink" title="3. 使用更安全的認證方式"></a>3. 使用更安全的認證方式</h3><p>如果網站包含敏感資訊，考慮禁用匿名驗證，改用 Windows 認證或表單認證等更安全的方式。</p>
+<h3 id="4-啟用-HTTPS"><a href="#4-啟用-HTTPS" class="headerlink" title="4. 啟用 HTTPS"></a>4. 啟用 HTTPS</h3><p>使用 HTTPS 加密所有流量，特別是包含認證資訊的流量。</p>
+<h2 id="總結：不只是修復錯誤，而是理解背後的安全機制"><a href="#總結：不只是修復錯誤，而是理解背後的安全機制" class="headerlink" title="總結：不只是修復錯誤，而是理解背後的安全機制"></a>總結：不只是修復錯誤，而是理解背後的安全機制</h2><p>HTTP 401.3 錯誤雖然令人煩惱，但它實際上是 IIS 的安全機制在正常運作的結果。通過理解 IUSR 的角色和適當設定檔案系統權限，你不僅能解決這個錯誤，還能更好地掌握 IIS 的安全架構。</p>
+<p>下次當你遇到 401.3 錯誤時，不要慌張，記住：可能只是你的 IUSR「服務生」需要適當的「通行證」來為你的網站訪客提供服務。簡單地新增 IUSR 權限，往往就是解決這個問題的救命關鍵。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/a6b782ce/" rel="prev" title="讓你的Claude如虎添翼：MCP功能實戰筆記">
+                  <i class="fa fa-angle-left"></i> 讓你的Claude如虎添翼：MCP功能實戰筆記
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/365c9a4d/" rel="next" title="告別背包中自動喚醒的筆電：用 PowerShell 一鍵關閉藍牙裝置喚醒功能">
+                  告別背包中自動喚醒的筆電：用 PowerShell 一鍵關閉藍牙裝置喚醒功能 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

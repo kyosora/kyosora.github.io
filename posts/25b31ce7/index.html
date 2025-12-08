@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="還在為「公司要從 Vue 轉 React」或「新專案用什麼框架」而頭痛嗎？如果我告訴你，現在有一種技術可以讓 React 和 Vue 在同一個專案中完美共存，你會不會覺得我在說夢話？  今天要跟大家分享的 Vite + Module Federation，就是這樣一個讓人眼睛為之一亮的黑科技。它不只解決了框架選擇的痛苦，更開啟了前端架構設計的全新可能性。  什麼是微前端？為什麼我們需要它？ 想像一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端架構大亂鬥：讓 React 和 Vue 在同一個專案中和平共處的黑科技">
+<meta property="og:url" content="https://kyosora.github.io/posts/25b31ce7/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="還在為「公司要從 Vue 轉 React」或「新專案用什麼框架」而頭痛嗎？如果我告訴你，現在有一種技術可以讓 React 和 Vue 在同一個專案中完美共存，你會不會覺得我在說夢話？  今天要跟大家分享的 Vite + Module Federation，就是這樣一個讓人眼睛為之一亮的黑科技。它不只解決了框架選擇的痛苦，更開啟了前端架構設計的全新可能性。  什麼是微前端？為什麼我們需要它？ 想像一">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2025-06-11T06:30:00.000Z">
+<meta property="article:modified_time" content="2025-06-11T06:13:13.681Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Vue">
+<meta property="article:tag" content="Vite">
+<meta property="article:tag" content="Module Federation">
+<meta property="article:tag" content="React">
+<meta property="article:tag" content="微前端">
+<meta property="article:tag" content="前端架構">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/25b31ce7/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/25b31ce7/","path":"posts/25b31ce7/","title":"前端架構大亂鬥：讓 React 和 Vue 在同一個專案中和平共處的黑科技"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>前端架構大亂鬥：讓 React 和 Vue 在同一個專案中和平共處的黑科技 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AF%E5%BE%AE%E5%89%8D%E7%AB%AF%EF%BC%9F%E7%82%BA%E4%BB%80%E9%BA%BC%E6%88%91%E5%80%91%E9%9C%80%E8%A6%81%E5%AE%83%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">什麼是微前端？為什麼我們需要它？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Module-Federation%EF%BC%9A%E5%89%8D%E7%AB%AF%E7%95%8C%E7%9A%84%E6%A8%82%E9%AB%98%E7%A9%8D%E6%9C%A8"><span class="nav-number">2.</span> <span class="nav-text">Module Federation：前端界的樂高積木</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A9%E5%80%8B%E9%97%9C%E9%8D%B5%E8%A7%92%E8%89%B2"><span class="nav-number">2.1.</span> <span class="nav-text">兩個關鍵角色</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vite%EF%BC%9A%E8%AE%93-Module-Federation-%E9%A3%9B%E8%B5%B7%E4%BE%86"><span class="nav-number">3.</span> <span class="nav-text">Vite：讓 Module Federation 飛起來</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC-React-%E8%83%BD%E6%95%B4%E5%90%88-Vue%EF%BC%9F%E6%8A%80%E8%A1%93%E5%8E%9F%E7%90%86%E5%A4%A7%E6%8F%AD%E5%AF%86"><span class="nav-number">4.</span> <span class="nav-text">為什麼 React 能整合 Vue？技術原理大揭密</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9F%B7%E8%A1%8C%E6%99%82%E8%BC%89%E5%85%A5%E7%9A%84%E9%AD%94%E6%B3%95"><span class="nav-number">4.1.</span> <span class="nav-text">1. 執行時載入的魔法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-DOM-%E7%9A%84%E5%92%8C%E8%AB%A7%E5%85%B1%E8%99%95"><span class="nav-number">4.2.</span> <span class="nav-text">2. DOM 的和諧共處</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%A1%86%E6%9E%B6%E5%AF%A6%E4%BE%8B%E7%9A%84%E7%8D%A8%E7%AB%8B%E6%80%A7"><span class="nav-number">4.3.</span> <span class="nav-text">3. 框架實例的獨立性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E6%88%B0%E6%A1%88%E4%BE%8B%EF%BC%9A%E6%89%93%E9%80%A0%E6%B7%B7%E5%90%88%E6%A1%86%E6%9E%B6%E7%9A%84%E9%9B%BB%E5%95%86%E5%B9%B3%E5%8F%B0"><span class="nav-number">5.</span> <span class="nav-text">實戰案例：打造混合框架的電商平台</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Remote-%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F%E8%A8%AD%E5%AE%9A%EF%BC%88Vue-%E5%95%86%E5%93%81%E5%B1%95%E7%A4%BA%E6%A8%A1%E7%B5%84%EF%BC%89"><span class="nav-number">5.1.</span> <span class="nav-text">Remote 應用程式設定（Vue 商品展示模組）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Host-%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F%E8%A8%AD%E5%AE%9A%EF%BC%88React-%E4%B8%BB%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F%EF%BC%89"><span class="nav-number">5.2.</span> <span class="nav-text">Host 應用程式設定（React 主應用程式）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8-React-%E4%B8%AD%E4%BD%BF%E7%94%A8-Vue-%E7%B5%84%E4%BB%B6"><span class="nav-number">5.3.</span> <span class="nav-text">在 React 中使用 Vue 組件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%A8%E6%A1%86%E6%9E%B6%E9%80%9A%E8%A8%8A%EF%BC%9A%E8%AE%93-React-%E5%92%8C-Vue-%E5%B0%8D%E8%A9%B1"><span class="nav-number">6.</span> <span class="nav-text">跨框架通訊：讓 React 和 Vue 對話</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E8%87%AA%E5%AE%9A%E7%BE%A9%E4%BA%8B%E4%BB%B6"><span class="nav-number">6.1.</span> <span class="nav-text">1. 自定義事件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%85%B1%E4%BA%AB%E7%8B%80%E6%85%8B%E7%AE%A1%E7%90%86"><span class="nav-number">6.2.</span> <span class="nav-text">2. 共享狀態管理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E5%8B%99%E8%80%83%E9%87%8F%EF%BC%9A%E4%BB%80%E9%BA%BC%E6%99%82%E5%80%99%E8%A9%B2%E7%94%A8%E9%80%99%E6%8B%9B%EF%BC%9F"><span class="nav-number">7.</span> <span class="nav-text">實務考量：什麼時候該用這招？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%A9%E5%90%88%E7%9A%84%E5%A0%B4%E6%99%AF"><span class="nav-number">7.1.</span> <span class="nav-text">適合的場景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9C%80%E8%A6%81%E8%AC%B9%E6%85%8E%E7%9A%84%E5%A0%B4%E6%99%AF"><span class="nav-number">7.2.</span> <span class="nav-text">需要謹慎的場景</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%88%E8%83%BD%E5%84%AA%E5%8C%96%E7%A7%98%E8%A8%A3"><span class="nav-number">8.</span> <span class="nav-text">效能優化秘訣</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%99%BA%E6%85%A7%E7%9A%84%E4%BE%9D%E8%B3%B4%E5%85%B1%E4%BA%AB"><span class="nav-number">8.1.</span> <span class="nav-text">1. 智慧的依賴共享</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%87%B6%E8%BC%89%E5%85%A5%E7%AD%96%E7%95%A5"><span class="nav-number">8.2.</span> <span class="nav-text">2. 懶載入策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%A0%90%E8%BC%89%E5%85%A5%E9%87%8D%E8%A6%81%E6%A8%A1%E7%B5%84"><span class="nav-number">8.3.</span> <span class="nav-text">3. 預載入重要模組</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%96%8B%E7%99%BC%E9%AB%94%E9%A9%97%E5%84%AA%E5%8C%96"><span class="nav-number">9.</span> <span class="nav-text">開發體驗優化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TypeScript-%E6%94%AF%E6%8F%B4"><span class="nav-number">9.1.</span> <span class="nav-text">TypeScript 支援</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%96%8B%E7%99%BC%E7%92%B0%E5%A2%83%E8%A8%AD%E5%AE%9A"><span class="nav-number">9.2.</span> <span class="nav-text">開發環境設定</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%A3%E6%8E%A7%E8%88%87%E9%99%A4%E9%8C%AF"><span class="nav-number">10.</span> <span class="nav-text">監控與除錯</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BC%89%E5%85%A5%E7%8B%80%E6%85%8B%E8%BF%BD%E8%B9%A4"><span class="nav-number">10.1.</span> <span class="nav-text">載入狀態追蹤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%8C%AF%E8%AA%A4%E9%82%8A%E7%95%8C"><span class="nav-number">10.2.</span> <span class="nav-text">錯誤邊界</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AA%E4%BE%86%E5%B1%95%E6%9C%9B%EF%BC%9A%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%A7%8B%E7%9A%84%E6%96%B0%E5%8F%AF%E8%83%BD"><span class="nav-number">11.</span> <span class="nav-text">未來展望：前端架構的新可能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B8%BD%E7%B5%90%EF%BC%9A%E6%93%81%E6%8A%B1%E5%A4%9A%E5%85%83%EF%BC%8C%E9%87%8B%E6%94%BE%E5%89%B5%E6%84%8F"><span class="nav-number">12.</span> <span class="nav-text">總結：擁抱多元，釋放創意</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/25b31ce7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="前端架構大亂鬥：讓 React 和 Vue 在同一個專案中和平共處的黑科技 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          前端架構大亂鬥：讓 React 和 Vue 在同一個專案中和平共處的黑科技
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2025-06-11 14:30:00 / 修改時間：14:13:13" itemprop="dateCreated datePublished" datetime="2025-06-11T14:30:00+08:00">2025-06-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%89%8D%E7%AB%AF%E9%96%8B%E7%99%BC/" itemprop="url" rel="index"><span itemprop="name">前端開發</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%89%8D%E7%AB%AF%E9%96%8B%E7%99%BC/%E5%BE%AE%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%A7%8B/" itemprop="url" rel="index"><span itemprop="name">微前端架構</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>7.5k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>7 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>還在為「公司要從 Vue 轉 React」或「新專案用什麼框架」而頭痛嗎？如果我告訴你，現在有一種技術可以讓 React 和 Vue 在同一個專案中完美共存，你會不會覺得我在說夢話？</p>
+<p>今天要跟大家分享的 <strong>Vite + Module Federation</strong>，就是這樣一個讓人眼睛為之一亮的黑科技。它不只解決了框架選擇的痛苦，更開啟了前端架構設計的全新可能性。</p>
+<h2 id="什麼是微前端？為什麼我們需要它？"><a href="#什麼是微前端？為什麼我們需要它？" class="headerlink" title="什麼是微前端？為什麼我們需要它？"></a>什麼是微前端？為什麼我們需要它？</h2><p>想像一下，你正在開發一個大型電商平台。產品團隊負責商品展示頁面，購物車團隊處理結帳流程，用戶中心團隊維護會員系統。傳統做法是把所有功能打包成一個巨大的應用程式，結果就是：</p>
+<ul>
+<li>一個人改了購物車邏輯，整個網站都要重新部署</li>
+<li>產品團隊想用最新的 React 18，但購物車團隊還在用 Vue 2</li>
+<li>測試時牽一髮動全身，誰都不敢隨便改程式碼</li>
+</ul>
+<p><strong>微前端架構</strong>就像是把一個大房子分割成多個獨立的套房，每個團隊都有自己的空間，可以自由裝潢、獨立出入，但仍然共享同一個地址。</p>
+<h2 id="Module-Federation：前端界的樂高積木"><a href="#Module-Federation：前端界的樂高積木" class="headerlink" title="Module Federation：前端界的樂高積木"></a>Module Federation：前端界的樂高積木</h2><p><a target="_blank" rel="noopener" href="https://webpack.js.org/concepts/module-federation/">Module Federation</a> 最初是 Webpack 5 的旗艦功能，它的核心概念很簡單：<strong>讓不同的應用程式可以在執行時動態分享程式碼</strong>。</p>
+<p>這就像是樂高積木一樣，每個團隊負責製作不同的積木塊，最後在瀏覽器中組裝成完整的應用程式。最神奇的是，這些積木塊可以用不同的「材料」製作 —— 有些用 React，有些用 Vue，甚至可以混用！</p>
+<h3 id="兩個關鍵角色"><a href="#兩個關鍵角色" class="headerlink" title="兩個關鍵角色"></a>兩個關鍵角色</h3><p>在 Module Federation 的世界裡，有兩個重要角色：</p>
+<p><strong>Host（主機應用程式）</strong>：就像是一個容器，負責載入和整合其他應用程式。它是用戶最終看到的完整應用程式。</p>
+<p><strong>Remote（遠端應用程式）</strong>：獨立開發、部署的微前端模組，可以把自己的組件或功能「出租」給其他應用程式使用。</p>
+<h2 id="Vite：讓-Module-Federation-飛起來"><a href="#Vite：讓-Module-Federation-飛起來" class="headerlink" title="Vite：讓 Module Federation 飛起來"></a>Vite：讓 Module Federation 飛起來</h2><p>傳統的 Module Federation 需要 Webpack，但 Webpack 的建置速度...你懂的。當專案變大時，喝杯咖啡回來可能都還在編譯。</p>
+<p>這時候 <a target="_blank" rel="noopener" href="https://vite.dev/">Vite</a> 就像是超級英雄一樣出現了！它利用瀏覽器原生的 ES Modules 特性，讓開發體驗快到飛起來。而 <a target="_blank" rel="noopener" href="https://github.com/originjs/vite-plugin-federation">@originjs/vite-plugin-federation</a> 這個插件，則是把 Module Federation 的魔法帶到了 Vite 的世界。</p>
+<h2 id="為什麼-React-能整合-Vue？技術原理大揭密"><a href="#為什麼-React-能整合-Vue？技術原理大揭密" class="headerlink" title="為什麼 React 能整合 Vue？技術原理大揭密"></a>為什麼 React 能整合 Vue？技術原理大揭密</h2><p>這可能是最讓人好奇的問題了。React 和 Vue 不是競爭對手嗎？怎麼可能在同一個應用程式中共存？</p>
+<h3 id="1-執行時載入的魔法"><a href="#1-執行時載入的魔法" class="headerlink" title="1. 執行時載入的魔法"></a>1. 執行時載入的魔法</h3><p>關鍵在於 <strong>執行時載入</strong>。Module Federation 不是在建置時把所有程式碼打包在一起，而是在瀏覽器執行時動態載入遠端模組。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 這不是編譯時的 import，而是執行時的動態載入</span></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">VueComponent</span> = <span class="keyword">await</span> <span class="keyword">import</span>(<span class="string">&#x27;remote-vue-app/VueComponent&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>想像一下，你的 React 應用程式已經在瀏覽器中執行了，這時候它說：「嘿，我需要一個 Vue 組件，去遠端抓一下吧！」然後 Vue 組件就被載入進來，在指定的 DOM 節點中開始工作。</p>
+<h3 id="2-DOM-的和諧共處"><a href="#2-DOM-的和諧共處" class="headerlink" title="2. DOM 的和諧共處"></a>2. DOM 的和諧共處</h3><p>無論是 React 還是 Vue，最終都是在操作 DOM。它們就像是兩個室友，只要各自使用不同的房間（DOM 節點），就不會互相干擾。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// React 容器組件</span></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">VueComponentWrapper</span>: <span class="title class_">React</span>.<span class="property">FC</span> = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> containerRef = useRef&lt;<span class="title class_">HTMLDivElement</span>&gt;(<span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">  <span class="title function_">useEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 載入 Vue 組件並掛載到指定節點</span></span><br><span class="line">    <span class="keyword">import</span>(<span class="string">&#x27;remote-vue-app/VueComponent&#x27;</span>).<span class="title function_">then</span>(<span class="function">(<span class="params"><span class="variable language_">module</span></span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> <span class="title class_">VueComponent</span> = <span class="variable language_">module</span>.<span class="property">default</span>;</span><br><span class="line">      <span class="keyword">if</span> (containerRef.<span class="property">current</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> app = <span class="title function_">createApp</span>(<span class="title class_">VueComponent</span>);</span><br><span class="line">        app.<span class="title function_">mount</span>(containerRef.<span class="property">current</span>);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;, []);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">ref</span>=<span class="string">&#123;containerRef&#125;</span> /&gt;</span></span>; <span class="comment">// Vue 的專屬空間</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-框架實例的獨立性"><a href="#3-框架實例的獨立性" class="headerlink" title="3. 框架實例的獨立性"></a>3. 框架實例的獨立性</h3><p>每個框架都有自己的實例和生命週期管理。React 管理自己的組件樹，Vue 在分配給它的 DOM 節點內運行，兩者井水不犯河水。</p>
+<h2 id="實戰案例：打造混合框架的電商平台"><a href="#實戰案例：打造混合框架的電商平台" class="headerlink" title="實戰案例：打造混合框架的電商平台"></a>實戰案例：打造混合框架的電商平台</h2><p>讓我們看看一個實際的例子。假設我們要建造一個電商平台：</p>
+<h3 id="Remote-應用程式設定（Vue-商品展示模組）"><a href="#Remote-應用程式設定（Vue-商品展示模組）" class="headerlink" title="Remote 應用程式設定（Vue 商品展示模組）"></a>Remote 應用程式設定（Vue 商品展示模組）</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// vite.config.js (Vue 商品模組)</span></span><br><span class="line"><span class="keyword">import</span> &#123; federation &#125; <span class="keyword">from</span> <span class="string">&#x27;@originjs/vite-plugin-federation&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="attr">plugins</span>: [</span><br><span class="line">    <span class="title function_">federation</span>(&#123;</span><br><span class="line">      <span class="attr">name</span>: <span class="string">&#x27;product-module&#x27;</span>,</span><br><span class="line">      <span class="attr">filename</span>: <span class="string">&#x27;remoteEntry.js&#x27;</span>,</span><br><span class="line">      <span class="attr">exposes</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;./ProductList&#x27;</span>: <span class="string">&#x27;./src/components/ProductList.vue&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;./ProductDetail&#x27;</span>: <span class="string">&#x27;./src/components/ProductDetail.vue&#x27;</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">shared</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;vue&#x27;</span>: &#123; <span class="attr">singleton</span>: <span class="literal">false</span> &#125; <span class="comment">// 允許多個 Vue 實例</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">server</span>: &#123;</span><br><span class="line">    <span class="attr">port</span>: <span class="number">5001</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Host-應用程式設定（React-主應用程式）"><a href="#Host-應用程式設定（React-主應用程式）" class="headerlink" title="Host 應用程式設定（React 主應用程式）"></a>Host 應用程式設定（React 主應用程式）</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// vite.config.js (React 主應用程式)</span></span><br><span class="line"><span class="keyword">import</span> &#123; federation &#125; <span class="keyword">from</span> <span class="string">&#x27;@originjs/vite-plugin-federation&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="attr">plugins</span>: [</span><br><span class="line">    <span class="title function_">federation</span>(&#123;</span><br><span class="line">      <span class="attr">name</span>: <span class="string">&#x27;main-app&#x27;</span>,</span><br><span class="line">      <span class="attr">remotes</span>: &#123;</span><br><span class="line">        <span class="attr">productModule</span>: <span class="string">&quot;http://localhost:5001/assets/remoteEntry.js&quot;</span>,</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">shared</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;react&#x27;</span>: &#123; <span class="attr">singleton</span>: <span class="literal">true</span> &#125;,</span><br><span class="line">        <span class="string">&#x27;react-dom&#x27;</span>: &#123; <span class="attr">singleton</span>: <span class="literal">true</span> &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="在-React-中使用-Vue-組件"><a href="#在-React-中使用-Vue-組件" class="headerlink" title="在 React 中使用 Vue 組件"></a>在 React 中使用 Vue 組件</h3><figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// React 主應用程式</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">React</span>, &#123; useEffect, useRef &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">ProductSection</span>: <span class="title class_">React</span>.<span class="property">FC</span> = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> containerRef = useRef&lt;<span class="title class_">HTMLDivElement</span>&gt;(<span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">  <span class="title function_">useEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 動態載入 Vue 商品組件</span></span><br><span class="line">    <span class="keyword">import</span>(<span class="string">&#x27;productModule/ProductList&#x27;</span>).<span class="title function_">then</span>(<span class="function">(<span class="params"><span class="variable language_">module</span></span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> <span class="title class_">ProductList</span> = <span class="variable language_">module</span>.<span class="property">default</span>;</span><br><span class="line">      <span class="keyword">if</span> (containerRef.<span class="property">current</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> &#123; createApp &#125; = <span class="keyword">await</span> <span class="keyword">import</span>(<span class="string">&#x27;vue&#x27;</span>);</span><br><span class="line">        <span class="keyword">const</span> app = <span class="title function_">createApp</span>(<span class="title class_">ProductList</span>);</span><br><span class="line">        app.<span class="title function_">mount</span>(containerRef.<span class="property">current</span>);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;, []);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">className</span>=<span class="string">&quot;product-section&quot;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">h1</span>&gt;</span>我們的商品（React 標題）<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">ref</span>=<span class="string">&#123;containerRef&#125;</span> /&gt;</span> &#123;/* Vue 組件會在這裡渲染 */&#125;</span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="跨框架通訊：讓-React-和-Vue-對話"><a href="#跨框架通訊：讓-React-和-Vue-對話" class="headerlink" title="跨框架通訊：讓 React 和 Vue 對話"></a>跨框架通訊：讓 React 和 Vue 對話</h2><p>當 React 和 Vue 需要「聊天」時，可以透過以下方式：</p>
+<h3 id="1-自定義事件"><a href="#1-自定義事件" class="headerlink" title="1. 自定義事件"></a>1. 自定義事件</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Vue 組件發送訊息</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">handleProductClick</span> = (<span class="params">product</span>) =&gt; &#123;</span><br><span class="line">  <span class="variable language_">window</span>.<span class="title function_">dispatchEvent</span>(<span class="keyword">new</span> <span class="title class_">CustomEvent</span>(<span class="string">&#x27;product-selected&#x27;</span>, &#123; </span><br><span class="line">    <span class="attr">detail</span>: &#123; product &#125;</span><br><span class="line">  &#125;));</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// React 組件接收訊息</span></span><br><span class="line"><span class="title function_">useEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> <span class="title function_">handleProductSelection</span> = (<span class="params">event</span>) =&gt; &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;用戶選擇了商品:&#x27;</span>, event.<span class="property">detail</span>.<span class="property">product</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">  </span><br><span class="line">  <span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;product-selected&#x27;</span>, handleProductSelection);</span><br><span class="line">  <span class="keyword">return</span> <span class="function">() =&gt;</span> <span class="variable language_">window</span>.<span class="title function_">removeEventListener</span>(<span class="string">&#x27;product-selected&#x27;</span>, handleProductSelection);</span><br><span class="line">&#125;, []);</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-共享狀態管理"><a href="#2-共享狀態管理" class="headerlink" title="2. 共享狀態管理"></a>2. 共享狀態管理</h3><p>使用 <a target="_blank" rel="noopener" href="https://github.com/pmndrs/zustand">Zustand</a> 或其他狀態管理工具：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 共享的狀態管理</span></span><br><span class="line"><span class="keyword">import</span> &#123; create &#125; <span class="keyword">from</span> <span class="string">&#x27;zustand&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> useSharedStore = <span class="title function_">create</span>(<span class="function">(<span class="params">set</span>) =&gt;</span> (&#123;</span><br><span class="line">  <span class="attr">selectedProduct</span>: <span class="literal">null</span>,</span><br><span class="line">  <span class="attr">setSelectedProduct</span>: <span class="function">(<span class="params">product</span>) =&gt;</span> <span class="title function_">set</span>(&#123; <span class="attr">selectedProduct</span>: product &#125;),</span><br><span class="line">&#125;));</span><br><span class="line"></span><br><span class="line"><span class="comment">// React 和 Vue 都可以使用這個 store</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="實務考量：什麼時候該用這招？"><a href="#實務考量：什麼時候該用這招？" class="headerlink" title="實務考量：什麼時候該用這招？"></a>實務考量：什麼時候該用這招？</h2><p>雖然 Module Federation 看起來很酷，但不是所有專案都適合：</p>
+<h3 id="適合的場景"><a href="#適合的場景" class="headerlink" title="適合的場景"></a>適合的場景</h3><ul>
+<li><strong>大型企業級應用</strong>：多個團隊各自負責不同模組</li>
+<li><strong>漸進式遷移</strong>：從 Vue 2 升級到 Vue 3，或從 Vue 遷移到 React</li>
+<li><strong>技術棧多樣化</strong>：團隊有不同的技術專長</li>
+<li><strong>獨立部署需求</strong>：希望各模組能獨立發布更新</li>
+</ul>
+<h3 id="需要謹慎的場景"><a href="#需要謹慎的場景" class="headerlink" title="需要謹慎的場景"></a>需要謹慎的場景</h3><ul>
+<li><strong>小型專案</strong>：複雜度可能超過效益</li>
+<li><strong>效能敏感應用</strong>：多框架載入會增加初始載入時間</li>
+<li><strong>團隊技術單一</strong>：如果大家都熟悉同一個框架，沒必要混用</li>
+</ul>
+<h2 id="效能優化秘訣"><a href="#效能優化秘訣" class="headerlink" title="效能優化秘訣"></a>效能優化秘訣</h2><h3 id="1-智慧的依賴共享"><a href="#1-智慧的依賴共享" class="headerlink" title="1. 智慧的依賴共享"></a>1. 智慧的依賴共享</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">shared</span>: &#123;</span><br><span class="line">  <span class="string">&#x27;react&#x27;</span>: &#123; </span><br><span class="line">    <span class="attr">singleton</span>: <span class="literal">true</span>,        <span class="comment">// 只載入一個 React 實例</span></span><br><span class="line">    <span class="attr">eager</span>: <span class="literal">true</span>,           <span class="comment">// 預先載入</span></span><br><span class="line">    <span class="attr">requiredVersion</span>: <span class="string">&#x27;^18.0.0&#x27;</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">&#x27;lodash&#x27;</span>: &#123;</span><br><span class="line">    <span class="attr">singleton</span>: <span class="literal">false</span>,      <span class="comment">// 允許多個版本共存</span></span><br><span class="line">    <span class="attr">shareScope</span>: <span class="string">&#x27;default&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-懶載入策略"><a href="#2-懶載入策略" class="headerlink" title="2. 懶載入策略"></a>2. 懶載入策略</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 只在需要時才載入 Vue 組件</span></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">LazyVueComponent</span> = <span class="title class_">React</span>.<span class="title function_">lazy</span>(<span class="function">() =&gt;</span> </span><br><span class="line">  <span class="keyword">import</span>(<span class="string">&#x27;productModule/ProductList&#x27;</span>).<span class="title function_">then</span>(<span class="function"><span class="params">module</span> =&gt;</span> (&#123;</span><br><span class="line">    <span class="attr">default</span>: <span class="function">() =&gt;</span> <span class="language-xml"><span class="tag">&lt;<span class="name">VueWrapper</span> <span class="attr">component</span>=<span class="string">&#123;module.default&#125;</span> /&gt;</span></span></span><br><span class="line">  &#125;))</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-預載入重要模組"><a href="#3-預載入重要模組" class="headerlink" title="3. 預載入重要模組"></a>3. 預載入重要模組</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 預先載入關鍵模組</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">preloadModules</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">await</span> <span class="keyword">import</span>(<span class="string">&#x27;productModule/ProductList&#x27;</span>);</span><br><span class="line">  <span class="keyword">await</span> <span class="keyword">import</span>(<span class="string">&#x27;cartModule/ShoppingCart&#x27;</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在應用程式啟動時預載入</span></span><br><span class="line"><span class="title function_">preloadModules</span>();</span><br></pre></td></tr></table></figure>
+
+<h2 id="開發體驗優化"><a href="#開發體驗優化" class="headerlink" title="開發體驗優化"></a>開發體驗優化</h2><h3 id="TypeScript-支援"><a href="#TypeScript-支援" class="headerlink" title="TypeScript 支援"></a>TypeScript 支援</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 為遠端模組建立型別定義</span></span><br><span class="line"><span class="keyword">declare</span> <span class="variable language_">module</span> <span class="string">&#x27;productModule/ProductList&#x27;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> <span class="title class_">ProductList</span>: <span class="built_in">any</span>;</span><br><span class="line">  <span class="keyword">export</span> <span class="keyword">default</span> <span class="title class_">ProductList</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 或使用更精確的型別定義</span></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">ProductListProps</span> &#123;</span><br><span class="line">  <span class="attr">category</span>?: <span class="built_in">string</span>;</span><br><span class="line">  <span class="attr">onProductSelect</span>?: <span class="function">(<span class="params"><span class="attr">product</span>: <span class="title class_">Product</span></span>) =&gt;</span> <span class="built_in">void</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">declare</span> <span class="variable language_">module</span> <span class="string">&#x27;productModule/ProductList&#x27;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> <span class="title class_">ProductList</span>: <span class="function">(<span class="params"><span class="attr">props</span>: <span class="title class_">ProductListProps</span></span>) =&gt;</span> <span class="built_in">void</span>;</span><br><span class="line">  <span class="keyword">export</span> <span class="keyword">default</span> <span class="title class_">ProductList</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="開發環境設定"><a href="#開發環境設定" class="headerlink" title="開發環境設定"></a>開發環境設定</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 開發環境下的 fallback 機制</span></span><br><span class="line"><span class="keyword">const</span> isDev = process.<span class="property">env</span>.<span class="property">NODE_ENV</span> === <span class="string">&#x27;development&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">loadRemoteComponent</span> = <span class="keyword">async</span> (<span class="params">modulePath, fallback</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> <span class="keyword">import</span>(modulePath);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (error) &#123;</span><br><span class="line">    <span class="keyword">if</span> (isDev) &#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">warn</span>(<span class="string">`無法載入遠端模組 <span class="subst">$&#123;modulePath&#125;</span>，使用 fallback`</span>);</span><br><span class="line">      <span class="keyword">return</span> fallback;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">throw</span> error;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="監控與除錯"><a href="#監控與除錯" class="headerlink" title="監控與除錯"></a>監控與除錯</h2><h3 id="載入狀態追蹤"><a href="#載入狀態追蹤" class="headerlink" title="載入狀態追蹤"></a>載入狀態追蹤</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">useRemoteComponent</span> = (<span class="params"><span class="attr">modulePath</span>: <span class="built_in">string</span></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> [component, setComponent] = <span class="title function_">useState</span>(<span class="literal">null</span>);</span><br><span class="line">  <span class="keyword">const</span> [loading, setLoading] = <span class="title function_">useState</span>(<span class="literal">true</span>);</span><br><span class="line">  <span class="keyword">const</span> [error, setError] = <span class="title function_">useState</span>(<span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">  <span class="title function_">useEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">import</span>(modulePath)</span><br><span class="line">      .<span class="title function_">then</span>(<span class="function"><span class="params">module</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="title function_">setComponent</span>(<span class="variable language_">module</span>.<span class="property">default</span>);</span><br><span class="line">        <span class="title function_">setLoading</span>(<span class="literal">false</span>);</span><br><span class="line">      &#125;)</span><br><span class="line">      .<span class="title function_">catch</span>(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="title function_">setError</span>(err);</span><br><span class="line">        <span class="title function_">setLoading</span>(<span class="literal">false</span>);</span><br><span class="line">      &#125;);</span><br><span class="line">  &#125;, [modulePath]);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> &#123; component, loading, error &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="錯誤邊界"><a href="#錯誤邊界" class="headerlink" title="錯誤邊界"></a>錯誤邊界</h3><figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">RemoteComponentErrorBoundary</span> <span class="keyword">extends</span> <span class="title class_ inherited__">React.Component</span> &#123;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">props</span>) &#123;</span><br><span class="line">    <span class="variable language_">super</span>(props);</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">state</span> = &#123; <span class="attr">hasError</span>: <span class="literal">false</span> &#125;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">static</span> <span class="title function_">getDerivedStateFromError</span>(<span class="params">error</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123; <span class="attr">hasError</span>: <span class="literal">true</span> &#125;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">render</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable language_">this</span>.<span class="property">state</span>.<span class="property">hasError</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span>遠端組件載入失敗，請稍後再試<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">props</span>.<span class="property">children</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="未來展望：前端架構的新可能"><a href="#未來展望：前端架構的新可能" class="headerlink" title="未來展望：前端架構的新可能"></a>未來展望：前端架構的新可能</h2><p>Module Federation + Vite 的組合，不只是技術上的創新，更是前端架構思維的轉變。它讓我們重新思考：</p>
+<ul>
+<li><strong>團隊協作</strong>：不再需要統一技術棧，每個團隊都能發揮所長</li>
+<li><strong>技術演進</strong>：可以漸進式地採用新技術，而不用推倒重來</li>
+<li><strong>維護成本</strong>：模組化的架構讓維護更輕鬆，bug 影響範圍更小</li>
+</ul>
+<p>當然，這個技術還在快速發展中。隨著 <a target="_blank" rel="noopener" href="https://github.com/module-federation/universe">Module Federation Runtime</a> 等新工具的出現，相信未來會有更多驚喜等著我們。</p>
+<h2 id="總結：擁抱多元，釋放創意"><a href="#總結：擁抱多元，釋放創意" class="headerlink" title="總結：擁抱多元，釋放創意"></a>總結：擁抱多元，釋放創意</h2><p>Vite + Module Federation 證明了一件事：<strong>技術不應該成為創意的枷鎖</strong>。</p>
+<p>當我們不再被「只能選擇一個框架」的思維限制時，前端開發的可能性變得無限寬廣。React 的生態系統、Vue 的簡潔優雅、Angular 的企業級特性...現在我們可以在同一個專案中享受它們的優點。</p>
+<p>下次當有人問你「我們該用 React 還是 Vue？」時，你可以自信地回答：「為什麼不能兩個都用呢？」</p>
+<p>記住，最好的架構不是最新的技術，而是最適合你團隊和專案需求的解決方案。Module Federation 給了我們更多選擇，但選擇權還是在我們手中。</p>
+<hr>
+<p><em>想要親自體驗 Module Federation 的魔力嗎？建議先從小型 POC 開始，感受一下跨框架開發的樂趣。記住，技術是工具，創意才是靈魂！</em></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Vue/" rel="tag"># Vue</a>
+              <a href="/tags/Vite/" rel="tag"># Vite</a>
+              <a href="/tags/Module-Federation/" rel="tag"># Module Federation</a>
+              <a href="/tags/React/" rel="tag"># React</a>
+              <a href="/tags/%E5%BE%AE%E5%89%8D%E7%AB%AF/" rel="tag"># 微前端</a>
+              <a href="/tags/%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%A7%8B/" rel="tag"># 前端架構</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/781156c4/" rel="prev" title="別再讓你的網站裸奔了！Cloudflare 讓你 5 分鐘變身網路防護高手">
+                  <i class="fa fa-angle-left"></i> 別再讓你的網站裸奔了！Cloudflare 讓你 5 分鐘變身網路防護高手
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/6a7b2e15/" rel="next" title="Notion MCP 使用教學：讓 Claude 直接操作你的 Notion 工作區">
+                  Notion MCP 使用教學：讓 Claude 直接操作你的 Notion 工作區 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="在 IIS 環境下使用 C# 操作 LibreOffice 進行檔案轉換 問題背景 在 Web 應用程式中，我們經常需要提供檔案格式轉換的功能。本文將詳細說明如何在 IIS 環境下，使用 C# 程式碼呼叫 LibreOffice 進行檔案格式轉換（例如：Excel 轉 ODS），並完整解決執行過程中可能遇到的權限問題。  環境需求  1. Windows Server 環境  2. IIS 網頁伺">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IIS環境下使用C#操作LibreOffice進行檔案轉換">
+<meta property="og:url" content="https://kyosora.github.io/posts/4d1e7271/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="在 IIS 環境下使用 C# 操作 LibreOffice 進行檔案轉換 問題背景 在 Web 應用程式中，我們經常需要提供檔案格式轉換的功能。本文將詳細說明如何在 IIS 環境下，使用 C# 程式碼呼叫 LibreOffice 進行檔案格式轉換（例如：Excel 轉 ODS），並完整解決執行過程中可能遇到的權限問題。  環境需求  1. Windows Server 環境  2. IIS 網頁伺">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-11-02T10:57:14.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:41:34.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="C#">
+<meta property="article:tag" content="LibreOffice">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/4d1e7271/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/4d1e7271/","path":"posts/4d1e7271/","title":"IIS環境下使用C#操作LibreOffice進行檔案轉換"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>IIS環境下使用C#操作LibreOffice進行檔案轉換 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%A8-IIS-%E7%92%B0%E5%A2%83%E4%B8%8B%E4%BD%BF%E7%94%A8-C-%E6%93%8D%E4%BD%9C-LibreOffice-%E9%80%B2%E8%A1%8C%E6%AA%94%E6%A1%88%E8%BD%89%E6%8F%9B"><span class="nav-number">1.</span> <span class="nav-text">在 IIS 環境下使用 C# 操作 LibreOffice 進行檔案轉換</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%95%8F%E9%A1%8C%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">問題背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%92%B0%E5%A2%83%E9%9C%80%E6%B1%82"><span class="nav-number">1.2.</span> <span class="nav-text">環境需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%83%BD%E9%81%87%E5%88%B0%E7%9A%84%E5%95%8F%E9%A1%8C"><span class="nav-number">1.3.</span> <span class="nav-text">可能遇到的問題</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88"><span class="nav-number">1.4.</span> <span class="nav-text">完整解決方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-IIS-%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F%E9%9B%86%E5%8D%80%E8%A8%AD%E5%AE%9A"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. IIS 應用程式集區設定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Windows-%E4%BD%BF%E7%94%A8%E8%80%85%E6%AC%8A%E9%99%90%E6%8C%87%E6%B4%BE"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. Windows 使用者權限指派</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%B3%87%E6%96%99%E5%A4%BE%E6%AC%8A%E9%99%90%E8%A8%AD%E5%AE%9A"><span class="nav-number">1.4.3.</span> <span class="nav-text">3. 資料夾權限設定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%A8%8B%E5%BC%8F%E7%A2%BC%E5%AF%A6%E4%BD%9C"><span class="nav-number">1.4.4.</span> <span class="nav-text">4. 程式碼實作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Web-config-%E8%A8%AD%E5%AE%9A"><span class="nav-number">1.4.5.</span> <span class="nav-text">5. Web.config 設定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">1.4.6.</span> <span class="nav-text">6. 使用方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E6%AA%A2%E6%9F%A5%E6%B8%85%E5%96%AE"><span class="nav-number">1.5.</span> <span class="nav-text">完整檢查清單</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A6%8B%E5%95%8F%E9%A1%8C%E6%8E%92%E9%99%A4"><span class="nav-number">1.6.</span> <span class="nav-text">常見問題排除</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.7.</span> <span class="nav-text">結論</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/4d1e7271/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="IIS環境下使用C#操作LibreOffice進行檔案轉換 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          IIS環境下使用C#操作LibreOffice進行檔案轉換
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-11-02 18:57:14" itemprop="dateCreated datePublished" datetime="2024-11-02T18:57:14+08:00">2024-11-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-11-27 14:41:34" itemprop="dateModified" datetime="2024-11-27T14:41:34+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>5.9k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>5 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="在-IIS-環境下使用-C-操作-LibreOffice-進行檔案轉換"><a href="#在-IIS-環境下使用-C-操作-LibreOffice-進行檔案轉換" class="headerlink" title="在 IIS 環境下使用 C# 操作 LibreOffice 進行檔案轉換"></a>在 IIS 環境下使用 C# 操作 LibreOffice 進行檔案轉換</h1><h2 id="問題背景"><a href="#問題背景" class="headerlink" title="問題背景"></a>問題背景</h2><p>在 Web 應用程式中，我們經常需要提供檔案格式轉換的功能。本文將詳細說明如何在 IIS 環境下，使用 C# 程式碼呼叫 LibreOffice 進行檔案格式轉換（例如：Excel 轉 ODS），並完整解決執行過程中可能遇到的權限問題。</p>
+<h2 id="環境需求"><a href="#環境需求" class="headerlink" title="環境需求"></a>環境需求</h2><ol>
+<li>Windows Server 環境</li>
+<li>IIS 網頁伺服器</li>
+<li>LibreOffice 套件</li>
+<li>.NET Framework 開發環境</li>
+</ol>
+<h2 id="可能遇到的問題"><a href="#可能遇到的問題" class="headerlink" title="可能遇到的問題"></a>可能遇到的問題</h2><ol>
+<li>使用一般使用者帳號無法執行轉換</li>
+<li>IIS ApplicationPool 權限不足</li>
+<li>檔案轉換過程沒有回應</li>
+<li>程式執行但找不到輸出檔案</li>
+<li>權限不足導致程式無法執行</li>
+</ol>
+<h2 id="完整解決方案"><a href="#完整解決方案" class="headerlink" title="完整解決方案"></a>完整解決方案</h2><h3 id="1-IIS-應用程式集區設定"><a href="#1-IIS-應用程式集區設定" class="headerlink" title="1. IIS 應用程式集區設定"></a>1. IIS 應用程式集區設定</h3><p>首先確認 IIS 應用程式集區的設定：</p>
+<ol>
+<li>開啟 IIS 管理員</li>
+<li>找到您的應用程式集區（例如：DefaultAppPool）</li>
+<li>右鍵 → 進階設定</li>
+<li>設定以下項目：<ul>
+<li>載入使用者設定檔 = True</li>
+<li>識別 = ApplicationPoolIdentity</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-Windows-使用者權限指派"><a href="#2-Windows-使用者權限指派" class="headerlink" title="2. Windows 使用者權限指派"></a>2. Windows 使用者權限指派</h3><p>設定執行檔案轉換的使用者權限：</p>
+<ol>
+<li><p>開啟「本機安全性原則」</p>
+<ul>
+<li>按 Windows + R</li>
+<li>輸入 secpol.msc</li>
+<li>按確定</li>
+</ul>
+</li>
+<li><p>在左側樹狀目錄中依序展開</p>
+<ul>
+<li>安全性設定</li>
+<li>本機原則</li>
+<li>使用者權限指派</li>
+</ul>
+</li>
+<li><p>設定下列權限（對於您要使用的帳號，例如 IIS APPPOOL\DefaultAppPool 或特定使用者帳號）</p>
+<ul>
+<li><p>找到「以批次工作登入」（Log on as a batch job）</p>
+<ul>
+<li>按右鍵 → 內容</li>
+<li>點選「新增使用者或群組」</li>
+<li>加入使用者帳號</li>
+</ul>
+</li>
+<li><p>找到「以服務方式登入」（Log on as a service）</p>
+<ul>
+<li>按右鍵 → 內容</li>
+<li>點選「新增使用者或群組」</li>
+<li>加入使用者帳號</li>
+</ul>
+</li>
+<li><p>找到「允許本機登入」（Allow log on locally）</p>
+<ul>
+<li>按右鍵 → 內容</li>
+<li>點選「新增使用者或群組」</li>
+<li>加入使用者帳號</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>如果使用 IIS APPPOOL\DefaultAppPool</p>
+<ul>
+<li>上述三個權限都要加入 IIS APPPOOL\DefaultAppPool</li>
+<li>特別注意「以批次工作登入」這個權限一定要加入</li>
+</ul>
+</li>
+</ol>
+<h3 id="3-資料夾權限設定"><a href="#3-資料夾權限設定" class="headerlink" title="3. 資料夾權限設定"></a>3. 資料夾權限設定</h3><p>為執行帳號設定適當的資料夾權限：</p>
+<ol>
+<li>在以下資料夾按右鍵 → 內容 → 安全性 → 編輯</li>
+<li>點選「新增」，輸入您使用的帳號（例如：IIS APPPOOL\DefaultAppPool）</li>
+<li>給予以下權限：<ul>
+<li>讀取權限</li>
+<li>寫入權限</li>
+<li>執行權限</li>
+</ul>
+</li>
+</ol>
+<p>需要設定的資料夾：</p>
+<ul>
+<li>LibreOffice 安裝目錄（通常是 C:\Program Files\LibreOffice）</li>
+<li>轉換檔案的來源資料夾</li>
+<li>轉換檔案的目標資料夾</li>
+<li>暫存資料夾（例如：D:\temp）</li>
+</ul>
+<h3 id="4-程式碼實作"><a href="#4-程式碼實作" class="headerlink" title="4. 程式碼實作"></a>4. 程式碼實作</h3><p>以下是完整的程式碼實作，包含詳細的錯誤處理和記錄：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Diagnostics;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.InteropServices;</span><br><span class="line"><span class="keyword">using</span> System.ComponentModel;</span><br><span class="line"><span class="keyword">using</span> System.Security;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> System.Configuration;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ImpersonateUser</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Windows API 常數定義</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">int</span> LOGON32_LOGON_INTERACTIVE = <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">int</span> LOGON32_PROVIDER_DEFAULT = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">int</span> LOGON32_LOGON_BATCH = <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">DllImport(<span class="string">&quot;advapi32.dll&quot;</span>, SetLastError = true)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> <span class="built_in">bool</span> <span class="title">LogonUser</span>(<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="built_in">string</span> lpszUsername,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="built_in">string</span> lpszDomain,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="built_in">string</span> lpszPassword,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="built_in">int</span> dwLogonType,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="built_in">int</span> dwLogonProvider,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">out</span> IntPtr phToken</span>)</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">DllImport(<span class="string">&quot;advapi32.dll&quot;</span>, SetLastError = true)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> <span class="built_in">bool</span> <span class="title">ImpersonateLoggedOnUser</span>(<span class="params">IntPtr hToken</span>)</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">DllImport(<span class="string">&quot;advapi32.dll&quot;</span>, SetLastError = true)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> <span class="built_in">bool</span> <span class="title">RevertToSelf</span>()</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">DllImport(<span class="string">&quot;kernel32.dll&quot;</span>, SetLastError = true)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> <span class="built_in">bool</span> <span class="title">CloseHandle</span>(<span class="params">IntPtr hObject</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ConvertFile</span>(<span class="params"><span class="built_in">string</span> sourcePath, <span class="built_in">string</span> destPath, <span class="built_in">string</span> Format</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> sofficePath = <span class="string">@&quot;C:\Program Files\LibreOffice\program\soffice.exe&quot;</span>;</span><br><span class="line">        Process process = <span class="literal">null</span>;</span><br><span class="line">        IntPtr tokenHandle = IntPtr.Zero;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            XLogFile.WriteLog(<span class="string">$&quot;原始執行身份: <span class="subst">&#123;System.Security.Principal.WindowsIdentity.GetCurrent().Name&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 取得使用者認證</span></span><br><span class="line">            <span class="built_in">string</span> userName = ConfigurationManager.AppSettings[<span class="string">&quot;SystemAccount&quot;</span>].ToString();</span><br><span class="line">            <span class="built_in">string</span> password = ConfigurationManager.AppSettings[<span class="string">&quot;SystemPassword&quot;</span>].ToString();</span><br><span class="line">            <span class="built_in">string</span> domain = <span class="string">&quot;.&quot;</span>; <span class="comment">// 本機帳號使用 &quot;.&quot;</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 嘗試登入並取得權杖</span></span><br><span class="line">            <span class="built_in">bool</span> loginSuccess = LogonUser(</span><br><span class="line">                userName,</span><br><span class="line">                domain,</span><br><span class="line">                password,</span><br><span class="line">                LOGON32_LOGON_INTERACTIVE,</span><br><span class="line">                LOGON32_PROVIDER_DEFAULT,</span><br><span class="line">                <span class="keyword">out</span> tokenHandle);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (!loginSuccess)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">int</span> error = Marshal.GetLastWin32Error();</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> Win32Exception(error, <span class="string">$&quot;LogonUser 失敗. 錯誤碼: <span class="subst">&#123;error&#125;</span>&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 模擬使用者</span></span><br><span class="line">            <span class="keyword">if</span> (!ImpersonateLoggedOnUser(tokenHandle))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">int</span> error = Marshal.GetLastWin32Error();</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> Win32Exception(error, <span class="string">&quot;ImpersonateLoggedOnUser 失敗&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            XLogFile.WriteLog(<span class="string">$&quot;切換後執行身份: <span class="subst">&#123;System.Security.Principal.WindowsIdentity.GetCurrent().Name&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 設定程序啟動資訊</span></span><br><span class="line">            ProcessStartInfo startInfo = <span class="keyword">new</span> ProcessStartInfo();</span><br><span class="line">            startInfo.FileName = sofficePath;</span><br><span class="line">            startInfo.Arguments = <span class="string">$&quot;--headless --convert-to \&quot;<span class="subst">&#123;Format&#125;</span>\&quot; \&quot;<span class="subst">&#123;sourcePath&#125;</span>\&quot; --outdir \&quot;<span class="subst">&#123;Path.GetDirectoryName(destPath)&#125;</span>\&quot;&quot;</span>;</span><br><span class="line">            startInfo.UseShellExecute = <span class="literal">false</span>;</span><br><span class="line">            startInfo.RedirectStandardOutput = <span class="literal">true</span>;</span><br><span class="line">            startInfo.RedirectStandardError = <span class="literal">true</span>;</span><br><span class="line">            startInfo.CreateNoWindow = <span class="literal">true</span>;</span><br><span class="line">            startInfo.WorkingDirectory = Path.GetDirectoryName(sourcePath);</span><br><span class="line"></span><br><span class="line">            XLogFile.WriteLog(<span class="string">$&quot;完整命令: <span class="subst">&#123;startInfo.FileName&#125;</span> <span class="subst">&#123;startInfo.Arguments&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 執行程序</span></span><br><span class="line">            process = <span class="keyword">new</span> Process();</span><br><span class="line">            process.StartInfo = startInfo;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 處理輸出</span></span><br><span class="line">            process.OutputDataReceived += (sender, e) =&gt; &#123;</span><br><span class="line">                <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(e.Data))</span><br><span class="line">                    XLogFile.WriteLog(<span class="string">$&quot;程序輸出: <span class="subst">&#123;e.Data&#125;</span>&quot;</span>);</span><br><span class="line">            &#125;;</span><br><span class="line">            process.ErrorDataReceived += (sender, e) =&gt; &#123;</span><br><span class="line">                <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(e.Data))</span><br><span class="line">                    XLogFile.WriteLog(<span class="string">$&quot;程序錯誤: <span class="subst">&#123;e.Data&#125;</span>&quot;</span>);</span><br><span class="line">            &#125;;</span><br><span class="line"></span><br><span class="line">            process.Start();</span><br><span class="line">            process.BeginOutputReadLine();</span><br><span class="line">            process.BeginErrorReadLine();</span><br><span class="line">            process.WaitForExit();</span><br><span class="line"></span><br><span class="line">            XLogFile.WriteLog(<span class="string">$&quot;程序結束代碼: <span class="subst">&#123;process.ExitCode&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 檢查輸出檔案</span></span><br><span class="line">            <span class="built_in">string</span> expectedOutputFile = Path.Combine(</span><br><span class="line">                Path.GetDirectoryName(destPath),</span><br><span class="line">                Path.GetFileNameWithoutExtension(sourcePath) + <span class="string">&quot;.&quot;</span> + Format);</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">if</span> (File.Exists(expectedOutputFile))</span><br><span class="line">            &#123;</span><br><span class="line">                XLogFile.WriteLog(<span class="string">&quot;檔案轉換成功&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                XLogFile.WriteLog(<span class="string">&quot;警告：找不到輸出檔案&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Exception ex)</span><br><span class="line">        &#123;</span><br><span class="line">            XLogFile.WriteLog(<span class="string">$&quot;轉換過程發生錯誤: <span class="subst">&#123;ex.ToString()&#125;</span>&quot;</span>);</span><br><span class="line">            <span class="keyword">throw</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 清理資源</span></span><br><span class="line">            <span class="keyword">if</span> (process != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                process.Close();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 恢復原始身份</span></span><br><span class="line">            RevertToSelf();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 關閉權杖</span></span><br><span class="line">            <span class="keyword">if</span> (tokenHandle != IntPtr.Zero)</span><br><span class="line">            &#123;</span><br><span class="line">                CloseHandle(tokenHandle);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-Web-config-設定"><a href="#5-Web-config-設定" class="headerlink" title="5. Web.config 設定"></a>5. Web.config 設定</h3><p>在 Web.config 中加入使用者帳號設定：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">appSettings</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">add</span> <span class="attr">key</span>=<span class="string">&quot;SystemAccount&quot;</span> <span class="attr">value</span>=<span class="string">&quot;您的使用者帳號&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">add</span> <span class="attr">key</span>=<span class="string">&quot;SystemPassword&quot;</span> <span class="attr">value</span>=<span class="string">&quot;您的密碼&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">appSettings</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-使用方式"><a href="#6-使用方式" class="headerlink" title="6. 使用方式"></a>6. 使用方式</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 呼叫範例</span></span><br><span class="line">ImpersonateUser.ConvertFile(</span><br><span class="line">    <span class="string">@&quot;D:\Source\test.xlsx&quot;</span>,           <span class="comment">// 來源檔案路徑</span></span><br><span class="line">    <span class="string">@&quot;D:\Destination\test.ods&quot;</span>,       <span class="comment">// 目標檔案路徑</span></span><br><span class="line">    <span class="string">&quot;ods&quot;</span>                             <span class="comment">// 轉換格式</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h2 id="完整檢查清單"><a href="#完整檢查清單" class="headerlink" title="完整檢查清單"></a>完整檢查清單</h2><p>設定完成後，使用以下清單檢查是否已完成所有必要設定：</p>
+<ol>
+<li><p>IIS 設定</p>
+<ul>
+<li><input disabled="" type="checkbox"> 應用程式集區載入使用者設定檔設為 True</li>
+<li><input disabled="" type="checkbox"> 應用程式集區識別設定正確</li>
+</ul>
+</li>
+<li><p>資料夾權限</p>
+<ul>
+<li><input disabled="" type="checkbox"> LibreOffice 安裝目錄權限</li>
+<li><input disabled="" type="checkbox"> 來源資料夾權限</li>
+<li><input disabled="" type="checkbox"> 目標資料夾權限</li>
+<li><input disabled="" type="checkbox"> 暫存資料夾權限</li>
+</ul>
+</li>
+<li><p>使用者權限指派</p>
+<ul>
+<li><input disabled="" type="checkbox"> 以批次工作登入</li>
+<li><input disabled="" type="checkbox"> 以服務方式登入</li>
+<li><input disabled="" type="checkbox"> 允許本機登入</li>
+</ul>
+</li>
+<li><p>Web.config 設定</p>
+<ul>
+<li><input disabled="" type="checkbox"> SystemAccount 設定正確</li>
+<li><input disabled="" type="checkbox"> SystemPassword 設定正確</li>
+</ul>
+</li>
+</ol>
+<h2 id="常見問題排除"><a href="#常見問題排除" class="headerlink" title="常見問題排除"></a>常見問題排除</h2><ol>
+<li><p>程式沒有回應</p>
+<ul>
+<li>檢查 IIS 應用程式集區的識別設定</li>
+<li>確認資料夾權限設定</li>
+<li>查看事件檢視器中的錯誤記錄</li>
+</ul>
+</li>
+<li><p>找不到輸出檔案</p>
+<ul>
+<li>確認目標資料夾的寫入權限</li>
+<li>檢查 LibreOffice 是否正確安裝</li>
+<li>查看記錄檔中的錯誤訊息</li>
+</ul>
+</li>
+<li><p>權限不足</p>
+<ul>
+<li>確認已設定正確的資料夾權限</li>
+<li>檢查使用者帳號是否有足夠權限</li>
+<li>確認 Web.config 中的帳號設定正確</li>
+</ul>
+</li>
+<li><p>設定完權限後仍無法執行</p>
+<ul>
+<li>重新啟動 IIS</li>
+<li>重新啟動應用程式集區</li>
+<li>必要時重新啟動伺服器</li>
+</ul>
+</li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>要在 IIS 環境下成功使用 LibreOffice 進行檔案轉換，關鍵在於：</p>
+<ol>
+<li>正確設定 IIS 應用程式集區</li>
+<li>設定完整的 Windows 使用者權限</li>
+<li>設定適當的資料夾權限</li>
+<li>實作完整的錯誤處理機制</li>
+<li>記錄詳細的執行過程</li>
+</ol>
+<p>只要依照上述步驟仔細設定，就能順利完成檔案轉換的功能。如果遇到問題，也可以透過記錄檔快速找出問題所在。</p>
+<p>希望這篇文章能幫助遇到類似問題的開發者，快速建立起可靠的檔案轉換機制！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C#</a>
+              <a href="/tags/LibreOffice/" rel="tag"># LibreOffice</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/e5401adb/" rel="prev" title="SQL Server 空間查詢操作指南">
+                  <i class="fa fa-angle-left"></i> SQL Server 空間查詢操作指南
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/67b75693/" rel="next" title="Content Security Policy 安全性與實用性平衡指南">
+                  Content Security Policy 安全性與實用性平衡指南 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

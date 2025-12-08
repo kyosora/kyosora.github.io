@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="使用 PowerShell 匯出完整的已安裝軟體清單 在系統管理工作中,經常需要匯出電腦上已安裝的軟體清單。不過單純使用 Win32_Product 類別往往會漏掉許多軟體,因為現代軟體經常使用自己的安裝程式而非 Windows Installer。本文將介紹如何使用更全面的方法來取得完整的軟體清單。  為什麼需要掃描登錄檔 Windows 系統中,已安裝的軟體資訊主要儲存在以下登錄檔位置:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 PowerShell 匯出完整的已安裝軟體清單">
+<meta property="og:url" content="https://kyosora.github.io/posts/8697256d/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="使用 PowerShell 匯出完整的已安裝軟體清單 在系統管理工作中,經常需要匯出電腦上已安裝的軟體清單。不過單純使用 Win32_Product 類別往往會漏掉許多軟體,因為現代軟體經常使用自己的安裝程式而非 Windows Installer。本文將介紹如何使用更全面的方法來取得完整的軟體清單。  為什麼需要掃描登錄檔 Windows 系統中,已安裝的軟體資訊主要儲存在以下登錄檔位置:">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2025-01-02T02:00:00.000Z">
+<meta property="article:modified_time" content="2025-01-02T05:54:42.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="系統管理">
+<meta property="article:tag" content="PowerShell">
+<meta property="article:tag" content="軟體清單">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/8697256d/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/8697256d/","path":"posts/8697256d/","title":"使用 PowerShell 匯出完整的已安裝軟體清單"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>使用 PowerShell 匯出完整的已安裝軟體清單 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-PowerShell-%E5%8C%AF%E5%87%BA%E5%AE%8C%E6%95%B4%E7%9A%84%E5%B7%B2%E5%AE%89%E8%A3%9D%E8%BB%9F%E9%AB%94%E6%B8%85%E5%96%AE"><span class="nav-number">1.</span> <span class="nav-text">使用 PowerShell 匯出完整的已安裝軟體清單</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E9%9C%80%E8%A6%81%E6%8E%83%E6%8F%8F%E7%99%BB%E9%8C%84%E6%AA%94"><span class="nav-number">1.1.</span> <span class="nav-text">為什麼需要掃描登錄檔</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E7%9A%84-PowerShell-%E8%85%B3%E6%9C%AC"><span class="nav-number">1.2.</span> <span class="nav-text">完整的 PowerShell 腳本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%85%B3%E6%9C%AC%E8%AA%AA%E6%98%8E"><span class="nav-number">1.3.</span> <span class="nav-text">腳本說明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%B7%E8%A1%8C%E7%B5%90%E6%9E%9C"><span class="nav-number">1.4.</span> <span class="nav-text">執行結果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85"><span class="nav-number">1.5.</span> <span class="nav-text">注意事項</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%B2%E9%9A%8E%E4%BD%BF%E7%94%A8"><span class="nav-number">1.6.</span> <span class="nav-text">進階使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%83%E8%80%83%E8%B3%87%E6%96%99"><span class="nav-number">1.7.</span> <span class="nav-text">參考資料</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/8697256d/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="使用 PowerShell 匯出完整的已安裝軟體清單 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用 PowerShell 匯出完整的已安裝軟體清單
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2025-01-02 10:00:00 / 修改時間：13:54:42" itemprop="dateCreated datePublished" datetime="2025-01-02T10:00:00+08:00">2025-01-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Windows-%E7%B3%BB%E7%B5%B1%E7%AE%A1%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">Windows 系統管理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.5k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="使用-PowerShell-匯出完整的已安裝軟體清單"><a href="#使用-PowerShell-匯出完整的已安裝軟體清單" class="headerlink" title="使用 PowerShell 匯出完整的已安裝軟體清單"></a>使用 PowerShell 匯出完整的已安裝軟體清單</h1><p>在系統管理工作中,經常需要匯出電腦上已安裝的軟體清單。不過單純使用 Win32_Product 類別往往會漏掉許多軟體,因為現代軟體經常使用自己的安裝程式而非 Windows Installer。本文將介紹如何使用更全面的方法來取得完整的軟體清單。</p>
+<h2 id="為什麼需要掃描登錄檔"><a href="#為什麼需要掃描登錄檔" class="headerlink" title="為什麼需要掃描登錄檔"></a>為什麼需要掃描登錄檔</h2><p>Windows 系統中,已安裝的軟體資訊主要儲存在以下登錄檔位置:</p>
+<ul>
+<li>HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall</li>
+<li>HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall (32 位元軟體)</li>
+</ul>
+<p>這些位置包含了所有透過各種方式安裝的軟體資訊,比 Win32_Product 類別更完整。</p>
+<h2 id="完整的-PowerShell-腳本"><a href="#完整的-PowerShell-腳本" class="headerlink" title="完整的 PowerShell 腳本"></a>完整的 PowerShell 腳本</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 設定輸出編碼為 UTF8,避免中文亂碼</span></span><br><span class="line"><span class="variable">$OutputEncoding</span> = [<span class="type">System.Text.Encoding</span>]::UTF8</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定義要掃描的登錄檔路徑</span></span><br><span class="line"><span class="variable">$RegPaths</span> = <span class="selector-tag">@</span>(</span><br><span class="line">    <span class="string">&quot;HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*&quot;</span>,</span><br><span class="line">    <span class="string">&quot;HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 取得已安裝的軟體清單</span></span><br><span class="line"><span class="variable">$InstalledSoftware</span> = <span class="selector-tag">@</span>()</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$Path</span> <span class="keyword">in</span> <span class="variable">$RegPaths</span>) &#123;</span><br><span class="line">    <span class="comment"># 從登錄檔讀取軟體資訊</span></span><br><span class="line">    <span class="variable">$Software</span> = <span class="built_in">Get-ItemProperty</span> <span class="variable">$Path</span> |</span><br><span class="line">        <span class="comment"># 選擇需要的欄位</span></span><br><span class="line">        <span class="built_in">Select-Object</span> DisplayName, DisplayVersion, Publisher, InstallDate |</span><br><span class="line">        <span class="comment"># 過濾掉沒有名稱的項目(通常是更新檔)</span></span><br><span class="line">        <span class="built_in">Where-Object</span> &#123; <span class="variable">$_</span>.DisplayName &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="variable">$InstalledSoftware</span> += <span class="variable">$Software</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 依照軟體名稱排序並移除重複項目</span></span><br><span class="line"><span class="variable">$InstalledSoftware</span> = <span class="variable">$InstalledSoftware</span> |</span><br><span class="line">    <span class="built_in">Sort-Object</span> DisplayName <span class="literal">-Unique</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 設定輸出檔案路徑,存在桌面</span></span><br><span class="line"><span class="variable">$DesktopPath</span> = [<span class="type">Environment</span>]::GetFolderPath(<span class="string">&quot;Desktop&quot;</span>)</span><br><span class="line"><span class="variable">$OutputFile</span> = <span class="built_in">Join-Path</span> <span class="variable">$DesktopPath</span> <span class="string">&quot;installed_software_complete.csv&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 匯出成 CSV 檔案</span></span><br><span class="line"><span class="variable">$InstalledSoftware</span> | </span><br><span class="line">    <span class="built_in">Select-Object</span> <span class="selector-tag">@</span>&#123;N=<span class="string">&#x27;名稱&#x27;</span>;E=&#123;<span class="variable">$_</span>.DisplayName&#125;&#125;,</span><br><span class="line">                  <span class="selector-tag">@</span>&#123;N=<span class="string">&#x27;版本&#x27;</span>;E=&#123;<span class="variable">$_</span>.DisplayVersion&#125;&#125;,</span><br><span class="line">                  <span class="selector-tag">@</span>&#123;N=<span class="string">&#x27;發布者&#x27;</span>;E=&#123;<span class="variable">$_</span>.Publisher&#125;&#125;,</span><br><span class="line">                  <span class="selector-tag">@</span>&#123;N=<span class="string">&#x27;安裝日期&#x27;</span>;E=&#123;<span class="variable">$_</span>.InstallDate&#125;&#125; |</span><br><span class="line">    <span class="built_in">Export-Csv</span> <span class="literal">-Path</span> <span class="variable">$OutputFile</span> <span class="literal">-NoTypeInformation</span> <span class="literal">-Encoding</span> UTF8</span><br><span class="line"></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;軟體清單已匯出至: <span class="variable">$OutputFile</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="腳本說明"><a href="#腳本說明" class="headerlink" title="腳本說明"></a>腳本說明</h2><p>讓我們逐步解釋這個腳本的功能:</p>
+<ol>
+<li><p><strong>設定編碼</strong></p>
+<ul>
+<li>使用 UTF8 編碼確保中文字能正確顯示</li>
+<li>避免輸出的 CSV 檔案開啟時出現亂碼</li>
+</ul>
+</li>
+<li><p><strong>定義登錄檔路徑</strong></p>
+<ul>
+<li>設定兩個需要掃描的登錄檔位置</li>
+<li>包含 64 位元和 32 位元的軟體資訊</li>
+</ul>
+</li>
+<li><p><strong>讀取軟體資訊</strong></p>
+<ul>
+<li>使用 Get-ItemProperty 讀取登錄檔內容</li>
+<li>選擇重要欄位:名稱、版本、發布者、安裝日期</li>
+<li>過濾掉沒有名稱的項目(通常是更新檔或系統元件)</li>
+</ul>
+</li>
+<li><p><strong>資料處理</strong></p>
+<ul>
+<li>合併兩個登錄檔路徑的資料</li>
+<li>依照軟體名稱排序</li>
+<li>移除重複的項目</li>
+</ul>
+</li>
+<li><p><strong>匯出資料</strong></p>
+<ul>
+<li>將欄位名稱改為中文,方便閱讀</li>
+<li>匯出成 CSV 格式,存放在桌面</li>
+</ul>
+</li>
+</ol>
+<h2 id="執行結果"><a href="#執行結果" class="headerlink" title="執行結果"></a>執行結果</h2><p>執行後會在桌面產生 installed_software_complete.csv 檔案,打開後可以看到類似以下的內容:</p>
+<table>
+<thead>
+<tr>
+<th>名稱</th>
+<th>版本</th>
+<th>發布者</th>
+<th>安裝日期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Adobe Creative Cloud</td>
+<td>5.11.0.522</td>
+<td>Adobe Inc.</td>
+<td>20231201</td>
+</tr>
+<tr>
+<td>Google Chrome</td>
+<td>120.0.6099.130</td>
+<td>Google LLC</td>
+<td>20231215</td>
+</tr>
+<tr>
+<td>Microsoft Office</td>
+<td>16.0.17201.20290</td>
+<td>Microsoft Corporation</td>
+<td>20230601</td>
+</tr>
+<tr>
+<td>PyCharm 2023.3</td>
+<td>233.11799.298</td>
+<td>JetBrains s.r.o.</td>
+<td>20231220</td>
+</tr>
+<tr>
+<td>Visual Studio Code</td>
+<td>1.85.1</td>
+<td>Microsoft Corporation</td>
+<td>20231218</td>
+</tr>
+</tbody></table>
+<h2 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h2><ol>
+<li>此腳本需要以系統管理員權限執行</li>
+<li>某些軟體可能沒有完整的安裝資訊</li>
+<li>安裝日期格式可能因軟體而異</li>
+</ol>
+<h2 id="進階使用"><a href="#進階使用" class="headerlink" title="進階使用"></a>進階使用</h2><p>如果需要更多資訊,可以修改 Select-Object 的欄位,例如:</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Select-Object</span> DisplayName, DisplayVersion, Publisher, InstallDate, </span><br><span class="line">            InstallLocation, UninstallString, EstimatedSize</span><br></pre></td></tr></table></figure>
+
+<p>這樣就能同時匯出:</p>
+<ul>
+<li>安裝路徑 (InstallLocation)</li>
+<li>解除安裝指令 (UninstallString)</li>
+<li>預估大小 (EstimatedSize)</li>
+</ul>
+<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_registry_provider">Microsoft Docs: About Registry Providers</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-itemproperty">Microsoft Docs: Get-ItemProperty</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%B3%BB%E7%B5%B1%E7%AE%A1%E7%90%86/" rel="tag"># 系統管理</a>
+              <a href="/tags/PowerShell/" rel="tag"># PowerShell</a>
+              <a href="/tags/%E8%BB%9F%E9%AB%94%E6%B8%85%E5%96%AE/" rel="tag"># 軟體清單</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/d4120792/" rel="prev" title="邁入而立之年的2024回顧與2025展望 - 從0到1的投資之路">
+                  <i class="fa fa-angle-left"></i> 邁入而立之年的2024回顧與2025展望 - 從0到1的投資之路
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/901fe680/" rel="next" title="Windows遠端桌面連線重置帳密教學">
+                  Windows遠端桌面連線重置帳密教學 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

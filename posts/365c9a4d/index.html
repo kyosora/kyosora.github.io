@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="告別背包中自動喚醒的筆電：用 PowerShell 一鍵關閉藍牙裝置喚醒功能 你有沒有遇過這樣的情況：筆電明明已經關上放進背包，卻在包裡莫名其妙地自己開機，到了目的地打開包發現電腦不僅發燙，電量還徹底耗盡？這種「背包中開趴」的情況很可能是因為你的藍牙滑鼠或其他藍牙裝置在背包中被不小心碰觸，進而喚醒了電腦所導致。  昨天我又一次經歷了這個惱人的問題，當我抵達咖啡廳後，打開背包才發現筆電已經沒電自動關">
+<meta property="og:type" content="article">
+<meta property="og:title" content="告別背包中自動喚醒的筆電：用 PowerShell 一鍵關閉藍牙裝置喚醒功能">
+<meta property="og:url" content="https://kyosora.github.io/posts/365c9a4d/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="告別背包中自動喚醒的筆電：用 PowerShell 一鍵關閉藍牙裝置喚醒功能 你有沒有遇過這樣的情況：筆電明明已經關上放進背包，卻在包裡莫名其妙地自己開機，到了目的地打開包發現電腦不僅發燙，電量還徹底耗盡？這種「背包中開趴」的情況很可能是因為你的藍牙滑鼠或其他藍牙裝置在背包中被不小心碰觸，進而喚醒了電腦所導致。  昨天我又一次經歷了這個惱人的問題，當我抵達咖啡廳後，打開背包才發現筆電已經沒電自動關">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2025-03-31T06:30:00.000Z">
+<meta property="article:modified_time" content="2025-03-31T01:45:59.913Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="PowerShell">
+<meta property="article:tag" content="藍牙裝置">
+<meta property="article:tag" content="電池管理">
+<meta property="article:tag" content="Windows 技巧">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/365c9a4d/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/365c9a4d/","path":"posts/365c9a4d/","title":"告別背包中自動喚醒的筆電：用 PowerShell 一鍵關閉藍牙裝置喚醒功能"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>告別背包中自動喚醒的筆電：用 PowerShell 一鍵關閉藍牙裝置喚醒功能 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%91%8A%E5%88%A5%E8%83%8C%E5%8C%85%E4%B8%AD%E8%87%AA%E5%8B%95%E5%96%9A%E9%86%92%E7%9A%84%E7%AD%86%E9%9B%BB%EF%BC%9A%E7%94%A8-PowerShell-%E4%B8%80%E9%8D%B5%E9%97%9C%E9%96%89%E8%97%8D%E7%89%99%E8%A3%9D%E7%BD%AE%E5%96%9A%E9%86%92%E5%8A%9F%E8%83%BD"><span class="nav-number">1.</span> <span class="nav-text">告別背包中自動喚醒的筆電：用 PowerShell 一鍵關閉藍牙裝置喚醒功能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%AA%E9%AD%81%E7%A6%8D%E9%A6%96%EF%BC%9A%E8%97%8D%E7%89%99%E8%A3%9D%E7%BD%AE%E7%9A%84%E5%96%9A%E9%86%92%E6%AC%8A%E9%99%90"><span class="nav-number">1.1.</span> <span class="nav-text">罪魁禍首：藍牙裝置的喚醒權限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PowerShell-%E6%95%91%E6%8F%B4%EF%BC%9A%E4%B8%80%E9%8D%B5%E9%97%9C%E9%96%89%E6%89%80%E6%9C%89%E8%A3%9D%E7%BD%AE%E7%9A%84%E5%96%9A%E9%86%92%E5%8A%9F%E8%83%BD"><span class="nav-number">1.2.</span> <span class="nav-text">PowerShell 救援：一鍵關閉所有裝置的喚醒功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AA%E6%83%B3%E9%97%9C%E9%96%89%E8%97%8D%E7%89%99%E8%A3%9D%E7%BD%AE%E7%9A%84%E5%96%9A%E9%86%92%E5%8A%9F%E8%83%BD%EF%BC%9F"><span class="nav-number">1.3.</span> <span class="nav-text">只想關閉藍牙裝置的喚醒功能？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E7%A2%BA%E8%AA%8D%E8%A8%AD%E5%AE%9A%E5%B7%B2%E7%94%9F%E6%95%88%EF%BC%9F"><span class="nav-number">1.4.</span> <span class="nav-text">如何確認設定已生效？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%84%A1%E6%B3%95%E5%9F%B7%E8%A1%8C-PowerShell%EF%BC%9F%E9%80%99%E8%A3%A1%E6%9C%89%E6%89%8B%E5%8B%95%E8%A8%AD%E5%AE%9A%E6%96%B9%E6%B3%95"><span class="nav-number">1.5.</span> <span class="nav-text">無法執行 PowerShell？這裡有手動設定方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%90%E6%9E%9C%EF%BC%9A%E5%91%8A%E5%88%A5%E8%83%8C%E5%8C%85%E4%B8%AD%E7%9A%84%E9%9B%BB%E6%B1%A0%E8%80%97%E7%9B%A1%E5%8D%B1%E6%A9%9F"><span class="nav-number">1.6.</span> <span class="nav-text">成果：告別背包中的電池耗盡危機</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/365c9a4d/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="告別背包中自動喚醒的筆電：用 PowerShell 一鍵關閉藍牙裝置喚醒功能 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          告別背包中自動喚醒的筆電：用 PowerShell 一鍵關閉藍牙裝置喚醒功能
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2025-03-31 14:30:00 / 修改時間：09:45:59" itemprop="dateCreated datePublished" datetime="2025-03-31T14:30:00+08:00">2025-03-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E8%A1%93%E5%B0%8F%E6%8A%80%E5%B7%A7/" itemprop="url" rel="index"><span itemprop="name">技術小技巧</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E8%A1%93%E5%B0%8F%E6%8A%80%E5%B7%A7/Windows-%E8%AA%BF%E6%A0%A1/" itemprop="url" rel="index"><span itemprop="name">Windows 調校</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.7k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="告別背包中自動喚醒的筆電：用-PowerShell-一鍵關閉藍牙裝置喚醒功能"><a href="#告別背包中自動喚醒的筆電：用-PowerShell-一鍵關閉藍牙裝置喚醒功能" class="headerlink" title="告別背包中自動喚醒的筆電：用 PowerShell 一鍵關閉藍牙裝置喚醒功能"></a>告別背包中自動喚醒的筆電：用 PowerShell 一鍵關閉藍牙裝置喚醒功能</h1><p>你有沒有遇過這樣的情況：筆電明明已經關上放進背包，卻在包裡莫名其妙地自己開機，到了目的地打開包發現電腦不僅發燙，電量還徹底耗盡？這種「背包中開趴」的情況很可能是因為你的藍牙滑鼠或其他藍牙裝置在背包中被不小心碰觸，進而喚醒了電腦所導致。</p>
+<p>昨天我又一次經歷了這個惱人的問題，當我抵達咖啡廳後，打開背包才發現筆電已經沒電自動關機，整個下午的工作計畫全部泡湯。這次我決定徹底解決這個問題，找到了一個優雅的一勞永逸解法。</p>
+<h2 id="罪魁禍首：藍牙裝置的喚醒權限"><a href="#罪魁禍首：藍牙裝置的喚醒權限" class="headerlink" title="罪魁禍首：藍牙裝置的喚醒權限"></a>罪魁禍首：藍牙裝置的喚醒權限</h2><p>Windows 預設允許許多連接的裝置具有「喚醒電腦」的權限，尤其是滑鼠和鍵盤。這項功能在某些情境下很有用，比如想要遠端喚醒電腦時。但對於筆記型電腦使用者來說，這常常變成一場災難。</p>
+<p>藍牙滑鼠在背包中的稍微移動就會被系統判定為「使用者想要喚醒電腦」的信號，結果就是電腦在密閉的背包環境中偷偷開機，不僅浪費電力，長時間下來還可能因過熱造成硬體損傷。</p>
+<h2 id="PowerShell-救援：一鍵關閉所有裝置的喚醒功能"><a href="#PowerShell-救援：一鍵關閉所有裝置的喚醒功能" class="headerlink" title="PowerShell 救援：一鍵關閉所有裝置的喚醒功能"></a>PowerShell 救援：一鍵關閉所有裝置的喚醒功能</h2><p>雖然可以在裝置管理員中手動一個個關閉各裝置的喚醒權限，但這個過程既繁瑣又容易遺漏。使用 PowerShell 可以一次性解決這個問題，尤其適合經常連接不同藍牙裝置的使用者。</p>
+<p>以下是我測試有效的 PowerShell 指令，只要執行一次，就能禁止所有藍牙裝置喚醒你的電腦：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 找出所有可喚醒電腦的設備並關閉喚醒功能</span></span><br><span class="line"><span class="built_in">Get-WmiObject</span> MSPower_DeviceWakeEnable <span class="literal">-Namespace</span> root\wmi | <span class="built_in">ForEach-Object</span> &#123; </span><br><span class="line">    <span class="variable">$_</span>.Enable = <span class="variable">$false</span></span><br><span class="line">    <span class="variable">$_</span>.psbase.Put()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 關閉所有設備的喚醒功能</span></span><br><span class="line"><span class="built_in">Get-CimInstance</span> <span class="literal">-Namespace</span> root/cimv2 <span class="literal">-ClassName</span> Win32_DeviceChangeEvent <span class="literal">-Filter</span> <span class="string">&quot;EventType = 2&quot;</span> | </span><br><span class="line"><span class="built_in">ForEach-Object</span> &#123;</span><br><span class="line">    <span class="variable">$device</span> = <span class="built_in">Get-CimInstance</span> <span class="literal">-ClassName</span> Win32_PnPEntity <span class="literal">-Filter</span> <span class="string">&quot;DeviceID = &#x27;<span class="variable">$</span>(<span class="variable">$_</span>.DeviceID)&#x27;&quot;</span></span><br><span class="line">    <span class="variable">$devicePath</span> = <span class="variable">$device</span>.PNPDeviceID</span><br><span class="line">    <span class="built_in">Set-ItemProperty</span> <span class="literal">-Path</span> <span class="string">&quot;HKLM:\SYSTEM\CurrentControlSet\Enum\<span class="variable">$devicePath</span>\Device Parameters&quot;</span> <span class="literal">-Name</span> <span class="string">&quot;WakeEnabled&quot;</span> <span class="literal">-Value</span> <span class="number">0</span> <span class="literal">-Type</span> DWord <span class="literal">-ErrorAction</span> SilentlyContinue</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;已關閉所有設備的喚醒功能&quot;</span> <span class="literal">-ForegroundColor</span> Green</span><br></pre></td></tr></table></figure>
+
+<p>這段程式碼做了什麼？它使用 Windows Management Instrumentation (WMI) 找出所有具有喚醒權限的裝置，然後將它們的喚醒功能統一設為停用。整個過程自動化完成，不需要手動點擊每個裝置進行設定。</p>
+<h2 id="只想關閉藍牙裝置的喚醒功能？"><a href="#只想關閉藍牙裝置的喚醒功能？" class="headerlink" title="只想關閉藍牙裝置的喚醒功能？"></a>只想關閉藍牙裝置的喚醒功能？</h2><p>如果你不想一刀切地關閉所有裝置的喚醒功能，而只想針對藍牙裝置進行控制，這個更有針對性的 PowerShell 指令更適合你：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 找出所有藍牙設備</span></span><br><span class="line"><span class="variable">$bluetoothDevices</span> = <span class="built_in">Get-PnpDevice</span> <span class="literal">-Class</span> Bluetooth <span class="literal">-PresentOnly</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 針對每個藍牙設備，檢查並關閉其喚醒功能</span></span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$device</span> <span class="keyword">in</span> <span class="variable">$bluetoothDevices</span>) &#123;</span><br><span class="line">    <span class="variable">$instanceId</span> = <span class="variable">$device</span>.InstanceId</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 檢查設備電源管理設定</span></span><br><span class="line">    <span class="variable">$powerMgmt</span> = <span class="built_in">Get-WmiObject</span> <span class="literal">-Class</span> MSPower_DeviceWakeEnable <span class="literal">-Namespace</span> root\wmi <span class="literal">-Filter</span> <span class="string">&quot;InstanceName LIKE &#x27;%<span class="variable">$instanceId</span>%&#x27;&quot;</span> <span class="literal">-ErrorAction</span> SilentlyContinue</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$powerMgmt</span>) &#123;</span><br><span class="line">        <span class="built_in">Write-Host</span> <span class="string">&quot;關閉設備喚醒功能: <span class="variable">$</span>(<span class="variable">$device</span>.FriendlyName)&quot;</span> <span class="literal">-ForegroundColor</span> Yellow</span><br><span class="line">        <span class="variable">$powerMgmt</span>.Enable = <span class="variable">$false</span></span><br><span class="line">        <span class="variable">$powerMgmt</span>.psbase.Put()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;已關閉所有藍牙設備的喚醒功能&quot;</span> <span class="literal">-ForegroundColor</span> Green</span><br></pre></td></tr></table></figure>
+
+<p>這段程式碼會列出每個被修改的藍牙裝置名稱，讓你清楚知道哪些裝置已經被處理過。</p>
+<h2 id="如何確認設定已生效？"><a href="#如何確認設定已生效？" class="headerlink" title="如何確認設定已生效？"></a>如何確認設定已生效？</h2><p>完成設定後，你可能想確認這些更改是否成功應用。執行以下指令可以列出所有裝置的喚醒狀態：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 列出所有可喚醒電腦的設備</span></span><br><span class="line"><span class="built_in">Get-WmiObject</span> MSPower_DeviceWakeEnable <span class="literal">-Namespace</span> root\wmi | <span class="built_in">Format-Table</span> <span class="literal">-Property</span> InstanceName, Enable</span><br></pre></td></tr></table></figure>
+
+<p>如果設定成功，你會看到所有（或所有藍牙）裝置的 Enable 欄位都顯示為 False。</p>
+<h2 id="無法執行-PowerShell？這裡有手動設定方法"><a href="#無法執行-PowerShell？這裡有手動設定方法" class="headerlink" title="無法執行 PowerShell？這裡有手動設定方法"></a>無法執行 PowerShell？這裡有手動設定方法</h2><p>如果你不方便執行 PowerShell 指令，或者不太熟悉命令列操作，以下是透過圖形界面手動設定的步驟：</p>
+<ol>
+<li>按下 Win+X 鍵組合，選擇「裝置管理員」</li>
+<li>在清單中找到並展開「藍牙」分類</li>
+<li>右鍵點擊你的藍牙滑鼠（或其他藍牙裝置），選擇「內容」</li>
+<li>切換到「電源管理」標籤</li>
+<li>取消勾選「允許這個裝置喚醒電腦」選項</li>
+<li>點擊「確定」儲存設定</li>
+<li>對所有藍牙裝置重複以上步驟</li>
+</ol>
+<p>雖然這個方法相對繁瑣，但對於只有少數幾個藍牙裝置的使用者來說也是個可行的解決方案。</p>
+<h2 id="成果：告別背包中的電池耗盡危機"><a href="#成果：告別背包中的電池耗盡危機" class="headerlink" title="成果：告別背包中的電池耗盡危機"></a>成果：告別背包中的電池耗盡危機</h2><p>實施這個解決方案後，我終於告別了背包中電腦莫名其妙開機的問題。即使滑鼠在包中被移動或按鍵被碰觸，電腦也能安然地保持睡眠狀態，不再無辜耗盡電池。最重要的是，我再也不用擔心到了重要場合才發現筆電沒電的尷尬情況。</p>
+<p>這個小技巧看似簡單，卻能有效解決一個常被忽視但令人煩惱的問題。透過這個設定，我的筆電與STEAMDECK電池壽命實際上延長了不少，因為它不再在我不知情的情況下偷偷耗電。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PowerShell/" rel="tag"># PowerShell</a>
+              <a href="/tags/%E8%97%8D%E7%89%99%E8%A3%9D%E7%BD%AE/" rel="tag"># 藍牙裝置</a>
+              <a href="/tags/%E9%9B%BB%E6%B1%A0%E7%AE%A1%E7%90%86/" rel="tag"># 電池管理</a>
+              <a href="/tags/Windows-%E6%8A%80%E5%B7%A7/" rel="tag"># Windows 技巧</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/bf4f4549/" rel="prev" title="IIS 401.3 權限錯誤完全解析：為什麼新增 IUSR 是救命關鍵">
+                  <i class="fa fa-angle-left"></i> IIS 401.3 權限錯誤完全解析：為什麼新增 IUSR 是救命關鍵
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/84f27add/" rel="next" title="告別Python套件地獄：為何資深工程師都在改用uv取代venv和conda？">
+                  告別Python套件地獄：為何資深工程師都在改用uv取代venv和conda？ <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

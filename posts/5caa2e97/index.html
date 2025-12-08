@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="WebSocket通訊過程詳解 今天要跟各位分享的是WebSocket通訊的運作過程。不論是網頁開發新手,還是想深入了解網路協定的老鳥,這篇文章都能讓你對WebSocket有更全面的認識。  WebSocket是什麼? WebSocket是一種網路通訊協定,它能在瀏覽器和伺服器之間建立全雙工、雙向的通訊管道。不同於傳統的HTTP請求-回應模式,WebSocket讓瀏覽器和伺服器可以隨時互相傳送訊息">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WebSocket通訊過程詳解">
+<meta property="og:url" content="https://kyosora.github.io/posts/5caa2e97/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="WebSocket通訊過程詳解 今天要跟各位分享的是WebSocket通訊的運作過程。不論是網頁開發新手,還是想深入了解網路協定的老鳥,這篇文章都能讓你對WebSocket有更全面的認識。  WebSocket是什麼? WebSocket是一種網路通訊協定,它能在瀏覽器和伺服器之間建立全雙工、雙向的通訊管道。不同於傳統的HTTP請求-回應模式,WebSocket讓瀏覽器和伺服器可以隨時互相傳送訊息">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-06-25T09:36:24.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:36:14.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="WebSocket">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/5caa2e97/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/5caa2e97/","path":"posts/5caa2e97/","title":"WebSocket通訊過程詳解"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>WebSocket通訊過程詳解 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#WebSocket%E9%80%9A%E8%A8%8A%E9%81%8E%E7%A8%8B%E8%A9%B3%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">WebSocket通訊過程詳解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#WebSocket%E6%98%AF%E4%BB%80%E9%BA%BC"><span class="nav-number">1.1.</span> <span class="nav-text">WebSocket是什麼?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WebSocket%E9%80%9A%E8%A8%8A%E9%81%8E%E7%A8%8B"><span class="nav-number">1.2.</span> <span class="nav-text">WebSocket通訊過程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BB%BA%E7%AB%8B%E9%80%A3%E7%B7%9A"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 建立連線</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BC%BA%E6%9C%8D%E5%99%A8%E5%9B%9E%E6%87%89"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 伺服器回應</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%80%A3%E7%B7%9A%E5%BB%BA%E7%AB%8B%E5%AE%8C%E6%88%90"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. 連線建立完成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E8%B3%87%E6%96%99%E5%82%B3%E8%BC%B8"><span class="nav-number">1.2.4.</span> <span class="nav-text">4. 資料傳輸</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%BF%83%E8%B7%B3%E6%A9%9F%E5%88%B6"><span class="nav-number">1.2.5.</span> <span class="nav-text">5. 心跳機制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E9%97%9C%E9%96%89%E9%80%A3%E7%B7%9A"><span class="nav-number">1.2.6.</span> <span class="nav-text">6. 關閉連線</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WebSocket%E7%9A%84%E5%84%AA%E9%BB%9E"><span class="nav-number">1.3.</span> <span class="nav-text">WebSocket的優點</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%81%A9%E7%94%A8%E5%A0%B4%E6%99%AF"><span class="nav-number">1.4.</span> <span class="nav-text">適用場景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AA%9E"><span class="nav-number">1.5.</span> <span class="nav-text">結語</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/5caa2e97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="WebSocket通訊過程詳解 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          WebSocket通訊過程詳解
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-06-25 17:36:24" itemprop="dateCreated datePublished" datetime="2024-06-25T17:36:24+08:00">2024-06-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-11-27 14:36:14" itemprop="dateModified" datetime="2024-11-27T14:36:14+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1.1k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>1 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="WebSocket通訊過程詳解"><a href="#WebSocket通訊過程詳解" class="headerlink" title="WebSocket通訊過程詳解"></a>WebSocket通訊過程詳解</h1><p>今天要跟各位分享的是WebSocket通訊的運作過程。不論是網頁開發新手,還是想深入了解網路協定的老鳥,這篇文章都能讓你對WebSocket有更全面的認識。</p>
+<h2 id="WebSocket是什麼"><a href="#WebSocket是什麼" class="headerlink" title="WebSocket是什麼?"></a>WebSocket是什麼?</h2><p>WebSocket是一種網路通訊協定,它能在瀏覽器和伺服器之間建立全雙工、雙向的通訊管道。不同於傳統的HTTP請求-回應模式,WebSocket讓瀏覽器和伺服器可以隨時互相傳送訊息,而不需要重新發起連線。</p>
+<h2 id="WebSocket通訊過程"><a href="#WebSocket通訊過程" class="headerlink" title="WebSocket通訊過程"></a>WebSocket通訊過程</h2><p>讓我們一步步來看WebSocket的通訊過程:</p>
+<h3 id="1-建立連線"><a href="#1-建立連線" class="headerlink" title="1. 建立連線"></a>1. 建立連線</h3><ol>
+<li>客戶端(通常是瀏覽器)向伺服器發送一個HTTP請求,要求升級連線為WebSocket。</li>
+<li>這個請求會包含一些特殊的標頭:<ul>
+<li><code>Upgrade: websocket</code></li>
+<li><code>Connection: Upgrade</code></li>
+<li><code>Sec-WebSocket-Key: [一個隨機生成的金鑰]</code></li>
+<li><code>Sec-WebSocket-Version: 13</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="2-伺服器回應"><a href="#2-伺服器回應" class="headerlink" title="2. 伺服器回應"></a>2. 伺服器回應</h3><ol>
+<li>如果伺服器支援WebSocket,它會回應一個HTTP 101狀態碼(Switching Protocols)。</li>
+<li>回應中也會包含特殊標頭:<ul>
+<li><code>Upgrade: websocket</code></li>
+<li><code>Connection: Upgrade</code></li>
+<li><code>Sec-WebSocket-Accept: [根據客戶端發送的金鑰計算出的值]</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="3-連線建立完成"><a href="#3-連線建立完成" class="headerlink" title="3. 連線建立完成"></a>3. 連線建立完成</h3><p>一旦客戶端收到伺服器的正確回應,WebSocket連線就建立成功了。現在,雙方可以開始互相傳送訊息。</p>
+<h3 id="4-資料傳輸"><a href="#4-資料傳輸" class="headerlink" title="4. 資料傳輸"></a>4. 資料傳輸</h3><ol>
+<li>WebSocket使用幀(Frame)來傳輸資料。每個幀都有一個小型的標頭,用來描述資料的類型和長度。</li>
+<li>資料可以是文字或二進制格式。</li>
+<li>雙方都可以隨時發送資料,不需要等待對方的回應。</li>
+</ol>
+<h3 id="5-心跳機制"><a href="#5-心跳機制" class="headerlink" title="5. 心跳機制"></a>5. 心跳機制</h3><ol>
+<li>為了保持連線活躍,WebSocket協定包含了一個心跳機制。</li>
+<li>客戶端或伺服器可以定期發送一個小型的Ping幀。</li>
+<li>接收方必須回應一個Pong幀。</li>
+</ol>
+<h3 id="6-關閉連線"><a href="#6-關閉連線" class="headerlink" title="6. 關閉連線"></a>6. 關閉連線</h3><ol>
+<li>任何一方都可以發起關閉連線的請求。</li>
+<li>發送一個帶有狀態碼的關閉幀。</li>
+<li>另一方接收到關閉幀後,也會回應一個關閉幀。</li>
+<li>雙方都發送和接收到關閉幀後,連線正式關閉。</li>
+</ol>
+<h2 id="WebSocket的優點"><a href="#WebSocket的優點" class="headerlink" title="WebSocket的優點"></a>WebSocket的優點</h2><ol>
+<li><strong>即時性</strong>: 資料可以立即傳送,不需要輪詢。</li>
+<li><strong>效能</strong>: 相較於反覆建立HTTP連線,WebSocket更節省資源。</li>
+<li><strong>雙向通訊</strong>: 伺服器可以主動向客戶端推送資料。</li>
+<li><strong>較低延遲</strong>: 一旦連線建立,資料傳輸的延遲就很低。</li>
+</ol>
+<h2 id="適用場景"><a href="#適用場景" class="headerlink" title="適用場景"></a>適用場景</h2><p>WebSocket特別適合需要即時更新的應用,例如:</p>
+<ul>
+<li>線上遊戲</li>
+<li>即時聊天室</li>
+<li>股票行情顯示器</li>
+<li>線上協作工具</li>
+</ul>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>WebSocket為網路應用帶來了新的可能性,讓我們能夠建立更即時、互動性更強的網站和應用程式。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/WebSocket/" rel="tag"># WebSocket</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/6c5d6830/" rel="prev" title="使用 NSSM 將 EXE 包裝成 Windows 服務">
+                  <i class="fa fa-angle-left"></i> 使用 NSSM 將 EXE 包裝成 Windows 服務
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/ea27f93e/" rel="next" title="防駭客必學！一次搞懂 IIS HSTS 設定，告別 HTTPS 降級攻擊">
+                  防駭客必學！一次搞懂 IIS HSTS 設定，告別 HTTPS 降級攻擊 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

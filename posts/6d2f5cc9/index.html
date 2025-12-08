@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="Windows工作排程器沒有正常運作 Windows工作排程器是我們常用的工具之一，但有時它也會給我們帶來意想不到的挑戰。今天，我想分享一個最近遇到的問題和解決方案，希望能幫助其他可能面臨類似情況的IT同仁。  問題描述 長期以來，我在設定工作排程時，總是習慣選擇&quot;不論使用者登入與否均執行&quot;這個選項。這個設置一直運作良好，直到最近我們公司開始實施定期更換密碼的政策。  上週，在完成密碼更新後，我驚">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows工作排程器沒有正常運作">
+<meta property="og:url" content="https://kyosora.github.io/posts/6d2f5cc9/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="Windows工作排程器沒有正常運作 Windows工作排程器是我們常用的工具之一，但有時它也會給我們帶來意想不到的挑戰。今天，我想分享一個最近遇到的問題和解決方案，希望能幫助其他可能面臨類似情況的IT同仁。  問題描述 長期以來，我在設定工作排程時，總是習慣選擇&quot;不論使用者登入與否均執行&quot;這個選項。這個設置一直運作良好，直到最近我們公司開始實施定期更換密碼的政策。  上週，在完成密碼更新後，我驚">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-06-06T08:58:22.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:54:18.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="工作排程器">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/6d2f5cc9/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/6d2f5cc9/","path":"posts/6d2f5cc9/","title":"Windows工作排程器沒有正常運作"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Windows工作排程器沒有正常運作 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Windows%E5%B7%A5%E4%BD%9C%E6%8E%92%E7%A8%8B%E5%99%A8%E6%B2%92%E6%9C%89%E6%AD%A3%E5%B8%B8%E9%81%8B%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">Windows工作排程器沒有正常運作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%95%8F%E9%A1%8C%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.1.</span> <span class="nav-text">問題描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E6%AD%A5%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88%E7%9A%84%E5%9B%B0%E5%A2%83"><span class="nav-number">1.2.</span> <span class="nav-text">初步解決方案的困境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8B%E6%89%BE%E6%9B%B4%E5%A5%BD%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88"><span class="nav-number">1.3.</span> <span class="nav-text">尋找更好的解決方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%AC%E8%A9%A6%E7%B5%90%E6%9E%9C"><span class="nav-number">1.4.</span> <span class="nav-text">測試結果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E7%B5%82%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88"><span class="nav-number">1.5.</span> <span class="nav-text">最終解決方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%99%E8%A8%93%E8%88%87%E5%8F%8D%E6%80%9D"><span class="nav-number">1.6.</span> <span class="nav-text">教訓與反思</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.7.</span> <span class="nav-text">結論</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/6d2f5cc9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Windows工作排程器沒有正常運作 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Windows工作排程器沒有正常運作
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-06-06 16:58:22" itemprop="dateCreated datePublished" datetime="2024-06-06T16:58:22+08:00">2024-06-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-11-27 14:54:18" itemprop="dateModified" datetime="2024-11-27T14:54:18+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E9%96%8B%E7%99%BC%E7%9B%B8%E9%97%9C/" itemprop="url" rel="index"><span itemprop="name">開發相關</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>1 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="Windows工作排程器沒有正常運作"><a href="#Windows工作排程器沒有正常運作" class="headerlink" title="Windows工作排程器沒有正常運作"></a>Windows工作排程器沒有正常運作</h1><p>Windows工作排程器是我們常用的工具之一，但有時它也會給我們帶來意想不到的挑戰。今天，我想分享一個最近遇到的問題和解決方案，希望能幫助其他可能面臨類似情況的IT同仁。</p>
+<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>長期以來，我在設定工作排程時，總是習慣選擇&quot;不論使用者登入與否均執行&quot;這個選項。這個設置一直運作良好，直到最近我們公司開始實施定期更換密碼的政策。</p>
+<p>上週，在完成密碼更新後，我驚訝地發現所有的排程任務都無法正常運行了。經過仔細檢查，我才意識到問題所在：更改密碼後，工作排程器要求重新輸入密碼，否則排程任務就會失效。</p>
+<h2 id="初步解決方案的困境"><a href="#初步解決方案的困境" class="headerlink" title="初步解決方案的困境"></a>初步解決方案的困境</h2><p>起初，這個問題看起來簡單：每次更改密碼後，只需要重新輸入新密碼就可以了。但是，考慮到我們管理的任務數量和更改密碼的頻率，這個解決方案顯然不夠理想。頻繁地手動更新每個任務的密碼不僅耗時，還容易出錯。</p>
+<h2 id="尋找更好的解決方案"><a href="#尋找更好的解決方案" class="headerlink" title="尋找更好的解決方案"></a>尋找更好的解決方案</h2><p>為了找到一個更有效的方法，我開始研究工作排程器的其他選項。特別引起我注意的是&quot;不要儲存密碼。工作將只有本機資源的存取權&quot;這個選項。</p>
+<p>最初，我擔心選擇這個選項會導致所有需要網路訪問的任務失效。然而，經過實際測試，我發現情況並非如此糟糕。</p>
+<h2 id="測試結果"><a href="#測試結果" class="headerlink" title="測試結果"></a>測試結果</h2><p>通過實際測試，我得出了以下結論：</p>
+<ol>
+<li>大多數本地任務都能正常運行。</li>
+<li>需要訪問網路共享或網路磁碟機的任務確實受到了影響，無法正常執行。</li>
+<li>令人驚喜的是，其他形式的網路操作（如發送郵件、訪問網站等）仍然可以正常工作。</li>
+</ol>
+<h2 id="最終解決方案"><a href="#最終解決方案" class="headerlink" title="最終解決方案"></a>最終解決方案</h2><p>基於測試結果，我決定採用以下策略：</p>
+<ol>
+<li>對於不需要訪問網路共享的任務，使用&quot;不要儲存密碼&quot;的選項。這樣，即使更改了密碼，這些任務也能繼續正常運行。</li>
+<li>對於需要訪問網路共享的少數任務，保留原來的設置，在更改密碼後手動更新。</li>
+</ol>
+<p>這個解決方案大大減少了密碼更改後需要手動干預的任務數量，節省了大量時間和精力。</p>
+<h2 id="教訓與反思"><a href="#教訓與反思" class="headerlink" title="教訓與反思"></a>教訓與反思</h2><p>這次經歷讓我意識到：</p>
+<ol>
+<li>在IT管理中，我們常常會形成一些習慣性的做法，但這些做法可能並非總是最優的。</li>
+<li>定期審視和優化我們的流程是非常必要的，特別是在面對新的安全政策或環境變化時。</li>
+<li>在尋找解決方案時，不要害怕嘗試新的選項。有時，我們擔心的問題可能並不如想象中嚴重。</li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>通過這次經驗，我不僅解決了一個棘手的問題，還優化了我們的工作流程。希望這個經驗分享能對其他IT管理員有所幫助。記住，在IT的世界裡，問題往往會帶來學習和改進的機會。保持好奇心和探索精神，我們總能找到更好的解決方案。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%B7%A5%E4%BD%9C%E6%8E%92%E7%A8%8B%E5%99%A8/" rel="tag"># 工作排程器</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/7d99f85e/" rel="prev" title="在 SQL Server 中尋找忘記的欄位位置">
+                  <i class="fa fa-angle-left"></i> 在 SQL Server 中尋找忘記的欄位位置
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/9e294297/" rel="next" title="CSS 偽元素指南">
+                  CSS 偽元素指南 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

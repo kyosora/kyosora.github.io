@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="【實用教學】如何優雅地整理數千筆瀏覽器書籤！Python + JavaScript 完整解決方案 你是否也有瀏覽器書籤雜亂無章的困擾？資料夾一層又一層，想找個網站卻要翻找半天？本文將分享一個實用的書籤整理方法，讓你輕鬆管理數千筆書籤！  問題背景 在日常使用瀏覽器的過程中，我們常常會儲存各種有用的網頁。隨著時間推移，書籤數量暴增，資料夾結構也越來越複雜。就像我遇到的情況：   * 4,000+ 筆">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【實用教學】如何優雅地整理數千筆瀏覽器書籤！Python + JavaScript 完整解決方案">
+<meta property="og:url" content="https://kyosora.github.io/posts/4a4ae244/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="【實用教學】如何優雅地整理數千筆瀏覽器書籤！Python + JavaScript 完整解決方案 你是否也有瀏覽器書籤雜亂無章的困擾？資料夾一層又一層，想找個網站卻要翻找半天？本文將分享一個實用的書籤整理方法，讓你輕鬆管理數千筆書籤！  問題背景 在日常使用瀏覽器的過程中，我們常常會儲存各種有用的網頁。隨著時間推移，書籤數量暴增，資料夾結構也越來越複雜。就像我遇到的情況：   * 4,000+ 筆">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-11-26T08:44:43.000Z">
+<meta property="article:modified_time" content="2024-12-10T02:23:16.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="書籤管理">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/4a4ae244/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/4a4ae244/","path":"posts/4a4ae244/","title":"【實用教學】如何優雅地整理數千筆瀏覽器書籤！Python + JavaScript 完整解決方案"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>【實用教學】如何優雅地整理數千筆瀏覽器書籤！Python + JavaScript 完整解決方案 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E3%80%90%E5%AF%A6%E7%94%A8%E6%95%99%E5%AD%B8%E3%80%91%E5%A6%82%E4%BD%95%E5%84%AA%E9%9B%85%E5%9C%B0%E6%95%B4%E7%90%86%E6%95%B8%E5%8D%83%E7%AD%86%E7%80%8F%E8%A6%BD%E5%99%A8%E6%9B%B8%E7%B1%A4%EF%BC%81Python-JavaScript-%E5%AE%8C%E6%95%B4%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88"><span class="nav-number">1.</span> <span class="nav-text">【實用教學】如何優雅地整理數千筆瀏覽器書籤！Python + JavaScript 完整解決方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%95%8F%E9%A1%8C%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">問題背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88%E6%A6%82%E8%BF%B0"><span class="nav-number">1.2.</span> <span class="nav-text">解決方案概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A9%B3%E7%B4%B0%E6%AD%A5%E9%A9%9F%E8%AA%AA%E6%98%8E"><span class="nav-number">1.3.</span> <span class="nav-text">詳細步驟說明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%8C%AF%E5%87%BA%E6%9B%B8%E7%B1%A4"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 匯出書籤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Python-%E7%A8%8B%E5%BC%8F%E8%99%95%E7%90%86"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. Python 程式處理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%87%8D%E6%96%B0%E5%8C%AF%E5%85%A5%E7%80%8F%E8%A6%BD%E5%99%A8"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 重新匯入瀏覽器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BD%BF%E7%94%A8-Bookmarks-clean-up-%E5%B0%8B%E6%89%BE%E9%87%8D%E8%A4%87"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 使用 Bookmarks clean up 尋找重複</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-JavaScript-%E6%89%B9%E6%AC%A1%E8%99%95%E7%90%86"><span class="nav-number">1.3.5.</span> <span class="nav-text">5. JavaScript 批次處理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E7%94%A8%E6%93%B4%E5%85%85%E6%8E%A8%E8%96%A6"><span class="nav-number">1.4.</span> <span class="nav-text">實用擴充推薦</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B8%E7%B1%A4%E7%AE%A1%E7%90%86%E5%BF%85%E5%82%99%E6%93%B4%E5%85%85%E5%8A%9F%E8%83%BD"><span class="nav-number">1.4.1.</span> <span class="nav-text">書籤管理必備擴充功能</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E7%94%A8%E5%BB%BA%E8%AD%B0"><span class="nav-number">1.5.</span> <span class="nav-text">實用建議</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AA%9E"><span class="nav-number">1.6.</span> <span class="nav-text">結語</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/4a4ae244/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="【實用教學】如何優雅地整理數千筆瀏覽器書籤！Python + JavaScript 完整解決方案 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【實用教學】如何優雅地整理數千筆瀏覽器書籤！Python + JavaScript 完整解決方案
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-11-26 16:44:43" itemprop="dateCreated datePublished" datetime="2024-11-26T16:44:43+08:00">2024-11-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-12-10 10:23:16" itemprop="dateModified" datetime="2024-12-10T10:23:16+08:00">2024-12-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AF%A6%E7%94%A8%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">實用教學</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>3.6k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>3 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="【實用教學】如何優雅地整理數千筆瀏覽器書籤！Python-JavaScript-完整解決方案"><a href="#【實用教學】如何優雅地整理數千筆瀏覽器書籤！Python-JavaScript-完整解決方案" class="headerlink" title="【實用教學】如何優雅地整理數千筆瀏覽器書籤！Python + JavaScript 完整解決方案"></a>【實用教學】如何優雅地整理數千筆瀏覽器書籤！Python + JavaScript 完整解決方案</h1><p>你是否也有瀏覽器書籤雜亂無章的困擾？資料夾一層又一層，想找個網站卻要翻找半天？本文將分享一個實用的書籤整理方法，讓你輕鬆管理數千筆書籤！</p>
+<h2 id="問題背景"><a href="#問題背景" class="headerlink" title="問題背景"></a>問題背景</h2><p>在日常使用瀏覽器的過程中，我們常常會儲存各種有用的網頁。隨著時間推移，書籤數量暴增，資料夾結構也越來越複雜。就像我遇到的情況：</p>
+<ul>
+<li>4,000+ 筆書籤</li>
+<li>400+ 個資料夾</li>
+<li>多層巢狀結構</li>
+<li>找尋特定書籤耗時費力</li>
+</ul>
+<h2 id="解決方案概述"><a href="#解決方案概述" class="headerlink" title="解決方案概述"></a>解決方案概述</h2><p>為了徹底解決這個問題，我設計了一個完整的書籤整理流程：</p>
+<ol>
+<li>匯出所有書籤</li>
+<li>使用 Python 程式將書籤結構扁平化</li>
+<li>重新匯入瀏覽器</li>
+<li>使用擴充功能找出重複書籤</li>
+<li>透過 JavaScript 批次處理重複項目</li>
+</ol>
+<h2 id="詳細步驟說明"><a href="#詳細步驟說明" class="headerlink" title="詳細步驟說明"></a>詳細步驟說明</h2><h3 id="1-匯出書籤"><a href="#1-匯出書籤" class="headerlink" title="1. 匯出書籤"></a>1. 匯出書籤</h3><p>首先，需要將瀏覽器中的所有書籤匯出為 HTML 檔案。這個檔案包含了所有書籤的資訊，包括網址、標題、加入時間等。</p>
+<h3 id="2-Python-程式處理"><a href="#2-Python-程式處理" class="headerlink" title="2. Python 程式處理"></a>2. Python 程式處理</h3><p>使用 Python 的 BeautifulSoup 套件來處理 HTML 檔案，將所有書籤移到同一層級：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">process_bookmarks</span>(<span class="params">html_content</span>):</span><br><span class="line">    <span class="comment"># 解析 HTML 內容</span></span><br><span class="line">    soup = BeautifulSoup(html_content, <span class="string">&#x27;html.parser&#x27;</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 找出所有書籤項目</span></span><br><span class="line">    bookmarks = soup.find_all(<span class="string">&#x27;a&#x27;</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 創建新的 HTML 結構</span></span><br><span class="line">    <span class="comment"># 這個結構符合瀏覽器書籤檔案的標準格式</span></span><br><span class="line">    new_html = <span class="string">&quot;&quot;&quot;&lt;!DOCTYPE NETSCAPE-Bookmark-file-1&gt;</span></span><br><span class="line"><span class="string">&lt;!-- This is an automatically generated file.</span></span><br><span class="line"><span class="string">     It will be read and overwritten.</span></span><br><span class="line"><span class="string">     DO NOT EDIT! --&gt;</span></span><br><span class="line"><span class="string">&lt;META HTTP-EQUIV=&quot;Content-Type&quot; CONTENT=&quot;text/html; charset=UTF-8&quot;&gt;</span></span><br><span class="line"><span class="string">&lt;TITLE&gt;Bookmarks&lt;/TITLE&gt;</span></span><br><span class="line"><span class="string">&lt;H1&gt;Bookmarks&lt;/H1&gt;</span></span><br><span class="line"><span class="string">&lt;DL&gt;&lt;p&gt;</span></span><br><span class="line"><span class="string">    &lt;DT&gt;&lt;H3 ADD_DATE=&quot;1685050416&quot; LAST_MODIFIED=&quot;1732586801&quot; PERSONAL_TOOLBAR_FOLDER=&quot;true&quot;&gt;書籤列&lt;/H3&gt;</span></span><br><span class="line"><span class="string">    &lt;DL&gt;&lt;p&gt;&quot;&quot;&quot;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 將所有書籤新增到頂層</span></span><br><span class="line">    <span class="keyword">for</span> bookmark <span class="keyword">in</span> bookmarks:</span><br><span class="line">        bookmark_html = <span class="built_in">str</span>(bookmark)</span><br><span class="line">        <span class="keyword">if</span> bookmark_html.strip():</span><br><span class="line">            new_html += <span class="string">f&quot;        &lt;DT&gt;<span class="subst">&#123;bookmark_html&#125;</span>&lt;/DT&gt;\n&quot;</span></span><br><span class="line">            </span><br><span class="line">    <span class="comment"># 關閉 HTML 結構</span></span><br><span class="line">    new_html += <span class="string">&quot;&quot;&quot;    &lt;/DL&gt;&lt;p&gt;</span></span><br><span class="line"><span class="string">&lt;/DL&gt;&lt;p&gt;&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> new_html</span><br><span class="line"></span><br><span class="line"><span class="comment"># 讀取書籤檔案</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;D:/paste.txt&#x27;</span>, <span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    content = f.read()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;讀取到的內容長度:&quot;</span>, <span class="built_in">len</span>(content))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;內容的前100個字元:&quot;</span>, content[:<span class="number">100</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 處理並保存結果</span></span><br><span class="line">processed_html = process_bookmarks(content)</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;bookmarks_flattened.html&#x27;</span>, <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    f.write(processed_html)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;已處理完整內容並保存。&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-重新匯入瀏覽器"><a href="#3-重新匯入瀏覽器" class="headerlink" title="3. 重新匯入瀏覽器"></a>3. 重新匯入瀏覽器</h3><p>將處理後的 <code>bookmarks_flattened.html</code> 檔案重新匯入瀏覽器。這時候所有書籤都會在同一層級，方便後續整理。</p>
+<h3 id="4-使用-Bookmarks-clean-up-尋找重複"><a href="#4-使用-Bookmarks-clean-up-尋找重複" class="headerlink" title="4. 使用 Bookmarks clean up 尋找重複"></a>4. 使用 Bookmarks clean up 尋找重複</h3><p>安裝 Bookmarks clean up 擴充功能後，可以自動找出重複的書籤。但是這個工具沒有批次處理功能，如果重複項目很多（像是超過 2,000 個），一個個點選會非常耗時。</p>
+<h3 id="5-JavaScript-批次處理"><a href="#5-JavaScript-批次處理" class="headerlink" title="5. JavaScript 批次處理"></a>5. JavaScript 批次處理</h3><p>使用以下 JavaScript 程式碼來自動選取要刪除的重複書籤：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 自動選取重複的書籤</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">checkDuplicateBookmarks</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="comment">// 取得所有 folder-url 的連結</span></span><br><span class="line">    <span class="keyword">const</span> folderUrls = <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.folder-url&#x27;</span>);</span><br><span class="line">    <span class="keyword">let</span> count = <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 過濾出目標項目（包含特定路徑的書籤）</span></span><br><span class="line">    <span class="keyword">const</span> targetUrls = <span class="title class_">Array</span>.<span class="title function_">from</span>(folderUrls).<span class="title function_">filter</span>(<span class="function"><span class="params">url</span> =&gt;</span> </span><br><span class="line">        url.<span class="property">textContent</span>.<span class="title function_">includes</span>(<span class="string">&#x27;//書籤列/已匯入&#x27;</span>)</span><br><span class="line">    );</span><br><span class="line">    </span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`找到 <span class="subst">$&#123;targetUrls.length&#125;</span> 個項目需要處理`</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 依序處理每個項目</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> url <span class="keyword">of</span> targetUrls) &#123;</span><br><span class="line">        <span class="comment">// 找到對應的 checkbox</span></span><br><span class="line">        <span class="keyword">const</span> listItem = url.<span class="title function_">closest</span>(<span class="string">&#x27;.list-group-item&#x27;</span>);</span><br><span class="line">        <span class="keyword">const</span> checkbox = listItem.<span class="title function_">querySelector</span>(<span class="string">&#x27;input[type=&quot;checkbox&quot;]&#x27;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (checkbox) &#123;</span><br><span class="line">            <span class="comment">// 模擬點擊事件</span></span><br><span class="line">            <span class="keyword">const</span> clickEvent = <span class="keyword">new</span> <span class="title class_">MouseEvent</span>(<span class="string">&#x27;click&#x27;</span>, &#123;</span><br><span class="line">                <span class="attr">bubbles</span>: <span class="literal">true</span>,</span><br><span class="line">                <span class="attr">cancelable</span>: <span class="literal">true</span>,</span><br><span class="line">                <span class="attr">view</span>: <span class="variable language_">window</span></span><br><span class="line">            &#125;);</span><br><span class="line">            </span><br><span class="line">            checkbox.<span class="title function_">dispatchEvent</span>(clickEvent);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 更新進度</span></span><br><span class="line">            count++;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`已處理 <span class="subst">$&#123;count&#125;</span>/<span class="subst">$&#123;targetUrls.length&#125;</span> 個項目`</span>);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 添加延遲避免處理過快</span></span><br><span class="line">            <span class="keyword">await</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> <span class="built_in">setTimeout</span>(resolve, <span class="number">100</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;處理完成！&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 執行函式</span></span><br><span class="line"><span class="title function_">checkDuplicateBookmarks</span>().<span class="title function_">catch</span>(<span class="variable language_">console</span>.<span class="property">error</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="實用擴充推薦"><a href="#實用擴充推薦" class="headerlink" title="實用擴充推薦"></a>實用擴充推薦</h2><h3 id="書籤管理必備擴充功能"><a href="#書籤管理必備擴充功能" class="headerlink" title="書籤管理必備擴充功能"></a>書籤管理必備擴充功能</h3><ol>
+<li><p><strong>Bookmarks clean up</strong></p>
+<ul>
+<li>功能：自動找出重複書籤、尋找有問題連結、刪除空資料夾、合併資料夾</li>
+<li>特色：支援多種比對模式</li>
+<li>使用時機：大規模書籤整理</li>
+</ul>
+</li>
+<li><p><strong>Sprucemarks</strong></p>
+<ul>
+<li>功能：自動排序書籤</li>
+<li>特色：<ul>
+<li>依照名稱、日期、網域等條件排序</li>
+<li>支援資料夾內部排序</li>
+<li>一鍵完成所有排序</li>
+</ul>
+</li>
+<li>使用時機：整理完書籤後，讓它們保持有序</li>
+</ul>
+</li>
+<li><p><strong>TAB SORTER</strong></p>
+<ul>
+<li>功能：分頁智慧排序</li>
+<li>特色：<ul>
+<li>依照網域、標題、使用時間等條件排序</li>
+<li>支援自動分組</li>
+<li>快速尋找重複分頁</li>
+</ul>
+</li>
+<li>使用時機：開啟大量分頁時，讓瀏覽更有條理</li>
+</ul>
+</li>
+</ol>
+<h2 id="實用建議"><a href="#實用建議" class="headerlink" title="實用建議"></a>實用建議</h2><ol>
+<li><p><strong>定期整理</strong>：建議每 3-6 個月進行一次書籤整理，避免堆積過多。</p>
+</li>
+<li><p><strong>資料夾結構</strong>：</p>
+<ul>
+<li>建立主要分類（如：工作、學習、娛樂）</li>
+<li>控制資料夾層級在 2-3 層內</li>
+<li>善用標籤功能代替過多資料夾</li>
+</ul>
+</li>
+<li><p><strong>管理策略</strong>：</p>
+<ul>
+<li>使用 Sprucemarks 定期排序書籤</li>
+<li>搭配 TAB SORTER 管理開啟的分頁</li>
+<li>定期使用 Bookmarks clean up 清理重複項目</li>
+</ul>
+</li>
+</ol>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>透過這套整理流程，再配合推薦的擴充功能，我們可以將雜亂的書籤變得井井有條。這不僅節省了尋找資料的時間，也讓書籤真正發揮它的價值。特別是 Sprucemarks 和 TAB SORTER 這樣的工具，能讓我們的瀏覽器使用體驗更加順暢。希望這篇文章能幫助到同樣有書籤管理困擾的朋友！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9B%B8%E7%B1%A4%E7%AE%A1%E7%90%86/" rel="tag"># 書籤管理</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/c371d411/" rel="prev" title="IIS 網站突然狂丟403錯誤！原來是安全性設定在搞鬼">
+                  <i class="fa fa-angle-left"></i> IIS 網站突然狂丟403錯誤！原來是安全性設定在搞鬼
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/8a3be9f2/" rel="next" title="IISCrypto - 資安弱掃的救星！一鍵搞定 TLS 設定">
+                  IISCrypto - 資安弱掃的救星！一鍵搞定 TLS 設定 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

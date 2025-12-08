@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="使用 Python 和 FFmpeg 打造簡易視頻轉換器 今天我要跟各位分享一個有趣的小專案 - 使用 Python 和 FFmpeg 製作的簡易視頻轉換器。這個應用程式不僅實用，還能讓我們學習到如何結合 Python 的圖形使用者介面（GUI）與強大的視頻處理工具。  專案概述  這個視頻轉換器具有以下特點：   1. 簡潔的圖形使用者介面  2. 可以選擇輸入檔案和指定輸出檔案  3. 使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Python 和 FFmpeg 打造簡易視頻轉換器">
+<meta property="og:url" content="https://kyosora.github.io/posts/8df7e6a/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="使用 Python 和 FFmpeg 打造簡易視頻轉換器 今天我要跟各位分享一個有趣的小專案 - 使用 Python 和 FFmpeg 製作的簡易視頻轉換器。這個應用程式不僅實用，還能讓我們學習到如何結合 Python 的圖形使用者介面（GUI）與強大的視頻處理工具。  專案概述  這個視頻轉換器具有以下特點：   1. 簡潔的圖形使用者介面  2. 可以選擇輸入檔案和指定輸出檔案  3. 使用">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/posts/8df7e6a/20240926060101745.png">
+<meta property="article:published_time" content="2024-09-26T09:56:07.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:15:10.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="FFmpeg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kyosora.github.io/posts/8df7e6a/20240926060101745.png">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/8df7e6a/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/8df7e6a/","path":"posts/8df7e6a/","title":"使用 Python 和 FFmpeg 打造簡易視頻轉換器"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>使用 Python 和 FFmpeg 打造簡易視頻轉換器 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-Python-%E5%92%8C-FFmpeg-%E6%89%93%E9%80%A0%E7%B0%A1%E6%98%93%E8%A6%96%E9%A0%BB%E8%BD%89%E6%8F%9B%E5%99%A8"><span class="nav-number">1.</span> <span class="nav-text">使用 Python 和 FFmpeg 打造簡易視頻轉換器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%88%E6%A1%88%E6%A6%82%E8%BF%B0"><span class="nav-number">1.1.</span> <span class="nav-text">專案概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%9A%84%E6%8A%80%E8%A1%93"><span class="nav-number">1.2.</span> <span class="nav-text">使用的技術</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%8B%E5%BC%8F%E7%A2%BC%E8%A7%A3%E6%9E%90"><span class="nav-number">1.3.</span> <span class="nav-text">程式碼解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8"><span class="nav-number">1.4.</span> <span class="nav-text">如何使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85"><span class="nav-number">1.5.</span> <span class="nav-text">注意事項</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AA%9E"><span class="nav-number">1.6.</span> <span class="nav-text">結語</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/8df7e6a/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="使用 Python 和 FFmpeg 打造簡易視頻轉換器 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用 Python 和 FFmpeg 打造簡易視頻轉換器
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-09-26 17:56:07" itemprop="dateCreated datePublished" datetime="2024-09-26T17:56:07+08:00">2024-09-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-11-27 14:15:10" itemprop="dateModified" datetime="2024-11-27T14:15:10+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%A8%8B%E5%BC%8F%E9%96%8B%E7%99%BC/" itemprop="url" rel="index"><span itemprop="name">程式開發</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.3k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="使用-Python-和-FFmpeg-打造簡易視頻轉換器"><a href="#使用-Python-和-FFmpeg-打造簡易視頻轉換器" class="headerlink" title="使用 Python 和 FFmpeg 打造簡易視頻轉換器"></a>使用 Python 和 FFmpeg 打造簡易視頻轉換器</h1><p>今天我要跟各位分享一個有趣的小專案 - 使用 Python 和 FFmpeg 製作的簡易視頻轉換器。這個應用程式不僅實用，還能讓我們學習到如何結合 Python 的圖形使用者介面（GUI）與強大的視頻處理工具。</p>
+<h2 id="專案概述"><a href="#專案概述" class="headerlink" title="專案概述"></a>專案概述</h2><p><img src="20240926060101745.png"><br>這個視頻轉換器具有以下特點：</p>
+<ol>
+<li>簡潔的圖形使用者介面</li>
+<li>可以選擇輸入檔案和指定輸出檔案</li>
+<li>使用 FFmpeg 進行視頻轉換</li>
+<li>顯示轉換狀態和錯誤訊息</li>
+</ol>
+<h2 id="使用的技術"><a href="#使用的技術" class="headerlink" title="使用的技術"></a>使用的技術</h2><ul>
+<li>Python：程式的主要語言</li>
+<li>tkinter：Python 的標準 GUI 函式庫</li>
+<li>ffmpeg-python：FFmpeg 的 Python 綁定，用於視頻處理</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 導入必要的模組</span></span><br><span class="line"><span class="keyword">import</span> ffmpeg  <span class="comment"># 用於處理視頻轉換</span></span><br><span class="line"><span class="keyword">import</span> tkinter <span class="keyword">as</span> tk  <span class="comment"># 用於創建圖形使用者介面 (GUI)</span></span><br><span class="line"><span class="keyword">from</span> tkinter <span class="keyword">import</span> filedialog, messagebox  <span class="comment"># 用於檔案選擇和顯示訊息框</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 定義選擇檔案的函數</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">select_file</span>():</span><br><span class="line">    <span class="comment"># 開啟檔案選擇對話框</span></span><br><span class="line">    filename = filedialog.askopenfilename()</span><br><span class="line">    <span class="comment"># 清除輸入框的現有內容</span></span><br><span class="line">    input_entry.delete(<span class="number">0</span>, tk.END)</span><br><span class="line">    <span class="comment"># 將選擇的檔案路徑插入輸入框</span></span><br><span class="line">    input_entry.insert(<span class="number">0</span>, filename)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定義視頻轉換的函數</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">convert_video</span>():</span><br><span class="line">    <span class="comment"># 獲取輸入和輸出檔案路徑</span></span><br><span class="line">    input_file = input_entry.get()</span><br><span class="line">    output_file = output_entry.get()</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="comment"># 讀取輸入檔案</span></span><br><span class="line">        stream = ffmpeg.<span class="built_in">input</span>(input_file)</span><br><span class="line">        <span class="comment"># 設置輸出參數（這裡使用預設參數）</span></span><br><span class="line">        stream = ffmpeg.output(stream, output_file)</span><br><span class="line">        <span class="comment"># 執行 FFmpeg 指令</span></span><br><span class="line">        ffmpeg.run(stream)</span><br><span class="line">        <span class="comment"># 更新狀態標籤，顯示成功訊息</span></span><br><span class="line">        status_label.config(text=<span class="string">&quot;轉換成功!&quot;</span>)</span><br><span class="line">    <span class="keyword">except</span> ffmpeg.Error <span class="keyword">as</span> e:</span><br><span class="line">        <span class="comment"># 如果發生錯誤，更新狀態標籤顯示錯誤訊息</span></span><br><span class="line">        status_label.config(text=<span class="string">&quot;轉換失敗。錯誤: &quot;</span> + <span class="built_in">str</span>(e))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 創建主視窗</span></span><br><span class="line">root = tk.Tk()</span><br><span class="line">root.title(<span class="string">&quot;視頻轉換器 (使用 ffmpeg-python)&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 創建和放置控制項</span></span><br><span class="line"><span class="comment"># 輸入檔案部分</span></span><br><span class="line">tk.Label(root, text=<span class="string">&quot;輸入檔案:&quot;</span>).grid(row=<span class="number">0</span>, column=<span class="number">0</span>, sticky=<span class="string">&quot;e&quot;</span>)</span><br><span class="line">input_entry = tk.Entry(root, width=<span class="number">50</span>)</span><br><span class="line">input_entry.grid(row=<span class="number">0</span>, column=<span class="number">1</span>)</span><br><span class="line">tk.Button(root, text=<span class="string">&quot;瀏覽&quot;</span>, command=select_file).grid(row=<span class="number">0</span>, column=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 輸出檔案部分</span></span><br><span class="line">tk.Label(root, text=<span class="string">&quot;輸出檔案:&quot;</span>).grid(row=<span class="number">1</span>, column=<span class="number">0</span>, sticky=<span class="string">&quot;e&quot;</span>)</span><br><span class="line">output_entry = tk.Entry(root, width=<span class="number">50</span>)</span><br><span class="line">output_entry.grid(row=<span class="number">1</span>, column=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 轉換按鈕</span></span><br><span class="line">convert_button = tk.Button(root, text=<span class="string">&quot;轉換&quot;</span>, command=convert_video)</span><br><span class="line">convert_button.grid(row=<span class="number">2</span>, column=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 狀態標籤</span></span><br><span class="line">status_label = tk.Label(root, text=<span class="string">&quot;&quot;</span>)</span><br><span class="line">status_label.grid(row=<span class="number">3</span>, column=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 啟動主循環</span></span><br><span class="line">root.mainloop()</span><br></pre></td></tr></table></figure>
+<h2 id="程式碼解析"><a href="#程式碼解析" class="headerlink" title="程式碼解析"></a>程式碼解析</h2><p>讓我們來看看這個應用程式的主要組成部分：</p>
+<ol>
+<li>導入必要模組：<br>我們導入了 ffmpeg、tkinter 以及 filedialog 和 messagebox。這些模組分別用於視頻處理、創建 GUI 和處理檔案選擇。</li>
+<li>檔案選擇功能：<br>select_file() 函數使用 filedialog.askopenfilename() 來開啟檔案選擇對話框，讓使用者可以輕鬆選擇要轉換的視頻檔案。</li>
+<li>視頻轉換功能：<br>convert_video() 函數是這個應用程式的核心。它使用 ffmpeg-python 來讀取輸入檔案、設定輸出參數並執行轉換。如果轉換成功，會顯示成功訊息；如果失敗，則顯示錯誤訊息。</li>
+<li>創建 GUI：<br>我們使用 tkinter 創建了一個簡單的視窗，包含輸入檔案和輸出檔案的輸入框、瀏覽按鈕、轉換按鈕和狀態標籤。</li>
+</ol>
+<h2 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h2><ol>
+<li>啟動應用程式後，你會看到一個簡單的視窗。</li>
+<li>點擊「瀏覽」按鈕選擇要轉換的視頻檔案。</li>
+<li>在「輸出檔案」欄位中輸入想要的輸出檔案名稱（記得加上副檔名）。</li>
+<li>點擊「轉換」按鈕開始轉換過程。</li>
+<li>轉換完成後，狀態標籤會顯示成功或失敗的訊息。</li>
+</ol>
+<h2 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h2><p>請確保你的系統上已安裝 FFmpeg。<br>這個程式使用了 FFmpeg 的預設參數進行轉換。如果你需要更多自訂選項，可以修改 convert_video() 函數中的 ffmpeg.output() 部分。</p>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>這個簡單的視頻轉換器展示了如何將強大的命令列工具（FFmpeg）與用戶友善的圖形介面結合。雖然這只是一個基礎版本，但你可以根據自己的需求進行擴展，例如增加更多的轉換選項、支援批次處理等。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Python/" rel="tag"># Python</a>
+              <a href="/tags/FFmpeg/" rel="tag"># FFmpeg</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/860c1b9/" rel="prev" title="如何快速刪除包含數百萬文件的資料夾：Windows 批次檔案解決方案">
+                  <i class="fa fa-angle-left"></i> 如何快速刪除包含數百萬文件的資料夾：Windows 批次檔案解決方案
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/f84b91fe/" rel="next" title="SQL優化：處理百萬級資料表的結構修改">
+                  SQL優化：處理百萬級資料表的結構修改 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

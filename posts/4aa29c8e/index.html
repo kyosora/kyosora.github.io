@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content=".NET Core 中的中間件（Middleware）詳解 什麼是中間件？ 在 .NET Core 應用程序中，中間件是一系列組件，它們形成了一個請求處理管道。每個中間件都可以:   1. 處理傳入的 HTTP 請求  2. 處理傳出的 HTTP 響應  3. 呼叫管道中的下一個中間件  4. 在管道中的下一個中間件完成處理後執行某些操作  中間件的概念類似於一條組裝線，每個工人（中間件）都對產品">
+<meta property="og:type" content="article">
+<meta property="og:title" content=".NET Core 中的中間件（Middleware）">
+<meta property="og:url" content="https://kyosora.github.io/posts/4aa29c8e/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content=".NET Core 中的中間件（Middleware）詳解 什麼是中間件？ 在 .NET Core 應用程序中，中間件是一系列組件，它們形成了一個請求處理管道。每個中間件都可以:   1. 處理傳入的 HTTP 請求  2. 處理傳出的 HTTP 響應  3. 呼叫管道中的下一個中間件  4. 在管道中的下一個中間件完成處理後執行某些操作  中間件的概念類似於一條組裝線，每個工人（中間件）都對產品">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-04-10T08:33:08.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:51:28.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Net">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/4aa29c8e/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/4aa29c8e/","path":"posts/4aa29c8e/","title":".NET Core 中的中間件（Middleware）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>.NET Core 中的中間件（Middleware） | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#NET-Core-%E4%B8%AD%E7%9A%84%E4%B8%AD%E9%96%93%E4%BB%B6%EF%BC%88Middleware%EF%BC%89%E8%A9%B3%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">.NET Core 中的中間件（Middleware）詳解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AF%E4%B8%AD%E9%96%93%E4%BB%B6%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">什麼是中間件？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AD%E9%96%93%E4%BB%B6%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">1.2.</span> <span class="nav-text">中間件的工作原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A6%8B%E7%9A%84%E4%B8%AD%E9%96%93%E4%BB%B6"><span class="nav-number">1.3.</span> <span class="nav-text">常見的中間件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%E4%B8%AD%E9%96%93%E4%BB%B6"><span class="nav-number">1.4.</span> <span class="nav-text">如何使用中間件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E7%BE%A9%E4%B8%AD%E9%96%93%E4%BB%B6"><span class="nav-number">1.5.</span> <span class="nav-text">自定義中間件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.6.</span> <span class="nav-text">結論</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/4aa29c8e/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=".NET Core 中的中間件（Middleware） | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          .NET Core 中的中間件（Middleware）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-04-10 16:33:08" itemprop="dateCreated datePublished" datetime="2024-04-10T16:33:08+08:00">2024-04-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-11-27 14:51:28" itemprop="dateModified" datetime="2024-11-27T14:51:28+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1.8k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="NET-Core-中的中間件（Middleware）詳解"><a href="#NET-Core-中的中間件（Middleware）詳解" class="headerlink" title=".NET Core 中的中間件（Middleware）詳解"></a>.NET Core 中的中間件（Middleware）詳解</h1><h2 id="什麼是中間件？"><a href="#什麼是中間件？" class="headerlink" title="什麼是中間件？"></a>什麼是中間件？</h2><p>在 .NET Core 應用程序中，中間件是一系列組件，它們形成了一個請求處理管道。每個中間件都可以:</p>
+<ol>
+<li>處理傳入的 HTTP 請求</li>
+<li>處理傳出的 HTTP 響應</li>
+<li>呼叫管道中的下一個中間件</li>
+<li>在管道中的下一個中間件完成處理後執行某些操作</li>
+</ol>
+<p>中間件的概念類似於一條組裝線，每個工人（中間件）都對產品（請求/響應）進行某些操作。</p>
+<h2 id="中間件的工作原理"><a href="#中間件的工作原理" class="headerlink" title="中間件的工作原理"></a>中間件的工作原理</h2><p>中間件在 .NET Core 應用程序中按照特定的順序執行。這個順序很重要，因為它決定了哪個中間件先處理請求，以及響應如何被處理。</p>
+<p>工作流程如下：</p>
+<ol>
+<li>當應用程序接收到 HTTP 請求時，請求進入中間件管道。</li>
+<li>每個中間件組件可以:<ul>
+<li>執行一些操作</li>
+<li>將請求傳遞給下一個中間件</li>
+<li>或者短路請求（不再傳遞給後續中間件）</li>
+</ul>
+</li>
+<li>一旦請求到達管道的末端，它會開始返回。</li>
+<li>響應會再次通過所有中間件，讓每個中間件有機會處理或修改響應。</li>
+</ol>
+<p>這個過程可以用下面的示意圖來表示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Request → Middleware 1 → Middleware 2 → Middleware 3 → Application Logic</span><br><span class="line">Response ← Middleware 1 ← Middleware 2 ← Middleware 3 ← Application Logic</span><br></pre></td></tr></table></figure>
+
+<h2 id="常見的中間件"><a href="#常見的中間件" class="headerlink" title="常見的中間件"></a>常見的中間件</h2><p>.NET Core 提供了許多內建的中間件，以下是一些常見的例子：</p>
+<ol>
+<li><p><strong>認證中間件</strong>: 處理用戶認證，確保只有授權的用戶可以訪問某些資源。</p>
+</li>
+<li><p><strong>CORS中間件</strong>: 處理跨源資源共享（CORS），允許或限制來自不同域的請求。</p>
+</li>
+<li><p><strong>靜態文件中間件</strong>: 處理靜態文件的請求，如 HTML、CSS、JavaScript 和圖片等。</p>
+</li>
+<li><p><strong>路由中間件</strong>: 根據 URL 將請求導向正確的控制器和操作。</p>
+</li>
+<li><p><strong>異常處理中間件</strong>: 捕獲並處理應用程序中發生的異常。</p>
+</li>
+<li><p><strong>響應壓縮中間件</strong>: 壓縮響應以減少傳輸的數據量，提高性能。</p>
+</li>
+</ol>
+<h2 id="如何使用中間件"><a href="#如何使用中間件" class="headerlink" title="如何使用中間件"></a>如何使用中間件</h2><p>在 .NET Core 應用程序中，中間件通常在 <code>Startup.cs</code> 文件的 <code>Configure</code> 方法中配置。以下是一個簡單的例子：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Configure</span>(<span class="params">IApplicationBuilder app, IWebHostEnvironment env</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (env.IsDevelopment())</span><br><span class="line">    &#123;</span><br><span class="line">        app.UseDeveloperExceptionPage();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    app.UseHttpsRedirection();</span><br><span class="line">    app.UseStaticFiles();</span><br><span class="line">    app.UseRouting();</span><br><span class="line">    app.UseAuthorization();</span><br><span class="line"></span><br><span class="line">    app.UseEndpoints(endpoints =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        endpoints.MapControllers();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在這個例子中，我們可以看到幾個常見中間件的使用，它們按照特定的順序添加到請求處理管道中。</p>
+<h2 id="自定義中間件"><a href="#自定義中間件" class="headerlink" title="自定義中間件"></a>自定義中間件</h2><p>除了使用內建的中間件，開發者還可以創建自定義的中間件來滿足特定的需求。自定義中間件通常包含：</p>
+<ol>
+<li>一個公共構造函數，帶有一個類型為 <code>RequestDelegate</code> 的參數。</li>
+<li>一個名為 <code>Invoke</code> 或 <code>InvokeAsync</code> 的公共方法，返回一個 <code>Task</code>。</li>
+</ol>
+<p>以下是一個簡單的自定義中間件示例：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">SimpleMiddleware</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> RequestDelegate _next;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SimpleMiddleware</span>(<span class="params">RequestDelegate next</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _next = next;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task <span class="title">InvokeAsync</span>(<span class="params">HttpContext context</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 在請求處理之前的邏輯</span></span><br><span class="line">        <span class="keyword">await</span> _next(context);</span><br><span class="line">        <span class="comment">// 在請求處理之後的邏輯</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>中間件是 .NET Core 應用程序中非常強大和靈活的組件。通過理解和正確使用中間件，開發者可以更好地控制請求處理流程，實現諸如認證、日誌記錄、異常處理等功能，從而構建更加健壯和高效的應用程序。</p>
+<p>在設計 .NET Core 應用程序時，合理安排中間件的順序和選擇適當的中間件組合是非常重要的。這不僅會影響應用程序的功能，還會影響其性能和可維護性。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Net/" rel="tag"># Net</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/a564be46/" rel="prev" title="經典排序演算法指南：快速、選擇、氣泡與插入排序">
+                  <i class="fa fa-angle-left"></i> 經典排序演算法指南：快速、選擇、氣泡與插入排序
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/e8f7c02c/" rel="next" title="GO語言學習路徑">
+                  GO語言學習路徑 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

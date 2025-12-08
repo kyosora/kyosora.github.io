@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="SQL查詢重複資料指南 在資料庫管理中，處理重複資料是一個常見的任務。本文將深入介紹如何使用SQL來查詢和識別重複的資料記錄，從基礎到進階，讓您完全掌握這個技能。  目錄  1. 什麼是重複資料？  2. 基礎查詢方法  3. 進階查詢技巧  4. 實務案例分析  5. 效能優化建議  1. 什麼是重複資料？ 重複資料指的是在資料表中，某些欄位或欄位組合的值完全相同的記錄。例如，在員工資料表中，可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL查詢重複資料指南">
+<meta property="og:url" content="https://kyosora.github.io/posts/ba945afd/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="SQL查詢重複資料指南 在資料庫管理中，處理重複資料是一個常見的任務。本文將深入介紹如何使用SQL來查詢和識別重複的資料記錄，從基礎到進階，讓您完全掌握這個技能。  目錄  1. 什麼是重複資料？  2. 基礎查詢方法  3. 進階查詢技巧  4. 實務案例分析  5. 效能優化建議  1. 什麼是重複資料？ 重複資料指的是在資料表中，某些欄位或欄位組合的值完全相同的記錄。例如，在員工資料表中，可">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-06-22T11:41:05.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:39:20.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="SQL">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/ba945afd/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/ba945afd/","path":"posts/ba945afd/","title":"SQL查詢重複資料指南"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SQL查詢重複資料指南 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SQL%E6%9F%A5%E8%A9%A2%E9%87%8D%E8%A4%87%E8%B3%87%E6%96%99%E6%8C%87%E5%8D%97"><span class="nav-number">1.</span> <span class="nav-text">SQL查詢重複資料指南</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E9%8C%84"><span class="nav-number">1.1.</span> <span class="nav-text">目錄</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%BB%80%E9%BA%BC%E6%98%AF%E9%87%8D%E8%A4%87%E8%B3%87%E6%96%99%EF%BC%9F"><span class="nav-number">1.2.</span> <span class="nav-text">1. 什麼是重複資料？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%9F%BA%E7%A4%8E%E6%9F%A5%E8%A9%A2%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.</span> <span class="nav-text">2. 基礎查詢方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E4%BD%BF%E7%94%A8-GROUP-BY-%E5%92%8C-HAVING"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 使用 GROUP BY 和 HAVING</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E6%9F%A5%E7%9C%8B%E9%87%8D%E8%A4%87%E8%A8%98%E9%8C%84%E7%9A%84%E5%AE%8C%E6%95%B4%E8%B3%87%E8%A8%8A"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 查看重複記錄的完整資訊</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E9%80%B2%E9%9A%8E%E6%9F%A5%E8%A9%A2%E6%8A%80%E5%B7%A7"><span class="nav-number">1.4.</span> <span class="nav-text">3. 進階查詢技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E4%BD%BF%E7%94%A8-ROW-NUMBER-%E5%87%BD%E6%95%B8"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 使用 ROW_NUMBER() 函數</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E4%BD%BF%E7%94%A8-EXISTS-%E5%AD%90%E6%9F%A5%E8%A9%A2"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 使用 EXISTS 子查詢</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%AF%A6%E5%8B%99%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90"><span class="nav-number">1.5.</span> <span class="nav-text">4. 實務案例分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E6%95%88%E8%83%BD%E5%84%AA%E5%8C%96%E5%BB%BA%E8%AD%B0"><span class="nav-number">1.6.</span> <span class="nav-text">5. 效能優化建議</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B8%BD%E7%B5%90"><span class="nav-number">1.7.</span> <span class="nav-text">總結</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%A6%E7%94%A8%E5%BB%BA%E8%AD%B0%EF%BC%9A"><span class="nav-number">1.7.1.</span> <span class="nav-text">實用建議：</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/ba945afd/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SQL查詢重複資料指南 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SQL查詢重複資料指南
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-06-22 19:41:05" itemprop="dateCreated datePublished" datetime="2024-06-22T19:41:05+08:00">2024-06-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-11-27 14:39:20" itemprop="dateModified" datetime="2024-11-27T14:39:20+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1.4k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>1 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="SQL查詢重複資料指南"><a href="#SQL查詢重複資料指南" class="headerlink" title="SQL查詢重複資料指南"></a>SQL查詢重複資料指南</h1><p>在資料庫管理中，處理重複資料是一個常見的任務。本文將深入介紹如何使用SQL來查詢和識別重複的資料記錄，從基礎到進階，讓您完全掌握這個技能。</p>
+<h2 id="目錄"><a href="#目錄" class="headerlink" title="目錄"></a>目錄</h2><ol>
+<li>什麼是重複資料？</li>
+<li>基礎查詢方法</li>
+<li>進階查詢技巧</li>
+<li>實務案例分析</li>
+<li>效能優化建議</li>
+</ol>
+<h2 id="1-什麼是重複資料？"><a href="#1-什麼是重複資料？" class="headerlink" title="1. 什麼是重複資料？"></a>1. 什麼是重複資料？</h2><p>重複資料指的是在資料表中，某些欄位或欄位組合的值完全相同的記錄。例如，在員工資料表中，可能會出現相同姓名、生日和部門的多筆記錄。</p>
+<h2 id="2-基礎查詢方法"><a href="#2-基礎查詢方法" class="headerlink" title="2. 基礎查詢方法"></a>2. 基礎查詢方法</h2><h3 id="2-1-使用-GROUP-BY-和-HAVING"><a href="#2-1-使用-GROUP-BY-和-HAVING" class="headerlink" title="2.1 使用 GROUP BY 和 HAVING"></a>2.1 使用 GROUP BY 和 HAVING</h3><p>最基本的查詢重複資料方式是使用 GROUP BY 和 HAVING 子句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> 欄位<span class="number">1</span>, 欄位<span class="number">2</span>, <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">as</span> 重複次數</span><br><span class="line"><span class="keyword">FROM</span> 資料表</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> 欄位<span class="number">1</span>, 欄位<span class="number">2</span></span><br><span class="line"><span class="keyword">HAVING</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="operator">&gt;</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-查看重複記錄的完整資訊"><a href="#2-2-查看重複記錄的完整資訊" class="headerlink" title="2.2 查看重複記錄的完整資訊"></a>2.2 查看重複記錄的完整資訊</h3><p>若要查看重複記錄的所有欄位資訊，可以使用以下方式：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">WITH</span> 重複資料 <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> 欄位<span class="number">1</span>, 欄位<span class="number">2</span></span><br><span class="line">    <span class="keyword">FROM</span> 資料表</span><br><span class="line">    <span class="keyword">GROUP</span> <span class="keyword">BY</span> 欄位<span class="number">1</span>, 欄位<span class="number">2</span></span><br><span class="line">    <span class="keyword">HAVING</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="operator">&gt;</span> <span class="number">1</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> A.<span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> 資料表 A</span><br><span class="line"><span class="keyword">INNER</span> <span class="keyword">JOIN</span> 重複資料 B</span><br><span class="line">    <span class="keyword">ON</span> A.欄位<span class="number">1</span> <span class="operator">=</span> B.欄位<span class="number">1</span></span><br><span class="line">    <span class="keyword">AND</span> A.欄位<span class="number">2</span> <span class="operator">=</span> B.欄位<span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-進階查詢技巧"><a href="#3-進階查詢技巧" class="headerlink" title="3. 進階查詢技巧"></a>3. 進階查詢技巧</h2><h3 id="3-1-使用-ROW-NUMBER-函數"><a href="#3-1-使用-ROW-NUMBER-函數" class="headerlink" title="3.1 使用 ROW_NUMBER() 函數"></a>3.1 使用 ROW_NUMBER() 函數</h3><p>ROW_NUMBER() 函數可以幫助我們更靈活地處理重複資料：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">WITH</span> 編號資料 <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> <span class="operator">*</span>,</span><br><span class="line">           <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span>(<span class="keyword">PARTITION</span> <span class="keyword">BY</span> 欄位<span class="number">1</span>, 欄位<span class="number">2</span> </span><br><span class="line">                            <span class="keyword">ORDER</span> <span class="keyword">BY</span> 欄位<span class="number">3</span>) <span class="keyword">as</span> row_num</span><br><span class="line">    <span class="keyword">FROM</span> 資料表</span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> 編號資料</span><br><span class="line"><span class="keyword">WHERE</span> row_num <span class="operator">&gt;</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-使用-EXISTS-子查詢"><a href="#3-2-使用-EXISTS-子查詢" class="headerlink" title="3.2 使用 EXISTS 子查詢"></a>3.2 使用 EXISTS 子查詢</h3><p>這種方法特別適合處理大量資料：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> 資料表 A</span><br><span class="line"><span class="keyword">WHERE</span> <span class="keyword">EXISTS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">FROM</span> 資料表 B</span><br><span class="line">    <span class="keyword">WHERE</span> A.欄位<span class="number">1</span> <span class="operator">=</span> B.欄位<span class="number">1</span></span><br><span class="line">    <span class="keyword">AND</span> A.欄位<span class="number">2</span> <span class="operator">=</span> B.欄位<span class="number">2</span></span><br><span class="line">    <span class="keyword">AND</span> A.主鍵 <span class="operator">&lt;&gt;</span> B.主鍵</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-實務案例分析"><a href="#4-實務案例分析" class="headerlink" title="4. 實務案例分析"></a>4. 實務案例分析</h2><p>讓我們看一個實際的例子。假設我們有一個設備檢查資料表：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">WITH</span> 重複設備 <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> </span><br><span class="line">        設備ID,</span><br><span class="line">        設備名稱,</span><br><span class="line">        位置代碼</span><br><span class="line">    <span class="keyword">FROM</span> 設備檢查表</span><br><span class="line">    <span class="keyword">GROUP</span> <span class="keyword">BY</span> </span><br><span class="line">        設備ID,</span><br><span class="line">        設備名稱,</span><br><span class="line">        位置代碼</span><br><span class="line">    <span class="keyword">HAVING</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="operator">&gt;</span> <span class="number">1</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    檢查表.<span class="operator">*</span> </span><br><span class="line"><span class="keyword">FROM</span> 設備檢查表 檢查表</span><br><span class="line"><span class="keyword">INNER</span> <span class="keyword">JOIN</span> 重複設備</span><br><span class="line">    <span class="keyword">ON</span> 檢查表.設備ID <span class="operator">=</span> 重複設備.設備ID</span><br><span class="line">    <span class="keyword">AND</span> 檢查表.設備名稱 <span class="operator">=</span> 重複設備.設備名稱</span><br><span class="line">    <span class="keyword">AND</span> 檢查表.位置代碼 <span class="operator">=</span> 重複設備.位置代碼</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> 檢查表.設備ID;</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-效能優化建議"><a href="#5-效能優化建議" class="headerlink" title="5. 效能優化建議"></a>5. 效能優化建議</h2><ol>
+<li><p><strong>善用索引</strong>：</p>
+<ul>
+<li>在常用於群組或排序的欄位上建立適當的索引</li>
+<li>複合索引的欄位順序要配合查詢條件</li>
+</ul>
+</li>
+<li><p><strong>使用適當的查詢方式</strong>：</p>
+<ul>
+<li>當資料量較小時，GROUP BY 方式效能佳</li>
+<li>資料量大時，考慮使用 EXISTS 或 ROW_NUMBER()</li>
+</ul>
+</li>
+<li><p><strong>避免全表掃描</strong>：</p>
+<ul>
+<li>盡可能加入 WHERE 條件縮小查詢範圍</li>
+<li>使用覆蓋索引減少資料讀取</li>
+</ul>
+</li>
+</ol>
+<h2 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h2><p>處理重複資料是資料庫管理中的重要技能。透過本文介紹的各種方法，您可以根據實際需求選擇最適合的查詢方式。記住，不同的查詢方式適用於不同的場景，要根據資料量、資料特性來選擇最適合的方法。</p>
+<h3 id="實用建議："><a href="#實用建議：" class="headerlink" title="實用建議："></a>實用建議：</h3><ul>
+<li>定期檢查重要資料表的重複情況</li>
+<li>建立適當的限制來預防重複資料</li>
+<li>適時維護索引以確保查詢效能</li>
+<li>對大型資料表進行查詢時，先用樣本資料測試查詢效能</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SQL/" rel="tag"># SQL</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/911f3916/" rel="prev" title="DuckDNS:免費且簡單的動態DNS服務">
+                  <i class="fa fa-angle-left"></i> DuckDNS:免費且簡單的動態DNS服務
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/6c5d6830/" rel="next" title="使用 NSSM 將 EXE 包裝成 Windows 服務">
+                  使用 NSSM 將 EXE 包裝成 Windows 服務 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="本教學將引導如何開發一個Chrome擴展套件，此套件能自動將新建的書籤按照其域名自動分類到對應的文件夾中。我們會使用background.js來實現這個功能。  前提 擁有基本的JavaScript知識。 已安裝Chrome瀏覽器。  步驟1：創建擴展目錄 首先，在你的電腦上創建一個新的資料夾來存放擴展文件，例如命名為BookmarkOrganizer。  步驟2：撰寫manifest.json">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Chrome套件開發教學：自動整理書籤到域名資料夾">
+<meta property="og:url" content="https://kyosora.github.io/posts/2212f7f6/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="本教學將引導如何開發一個Chrome擴展套件，此套件能自動將新建的書籤按照其域名自動分類到對應的文件夾中。我們會使用background.js來實現這個功能。  前提 擁有基本的JavaScript知識。 已安裝Chrome瀏覽器。  步驟1：創建擴展目錄 首先，在你的電腦上創建一個新的資料夾來存放擴展文件，例如命名為BookmarkOrganizer。  步驟2：撰寫manifest.json">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-02-23T09:05:31.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:54:42.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Chrome開發">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/2212f7f6/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/2212f7f6/","path":"posts/2212f7f6/","title":"Chrome套件開發教學：自動整理書籤到域名資料夾"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Chrome套件開發教學：自動整理書籤到域名資料夾 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E6%8F%90"><span class="nav-number">1.</span> <span class="nav-text">前提</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F1%EF%BC%9A%E5%89%B5%E5%BB%BA%E6%93%B4%E5%B1%95%E7%9B%AE%E9%8C%84"><span class="nav-number">1.1.</span> <span class="nav-text">步驟1：創建擴展目錄</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F2%EF%BC%9A%E6%92%B0%E5%AF%ABmanifest-json"><span class="nav-number">1.2.</span> <span class="nav-text">步驟2：撰寫manifest.json</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F3%EF%BC%9A%E6%92%B0%E5%AF%ABbackground-js"><span class="nav-number">1.3.</span> <span class="nav-text">步驟3：撰寫background.js</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F4%EF%BC%9A%E5%8A%A0%E8%BC%89%E6%93%B4%E5%B1%95%E5%88%B0Chrome"><span class="nav-number">1.4.</span> <span class="nav-text">步驟4：加載擴展到Chrome</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F5%EF%BC%9A%E6%B8%AC%E8%A9%A6%E6%93%B4%E5%B1%95"><span class="nav-number">1.5.</span> <span class="nav-text">步驟5：測試擴展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90background-js"><span class="nav-number">1.6.</span> <span class="nav-text">解析background.js</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AA%9E"><span class="nav-number">1.7.</span> <span class="nav-text">結語</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/2212f7f6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Chrome套件開發教學：自動整理書籤到域名資料夾 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Chrome套件開發教學：自動整理書籤到域名資料夾
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-02-23 17:05:31" itemprop="dateCreated datePublished" datetime="2024-02-23T17:05:31+08:00">2024-02-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-11-27 14:54:42" itemprop="dateModified" datetime="2024-11-27T14:54:42+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>3.4k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>3 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>本教學將引導如何開發一個Chrome擴展套件，此套件能自動將新建的書籤按照其域名自動分類到對應的文件夾中。我們會使用background.js來實現這個功能。</p>
+<h1 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h1><p>擁有基本的JavaScript知識。<br>已安裝Chrome瀏覽器。</p>
+<h2 id="步驟1：創建擴展目錄"><a href="#步驟1：創建擴展目錄" class="headerlink" title="步驟1：創建擴展目錄"></a>步驟1：創建擴展目錄</h2><p>首先，在你的電腦上創建一個新的資料夾來存放擴展文件，例如命名為BookmarkOrganizer。</p>
+<h2 id="步驟2：撰寫manifest-json"><a href="#步驟2：撰寫manifest-json" class="headerlink" title="步驟2：撰寫manifest.json"></a>步驟2：撰寫manifest.json</h2><p>在BookmarkOrganizer資料夾內，創建一個名為manifest.json的文件，並加入以下內容：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;manifest_version&quot;</span><span class="punctuation">:</span> <span class="number">3</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;自動整理書籤到域名資料夾&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;將新建的書籤自動整理到以域名命名的資料夾中。&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;permissions&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;bookmarks&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;background&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;service_worker&quot;</span><span class="punctuation">:</span> <span class="string">&quot;background.js&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="步驟3：撰寫background-js"><a href="#步驟3：撰寫background-js" class="headerlink" title="步驟3：撰寫background.js"></a>步驟3：撰寫background.js</h2><p>在BookmarkOrganizer資料夾內，創建一個名為background.js的文件，並將提供的程式碼粘貼到這個文件中。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> folderCreationLocks = &#123;&#125;; <span class="comment">// 鎖定正在創建的文件夾</span></span><br><span class="line"><span class="keyword">let</span> domainFoldersCache = &#123;&#125;; <span class="comment">// 緩存已創建的域名文件夾ID</span></span><br><span class="line"></span><br><span class="line">chrome.<span class="property">bookmarks</span>.<span class="property">onCreated</span>.<span class="title function_">addListener</span>(<span class="keyword">function</span>(<span class="params">id, bookmark</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (!bookmark.<span class="property">url</span>) <span class="keyword">return</span>; <span class="comment">// 忽略非URL書簽（即文件夾）</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> mainFolderName = <span class="string">&quot;整理資料夾&quot;</span>;</span><br><span class="line">  <span class="keyword">const</span> url = <span class="keyword">new</span> <span class="title function_">URL</span>(bookmark.<span class="property">url</span>);</span><br><span class="line">  <span class="keyword">const</span> domain = url.<span class="property">hostname</span>;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">ensureMainFolderExists</span>(mainFolderName, <span class="keyword">function</span>(<span class="params">mainFolderId</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!mainFolderId) <span class="keyword">return</span>; <span class="comment">// 如果沒有找到或創建主文件夾，則退出</span></span><br><span class="line"></span><br><span class="line">    <span class="title function_">ensureDomainFolderExists</span>(mainFolderId, domain, <span class="keyword">function</span>(<span class="params">domainFolderId</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (domainFolderId) &#123;</span><br><span class="line">        <span class="comment">// 存在域名文件夾，移動書簽</span></span><br><span class="line">        chrome.<span class="property">bookmarks</span>.<span class="title function_">move</span>(id, &#123;<span class="attr">parentId</span>: domainFolderId&#125;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">ensureMainFolderExists</span>(<span class="params">mainFolderName, callback</span>) &#123;</span><br><span class="line">  <span class="comment">// 查找或創建主文件夾</span></span><br><span class="line">  chrome.<span class="property">bookmarks</span>.<span class="title function_">search</span>(&#123;<span class="attr">title</span>: mainFolderName&#125;, <span class="keyword">function</span>(<span class="params">results</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> mainFolder = results.<span class="title function_">find</span>(<span class="function"><span class="params">result</span> =&gt;</span> result.<span class="property">title</span> === mainFolderName &amp;&amp; !result.<span class="property">url</span>);</span><br><span class="line">    <span class="keyword">if</span> (!mainFolder) &#123;</span><br><span class="line">      chrome.<span class="property">bookmarks</span>.<span class="title function_">create</span>(&#123;<span class="attr">title</span>: mainFolderName&#125;, <span class="keyword">function</span>(<span class="params">newFolder</span>) &#123;</span><br><span class="line">        <span class="title function_">callback</span>(newFolder.<span class="property">id</span>);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="title function_">callback</span>(mainFolder.<span class="property">id</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">ensureDomainFolderExists</span>(<span class="params">mainFolderId, domain, callback</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (folderCreationLocks[domain]) &#123;</span><br><span class="line">    <span class="comment">// 如果域名文件夾正在創建中，則稍後重試</span></span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> <span class="title function_">ensureDomainFolderExists</span>(mainFolderId, domain, callback), <span class="number">100</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (domainFoldersCache[domain]) &#123;</span><br><span class="line">    <span class="comment">// 如果域名文件夾已存在於緩存中，直接使用</span></span><br><span class="line">    <span class="title function_">callback</span>(domainFoldersCache[domain]);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 鎖定域名文件夾創建操作</span></span><br><span class="line">  folderCreationLocks[domain] = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">  chrome.<span class="property">bookmarks</span>.<span class="title function_">getChildren</span>(mainFolderId, <span class="keyword">function</span>(<span class="params">children</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> domainFolder = children.<span class="title function_">find</span>(<span class="function"><span class="params">child</span> =&gt;</span> child.<span class="property">title</span> === domain &amp;&amp; !child.<span class="property">url</span>);</span><br><span class="line">    <span class="keyword">if</span> (!domainFolder) &#123;</span><br><span class="line">      <span class="comment">// 創建域名文件夾</span></span><br><span class="line">      chrome.<span class="property">bookmarks</span>.<span class="title function_">create</span>(&#123;<span class="attr">parentId</span>: mainFolderId, <span class="attr">title</span>: domain&#125;, <span class="keyword">function</span>(<span class="params">newFolder</span>) &#123;</span><br><span class="line">        domainFoldersCache[domain] = newFolder.<span class="property">id</span>; <span class="comment">// 緩存文件夾ID</span></span><br><span class="line">        <span class="keyword">delete</span> folderCreationLocks[domain]; <span class="comment">// 解鎖</span></span><br><span class="line">        <span class="title function_">callback</span>(newFolder.<span class="property">id</span>);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      domainFoldersCache[domain] = domainFolder.<span class="property">id</span>; <span class="comment">// 緩存文件夾ID</span></span><br><span class="line">      <span class="keyword">delete</span> folderCreationLocks[domain]; <span class="comment">// 解鎖</span></span><br><span class="line">      <span class="title function_">callback</span>(domainFolder.<span class="property">id</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="步驟4：加載擴展到Chrome"><a href="#步驟4：加載擴展到Chrome" class="headerlink" title="步驟4：加載擴展到Chrome"></a>步驟4：加載擴展到Chrome</h2><p>打開Chrome瀏覽器，進入chrome://extensions/頁面。<br>開啟開發者模式。<br>點擊「加載已解壓的擴展」，選擇剛剛建立的BookmarkOrganizer資料夾。</p>
+<h2 id="步驟5：測試擴展"><a href="#步驟5：測試擴展" class="headerlink" title="步驟5：測試擴展"></a>步驟5：測試擴展</h2><p>現在，當你創建一個包含URL的書籤時，擴展會自動將該書籤移動到一個以該URL的域名命名的資料夾內。如果相應的域名資料夾不存在，擴展會自動創建一個。</p>
+<h2 id="解析background-js"><a href="#解析background-js" class="headerlink" title="解析background.js"></a>解析background.js</h2><p>監聽書籤創建事件：使用chrome.bookmarks.onCreated.addListener來監聽書籤的創建事件。<br>確保主資料夾存在：ensureMainFolderExists函數會檢查是否存在一個名為&quot;整理資料夾&quot;的資料夾，如果不存在則創建它。<br>確保域名資料夾存在：ensureDomainFolderExists函數負責創建和維護以域名命名的資料夾，並將新的書籤移動到相應的資料夾中。</p>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>通過上述步驟，成功創建了一個能夠自動整理書籤到域名資料夾的Chrome擴展套件。<br>會開發這個是因為日漸增加的書籤，書籤已經突破幾萬筆，看起來很亂，想了想有沒有解決方法，找了CHROME套件沒找到能解決這個問題的套件，最後決定寫個chrome套件來解決，其實是第一次開發chrome套件，此文章當作個筆記，沒做到上架的程度，開發中也遇到很多問題，例如一開始寫的時候，書籤一口氣複製進去，域名資料夾重複建立了，發現是異步原因，也發現根目錄資料夾新增刪除移動都沒反應，查文檔是根目錄不能做這些操作。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Chrome%E9%96%8B%E7%99%BC/" rel="tag"># Chrome開發</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/bf8ec934/" rel="prev" title="CORS 都有哪些解決方法?">
+                  <i class="fa fa-angle-left"></i> CORS 都有哪些解決方法?
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/7aecd08e/" rel="next" title="JavaScript 深拷貝完整指南：掌握物件複製的關鍵技巧">
+                  JavaScript 深拷貝完整指南：掌握物件複製的關鍵技巧 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="Vue中的Pinia狀態管理：全面指南 引言 在Vue應用程序中管理狀態是一個重要的話題。隨著應用程序的增長，有效地管理和共享狀態變得越來越具有挑戰性。Pinia作為Vue的官方狀態管理庫，提供了一種簡單、直觀且類型安全的方式來管理全局狀態。本文將深入探討Pinia的核心概念、特性以及如何在Vue項目中有效地使用它。  什麼是Pinia? Pinia是新一代的Vue狀態管理庫，設計用於替代Vuex">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue中的Pinia狀態管理：全面指南">
+<meta property="og:url" content="https://kyosora.github.io/posts/2ab9528b/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="Vue中的Pinia狀態管理：全面指南 引言 在Vue應用程序中管理狀態是一個重要的話題。隨著應用程序的增長，有效地管理和共享狀態變得越來越具有挑戰性。Pinia作為Vue的官方狀態管理庫，提供了一種簡單、直觀且類型安全的方式來管理全局狀態。本文將深入探討Pinia的核心概念、特性以及如何在Vue項目中有效地使用它。  什麼是Pinia? Pinia是新一代的Vue狀態管理庫，設計用於替代Vuex">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-03-12T11:33:18.000Z">
+<meta property="article:modified_time" content="2024-12-10T01:47:56.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Pinia">
+<meta property="article:tag" content="Vue">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/2ab9528b/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/2ab9528b/","path":"posts/2ab9528b/","title":"Vue中的Pinia狀態管理：全面指南"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Vue中的Pinia狀態管理：全面指南 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Vue%E4%B8%AD%E7%9A%84Pinia%E7%8B%80%E6%85%8B%E7%AE%A1%E7%90%86%EF%BC%9A%E5%85%A8%E9%9D%A2%E6%8C%87%E5%8D%97"><span class="nav-number">1.</span> <span class="nav-text">Vue中的Pinia狀態管理：全面指南</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AFPinia"><span class="nav-number">1.2.</span> <span class="nav-text">什麼是Pinia?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Pinia%E7%9A%84%E4%B8%BB%E8%A6%81%E7%89%B9%E6%80%A7"><span class="nav-number">1.2.1.</span> <span class="nav-text">Pinia的主要特性:</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%9D%E5%92%8C%E8%A8%AD%E7%BD%AE"><span class="nav-number">1.3.</span> <span class="nav-text">安裝和設置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pinia%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.4.</span> <span class="nav-text">Pinia的核心概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Store"><span class="nav-number">1.4.1.</span> <span class="nav-text">Store</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B5%84%E5%90%88%E5%BC%8FAPI%E9%A2%A8%E6%A0%BC%E7%9A%84Store"><span class="nav-number">1.4.2.</span> <span class="nav-text">組合式API風格的Store</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8%E7%B5%84%E4%BB%B6%E4%B8%AD%E4%BD%BF%E7%94%A8Store"><span class="nav-number">1.5.</span> <span class="nav-text">在組件中使用Store</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pinia%E7%9A%84%E9%AB%98%E7%B4%9A%E7%89%B9%E6%80%A7"><span class="nav-number">1.6.</span> <span class="nav-text">Pinia的高級特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E8%A8%82%E9%96%B1%E7%8B%80%E6%85%8B%E8%AE%8A%E5%8C%96"><span class="nav-number">1.6.1.</span> <span class="nav-text">1. 訂閱狀態變化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-number">1.6.2.</span> <span class="nav-text">2. 持久化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%8F%92%E4%BB%B6%E7%B3%BB%E7%B5%B1"><span class="nav-number">1.6.3.</span> <span class="nav-text">3. 插件系統</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%88%87Vuex%E7%9A%84%E6%AF%94%E8%BC%83"><span class="nav-number">1.7.</span> <span class="nav-text">與Vuex的比較</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E4%BD%B3%E5%AF%A6%E8%B8%90"><span class="nav-number">1.8.</span> <span class="nav-text">最佳實踐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.9.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%83%E8%80%83%E8%B3%87%E6%BA%90"><span class="nav-number">1.10.</span> <span class="nav-text">參考資源</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/2ab9528b/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Vue中的Pinia狀態管理：全面指南 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Vue中的Pinia狀態管理：全面指南
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-03-12 19:33:18" itemprop="dateCreated datePublished" datetime="2024-03-12T19:33:18+08:00">2024-03-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-12-10 09:47:56" itemprop="dateModified" datetime="2024-12-10T09:47:56+08:00">2024-12-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.8k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>3 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="Vue中的Pinia狀態管理：全面指南"><a href="#Vue中的Pinia狀態管理：全面指南" class="headerlink" title="Vue中的Pinia狀態管理：全面指南"></a>Vue中的Pinia狀態管理：全面指南</h1><h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>在Vue應用程序中管理狀態是一個重要的話題。隨著應用程序的增長，有效地管理和共享狀態變得越來越具有挑戰性。Pinia作為Vue的官方狀態管理庫，提供了一種簡單、直觀且類型安全的方式來管理全局狀態。本文將深入探討Pinia的核心概念、特性以及如何在Vue項目中有效地使用它。</p>
+<h2 id="什麼是Pinia"><a href="#什麼是Pinia" class="headerlink" title="什麼是Pinia?"></a>什麼是Pinia?</h2><p>Pinia是新一代的Vue狀態管理庫，設計用於替代Vuex。它由Vue核心團隊成員Eduardo San Martin Morote創建，並在Vue 3中成為官方推薦的狀態管理解決方案。</p>
+<h3 id="Pinia的主要特性"><a href="#Pinia的主要特性" class="headerlink" title="Pinia的主要特性:"></a>Pinia的主要特性:</h3><ol>
+<li>直觀且簡潔的API</li>
+<li>完整的TypeScript支持</li>
+<li>支持Vue 2和Vue 3</li>
+<li>極小的包大小</li>
+<li>支持多個Store</li>
+<li>支持熱模塊替換(HMR)</li>
+<li>支持Vue DevTools</li>
+<li>可擴展性強</li>
+</ol>
+<h2 id="安裝和設置"><a href="#安裝和設置" class="headerlink" title="安裝和設置"></a>安裝和設置</h2><p>首先，讓我們看看如何在Vue項目中安裝和設置Pinia。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install pinia</span><br></pre></td></tr></table></figure>
+
+<p>在Vue應用中引入Pinia:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createApp &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; createPinia &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">App</span> <span class="keyword">from</span> <span class="string">&#x27;./App.vue&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> pinia = <span class="title function_">createPinia</span>()</span><br><span class="line"><span class="keyword">const</span> app = <span class="title function_">createApp</span>(<span class="title class_">App</span>)</span><br><span class="line"></span><br><span class="line">app.<span class="title function_">use</span>(pinia)</span><br><span class="line">app.<span class="title function_">mount</span>(<span class="string">&#x27;#app&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="Pinia的核心概念"><a href="#Pinia的核心概念" class="headerlink" title="Pinia的核心概念"></a>Pinia的核心概念</h2><h3 id="Store"><a href="#Store" class="headerlink" title="Store"></a>Store</h3><p>Store是Pinia的核心概念，它包含了狀態(state)、getter和action。</p>
+<p>創建一個基本的Store:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; defineStore &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useCounterStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;counter&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">state</span>: <span class="function">() =&gt;</span> (&#123; <span class="attr">count</span>: <span class="number">0</span> &#125;),</span><br><span class="line">  <span class="attr">getters</span>: &#123;</span><br><span class="line">    <span class="attr">doubleCount</span>: <span class="function">(<span class="params">state</span>) =&gt;</span> state.<span class="property">count</span> * <span class="number">2</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">actions</span>: &#123;</span><br><span class="line">    <span class="title function_">increment</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">count</span>++</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="組合式API風格的Store"><a href="#組合式API風格的Store" class="headerlink" title="組合式API風格的Store"></a>組合式API風格的Store</h3><p>Pinia也支持使用組合式API風格定義Store:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; ref, computed &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; defineStore &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useCounterStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;counter&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> count = <span class="title function_">ref</span>(<span class="number">0</span>)</span><br><span class="line">  <span class="keyword">const</span> doubleCount = <span class="title function_">computed</span>(<span class="function">() =&gt;</span> count.<span class="property">value</span> * <span class="number">2</span>)</span><br><span class="line">  <span class="keyword">function</span> <span class="title function_">increment</span>(<span class="params"></span>) &#123;</span><br><span class="line">    count.<span class="property">value</span>++</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> &#123; count, doubleCount, increment &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="在組件中使用Store"><a href="#在組件中使用Store" class="headerlink" title="在組件中使用Store"></a>在組件中使用Store</h2><p>在Vue組件中使用Pinia Store非常簡單:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;Count: &#123;&#123; counter.count &#125;&#125;&lt;/p&gt;</span><br><span class="line">    &lt;p&gt;Double Count: &#123;&#123; counter.doubleCount &#125;&#125;&lt;/p&gt;</span><br><span class="line">    &lt;button @click=&quot;counter.increment&quot;&gt;Increment&lt;/button&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script setup&gt;</span><br><span class="line">import &#123; useCounterStore &#125; from &#x27;@/stores/counter&#x27;</span><br><span class="line"></span><br><span class="line">const counter = useCounterStore()</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Pinia的高級特性"><a href="#Pinia的高級特性" class="headerlink" title="Pinia的高級特性"></a>Pinia的高級特性</h2><h3 id="1-訂閱狀態變化"><a href="#1-訂閱狀態變化" class="headerlink" title="1. 訂閱狀態變化"></a>1. 訂閱狀態變化</h3><p>Pinia允許你訂閱store的變化:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> unsubscribe = someStore.$subscribe(<span class="function">(<span class="params">mutation, state</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 每次state變化時觸發</span></span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(mutation.<span class="property">type</span>)</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(mutation.<span class="property">storeId</span>)</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(mutation.<span class="property">payload</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-持久化"><a href="#2-持久化" class="headerlink" title="2. 持久化"></a>2. 持久化</h3><p>結合插件，可以輕鬆實現狀態持久化:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createPinia &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; createPersistedState &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia-plugin-persistedstate&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> pinia = <span class="title function_">createPinia</span>()</span><br><span class="line">pinia.<span class="title function_">use</span>(<span class="title function_">createPersistedState</span>())</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-插件系統"><a href="#3-插件系統" class="headerlink" title="3. 插件系統"></a>3. 插件系統</h3><p>Pinia提供了強大的插件系統，允許你擴展Store的功能:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pinia.<span class="title function_">use</span>(<span class="function">(<span class="params">&#123; store &#125;</span>) =&gt;</span> &#123;</span><br><span class="line">  store.<span class="property">customValue</span> = <span class="string">&#x27;Hello&#x27;</span></span><br><span class="line">  store.<span class="property">customMethod</span> = <span class="function">() =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Custom method&#x27;</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="與Vuex的比較"><a href="#與Vuex的比較" class="headerlink" title="與Vuex的比較"></a>與Vuex的比較</h2><p>Pinia相比Vuex有以下優勢:</p>
+<ol>
+<li>更簡潔的API</li>
+<li>更好的TypeScript支持</li>
+<li>不需要嵌套模塊</li>
+<li>更輕量級</li>
+</ol>
+<h2 id="最佳實踐"><a href="#最佳實踐" class="headerlink" title="最佳實踐"></a>最佳實踐</h2><ol>
+<li>將相關的狀態分組到不同的store中</li>
+<li>使用組合式API風格可以獲得更好的TypeScript推斷</li>
+<li>善用Pinia的插件系統擴展功能</li>
+<li>在大型應用中，考慮按功能模塊拆分store</li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>Pinia為Vue應用提供了一個強大、靈活且易於使用的狀態管理解決方案。它簡化了全局狀態的管理，同時保持了出色的開發體驗和性能。無論是小型項目還是大型應用，Pinia都是一個值得考慮的選擇。</p>
+<p>隨著Vue生態系統的不斷發展，Pinia很可能會成為未來Vue項目中狀態管理的首選方案。掌握Pinia不僅能提高你的Vue開發效率，還能為你的應用帶來更好的可維護性和擴展性。</p>
+<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://pinia.vuejs.org/">Pinia 官方文檔</a></li>
+<li><a target="_blank" rel="noopener" href="https://vuejs.org/">Vue 官方網站</a></li>
+<li><a target="_blank" rel="noopener" href="https://pinia.vuejs.org/introduction.html#comparison-with-vuex">Comparison with Vuex</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Pinia/" rel="tag"># Pinia</a>
+              <a href="/tags/Vue/" rel="tag"># Vue</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/2f83e8a9/" rel="prev" title="JS防抖（Debouncing）與節流（Throttling）">
+                  <i class="fa fa-angle-left"></i> JS防抖（Debouncing）與節流（Throttling）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/8311066/" rel="next" title="Promise 和 setTimeout 的深入解析">
+                  Promise 和 setTimeout 的深入解析 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

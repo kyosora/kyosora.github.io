@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="2024年CSS終於實現垂直置中 在2024年，align-content終於可以在塊級佈局中運作了。只需一個CSS屬性就能實現垂直置中，而不需使用Flexbox或Grid。  1 2 3      align-content 現在可以直接使用了!    支援情況: Chrome: 123 | Firefox: 125 | Safari: 17.4  可以看到只支援比較新的瀏覽器版本，所以使用上還">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2024年CSS終於實現垂直置中">
+<meta property="og:url" content="https://kyosora.github.io/posts/a955718e/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="2024年CSS終於實現垂直置中 在2024年，align-content終於可以在塊級佈局中運作了。只需一個CSS屬性就能實現垂直置中，而不需使用Flexbox或Grid。  1 2 3      align-content 現在可以直接使用了!    支援情況: Chrome: 123 | Firefox: 125 | Safari: 17.4  可以看到只支援比較新的瀏覽器版本，所以使用上還">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-09-05T03:44:37.000Z">
+<meta property="article:modified_time" content="2024-11-27T06:33:58.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="CSS">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/a955718e/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/a955718e/","path":"posts/a955718e/","title":"2024年CSS終於實現垂直置中"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>2024年CSS終於實現垂直置中 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#2024%E5%B9%B4CSS%E7%B5%82%E6%96%BC%E5%AF%A6%E7%8F%BE%E5%9E%82%E7%9B%B4%E7%BD%AE%E4%B8%AD"><span class="nav-number">1.</span> <span class="nav-text">2024年CSS終於實現垂直置中</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E4%BB%80%E9%BA%BC%E6%96%B0%E8%AE%8A%E5%8C%96"><span class="nav-number">1.1.</span> <span class="nav-text">有什麼新變化?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9E%82%E7%9B%B4%E7%BD%AE%E4%B8%AD-%E6%AD%B7%E5%8F%B2%E5%9B%9E%E9%A1%A7"><span class="nav-number">1.2.</span> <span class="nav-text">垂直置中 - 歷史回顧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%951-%E8%A1%A8%E6%A0%BC%E5%96%AE%E5%85%83%E6%A0%BC"><span class="nav-number">1.2.1.</span> <span class="nav-text">方法1:表格單元格</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%952-%E7%B5%95%E5%B0%8D%E5%AE%9A%E4%BD%8D"><span class="nav-number">1.2.2.</span> <span class="nav-text">方法2:絕對定位</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%953-%E8%A1%8C%E5%85%A7%E5%85%A7%E5%AE%B9"><span class="nav-number">1.2.3.</span> <span class="nav-text">方法3:行內內容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%954-%E5%96%AE%E8%A1%8Cflexbox"><span class="nav-number">1.2.4.</span> <span class="nav-text">方法4:單行flexbox</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%955-%E5%A4%9A%E8%A1%8Cflexbox"><span class="nav-number">1.2.5.</span> <span class="nav-text">方法5:多行flexbox</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%956-%E7%B6%B2%E6%A0%BC%E5%85%A7%E5%AE%B9"><span class="nav-number">1.2.6.</span> <span class="nav-text">方法6:網格內容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%957-%E7%B6%B2%E6%A0%BC%E5%96%AE%E5%85%83%E6%A0%BC"><span class="nav-number">1.2.7.</span> <span class="nav-text">方法7:網格單元格</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%958-%E8%87%AA%E5%8B%95%E5%A4%96%E9%82%8A%E8%B7%9D"><span class="nav-number">1.2.8.</span> <span class="nav-text">方法8:自動外邊距</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%959-2024%E5%B9%B4%E7%9A%84%E9%80%99%E7%AF%87%E6%96%87%E7%AB%A0"><span class="nav-number">1.2.9.</span> <span class="nav-text">方法9:2024年的這篇文章</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B8%BD%E7%B5%90"><span class="nav-number">1.2.10.</span> <span class="nav-text">總結</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E7%8F%BE%E4%BA%8C%E7%B6%AD%E5%B0%8D%E9%BD%8A"><span class="nav-number">1.3.</span> <span class="nav-text">實現二維對齊</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF-CSS%E8%BB%B8%E8%A1%93%E8%AA%9E"><span class="nav-number">1.3.1.</span> <span class="nav-text">背景:CSS軸術語</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">155</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/a955718e/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="2024年CSS終於實現垂直置中 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2024年CSS終於實現垂直置中
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-09-05 11:44:37" itemprop="dateCreated datePublished" datetime="2024-09-05T11:44:37+08:00">2024-09-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-11-27 14:33:58" itemprop="dateModified" datetime="2024-11-27T14:33:58+08:00">2024-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>6.9k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>6 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="2024年CSS終於實現垂直置中"><a href="#2024年CSS終於實現垂直置中" class="headerlink" title="2024年CSS終於實現垂直置中"></a>2024年CSS終於實現垂直置中</h1><p>在2024年，<code>align-content</code>終於可以在塊級佈局中運作了。只需<strong>一個CSS屬性</strong>就能實現垂直置中，而不需使用Flexbox或Grid。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;align-content: center; height: 100px;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">code</span>&gt;</span>align-content<span class="tag">&lt;/<span class="name">code</span>&gt;</span> 現在可以直接使用了!</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://caniuse.com/mdn-css_properties_align-content_block_context">支援情況</a>:<br>Chrome: 123 | Firefox: 125 | Safari: 17.4</p>
+<p>可以看到只支援比較新的瀏覽器版本，所以使用上還是得考慮一下，總的來說，雖然我們會很興奮地看到新的 CSS 特性出現，但在實際開發中，我們需要平衡新特性的使用和對舊版瀏覽器的支援。通常，我們會採用漸進式增強的策略，確保基本功能在所有環境中都能正常運作，同時為支援新特性的瀏覽器提供更好的體驗。。</p>
+<h2 id="有什麼新變化"><a href="#有什麼新變化" class="headerlink" title="有什麼新變化?"></a>有什麼新變化?</h2><p>CSS對齊的現況是需要切換到<em>flexbox</em>或<em>grid</em>佈局，因為<code>align-content</code>在預設佈局(<em>flow</em>)中不起作用。在2024年，瀏覽器<a target="_blank" rel="noopener" href="https://web.dev/blog/align-content-block">實作了</a>流式佈局的<code>align-content</code>。這帶來一些好處:</p>
+<ul>
+<li>你不需要使用flexbox或grid，只需要一個CSS屬性就能實現對齊。</li>
+<li>因此，內容不需要包裝在一個div中。</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 可以運作 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid; align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  內容。</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 失敗! --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid; align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  包含<span class="tag">&lt;<span class="name">em</span>&gt;</span>多個<span class="tag">&lt;/<span class="name">em</span>&gt;</span>節點的內容。</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 使用內容包裝器可以運作 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid; align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>  <span class="comment">&lt;!-- 額外的包裝器 --&gt;</span></span><br><span class="line">    包含<span class="tag">&lt;<span class="name">em</span>&gt;</span>多個<span class="tag">&lt;/<span class="name">em</span>&gt;</span>節點的內容。</span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 不需要內容包裝器就可以運作 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  包含<span class="tag">&lt;<span class="name">em</span>&gt;</span>多個<span class="tag">&lt;/<span class="name">em</span>&gt;</span>節點的內容。</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>經過幾十年的進步，CSS終於有了一個<strong>單一屬性</strong>來控制垂直對齊，這真是太棒了!</p>
+<h2 id="垂直置中-歷史回顧"><a href="#垂直置中-歷史回顧" class="headerlink" title="垂直置中 - 歷史回顧"></a>垂直置中 - 歷史回顧</h2><p>瀏覽器很有趣，像對齊這樣的基本需求在很長一段時間內都沒有簡單的解決方案。以下是如何置中內容:</p>
+<p>以下是在瀏覽器中如何<em>垂直</em>置中(<em>水平</em>置中是另一個話題):</p>
+<h3 id="方法1-表格單元格"><a href="#方法1-表格單元格" class="headerlink" title="方法1:表格單元格"></a>方法1:表格單元格</h3><p>有4種主要佈局:flow(預設)、table、flexbox、grid。如何對齊內容取決於容器的佈局。flexbox和grid是後來才加入的，所以table是最早的選擇。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: table;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: table-cell; vertical-align: middle;&quot;</span>&gt;</span></span><br><span class="line">    內容。</span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以僅透過CSS召喚出一個表格，但需要這樣一個間接方法實在是一種恥辱。</p>
+<h3 id="方法2-絕對定位"><a href="#方法2-絕對定位" class="headerlink" title="方法2:絕對定位"></a>方法2:絕對定位</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;position: relative;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;position: absolute; top: 50%; transform: translateY(-50%);&quot;</span>&gt;</span></span><br><span class="line">    內容。</span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>這種方法使用絕對定位來繞過佈局，因為流式佈局無法幫助我們:</p>
+<ol>
+<li>用<code>position: relative</code>標記參考容器。</li>
+<li>用<code>position: absolute; top: 50%</code>將內容邊緣放在中心。</li>
+<li>用<code>transform: translateY(-50%)</code>將內容中心偏移到邊緣。</li>
+</ol>
+<p>此方法的缺點有：</p>
+<ol>
+<li>複雜性：這個方法需要多個 CSS 屬性組合，不夠直觀。</li>
+<li>破壞文檔流：使用絕對定位會將元素從正常文檔流中移除，可能導致佈局問題。</li>
+<li>需要額外的包裝元素：這個方法通常需要一個額外的容器元素。</li>
+<li>不靈活：在某些情況下，這種方法可能不適用，特別是當容器高度不固定時。</li>
+<li>性能考慮：使用 transform 可能在某些情況下引起性能問題。</li>
+<li>不符合語義：這種方法使用了與內容語義無關的 CSS 技巧來實現佈局。</li>
+</ol>
+<p>不過這個方法還是很多開發者在使用，因為</p>
+<ol>
+<li>廣泛支援：這個方法在絕大多數瀏覽器中都能正常工作，包括較舊的版本。</li>
+<li>可靠性：一旦掌握，這個方法在大多數情況下都能可靠地工作。</li>
+<li>靈活性：可以輕易調整以適應不同的情況，如水平置中。</li>
+<li>習慣：許多開發者已經習慣了這種方法，並能快速實現。</li>
+<li>相容性好：不依賴於新的 CSS 特性，因此在各種環境中都能使用。</li>
+<li>問題解決：儘管不完美，但它解決了一個常見的佈局問題。</li>
+</ol>
+<h3 id="方法3-行內內容"><a href="#方法3-行內內容" class="headerlink" title="方法3:行內內容"></a>方法3:行內內容</h3><p>雖然流式佈局不能幫助內容對齊，但它允許在行內進行垂直對齊。那麼為什麼不讓一行和容器一樣高呢?</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;container&quot;</span>&gt;</span></span><br><span class="line">  ::before</span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;content&quot;</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.container</span><span class="selector-pseudo">::before</span> &#123;</span><br><span class="line">  <span class="attribute">content</span>: <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">100%</span>;</span><br><span class="line">  <span class="attribute">display</span>: inline-block;</span><br><span class="line">  <span class="attribute">vertical-align</span>: middle;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.content</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: inline-block;</span><br><span class="line">  <span class="attribute">vertical-align</span>: middle;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>這有一些缺陷:除了犧牲一個偽元素外，開頭還有一個零寬度的<a target="_blank" rel="noopener" href="https://christopheraue.net/design/vertical-align#:~:text=strut">&quot;支柱&quot;字元</a>可能會搞亂東西。</p>
+<h3 id="方法4-單行flexbox"><a href="#方法4-單行flexbox" class="headerlink" title="方法4:單行flexbox"></a>方法4:單行flexbox</h3><p>flexbox在Web出現20年後才廣泛可用。它有兩種模式:單行和多行。在單行模式(預設)下，該行填滿垂直空間，<code>align-items</code>在行內對齊內容。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: flex; align-items: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>或者，讓行變成列，用<code>justify-content</code>對齊項目。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: flex; flex-flow: column; justify-content: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="方法5-多行flexbox"><a href="#方法5-多行flexbox" class="headerlink" title="方法5:多行flexbox"></a>方法5:多行flexbox</h3><p>在多行flexbox中，行不再填滿垂直空間，所以可以用<code>align-content</code>對齊只有1個項目的行。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: flex; flex-flow: row wrap; align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="方法6-網格內容"><a href="#方法6-網格內容" class="headerlink" title="方法6:網格內容"></a>方法6:網格內容</h3><p>網格出現得更晚。對齊變得更簡單。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid; align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="方法7-網格單元格"><a href="#方法7-網格單元格" class="headerlink" title="方法7:網格單元格"></a>方法7:網格單元格</h3><p>注意與前一種方法的細微差別:</p>
+<ul>
+<li><code>align-content</code>將<em>單元格</em>相對於<em>容器</em>置中。</li>
+<li><code>align-items</code>將<em>內容</em>相對於<em>單元格</em>置中，而<em>單元格</em>會拉伸以適應<em>容器</em>。</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid; align-items: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>內容。<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>似乎有很多方法可以做同樣的事情。</p>
+<h3 id="方法8-自動外邊距"><a href="#方法8-自動外邊距" class="headerlink" title="方法8:自動外邊距"></a>方法8:自動外邊距</h3><p>在流式佈局中，<code>margin:auto</code>可以水平置中，但不能垂直置中。flexbox和Grid沒有這個問題。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;display: grid;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;margin-block: auto;&quot;</span>&gt;</span></span><br><span class="line">    內容。</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>不過，我還是很困惑為什麼要設計邊距來控制對齊。</p>
+<h3 id="方法9-2024年的這篇文章"><a href="#方法9-2024年的這篇文章" class="headerlink" title="方法9:2024年的這篇文章"></a>方法9:2024年的這篇文章</h3><p>為什麼瀏覽器一開始就不加入這個功能呢?</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;align-content: center;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">code</span>&gt;</span>align-content<span class="tag">&lt;/<span class="name">code</span>&gt;</span> 現在可以直接使用了!</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>方法1中的表格單元格，像這種方法一樣，也不需要內容包裝器(儘管它需要一個表格包裝器)。我們又回到了起點!</p>
+<p>不過使用上要看瀏覽器是否支援，可以使用以下策略：</p>
+<ol>
+<li>使用特性檢測：<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="string">&#x27;alignContent&#x27;</span> <span class="keyword">in</span> <span class="variable language_">document</span>.<span class="property">documentElement</span>.<span class="property">style</span>) &#123;</span><br><span class="line">  <span class="comment">// 使用新的 align-content 方法</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  <span class="comment">// 使用備用方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>使用 CSS @supports：<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">@supports</span> (<span class="attribute">align-content</span>: center) &#123;</span><br><span class="line">  <span class="selector-class">.container</span> &#123;</span><br><span class="line">    <span class="attribute">align-content</span>: center;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@supports</span> <span class="keyword">not</span> (<span class="attribute">align-content</span>: center) &#123;</span><br><span class="line">  <span class="comment">/* 當樣式不被瀏覽器所支援就套用此處的樣式 */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h3></li>
+</ol>
+<p>以下是所有垂直置中方法</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="selector-tag">p</span>&gt;Various methods for vertical centering. Yellow is <span class="attribute">container</span> and green is <span class="attribute">content</span> wrapper. Note that the first and last methods do not require <span class="selector-tag">a</span> <span class="attribute">content</span> wrapper.&lt;/<span class="selector-tag">p</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">display</span>: table;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> style=&quot;<span class="attribute">display</span>: table-cell; <span class="attribute">vertical-align</span>: middle;&quot;&gt;</span><br><span class="line">    <span class="selector-tag">Table</span> cell with &lt;<span class="selector-tag">code</span>&gt;<span class="attribute">vertical-align</span>&lt;/<span class="selector-tag">code</span>&gt;.</span><br><span class="line">  &lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">position</span>: relative;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot; style=&quot;<span class="attribute">position</span>: absolute; <span class="attribute">top</span>: <span class="number">50%</span>; <span class="attribute">transform</span>: <span class="built_in">translateY</span>(-<span class="number">50%</span>);&quot;&gt;</span><br><span class="line">    &lt;<span class="selector-tag">b</span>&gt;Absolute&lt;/<span class="selector-tag">b</span>&gt; positioning.</span><br><span class="line">  &lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">span</span> style=&quot;<span class="attribute">display</span>: inline-block; <span class="attribute">vertical-align</span>: middle; <span class="attribute">height</span>: <span class="number">100%</span>;&quot;&gt;&lt;/<span class="selector-tag">span</span>&gt;&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot; style=&quot;<span class="attribute">display</span>: inline-block; <span class="attribute">vertical-align</span>: middle;&quot;&gt;</span><br><span class="line">    &lt;<span class="selector-tag">b</span>&gt;Inline&lt;/<span class="selector-tag">b</span>&gt; <span class="attribute">content</span>.</span><br><span class="line">  &lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">display</span>: flex; <span class="attribute">align-items</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot;&gt;Single-<span class="selector-tag">line</span> &lt;<span class="selector-tag">b</span>&gt;flexbox&lt;/<span class="selector-tag">b</span>&gt; (cross axis).&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">display</span>: flex; <span class="attribute">flex-flow</span>: column; <span class="attribute">justify-content</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot;&gt;Single-<span class="selector-tag">line</span> &lt;<span class="selector-tag">b</span>&gt;flexbox&lt;/<span class="selector-tag">b</span>&gt; (<span class="selector-tag">main</span> axis).&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">display</span>: flex; <span class="attribute">flex-flow</span>: row wrap; <span class="attribute">align-content</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot;&gt;Multi-<span class="selector-tag">line</span> &lt;<span class="selector-tag">b</span>&gt;flexbox&lt;/<span class="selector-tag">b</span>&gt; (cross axis).&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">display</span>: grid; <span class="attribute">align-content</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot;&gt;&lt;<span class="selector-tag">b</span>&gt;<span class="attribute">Grid</span>&lt;/<span class="selector-tag">b</span>&gt; <span class="attribute">content</span>.&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">display</span>: grid; <span class="attribute">align-items</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot;&gt;&lt;<span class="selector-tag">b</span>&gt;<span class="attribute">Grid</span>&lt;/<span class="selector-tag">b</span>&gt; cell.&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">display</span>: grid;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">content</span>&quot; style=&quot;<span class="attribute">margin-block</span>: auto;&quot;&gt;</span><br><span class="line">    Auto-&lt;<span class="selector-tag">b</span>&gt;<span class="attribute">margin</span>&lt;/<span class="selector-tag">b</span>&gt;.</span><br><span class="line">  &lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">div</span> class=&quot;<span class="attribute">container</span>&quot; style=&quot;<span class="attribute">align-content</span>: center;&quot;&gt;</span><br><span class="line">  &lt;<span class="selector-tag">code</span>&gt;<span class="attribute">align-content</span>&lt;/<span class="selector-tag">code</span>&gt; just works in <span class="number">2024</span>!</span><br><span class="line">&lt;/<span class="selector-tag">div</span>&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="實現二維對齊"><a href="#實現二維對齊" class="headerlink" title="實現二維對齊"></a>實現二維對齊</h2><p>有沒有一個<em>水平</em>對齊的<strong>單一屬性</strong>?<code>align-content</code>的對應屬性是什麼?讓我們看看各種對齊屬性:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>flow</th>
+<th>flexbox</th>
+<th>grid</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>  align-content</code></td>
+<td>block軸</td>
+<td>交叉軸(行)</td>
+<td>block軸(網格)</td>
+</tr>
+<tr>
+<td><code>justify-content</code></td>
+<td>無效果</td>
+<td>主軸</td>
+<td>inline軸(網格)</td>
+</tr>
+<tr>
+<td><code>  align-items</code></td>
+<td>無效果</td>
+<td>交叉軸(項目)</td>
+<td>block軸(單元格)</td>
+</tr>
+<tr>
+<td><code>justify-items</code></td>
+<td>無效果</td>
+<td>無效果</td>
+<td>inline軸(單元格)</td>
+</tr>
+</tbody></table>
+<p>表:不同佈局中的對齊屬性</p>
+<h3 id="背景-CSS軸術語"><a href="#背景-CSS軸術語" class="headerlink" title="背景:CSS軸術語"></a>背景:CSS軸術語</h3><p><em>block軸</em>通常是<em>垂直的</em>，<em>inline軸</em>是<em>水平的</em>。需要這些術語是因為<a target="_blank" rel="noopener" href="https://build-your-own.org/visual_css/2p40_box_model.html#:~:text=Logical%20properties">垂直<code>writing-mode</code></a>是存在的,所以<strong>block軸和inline軸是相對於文字方向的</strong>。這類似於<em>主軸</em>和<em>交叉軸</em>是相對於flexbox項目方向的。</p>
+<p><strong>結論</strong>: &quot;items&quot;用於可以<em>單獨</em>對齊的內容。在主軸上,flex項目不能單獨對齊,所以是&quot;content&quot;。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CSS/" rel="tag"># CSS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/8b13da19/" rel="prev" title="Docker 容器化進階：自動化部署與 CI&#x2F;CD 實戰指南">
+                  <i class="fa fa-angle-left"></i> Docker 容器化進階：自動化部署與 CI/CD 實戰指南
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/c073a9b5/" rel="next" title="C# 常用命名空間參考指南">
+                  C# 常用命名空間參考指南 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">303k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>
