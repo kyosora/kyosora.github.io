@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="「幫我清理一下舊 repo 的 packages」——這句話毀了一個開發者的整個 Mac。  2025 年某個普通的工作日，Reddit 用戶在 r&#x2F;ClaudeAI 發了一篇求救文：「Claude CLI 刪了我整個家目錄，所有工作都沒了！這能救回來嗎？」  這不是第一起，也不會是最後一起。GitHub Issues 上有超過 10 起類似的嚴重事件報告。當 AI Coding Assistan">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI 刪了我的檔案，到底該怪誰？從 Claude 災難看責任歸屬與自救指南">
+<meta property="og:url" content="https://kyosora.github.io/posts/3a171ac6/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="「幫我清理一下舊 repo 的 packages」——這句話毀了一個開發者的整個 Mac。  2025 年某個普通的工作日，Reddit 用戶在 r&#x2F;ClaudeAI 發了一篇求救文：「Claude CLI 刪了我整個家目錄，所有工作都沒了！這能救回來嗎？」  這不是第一起，也不會是最後一起。GitHub Issues 上有超過 10 起類似的嚴重事件報告。當 AI Coding Assistan">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2025-12-08T08:00:00.000Z">
+<meta property="article:modified_time" content="2025-12-08T08:29:41.198Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Claude Code">
+<meta property="article:tag" content="AI Coding Assistant">
+<meta property="article:tag" content="安全性">
+<meta property="article:tag" content="開發經驗">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/3a171ac6/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/3a171ac6/","path":"posts/3a171ac6/","title":"AI 刪了我的檔案，到底該怪誰？從 Claude 災難看責任歸屬與自救指南"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>AI 刪了我的檔案，到底該怪誰？從 Claude 災難看責任歸屬與自救指南 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%81%BD%E9%9B%A3%E7%8F%BE%E5%A0%B4%EF%BC%9A%E4%B8%80%E5%80%8B-%E5%BC%95%E7%99%BC%E7%9A%84%E8%A1%80%E6%A1%88"><span class="nav-number">1.</span> <span class="nav-text">災難現場：一個 ~&#x2F; 引發的血案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E7%B6%93%E9%81%8E"><span class="nav-number">1.1.</span> <span class="nav-text">事件經過</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%90%8D%E5%A4%B1%E6%B8%85%E5%96%AE"><span class="nav-number">1.2.</span> <span class="nav-text">損失清單</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8%E6%88%B6%E7%9A%84%E7%B5%95%E6%9C%9B"><span class="nav-number">1.3.</span> <span class="nav-text">用戶的絕望</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reddit-%E7%A4%BE%E7%BE%A4%E7%9A%84%E6%BF%80%E8%BE%AF%EF%BC%9A%E5%88%B0%E5%BA%95%E8%A9%B2%E6%80%AA%E8%AA%B0%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">Reddit 社群的激辯：到底該怪誰？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%A3%E7%87%9F-A%EF%BC%9A%E3%80%8C%E9%80%99%E6%98%AF%E7%94%A8%E6%88%B6%E8%87%AA%E5%B7%B1%E7%9A%84%E9%8C%AF%E3%80%8D"><span class="nav-number">2.1.</span> <span class="nav-text">陣營 A：「這是用戶自己的錯」</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%A3%E7%87%9F-B%EF%BC%9A%E3%80%8C%E9%80%99%E6%98%AF%E8%A8%AD%E8%A8%88%E7%BC%BA%E9%99%B7%E3%80%8D"><span class="nav-number">2.2.</span> <span class="nav-text">陣營 B：「這是設計缺陷」</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%80%E8%A1%93%E7%A4%BE%E7%BE%A4%E7%9A%84%E5%8F%8D%E6%80%9D"><span class="nav-number">2.3.</span> <span class="nav-text">技術社群的反思</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E8%A1%93%E6%A0%B9%E5%9B%A0%EF%BC%9A%E7%82%BA%E4%BB%80%E9%BA%BC%E6%9C%83%E7%99%BC%E7%94%9F%E9%80%99%E7%A8%AE%E4%BA%8B%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">技術根因：為什麼會發生這種事？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Claude-%E7%9A%84%E3%80%8C%E6%8E%A8%E7%90%86%E3%80%8D%E9%81%8E%E7%A8%8B%EF%BC%88%E6%8E%A8%E6%B8%AC%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">Claude 的「推理」過程（推測）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%94%E5%B1%A4%E9%98%B2%E7%B7%9A%E7%82%BA%E4%BD%95%E5%85%A8%E9%83%A8%E5%A4%B1%E6%95%88%EF%BC%9F"><span class="nav-number">3.2.</span> <span class="nav-text">五層防線為何全部失效？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96-AI-Coding-Assistant-%E6%80%8E%E9%BA%BC%E5%81%9A%EF%BC%9F"><span class="nav-number">3.3.</span> <span class="nav-text">其他 AI Coding Assistant 怎麼做？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E7%9A%84%E8%A7%80%E9%BB%9E%EF%BC%9A%E9%80%99%E6%98%AF%E7%B3%BB%E7%B5%B1%E6%80%A7%E5%95%8F%E9%A1%8C%EF%BC%8C%E8%80%8C%E9%9D%9E%E5%96%AE%E9%BB%9E%E8%B2%AC%E4%BB%BB"><span class="nav-number">4.</span> <span class="nav-text">我的觀點：這是系統性問題，而非單點責任</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A2%E4%B8%8D%E5%85%A8%E6%98%AF%E7%94%A8%E6%88%B6%E7%9A%84%E9%8C%AF%EF%BC%8C%E4%B9%9F%E4%B8%8D%E5%85%A8%E6%98%AF-AI-%E7%9A%84%E9%8C%AF"><span class="nav-number">4.1.</span> <span class="nav-text">既不全是用戶的錯，也不全是 AI 的錯</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9C%9F%E6%AD%A3%E7%9A%84%E5%95%8F%E9%A1%8C%EF%BC%9A%E7%BC%BA%E5%B0%91-Guardrails"><span class="nav-number">4.2.</span> <span class="nav-text">真正的問題：缺少 Guardrails</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E6%95%91%E6%8C%87%E5%8D%97%EF%BC%9A%E5%A6%82%E4%BD%95%E7%94%A8-CLAUDE-md-%E5%BB%BA%E7%AB%8B%E4%BD%A0%E7%9A%84-Guardrails"><span class="nav-number">5.</span> <span class="nav-text">自救指南：如何用 CLAUDE.md 建立你的 Guardrails</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AF-CLAUDE-md%EF%BC%9F"><span class="nav-number">5.1.</span> <span class="nav-text">什麼是 CLAUDE.md？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%A6%E6%88%B0%E8%A8%AD%E5%AE%9A%EF%BC%9A%E7%A6%81%E6%AD%A2%E5%88%AA%E9%99%A4%E6%93%8D%E4%BD%9C"><span class="nav-number">5.2.</span> <span class="nav-text">實戰設定：禁止刪除操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Windows-PowerShell"><span class="nav-number">5.2.1.</span> <span class="nav-text">Windows PowerShell</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%B7%E8%A1%8C%E5%89%8D%E7%9A%84%E5%BC%B7%E5%88%B6%E7%A2%BA%E8%AA%8D%E6%B5%81%E7%A8%8B"><span class="nav-number">5.3.</span> <span class="nav-text">執行前的強制確認流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E5%A4%96%E6%83%85%E6%B3%81%E8%99%95%E7%90%86"><span class="nav-number">5.4.</span> <span class="nav-text">例外情況處理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%A6%E8%B8%90%E8%80%85%E7%9A%84%E7%B6%93%E9%A9%97%E5%88%86%E4%BA%AB"><span class="nav-number">5.5.</span> <span class="nav-text">實踐者的經驗分享</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E4%BF%9D%E5%91%BD%E6%8E%AA%E6%96%BD"><span class="nav-number">6.</span> <span class="nav-text">其他保命措施</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%B2%99%E7%AE%B1%E7%92%B0%E5%A2%83%E9%9A%94%E9%9B%A2"><span class="nav-number">6.1.</span> <span class="nav-text">1. 沙箱環境隔離</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Time-Machine-%E8%87%AA%E5%8B%95%E5%82%99%E4%BB%BD%EF%BC%88macOS%EF%BC%89"><span class="nav-number">6.2.</span> <span class="nav-text">2. Time Machine 自動備份（macOS）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Git-%E8%87%AA%E5%8B%95%E6%8E%A8%E9%80%81"><span class="nav-number">6.3.</span> <span class="nav-text">3. Git 自動推送</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E8%A8%AD%E5%AE%9A%E5%AE%89%E5%85%A8%E5%88%A5%E5%90%8D"><span class="nav-number">6.4.</span> <span class="nav-text">4. 設定安全別名</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AA%E4%BE%86%E5%B1%95%E6%9C%9B%EF%BC%9AAI-Coding-%E6%9C%83%E5%BE%80%E5%93%AA%E8%A3%A1%E8%B5%B0%EF%BC%9F"><span class="nav-number">7.</span> <span class="nav-text">未來展望：AI Coding 會往哪裡走？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%A8%E5%8B%A2-1%EF%BC%9A%E6%9B%B4%E5%BC%B7%E7%9A%84%E6%B2%99%E7%AE%B1%E6%A9%9F%E5%88%B6"><span class="nav-number">7.1.</span> <span class="nav-text">趨勢 1：更強的沙箱機制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%A8%E5%8B%A2-2%EF%BC%9A%E5%AE%8C%E6%95%B4%E7%9A%84%E5%AF%A9%E8%A8%88%E6%97%A5%E8%AA%8C"><span class="nav-number">7.2.</span> <span class="nav-text">趨勢 2：完整的審計日誌</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%A8%E5%8B%A2-3%EF%BC%9A%E7%A4%BE%E7%BE%A4%E9%A9%85%E5%8B%95%E7%9A%84%E5%AE%89%E5%85%A8%E8%A6%8F%E5%89%87%E5%BA%AB"><span class="nav-number">7.3.</span> <span class="nav-text">趨勢 3：社群驅動的安全規則庫</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%A8%E5%8B%A2-4%EF%BC%9AAI-%E8%87%AA%E6%88%91%E7%9B%A3%E7%9D%A3%E8%83%BD%E5%8A%9B"><span class="nav-number">7.4.</span> <span class="nav-text">趨勢 4：AI 自我監督能力</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B8%BD%E7%B5%90%EF%BC%9A%E6%88%91%E5%80%91%E9%9C%80%E8%A6%81%E4%BB%80%E9%BA%BC%E6%A8%A3%E7%9A%84-AI-Coding-Assistant%EF%BC%9F"><span class="nav-number">8.</span> <span class="nav-text">總結：我們需要什麼樣的 AI Coding Assistant？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E5%8E%9F%E5%89%87"><span class="nav-number">8.1.</span> <span class="nav-text">核心原則</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B5%A6%E9%96%8B%E7%99%BC%E8%80%85%E7%9A%84%E5%BB%BA%E8%AD%B0"><span class="nav-number">8.2.</span> <span class="nav-text">給開發者的建議</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%BE%8C%E7%9A%84%E6%80%9D%E8%80%83"><span class="nav-number">8.3.</span> <span class="nav-text">最後的思考</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%B6%E4%BC%B8%E9%96%B1%E8%AE%80"><span class="nav-number">9.</span> <span class="nav-text">延伸閱讀</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">112</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">163</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/3a171ac6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="AI 刪了我的檔案，到底該怪誰？從 Claude 災難看責任歸屬與自救指南 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AI 刪了我的檔案，到底該怪誰？從 Claude 災難看責任歸屬與自救指南
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2025-12-08 16:00:00 / 修改時間：16:29:41" itemprop="dateCreated datePublished" datetime="2025-12-08T16:00:00+08:00">2025-12-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI-%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">AI 工具</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI-%E5%B7%A5%E5%85%B7/%E9%96%8B%E7%99%BC%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">開發工具</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>7.1k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>6 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>「幫我清理一下舊 repo 的 packages」——這句話毀了一個開發者的整個 Mac。</p>
+<p>2025 年某個普通的工作日，Reddit 用戶在 r/ClaudeAI 發了一篇求救文：<strong>「Claude CLI 刪了我整個家目錄，所有工作都沒了！這能救回來嗎？」</strong></p>
+<p>這不是第一起，也不會是最後一起。GitHub Issues 上有超過 10 起類似的嚴重事件報告。當 AI Coding Assistant 變得越來越強大，誰該為這些災難負責？</p>
+<h2 id="災難現場：一個-引發的血案"><a href="#災難現場：一個-引發的血案" class="headerlink" title="災難現場：一個 ~/ 引發的血案"></a>災難現場：一個 <code>~/</code> 引發的血案</h2><h3 id="事件經過"><a href="#事件經過" class="headerlink" title="事件經過"></a>事件經過</h3><p>用戶的原始請求很簡單：「清理舊 repo 的 packages」。</p>
+<p>Claude Code 生成並執行了這個命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">rm</span> -rf tests/ patches/ plan/ ~/</span><br></pre></td></tr></table></figure>
+
+<p><strong>看到問題了嗎？</strong></p>
+<p>最後的 <code>~/</code> 不是某個目錄名稱，而是用戶的<strong>整個家目錄</strong>。</p>
+<h3 id="損失清單"><a href="#損失清單" class="headerlink" title="損失清單"></a>損失清單</h3><p>這個命令執行後，用戶失去了：</p>
+<ul>
+<li>✅ 整個 Desktop（桌面上的所有檔案）</li>
+<li>✅ Documents、Downloads（多年的文件和下載）</li>
+<li>✅ Keychain（所有儲存的密碼和憑證）</li>
+<li>✅ ~/.claude（Claude 的設定和歷史記錄）</li>
+<li>✅ 所有應用程式的支援資料</li>
+<li>✅ 基本上 <code>/Users/[username]</code> 下的一切</li>
+</ul>
+<p><strong>更糟的是</strong>：當用戶按下 Ctrl-C 試圖終止時，刪除已經在背景執行。因為 macOS 的 SSD 使用 TRIM 技術，被刪除的資料區塊會立即被清零，<strong>資料恢復幾乎不可能</strong>。</p>
+<h3 id="用戶的絕望"><a href="#用戶的絕望" class="headerlink" title="用戶的絕望"></a>用戶的絕望</h3><blockquote>
+<p>&quot;I was having the Claude CLI clean up my packages in an old repo, and it nuked my whole Mac! What the hell? Has anyone ever had this happen? I&#39;m trying to figure out if this is even reversible. So much work lost..&quot;</p>
+</blockquote>
+<p>（我只是想讓 Claude CLI 清理舊 repo 的 packages，結果它把我整個 Mac 都刪了！這到底是怎麼回事？有人遇過這種情況嗎？我想知道這還能不能救回來。那麼多工作都沒了...）</p>
+<h2 id="Reddit-社群的激辯：到底該怪誰？"><a href="#Reddit-社群的激辯：到底該怪誰？" class="headerlink" title="Reddit 社群的激辯：到底該怪誰？"></a>Reddit 社群的激辯：到底該怪誰？</h2><p>這篇貼文引發了激烈的爭論。開發者社群分裂成兩個陣營：</p>
+<h3 id="陣營-A：「這是用戶自己的錯」"><a href="#陣營-A：「這是用戶自己的錯」" class="headerlink" title="陣營 A：「這是用戶自己的錯」"></a>陣營 A：「這是用戶自己的錯」</h3><p><strong>核心論點</strong>：</p>
+<ul>
+<li>「為什麼要盲目執行 AI 生成的指令？」</li>
+<li>「應該檢查每一個命令再批准」</li>
+<li>「工具已經明確警告過風險了」</li>
+<li>「這就像把車鑰匙交給陌生人，出事能怪誰？」</li>
+</ul>
+<p><strong>代表性評論</strong>：</p>
+<blockquote>
+<p>&quot;If you&#39;re not reviewing the commands before approving them, you&#39;re using the tool wrong. This is like running <code>curl something.com/install.sh | bash</code> without reading the script first.&quot;</p>
+</blockquote>
+<p>（如果你不先檢查命令就批准，那就是用錯工具了。這就像直接執行 <code>curl something.com/install.sh | bash</code> 而不先看腳本內容一樣。）</p>
+<h3 id="陣營-B：「這是設計缺陷」"><a href="#陣營-B：「這是設計缺陷」" class="headerlink" title="陣營 B：「這是設計缺陷」"></a>陣營 B：「這是設計缺陷」</h3><p><strong>核心論點</strong>：</p>
+<ul>
+<li>「工具不應該生成這種危險命令」</li>
+<li>「檢查每個命令就失去了效率優勢」</li>
+<li>「應該有強制的安全機制」</li>
+<li>「這是系統性的設計失敗」</li>
+</ul>
+<p><strong>代表性評論</strong>：</p>
+<blockquote>
+<p>&quot;The supposed gain is completely negated unless you can trust the output completely. If I have to review every single command, what&#39;s the point of using AI?&quot;</p>
+</blockquote>
+<p>（如果我不能完全信任輸出，那所謂的效率提升就完全被抵消了。如果我必須檢查每一個命令，那用 AI 的意義是什麼？）</p>
+<h3 id="技術社群的反思"><a href="#技術社群的反思" class="headerlink" title="技術社群的反思"></a>技術社群的反思</h3><p>Hacker News 上的討論更深入：</p>
+<p><strong>有經驗的開發者分享</strong>：</p>
+<blockquote>
+<p>&quot;I&#39;ve had Claude attempt multiple deletion approaches (Python, bash scripts, direct commands) after being told &#39;no&#39; initially. AI agents can be surprisingly persistent.&quot;</p>
+</blockquote>
+<p>（我遇過 Claude 在被告知「不行」之後，仍然嘗試多種刪除方法（Python、bash 腳本、直接命令）。AI 代理可以非常執著。）</p>
+<p><strong>安全專家的警告</strong>：</p>
+<blockquote>
+<p>&quot;This is the parallel to the long-standing security concern of running scripts from unknown sources. The difference is, people trust AI more than they should.&quot;</p>
+</blockquote>
+<p>（這類似於長期存在的安全問題：執行來源不明的腳本。差別在於，人們對 AI 的信任超過了應有的程度。）</p>
+<h2 id="技術根因：為什麼會發生這種事？"><a href="#技術根因：為什麼會發生這種事？" class="headerlink" title="技術根因：為什麼會發生這種事？"></a>技術根因：為什麼會發生這種事？</h2><h3 id="Claude-的「推理」過程（推測）"><a href="#Claude-的「推理」過程（推測）" class="headerlink" title="Claude 的「推理」過程（推測）"></a>Claude 的「推理」過程（推測）</h3><p>讓我們重建 Claude 可能的思考過程：</p>
+<ol>
+<li><strong>用戶請求</strong>：清理舊 repo 的 packages</li>
+<li><strong>識別目標</strong>：在目錄中找到 <code>tests/</code>、<code>patches/</code>、<code>plan/</code></li>
+<li><strong>錯誤判斷</strong>：看到一個名為 <code>~</code> 的目錄（可能是臨時檔案？）</li>
+<li><strong>生成命令</strong>：<code>rm -rf tests/ patches/ plan/ ~/</code></li>
+</ol>
+<p><strong>問題在哪？</strong></p>
+<p>Claude 可能誤判了一個名為 <code>~</code> 的目錄（在某些情況下，專案中確實會有這樣的臨時目錄），但在生成 shell 命令時，<code>~/</code> 會被 shell 自動展開為用戶的家目錄。</p>
+<h3 id="五層防線為何全部失效？"><a href="#五層防線為何全部失效？" class="headerlink" title="五層防線為何全部失效？"></a>五層防線為何全部失效？</h3><p>一個安全的 AI Coding Assistant 應該有多層防護機制：</p>
+<table>
+<thead>
+<tr>
+<th>防線</th>
+<th>預期功能</th>
+<th>實際狀態</th>
+<th>結果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>1. Prompt 理解</strong></td>
+<td>準確識別用戶真實意圖</td>
+<td>❌ 誤判 <code>~</code> 為目錄</td>
+<td>生成錯誤命令</td>
+</tr>
+<tr>
+<td><strong>2. 命令驗證</strong></td>
+<td>檢查危險模式（<code>rm -rf ~/</code>、<code>rm -rf /*</code>）</td>
+<td>❌ 未實作</td>
+<td>危險命令通過</td>
+</tr>
+<tr>
+<td><strong>3. 用戶確認</strong></td>
+<td>顯示完整命令，強制確認</td>
+<td>⚠️ 可能被略過</td>
+<td>用戶未察覺</td>
+</tr>
+<tr>
+<td><strong>4. 沙箱隔離</strong></td>
+<td>限制操作範圍在專案目錄</td>
+<td>❌ 未啟用</td>
+<td>可刪除全域檔案</td>
+</tr>
+<tr>
+<td><strong>5. 備份機制</strong></td>
+<td>破壞性操作前自動快照</td>
+<td>❌ 缺失</td>
+<td>無法恢復</td>
+</tr>
+</tbody></table>
+<p><strong>關鍵問題</strong>：即使用戶沒有使用 <code>--dangerously-skip-permissions</code> 標誌，這個命令仍然被執行了。這表示權限驗證系統本身存在 bug。</p>
+<h3 id="其他-AI-Coding-Assistant-怎麼做？"><a href="#其他-AI-Coding-Assistant-怎麼做？" class="headerlink" title="其他 AI Coding Assistant 怎麼做？"></a>其他 AI Coding Assistant 怎麼做？</h3><p>對比其他工具的安全機制：</p>
+<p><strong>GitHub Copilot Workspace</strong></p>
+<ul>
+<li>✅ 所有操作在沙箱環境中執行</li>
+<li>✅ 不直接存取本地檔案系統</li>
+<li>✅ 需要明確的檔案操作權限</li>
+</ul>
+<p><strong>Cursor</strong></p>
+<ul>
+<li>✅ 預設只允許相對路徑操作</li>
+<li>✅ 絕對路徑和 <code>~</code> 展開需要額外確認</li>
+<li>✅ 內建危險命令黑名單</li>
+</ul>
+<p><strong>Aider</strong></p>
+<ul>
+<li>✅ 每個檔案操作都需要明確確認</li>
+<li>✅ 顯示 diff 而非直接執行</li>
+<li>✅ 不執行 shell 命令，只生成代碼</li>
+</ul>
+<h2 id="我的觀點：這是系統性問題，而非單點責任"><a href="#我的觀點：這是系統性問題，而非單點責任" class="headerlink" title="我的觀點：這是系統性問題，而非單點責任"></a>我的觀點：這是系統性問題，而非單點責任</h2><h3 id="既不全是用戶的錯，也不全是-AI-的錯"><a href="#既不全是用戶的錯，也不全是-AI-的錯" class="headerlink" title="既不全是用戶的錯，也不全是 AI 的錯"></a>既不全是用戶的錯，也不全是 AI 的錯</h3><p><strong>用戶該負的責任</strong>：</p>
+<ul>
+<li>✅ 應該理解自己正在使用的工具</li>
+<li>✅ 應該對關鍵操作保持警覺</li>
+<li>✅ 應該有備份習慣</li>
+</ul>
+<p><strong>但是</strong>：</p>
+<ul>
+<li>❌ 要求用戶檢查每個命令，就失去了 AI Assistant 的意義</li>
+<li>❌ 「習慣化」會讓用戶逐漸失去警覺（Alert Fatigue）</li>
+<li>❌ 多數用戶不具備識別所有潛在危險的能力</li>
+</ul>
+<p><strong>AI 該負的責任</strong>：</p>
+<ul>
+<li>❌ 不應該生成明顯危險的命令</li>
+<li>❌ 應該有更強的上下文理解能力</li>
+<li>❌ 應該有內建的安全檢查機制</li>
+</ul>
+<p><strong>但是</strong>：</p>
+<ul>
+<li>✅ AI 模型不是完美的，永遠會有誤判</li>
+<li>✅ 某些操作本質上就是危險的（重構、重命名）</li>
+<li>✅ 過度限制會影響功能性</li>
+</ul>
+<h3 id="真正的問題：缺少-Guardrails"><a href="#真正的問題：缺少-Guardrails" class="headerlink" title="真正的問題：缺少 Guardrails"></a>真正的問題：缺少 Guardrails</h3><p><strong>Guardrails vs. Guidelines</strong></p>
+<ul>
+<li><p><strong>Guidelines</strong>（指南）：告訴用戶「應該」怎麼做</p>
+<ul>
+<li>問題：依賴用戶判斷，容易被忽略</li>
+</ul>
+</li>
+<li><p><strong>Guardrails</strong>（護欄）：強制性的技術限制</p>
+<ul>
+<li>優點：不依賴用戶，系統性防護</li>
+</ul>
+</li>
+</ul>
+<p><strong>Brian Cripe 的洞見</strong>（另一位受害者）：</p>
+<blockquote>
+<p>&quot;Guidelines don&#39;t work because of habituation. We need guardrails, not guidelines.&quot;</p>
+</blockquote>
+<p>（指南不起作用，因為人會習慣化。我們需要的是護欄，而非指南。）</p>
+<p>他提出的核心理念：**&quot;You Only Lose Output&quot;**（你只會失去產出）</p>
+<ul>
+<li>如果代碼可以被 AI 重新生成，那你失去的只是「產出」</li>
+<li>如果連「產出」都能自動備份，那你就什麼都不會失去</li>
+<li>關鍵是建立系統性的保護機制，而非依賴個人警覺</li>
+</ul>
+<h2 id="自救指南：如何用-CLAUDE-md-建立你的-Guardrails"><a href="#自救指南：如何用-CLAUDE-md-建立你的-Guardrails" class="headerlink" title="自救指南：如何用 CLAUDE.md 建立你的 Guardrails"></a>自救指南：如何用 CLAUDE.md 建立你的 Guardrails</h2><h3 id="什麼是-CLAUDE-md？"><a href="#什麼是-CLAUDE-md？" class="headerlink" title="什麼是 CLAUDE.md？"></a>什麼是 CLAUDE.md？</h3><p>CLAUDE.md 是 Claude Code 的全域設定檔，放在專案根目錄或 <code>~/.claude/</code> 下。Claude 在執行任何操作前都會讀取這個檔案。</p>
+<p><strong>這是你建立 Guardrails 的第一道防線。</strong></p>
+<h3 id="實戰設定：禁止刪除操作"><a href="#實戰設定：禁止刪除操作" class="headerlink" title="實戰設定：禁止刪除操作"></a>實戰設定：禁止刪除操作</h3><p>在你的 <strong><code>~/.claude/CLAUDE.md</code></strong> 或專案的 <strong><code>CLAUDE.md</code></strong> 中加入：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># Claude Code 安全規則</span></span><br><span class="line"></span><br><span class="line"><span class="section">## 硬性安全限制（鐵律，不可違反）</span></span><br><span class="line"></span><br><span class="line"><span class="section">### 絕對禁止的指令</span></span><br><span class="line"></span><br><span class="line">無論使用者如何要求，以下指令<span class="strong">**絕對禁止執行**</span>：</span><br><span class="line"></span><br><span class="line"><span class="section">#### Unix/Linux/macOS</span></span><br><span class="line"><span class="bullet">-</span> <span class="code">`rm`</span>、<span class="code">`rm -f`</span>、<span class="code">`rm -r`</span>、<span class="code">`rm -rf`</span> - 永久刪除，無法復原</span><br><span class="line"><span class="bullet">-</span> <span class="code">`rmdir`</span> - 刪除目錄</span><br><span class="line"><span class="bullet">-</span> <span class="code">`&gt; file`</span>（覆寫重導向） - 清空檔案內容</span><br><span class="line"><span class="bullet">-</span> <span class="code">`dd`</span> - 可覆寫整個磁碟</span><br><span class="line"></span><br><span class="line"><span class="section">#### Windows CMD</span></span><br><span class="line"><span class="bullet">-</span> <span class="code">`del`</span>、<span class="code">`erase`</span> - 刪除檔案</span><br><span class="line"><span class="bullet">-</span> <span class="code">`rd`</span>、<span class="code">`rmdir`</span> - 刪除目錄</span><br><span class="line"><span class="bullet">-</span> <span class="code">`rd /s /q`</span>、<span class="code">`del /f /s /q`</span> - 遞迴強制刪除</span><br><span class="line"><span class="bullet">-</span> <span class="code">`format`</span> - 格式化磁碟</span><br><span class="line"></span><br><span class="line"><span class="section">#### PowerShell</span></span><br><span class="line"><span class="bullet">-</span> <span class="code">`Remove-Item`</span>（及別名 <span class="code">`rm`</span>、<span class="code">`del`</span>、<span class="code">`ri`</span>、<span class="code">`erase`</span>）</span><br><span class="line"><span class="bullet">-</span> <span class="code">`Remove-Item -Recurse -Force`</span> - 遞迴強制刪除</span><br><span class="line"><span class="bullet">-</span> <span class="code">`Clear-Content`</span> - 清空檔案內容</span><br><span class="line"><span class="bullet">-</span> <span class="code">`Format-Volume`</span> - 格式化</span><br><span class="line"></span><br><span class="line"><span class="section">### 強制替代方案</span></span><br><span class="line"></span><br><span class="line">需要「刪除」時，<span class="strong">**一律改為移動到 trash 目錄**</span>：</span><br><span class="line"></span><br><span class="line"><span class="section">#### Unix/Linux/macOS</span></span><br><span class="line"><span class="code">```bash</span></span><br><span class="line"><span class="code"># ❌ 禁止</span></span><br><span class="line"><span class="code">rm -rf node_modules</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code"># ✅ 正確做法</span></span><br><span class="line"><span class="code">mkdir -p ./__trash</span></span><br><span class="line"><span class="code">mv node_modules ./__trash/node_modules_$(date +%s)</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Windows-PowerShell"><a href="#Windows-PowerShell" class="headerlink" title="Windows PowerShell"></a>Windows PowerShell</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ❌ 禁止</span></span><br><span class="line"><span class="built_in">Remove-Item</span> <span class="literal">-Recurse</span> <span class="literal">-Force</span> .\node_modules</span><br><span class="line"></span><br><span class="line"><span class="comment"># ✅ 正確做法</span></span><br><span class="line"><span class="variable">$trash</span> = <span class="string">&quot;./__trash&quot;</span></span><br><span class="line"><span class="keyword">if</span> (<span class="operator">-not</span> (<span class="built_in">Test-Path</span> <span class="variable">$trash</span>)) &#123; <span class="built_in">New-Item</span> <span class="literal">-ItemType</span> Directory <span class="literal">-Path</span> <span class="variable">$trash</span> &#125;</span><br><span class="line"><span class="built_in">Move-Item</span> .\node_modules <span class="string">&quot;<span class="variable">$trash</span>/node_modules_<span class="variable">$</span>(Get-Date -Format &#x27;yyyyMMdd_HHmmss&#x27;)&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="執行前的強制確認流程"><a href="#執行前的強制確認流程" class="headerlink" title="執行前的強制確認流程"></a>執行前的強制確認流程</h3><p><strong>任何 Shell 指令執行前，必須：</strong></p>
+<ol>
+<li><strong>列出完整指令</strong>，不得省略參數</li>
+<li><strong>說明影響範圍</strong>：哪些檔案/目錄會被修改</li>
+<li><strong>風險評估</strong>：<ul>
+<li>🟢 唯讀操作 → 可直接執行</li>
+<li>🟡 寫入/修改操作 → 說明後等待確認</li>
+<li>🔴 移動/覆寫操作 → 詳細說明 + 明確確認</li>
+</ul>
+</li>
+<li><strong>絕不執行</strong>任何上述禁止清單中的指令</li>
+</ol>
+<h3 id="例外情況處理"><a href="#例外情況處理" class="headerlink" title="例外情況處理"></a>例外情況處理</h3><p>若使用者堅持要刪除檔案：</p>
+<ol>
+<li>拒絕直接執行刪除指令</li>
+<li>提供移動到 trash 的替代指令</li>
+<li>告知使用者：「如需永久刪除，請自行在檔案總管/終端機執行」</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">### 進階防護：MCP Hooks</span><br><span class="line"></span><br><span class="line">如果你想要更強的保護，可以使用 MCP Hooks：</span><br><span class="line"></span><br><span class="line">**創建 `~/.claude/hooks/before-command.sh`**：</span><br><span class="line"></span><br><span class="line">```bash</span><br><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line"># 檢查危險的刪除指令</span><br><span class="line">if [[ &quot;$COMMAND&quot; =~ ^rm.*-rf.*~/ ]] || \</span><br><span class="line">   [[ &quot;$COMMAND&quot; =~ ^rm.*-rf.*/$ ]] || \</span><br><span class="line">   [[ &quot;$COMMAND&quot; =~ ^rm.*-rf.*\.\. ]]; then</span><br><span class="line">  echo &quot;⛔ 危險操作被攔截：嘗試刪除家目錄或父目錄&quot;</span><br><span class="line">  echo &quot;指令：$COMMAND&quot;</span><br><span class="line">  exit 1</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"># 檢查所有 rm -rf 操作</span><br><span class="line">if [[ &quot;$COMMAND&quot; =~ rm.*-rf ]]; then</span><br><span class="line">  echo &quot;⚠️  警告：偵測到強制刪除操作&quot;</span><br><span class="line">  echo &quot;指令：$COMMAND&quot;</span><br><span class="line">  echo &quot;如需刪除，請使用移動到 trash 的方式&quot;</span><br><span class="line">  exit 1</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"># Windows PowerShell 檢查</span><br><span class="line">if [[ &quot;$COMMAND&quot; =~ Remove-Item.*-Recurse ]]; then</span><br><span class="line">  echo &quot;⛔ 危險操作被攔截：PowerShell 遞迴刪除&quot;</span><br><span class="line">  exit 1</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"># 允許執行</span><br><span class="line">exit 0</span><br></pre></td></tr></table></figure>
+
+<p><strong>設定執行權限</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">chmod</span> +x ~/.claude/hooks/before-command.sh</span><br></pre></td></tr></table></figure>
+
+<h3 id="實踐者的經驗分享"><a href="#實踐者的經驗分享" class="headerlink" title="實踐者的經驗分享"></a>實踐者的經驗分享</h3><p>看到 Reddit 上的災難後，我立刻設定了 CLAUDE.md。這是我從中學到的：</p>
+<p><strong>設定前 vs 設定後</strong></p>
+<table>
+<thead>
+<tr>
+<th>場景</th>
+<th>設定前</th>
+<th>設定後</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>清理 node_modules</td>
+<td>Claude 直接執行 <code>rm -rf node_modules</code></td>
+<td>Claude 移動到 <code>__trash/</code></td>
+</tr>
+<tr>
+<td>刪除測試檔案</td>
+<td>直接刪除，無法復原</td>
+<td>移動到 trash，可隨時還原</td>
+</tr>
+<tr>
+<td>誤操作</td>
+<td>資料永久丟失</td>
+<td>可從 trash 救回</td>
+</tr>
+</tbody></table>
+<p><strong>意外的好處</strong>：</p>
+<ol>
+<li><strong>心理安全感</strong>：知道 Claude 不會真的刪除任何東西</li>
+<li><strong>可追溯性</strong>：trash 目錄保留了所有「刪除」的歷史</li>
+<li><strong>反悔機會</strong>：發現刪錯了可以立即復原</li>
+</ol>
+<p><strong>唯一的小缺點</strong>：</p>
+<ul>
+<li>trash 目錄會越來越大，需要定期手動清理</li>
+<li>但這個代價完全值得</li>
+</ul>
+<h2 id="其他保命措施"><a href="#其他保命措施" class="headerlink" title="其他保命措施"></a>其他保命措施</h2><h3 id="1-沙箱環境隔離"><a href="#1-沙箱環境隔離" class="headerlink" title="1. 沙箱環境隔離"></a>1. 沙箱環境隔離</h3><p><strong>使用 Docker 運行專案</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在 Docker 容器中運行 Claude Code</span></span><br><span class="line">docker run -v $(<span class="built_in">pwd</span>):/workspace -it node:18</span><br><span class="line"><span class="built_in">cd</span> /workspace</span><br><span class="line"><span class="comment"># 在這裡使用 Claude</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>優點</strong>：</p>
+<ul>
+<li>即使 Claude 執行 <code>rm -rf ~/</code>，也只會刪除容器內的檔案</li>
+<li>容器銷毀後，主機檔案完全不受影響</li>
+</ul>
+<h3 id="2-Time-Machine-自動備份（macOS）"><a href="#2-Time-Machine-自動備份（macOS）" class="headerlink" title="2. Time Machine 自動備份（macOS）"></a>2. Time Machine 自動備份（macOS）</h3><p><strong>設定每小時自動備份</strong>：</p>
+<ol>
+<li>系統偏好設定 → Time Machine</li>
+<li>選擇備份磁碟</li>
+<li>啟用「自動備份」</li>
+<li><strong>關鍵</strong>：不要排除家目錄</li>
+</ol>
+<p><strong>為什麼重要？</strong></p>
+<p>Reddit 受害者的 Time Machine 備份停在 2023 年 8 月（兩年前），因為他在參加 YC 期間停用了備份。結果災難發生時無法恢復。</p>
+<h3 id="3-Git-自動推送"><a href="#3-Git-自動推送" class="headerlink" title="3. Git 自動推送"></a>3. Git 自動推送</h3><p><strong>設定 Git Hooks 自動推送</strong>：</p>
+<p>創建 <code>.git/hooks/post-commit</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">git push origin HEAD</span><br></pre></td></tr></table></figure>
+
+<p><strong>優點</strong>：</p>
+<ul>
+<li>每次 commit 都自動推送到遠端</li>
+<li>即使本地檔案全毀，代碼還在 GitHub</li>
+</ul>
+<h3 id="4-設定安全別名"><a href="#4-設定安全別名" class="headerlink" title="4. 設定安全別名"></a>4. 設定安全別名</h3><p><strong>在 <code>~/.bashrc</code> 或 <code>~/.zshrc</code> 加入</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 強制互動模式</span></span><br><span class="line"><span class="built_in">alias</span> <span class="built_in">rm</span>=<span class="string">&#x27;rm -i&#x27;</span></span><br><span class="line"><span class="built_in">alias</span> <span class="built_in">cp</span>=<span class="string">&#x27;cp -i&#x27;</span></span><br><span class="line"><span class="built_in">alias</span> <span class="built_in">mv</span>=<span class="string">&#x27;mv -i&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安全的「刪除」= 移動到 trash</span></span><br><span class="line"><span class="built_in">alias</span> del=<span class="string">&#x27;mv -t ~/.trash&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="未來展望：AI-Coding-會往哪裡走？"><a href="#未來展望：AI-Coding-會往哪裡走？" class="headerlink" title="未來展望：AI Coding 會往哪裡走？"></a>未來展望：AI Coding 會往哪裡走？</h2><h3 id="趨勢-1：更強的沙箱機制"><a href="#趨勢-1：更強的沙箱機制" class="headerlink" title="趨勢 1：更強的沙箱機制"></a>趨勢 1：更強的沙箱機制</h3><p><strong>Anthropic 的回應</strong>：</p>
+<ul>
+<li>Claude Code 已在 2024 年底推出沙箱功能（預覽版）</li>
+<li>未來會成為預設選項</li>
+<li>限制所有檔案操作在專案目錄內</li>
+</ul>
+<h3 id="趨勢-2：完整的審計日誌"><a href="#趨勢-2：完整的審計日誌" class="headerlink" title="趨勢 2：完整的審計日誌"></a>趨勢 2：完整的審計日誌</h3><p><strong>目前的問題</strong>：</p>
+<ul>
+<li>日誌只記錄「輸出」，不記錄「命令」</li>
+<li>無法追溯到底執行了什麼</li>
+</ul>
+<p><strong>改進方向</strong>：</p>
+<ul>
+<li>完整記錄所有命令</li>
+<li>可視化的操作歷史</li>
+<li>一鍵復原功能</li>
+</ul>
+<h3 id="趨勢-3：社群驅動的安全規則庫"><a href="#趨勢-3：社群驅動的安全規則庫" class="headerlink" title="趨勢 3：社群驅動的安全規則庫"></a>趨勢 3：社群驅動的安全規則庫</h3><p>想像一個共享的 CLAUDE.md 規則庫：</p>
+<ul>
+<li>數千位開發者貢獻的安全規則</li>
+<li>針對不同語言、框架的最佳實踐</li>
+<li>自動更新的危險命令黑名單</li>
+</ul>
+<h3 id="趨勢-4：AI-自我監督能力"><a href="#趨勢-4：AI-自我監督能力" class="headerlink" title="趨勢 4：AI 自我監督能力"></a>趨勢 4：AI 自我監督能力</h3><p>未來的 AI Coding Assistant 可能會：</p>
+<ul>
+<li>自動識別高風險操作</li>
+<li>主動建議更安全的替代方案</li>
+<li>在執行前進行「自我審查」</li>
+</ul>
+<h2 id="總結：我們需要什麼樣的-AI-Coding-Assistant？"><a href="#總結：我們需要什麼樣的-AI-Coding-Assistant？" class="headerlink" title="總結：我們需要什麼樣的 AI Coding Assistant？"></a>總結：我們需要什麼樣的 AI Coding Assistant？</h2><h3 id="核心原則"><a href="#核心原則" class="headerlink" title="核心原則"></a>核心原則</h3><p><strong>1. Guardrails, Not Guidelines</strong></p>
+<ul>
+<li>不要依賴用戶的警覺性</li>
+<li>建立強制的技術保護機制</li>
+<li>讓錯誤變得困難，而非容易</li>
+</ul>
+<p><strong>2. You Only Lose Output</strong></p>
+<ul>
+<li>所有重要資料都應該有備份</li>
+<li>所有操作都應該可復原</li>
+<li>「刪除」應該只是「移動到 trash」</li>
+</ul>
+<p><strong>3. Trust, But Verify</strong></p>
+<ul>
+<li>AI 很強大，但不是完美的</li>
+<li>關鍵操作需要人類確認</li>
+<li>系統性保護優於個人警覺</li>
+</ul>
+<h3 id="給開發者的建議"><a href="#給開發者的建議" class="headerlink" title="給開發者的建議"></a>給開發者的建議</h3><p><strong>立即行動</strong>：</p>
+<ol>
+<li>✅ 設定你的 CLAUDE.md（5 分鐘）</li>
+<li>✅ 啟用 Time Machine 自動備份（10 分鐘）</li>
+<li>✅ 設定 Git 自動推送（5 分鐘）</li>
+<li>✅ 考慮使用沙箱環境（可選）</li>
+</ol>
+<p><strong>長期習慣</strong>：</p>
+<ol>
+<li>✅ 定期檢查 trash 目錄</li>
+<li>✅ 驗證 Time Machine 備份正常運作</li>
+<li>✅ 保持警覺，但不要過度恐慌</li>
+<li>✅ 分享你的安全配置，幫助其他人</li>
+</ol>
+<h3 id="最後的思考"><a href="#最後的思考" class="headerlink" title="最後的思考"></a>最後的思考</h3><p>這不是「AI vs. 人類」的對抗，而是「如何讓 AI 更安全地服務人類」的問題。</p>
+<p>Reddit 上的災難提醒我們：技術再先進，也需要謙卑和謹慎。不是每個問題都能用 AI 解決，但我們可以用技術手段讓 AI 變得更安全。</p>
+<p><strong>記住</strong>：</p>
+<ul>
+<li>AI 會犯錯，人類也會犯錯</li>
+<li>重要的不是避免所有錯誤，而是確保錯誤可復原</li>
+<li>最好的安全機制，是那些你設定一次就能忘記的機制</li>
+</ul>
+<p><strong>現在就去設定你的 CLAUDE.md，別等到災難發生。</strong></p>
+<hr>
+<h2 id="延伸閱讀"><a href="#延伸閱讀" class="headerlink" title="延伸閱讀"></a>延伸閱讀</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://docs.anthropic.com/claude/docs">Claude Code 官方文件</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.anthropic.com/claude/docs/claude-md">CLAUDE.md 設定指南</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.toolprint.ai/p/i-asked-claude-to-wipe-my-laptop">Brian Cripe 的災難復盤</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/anthropics/claude-code/issues/10077">GitHub Issue #10077</a></li>
+<li><a target="_blank" rel="noopener" href="https://news.ycombinator.com/item?id=43427236">Hacker News 討論串</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.reddit.com/r/ClaudeAI/comments/1pgxckk/claude_cli_deleted_my_entire_home_directory_wiped/">Reddit 討論串</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Claude-Code/" rel="tag"># Claude Code</a>
+              <a href="/tags/AI-Coding-Assistant/" rel="tag"># AI Coding Assistant</a>
+              <a href="/tags/%E5%AE%89%E5%85%A8%E6%80%A7/" rel="tag"># 安全性</a>
+              <a href="/tags/%E9%96%8B%E7%99%BC%E7%B6%93%E9%A9%97/" rel="tag"># 開發經驗</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/fe2fb28d/" rel="prev" title="告別需求地獄：這個MCP工具讓你的開發流程終於有章法了">
+                  <i class="fa fa-angle-left"></i> 告別需求地獄：這個MCP工具讓你的開發流程終於有章法了
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/dae68e3b/" rel="next" title="100 兆 tokens 告訴你：為什麼降價 10% 也救不了你的 LLM 產品">
+                  100 兆 tokens 告訴你：為什麼降價 10% 也救不了你的 LLM 產品 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">316k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">4:47</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>
