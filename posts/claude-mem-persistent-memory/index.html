@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="你有沒有過這種經驗：  花了半小時跟 Claude Code 說清楚你的專案架構，解釋為什麼這裡不用 ORM、那裡要用自定義的錯誤格式、這個 naming convention 有歷史原因不要改——然後隔天開新 session，一切歸零。  它不記得。你得再說一遍。  這不是 Claude 的問題，是 LLM 的根本限制：每個 session 都是一個全新的對話，沒有上一次的任何記憶。你在 CLA">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Claude Code 每次開新對話都在「失憶」？這個工具讓它記住你說過的每件事">
+<meta property="og:url" content="https://kyosora.github.io/posts/claude-mem-persistent-memory/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="你有沒有過這種經驗：  花了半小時跟 Claude Code 說清楚你的專案架構，解釋為什麼這裡不用 ORM、那裡要用自定義的錯誤格式、這個 naming convention 有歷史原因不要改——然後隔天開新 session，一切歸零。  它不記得。你得再說一遍。  這不是 Claude 的問題，是 LLM 的根本限制：每個 session 都是一個全新的對話，沒有上一次的任何記憶。你在 CLA">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2026-02-25T07:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-25T07:06:50.648Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Claude Code">
+<meta property="article:tag" content="AI 工具">
+<meta property="article:tag" content="開發效率">
+<meta property="article:tag" content="MCP">
+<meta property="article:tag" content="記憶系統">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/claude-mem-persistent-memory/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/claude-mem-persistent-memory/","path":"posts/claude-mem-persistent-memory/","title":"Claude Code 每次開新對話都在「失憶」？這個工具讓它記住你說過的每件事"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Claude Code 每次開新對話都在「失憶」？這個工具讓它記住你說過的每件事 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%83%E5%9C%A8%E8%83%8C%E5%BE%8C%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC"><span class="nav-number">1.</span> <span class="nav-text">它在背後做了什麼</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%8E%E9%BA%BC%E6%90%9C%E5%B0%8B%E9%81%8E%E5%8E%BB%E7%9A%84%E8%A8%98%E6%86%B6"><span class="nav-number">2.</span> <span class="nav-text">怎麼搜尋過去的記憶</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%9D%E5%8F%AA%E8%A6%81%E4%B8%80%E5%80%8B%E6%8C%87%E4%BB%A4"><span class="nav-number">3.</span> <span class="nav-text">安裝只要一個指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%A0%E4%B8%8D%E6%83%B3%E8%A2%AB%E8%A8%98%E4%BD%8F%E7%9A%84%E6%9D%B1%E8%A5%BF%EF%BC%8C%E7%94%A8-lt-private-gt-%E5%8C%85%E8%B5%B7%E4%BE%86"><span class="nav-number">4.</span> <span class="nav-text">你不想被記住的東西，用 &lt;private&gt; 包起來</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8-Web-UI-%E7%9C%8B-Claude-%E7%9A%84%E3%80%8C%E8%85%A6%E8%A2%8B%E3%80%8D"><span class="nav-number">5.</span> <span class="nav-text">用 Web UI 看 Claude 的「腦袋」</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%81%A9%E5%90%88%E5%93%AA%E7%A8%AE%E4%BA%BA%E7%94%A8"><span class="nav-number">6.</span> <span class="nav-text">適合哪種人用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B8%BD%E7%B5%90"><span class="nav-number">7.</span> <span class="nav-text">總結</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">117</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">173</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/claude-mem-persistent-memory/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Claude Code 每次開新對話都在「失憶」？這個工具讓它記住你說過的每件事 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Claude Code 每次開新對話都在「失憶」？這個工具讓它記住你說過的每件事
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2026-02-25 15:00:00 / 修改時間：15:06:50" itemprop="dateCreated datePublished" datetime="2026-02-25T15:00:00+08:00">2026-02-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/%E9%96%8B%E7%99%BC%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">開發工具</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>你有沒有過這種經驗：</p>
+<p>花了半小時跟 Claude Code 說清楚你的專案架構，解釋為什麼這裡不用 ORM、那裡要用自定義的錯誤格式、這個 naming convention 有歷史原因不要改——然後隔天開新 session，一切歸零。</p>
+<p>它不記得。你得再說一遍。</p>
+<p>這不是 Claude 的問題，是 LLM 的根本限制：<strong>每個 session 都是一個全新的對話，沒有上一次的任何記憶</strong>。你在 CLAUDE.md 寫的東西只能覆蓋靜態規範，卻沒辦法保留「上週我們決定把 API 分層重構，目前做到一半」這種動態的工作狀態。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/thedotmack/claude-mem">claude-mem</a> 就是為了解決這件事而生的。</p>
+<hr>
+<h2 id="它在背後做了什麼"><a href="#它在背後做了什麼" class="headerlink" title="它在背後做了什麼"></a>它在背後做了什麼</h2><p>安裝之後，claude-mem 會在 Claude Code 的整個生命週期裡掛上 <strong>5 個自動化 hook</strong>：</p>
+<ul>
+<li><strong>SessionStart</strong>：新 session 開始，自動把過去相關記憶注入進來</li>
+<li><strong>UserPromptSubmit</strong>：你每次送出訊息，它都在旁邊記錄</li>
+<li><strong>PostToolUse</strong>：Claude 每次用工具之後，觀察結果被自動捕捉</li>
+<li><strong>Stop</strong>：Claude 停止回應時，這段互動被整理壓縮</li>
+<li><strong>SessionEnd</strong>：session 結束，把這次的重要發現存進資料庫</li>
+</ul>
+<p>這些全部在背景自動執行，你不需要手動做任何事。</p>
+<p>存下來的東西不是原始對話記錄——claude-mem 會用 AI 先做語義壓縮，把「這次做了什麼、發現了什麼、決定了什麼」提煉出來存進 SQLite。搜尋的時候再透過 Chroma 向量資料庫做混合搜尋（語義 + 關鍵字），讓過去的記憶能被準確召回。</p>
+<hr>
+<h2 id="怎麼搜尋過去的記憶"><a href="#怎麼搜尋過去的記憶" class="headerlink" title="怎麼搜尋過去的記憶"></a>怎麼搜尋過去的記憶</h2><p>claude-mem 提供 4 個 MCP 工具，設計成一個 <strong>3 層查詢工作流</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">第一層：search(query)</span><br><span class="line">→ 用 50-100 tokens 取得搜尋結果索引（ID 清單）</span><br><span class="line"></span><br><span class="line">第二層：timeline(anchor=ID)</span><br><span class="line">→ 取得某個結果前後的時間軸脈絡</span><br><span class="line"></span><br><span class="line">第三層：get_observations([IDs])</span><br><span class="line">→ 針對你真正需要的 ID，抓完整細節（每筆約 500-1,000 tokens）</span><br></pre></td></tr></table></figure>
+
+<p>這個設計很聰明：<strong>先篩選，再取詳情</strong>。不是一次把所有記憶都塞進 context，而是讓 Claude 先看摘要索引、決定哪些值得深挖，才去取完整內容。官方說這樣可以省下 <strong>約 10 倍的 token 消耗</strong>。</p>
+<hr>
+<h2 id="安裝只要一個指令"><a href="#安裝只要一個指令" class="headerlink" title="安裝只要一個指令"></a>安裝只要一個指令</h2><p>在 Claude Code session 裡執行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/plugin marketplace add thedotmack/claude-mem</span><br><span class="line">/plugin install claude-mem</span><br></pre></td></tr></table></figure>
+
+<p>重啟 Claude Code 之後，hook 自動生效。從下一個 session 開始，它就會默默在背後記錄。</p>
+<blockquote>
+<p><strong>注意</strong>：用 <code>npm install -g claude-mem</code> 只會裝 SDK library，<strong>不會啟動 hook 和 worker 服務</strong>。一定要用上面的 <code>/plugin</code> 指令。</p>
+</blockquote>
+<p>系統需求：Node.js 18+、最新版 Claude Code。Bun 和 uv 如果沒有會自動安裝，不用自己準備。</p>
+<hr>
+<h2 id="你不想被記住的東西，用-lt-private-gt-包起來"><a href="#你不想被記住的東西，用-lt-private-gt-包起來" class="headerlink" title="你不想被記住的東西，用 &lt;private&gt; 包起來"></a>你不想被記住的東西，用 <code>&lt;private&gt;</code> 包起來</h2><p>有些對話內容你不想讓它留存——臨時的測試代碼、你自己罵幾句出氣的抱怨、包含客戶資訊的討論。</p>
+<p>用這個語法就能排除：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;private&gt;</span><br><span class="line">這段不要記進去</span><br><span class="line">&lt;/private&gt;</span><br></pre></td></tr></table></figure>
+
+<p>claude-mem 會跳過 <code>&lt;private&gt;</code> 標籤裡的內容，不進行捕捉和儲存。</p>
+<hr>
+<h2 id="用-Web-UI-看-Claude-的「腦袋」"><a href="#用-Web-UI-看-Claude-的「腦袋」" class="headerlink" title="用 Web UI 看 Claude 的「腦袋」"></a>用 Web UI 看 Claude 的「腦袋」</h2><p>Worker 服務跑起來之後，打開 <code>http://localhost:37777</code> 可以看到一個即時更新的記憶流 UI。</p>
+<p>你可以看到：</p>
+<ul>
+<li>每個 session 記錄了哪些觀察</li>
+<li>AI 壓縮後的摘要長什麼樣</li>
+<li>哪些記憶被成功召回並注入到當前 session</li>
+</ul>
+<p>對於理解「它現在知道什麼」非常直觀。</p>
+<hr>
+<h2 id="適合哪種人用"><a href="#適合哪種人用" class="headerlink" title="適合哪種人用"></a>適合哪種人用</h2><p><strong>最有感的場景</strong>：</p>
+<ul>
+<li>長期進行中的個人專案，每天都在跟 Claude Code 互動</li>
+<li>做了很多架構決策、有很多「這樣做的原因」需要保留</li>
+<li>討厭每次新 session 都要重新解釋同樣的背景資訊</li>
+</ul>
+<p><strong>比較沒差的場景</strong>：</p>
+<ul>
+<li>用 Claude 處理一次性的、互相獨立的任務</li>
+<li>專案有非常詳細的 CLAUDE.md，靜態規範已經夠用</li>
+<li>對話主要是問問題而不是持續推進一件事</li>
+</ul>
+<hr>
+<h2 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h2><p>claude-mem 解決的是 AI 開發工具最根本的一個痛點：<strong>context window 的邊界讓 AI 永遠活在當下</strong>。</p>
+<p>它用 5 個 lifecycle hook 自動記錄、AI 壓縮摘要、向量搜尋召回，讓 Claude Code 在下一個 session 開始時，能帶著「上次我們做到哪」的記憶繼續工作。</p>
+<p>核心要點：</p>
+<ul>
+<li>全自動運作，不需要手動整理</li>
+<li>3 層查詢設計讓 token 消耗保持可控</li>
+<li><code>&lt;private&gt;</code> 標籤給你完整的隱私控制</li>
+<li>Web UI 讓記憶系統的狀態一目了然</li>
+</ul>
+<p>如果你是 Claude Code 的重度使用者，試試看——你可能會訝異於它記得多少你以為早就消失的東西。</p>
+<hr>
+<p><strong>資源</strong></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/thedotmack/claude-mem">claude-mem GitHub</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.claude-mem.ai/">官方文件</a></li>
+<li><a target="_blank" rel="noopener" href="https://discord.com/invite/J4wttp9vDu">Discord 社群</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Claude-Code/" rel="tag"># Claude Code</a>
+              <a href="/tags/AI-%E5%B7%A5%E5%85%B7/" rel="tag"># AI 工具</a>
+              <a href="/tags/%E9%96%8B%E7%99%BC%E6%95%88%E7%8E%87/" rel="tag"># 開發效率</a>
+              <a href="/tags/MCP/" rel="tag"># MCP</a>
+              <a href="/tags/%E8%A8%98%E6%86%B6%E7%B3%BB%E7%B5%B1/" rel="tag"># 記憶系統</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/everything-claude-code/" rel="prev" title="你還在每次重新教 Claude Code 你的開發習慣嗎？這個 51k Stars 的配置包幫你省掉這件事">
+                  <i class="fa fa-angle-left"></i> 你還在每次重新教 Claude Code 你的開發習慣嗎？這個 51k Stars 的配置包幫你省掉這件事
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">330k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">5:01</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>
