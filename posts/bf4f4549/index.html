@@ -138,16 +138,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">117</span>
+          <span class="site-state-item-count">124</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-count">64</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">173</span>
+        <span class="site-state-item-count">192</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -250,23 +250,30 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h2 id="當你的網站突然拒絕訪客，顯示-401-3-錯誤"><a href="#當你的網站突然拒絕訪客，顯示-401-3-錯誤" class="headerlink" title="當你的網站突然拒絕訪客，顯示 401.3 錯誤"></a>當你的網站突然拒絕訪客，顯示 401.3 錯誤</h2><p>你是否曾經碰到過這樣的情境：辛苦架設好的網站部署到 IIS 上，一切設定看起來都很完美，但當你試著從瀏覽器訪問時，卻看到這樣讓人頭痛的錯誤訊息：</p>
+    <div class="post-body" itemprop="articleBody"><h2 id="當你的網站突然拒絕訪客，顯示-401-3-錯誤">當你的網站突然拒絕訪客，顯示 401.3 錯誤</h2>
+<p>你是否曾經碰到過這樣的情境：辛苦架設好的網站部署到 IIS 上，一切設定看起來都很完美，但當你試著從瀏覽器訪問時，卻看到這樣讓人頭痛的錯誤訊息：</p>
 <blockquote>
-<p>HTTP 錯誤 401.3 - Unauthorized<br>因為網頁伺服器上此資源的存取控制清單 (ACL) 設定或加密設定的緣故，您沒有檢視此目錄或網頁的權限。</p>
+<p>HTTP 錯誤 401.3 - Unauthorized<br>
+因為網頁伺服器上此資源的存取控制清單 (ACL) 設定或加密設定的緣故，您沒有檢視此目錄或網頁的權限。</p>
 </blockquote>
 <p>這個讓人抓狂的錯誤往往會讓你懷疑自己是不是漏了什麼重要設定，特別是當你確信已經正確配置網站的其他部分時。今天，我們就要徹底解析這個常見但令人困擾的問題，並解釋為什麼簡單地新增 IUSR 權限往往就能解決它。</p>
-<h2 id="理解-HTTP-401-3-錯誤的真正含義"><a href="#理解-HTTP-401-3-錯誤的真正含義" class="headerlink" title="理解 HTTP 401.3 錯誤的真正含義"></a>理解 HTTP 401.3 錯誤的真正含義</h2><p>在深入解決方案前，讓我們先了解這個錯誤的真正含義。HTTP 401.3 是 IIS 特有的狀態碼，它表示「由於 ACL 限制，您的請求被拒絕」。與一般的 401 錯誤（表示認證失敗）不同，401.3 特別指出這是檔案系統權限問題，而非網站認證機制的問題。</p>
+<h2 id="理解-HTTP-401-3-錯誤的真正含義">理解 HTTP 401.3 錯誤的真正含義</h2>
+<p>在深入解決方案前，讓我們先了解這個錯誤的真正含義。HTTP 401.3 是 IIS 特有的狀態碼，它表示「由於 ACL 限制，您的請求被拒絕」。與一般的 401 錯誤（表示認證失敗）不同，401.3 特別指出這是檔案系統權限問題，而非網站認證機制的問題。</p>
 <p>簡單來說，這個錯誤是在告訴你：「IIS 想要提供你請求的資源，但它沒有足夠的系統權限來讀取或存取這些檔案。」</p>
-<h2 id="IUSR：IIS-中默默付出的匿名英雄"><a href="#IUSR：IIS-中默默付出的匿名英雄" class="headerlink" title="IUSR：IIS 中默默付出的匿名英雄"></a>IUSR：IIS 中默默付出的匿名英雄</h2><p>這就是 IUSR 帳戶登場的時刻。但 IUSR 到底是什麼？為什麼它如此重要？</p>
+<h2 id="IUSR：IIS-中默默付出的匿名英雄">IUSR：IIS 中默默付出的匿名英雄</h2>
+<p>這就是 IUSR 帳戶登場的時刻。但 IUSR 到底是什麼？為什麼它如此重要？</p>
 <p>IUSR（Internet User）是 IIS 中用於處理匿名訪問的預設帳戶。每當有人在未登入的狀態下訪問你的網站時，IIS 就會以 IUSR 的身分來嘗試存取網站資源。這就像餐廳的服務生：當客人（網站訪客）點餐時，服務生（IUSR）需要有足夠的權限進入廚房（網站檔案）取得所需的菜餚。</p>
 <p>當你的網站資料夾沒有賦予 IUSR 適當的存取權限時，這位「服務生」就無法取得客人所需的資源，從而導致 401.3 錯誤的發生。</p>
-<h2 id="解決方案：授予-IUSR-適當的權限"><a href="#解決方案：授予-IUSR-適當的權限" class="headerlink" title="解決方案：授予 IUSR 適當的權限"></a>解決方案：授予 IUSR 適當的權限</h2><p>解決這個問題的方法很直接：我們需要賦予 IUSR 帳戶足夠的權限來存取網站資源。以下是詳細步驟：</p>
-<h3 id="1-找到你的網站根目錄"><a href="#1-找到你的網站根目錄" class="headerlink" title="1. 找到你的網站根目錄"></a>1. 找到你的網站根目錄</h3><p>首先，找到你的網站檔案所在的實體路徑。通常是在：</p>
+<h2 id="解決方案：授予-IUSR-適當的權限">解決方案：授予 IUSR 適當的權限</h2>
+<p>解決這個問題的方法很直接：我們需要賦予 IUSR 帳戶足夠的權限來存取網站資源。以下是詳細步驟：</p>
+<h3 id="1-找到你的網站根目錄">1. 找到你的網站根目錄</h3>
+<p>首先，找到你的網站檔案所在的實體路徑。通常是在：</p>
 <ul>
 <li><code>C:\inetpub\wwwroot\你的網站名稱</code></li>
 <li>或是你自定義的其他位置</li>
 </ul>
-<h3 id="2-設定資料夾權限"><a href="#2-設定資料夾權限" class="headerlink" title="2. 設定資料夾權限"></a>2. 設定資料夾權限</h3><ol>
+<h3 id="2-設定資料夾權限">2. 設定資料夾權限</h3>
+<ol>
 <li>在檔案總管中，右鍵點選該資料夾</li>
 <li>選擇「內容」</li>
 <li>切換到「安全性」頁籤</li>
@@ -276,28 +283,34 @@
 <li>點選「檢查名稱」，系統會自動找到完整的帳戶名稱</li>
 <li>點選「確定」</li>
 </ol>
-<h3 id="3-設定適當的權限級別"><a href="#3-設定適當的權限級別" class="headerlink" title="3. 設定適當的權限級別"></a>3. 設定適當的權限級別</h3><p>對於 IUSR 帳戶，通常建議設定以下權限：</p>
+<h3 id="3-設定適當的權限級別">3. 設定適當的權限級別</h3>
+<p>對於 IUSR 帳戶，通常建議設定以下權限：</p>
 <ul>
 <li>✅ 讀取與執行</li>
 <li>✅ 列出資料夾內容</li>
 <li>✅ 讀取</li>
 </ul>
 <p>對於大多數靜態網站而言，這些權限已經足夠。如果你的網站需要上傳功能或寫入操作，你可能還需要加上「寫入」權限，但僅限於需要的特定資料夾，避免賦予過多不必要的權限。</p>
-<h3 id="4-應用變更"><a href="#4-應用變更" class="headerlink" title="4. 應用變更"></a>4. 應用變更</h3><p>點選「確定」數次，確保所有變更都已被應用。</p>
-<h3 id="5-重啟-IIS"><a href="#5-重啟-IIS" class="headerlink" title="5. 重啟 IIS"></a>5. 重啟 IIS</h3><ol>
+<h3 id="4-應用變更">4. 應用變更</h3>
+<p>點選「確定」數次，確保所有變更都已被應用。</p>
+<h3 id="5-重啟-IIS">5. 重啟 IIS</h3>
+<ol>
 <li>以管理員身分運行命令提示字元</li>
 <li>輸入 <code>iisreset</code> 命令</li>
 <li>等待 IIS 重新啟動完成</li>
 </ol>
 <p>完成以上步驟後，再次訪問你的網站，401.3 錯誤應該已經消失了。</p>
-<h2 id="IUSR-vs-IIS-IUSRS：兩種帳戶，不同使用時機"><a href="#IUSR-vs-IIS-IUSRS：兩種帳戶，不同使用時機" class="headerlink" title="IUSR vs. IIS_IUSRS：兩種帳戶，不同使用時機"></a>IUSR vs. IIS_IUSRS：兩種帳戶，不同使用時機</h2><p>在處理 IIS 權限問題時，經常會遇到兩個關鍵帳戶：IUSR 和 IIS_IUSRS。很多工程師對這兩者的區別和使用時機感到困惑。如果你已經添加了 IUSR 並解決了問題，你可能會想：「那 IIS_IUSRS 是否必要？」讓我們來澄清這個常見疑問。</p>
-<h3 id="什麼是-IIS-IUSRS-群組？"><a href="#什麼是-IIS-IUSRS-群組？" class="headerlink" title="什麼是 IIS_IUSRS 群組？"></a>什麼是 IIS_IUSRS 群組？</h3><p>如果將 IUSR 比喻為「匿名訪客的服務生」，那麼 IIS_IUSRS 就像是「整個服務團隊」：</p>
+<h2 id="IUSR-vs-IIS-IUSRS：兩種帳戶，不同使用時機">IUSR vs. IIS_IUSRS：兩種帳戶，不同使用時機</h2>
+<p>在處理 IIS 權限問題時，經常會遇到兩個關鍵帳戶：IUSR 和 IIS_IUSRS。很多工程師對這兩者的區別和使用時機感到困惑。如果你已經添加了 IUSR 並解決了問題，你可能會想：「那 IIS_IUSRS 是否必要？」讓我們來澄清這個常見疑問。</p>
+<h3 id="什麼是-IIS-IUSRS-群組？">什麼是 IIS_IUSRS 群組？</h3>
+<p>如果將 IUSR 比喻為「匿名訪客的服務生」，那麼 IIS_IUSRS 就像是「整個服務團隊」：</p>
 <ul>
 <li><strong>IIS_IUSRS</strong> 是一個 Windows 安全群組，包含了所有 IIS 相關的帳戶</li>
 <li>這個群組中自動包含了 IUSR 以及所有應用程式集區的身分</li>
 <li>在新版 Windows Server 和 IIS 中，它替代了舊版中的 IIS_WPG 群組</li>
 </ul>
-<h3 id="何時只需要-IUSR？"><a href="#何時只需要-IUSR？" class="headerlink" title="何時只需要 IUSR？"></a>何時只需要 IUSR？</h3><p>在以下情況下，只設定 IUSR 權限就足夠了：</p>
+<h3 id="何時只需要-IUSR？">何時只需要 IUSR？</h3>
+<p>在以下情況下，只設定 IUSR 權限就足夠了：</p>
 <ul>
 <li>網站只使用匿名驗證模式</li>
 <li>應用程式集區使用預設身分 (ApplicationPoolIdentity)</li>
@@ -305,7 +318,8 @@
 <li>你希望遵循最小權限原則，只授予必要的最低權限</li>
 </ul>
 <p>大多數基本的靜態網站或簡單的動態網站都屬於這種情況。</p>
-<h3 id="何時需要添加-IIS-IUSRS？"><a href="#何時需要添加-IIS-IUSRS？" class="headerlink" title="何時需要添加 IIS_IUSRS？"></a>何時需要添加 IIS_IUSRS？</h3><p>在以下情況下，添加 IIS_IUSRS 群組可能更為適合：</p>
+<h3 id="何時需要添加-IIS-IUSRS？">何時需要添加 IIS_IUSRS？</h3>
+<p>在以下情況下，添加 IIS_IUSRS 群組可能更為適合：</p>
 <ul>
 <li>網站使用多種驗證方式（匿名 + Windows 驗證 + 表單驗證等）</li>
 <li>使用多個應用程式集區或自定義的應用程式集區身分</li>
@@ -313,14 +327,17 @@
 <li>你希望簡化權限管理，使用「一勞永逸」的方式設定</li>
 </ul>
 <p>企業級應用、複雜的 Web 應用程式或需要整合多個服務的網站通常需要這種設定。</p>
-<h3 id="安全考量：找到平衡點"><a href="#安全考量：找到平衡點" class="headerlink" title="安全考量：找到平衡點"></a>安全考量：找到平衡點</h3><p>從安全角度來看，選擇 IUSR 還是 IIS_IUSRS 實際上是一個權限範圍與管理便利性之間的權衡：</p>
+<h3 id="安全考量：找到平衡點">安全考量：找到平衡點</h3>
+<p>從安全角度來看，選擇 IUSR 還是 IIS_IUSRS 實際上是一個權限範圍與管理便利性之間的權衡：</p>
 <ul>
 <li><strong>只使用 IUSR</strong>：權限範圍較小，安全性較高，但可能需要在網站變得複雜時重新設定權限</li>
 <li><strong>使用 IIS_IUSRS</strong>：覆蓋所有 IIS 相關帳戶，管理便利，但權限範圍較廣</li>
 </ul>
 <p>遵循安全最佳實踐，建議先從最小權限開始（只添加 IUSR），如果網站功能需要，再逐步擴展權限。</p>
-<h2 id="進階權限配置：更全面的解決方案"><a href="#進階權限配置：更全面的解決方案" class="headerlink" title="進階權限配置：更全面的解決方案"></a>進階權限配置：更全面的解決方案</h2><p>雖然新增 IUSR 權限是解決 401.3 錯誤的最常見方法，但在某些情況下，你可能需要考慮以下額外的設定：</p>
-<h3 id="1-檢查應用程式集區身分"><a href="#1-檢查應用程式集區身分" class="headerlink" title="1. 檢查應用程式集區身分"></a>1. 檢查應用程式集區身分</h3><p>應用程式集區（Application Pool）的執行身分也會影響檔案存取權限：</p>
+<h2 id="進階權限配置：更全面的解決方案">進階權限配置：更全面的解決方案</h2>
+<p>雖然新增 IUSR 權限是解決 401.3 錯誤的最常見方法，但在某些情況下，你可能需要考慮以下額外的設定：</p>
+<h3 id="1-檢查應用程式集區身分">1. 檢查應用程式集區身分</h3>
+<p>應用程式集區（Application Pool）的執行身分也會影響檔案存取權限：</p>
 <ol>
 <li>開啟 IIS 管理員</li>
 <li>在左側樹狀目錄中找到「應用程式集區」</li>
@@ -329,23 +346,30 @@
 <li>檢查「身分」設定</li>
 </ol>
 <p>如果你使用自定義身分，確保該帳戶也具有網站資料夾的適當權限。</p>
-<h3 id="2-特殊資料夾的權限設定"><a href="#2-特殊資料夾的權限設定" class="headerlink" title="2. 特殊資料夾的權限設定"></a>2. 特殊資料夾的權限設定</h3><p>除了網站根目錄外，有些特殊資料夾可能需要額外的權限設定：</p>
+<h3 id="2-特殊資料夾的權限設定">2. 特殊資料夾的權限設定</h3>
+<p>除了網站根目錄外，有些特殊資料夾可能需要額外的權限設定：</p>
 <ul>
 <li><strong>暫存檔資料夾</strong>：需要寫入權限</li>
 <li><strong>上傳資料夾</strong>：需要寫入權限</li>
 <li><strong>日誌資料夾</strong>：需要修改權限</li>
 <li><strong>應用程式資料資料夾</strong>：可能需要完全控制權限（但要謹慎評估）</li>
 </ul>
-<h3 id="3-使用命令列快速設定權限"><a href="#3-使用命令列快速設定權限" class="headerlink" title="3. 使用命令列快速設定權限"></a>3. 使用命令列快速設定權限</h3><p>如果你管理多個站點或需要頻繁設定權限，使用命令列可以提高效率：</p>
+<h3 id="3-使用命令列快速設定權限">3. 使用命令列快速設定權限</h3>
+<p>如果你管理多個站點或需要頻繁設定權限，使用命令列可以提高效率：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">icacls &quot;C:\inetpub\wwwroot\你的網站路徑&quot; /grant &quot;IUSR&quot;:(OI)(CI)(RX) /T</span><br></pre></td></tr></table></figure>
-
 <p>這個命令會遞迴地賦予 IUSR 對指定資料夾及其所有子資料夾和檔案的「讀取與執行」權限。</p>
-<h2 id="安全性最佳實踐"><a href="#安全性最佳實踐" class="headerlink" title="安全性最佳實踐"></a>安全性最佳實踐</h2><p>在解決 401.3 錯誤的同時，別忘了遵循以下安全性最佳實踐：</p>
-<h3 id="1-最小權限原則"><a href="#1-最小權限原則" class="headerlink" title="1. 最小權限原則"></a>1. 最小權限原則</h3><p>只賦予必要的最低權限。例如，如果網站只需要讀取權限，就不要賦予寫入或修改權限。</p>
-<h3 id="2-定期審查權限設定"><a href="#2-定期審查權限設定" class="headerlink" title="2. 定期審查權限設定"></a>2. 定期審查權限設定</h3><p>定期檢查並審查網站資料夾的權限設定，確保沒有不必要的權限被授予。</p>
-<h3 id="3-使用更安全的認證方式"><a href="#3-使用更安全的認證方式" class="headerlink" title="3. 使用更安全的認證方式"></a>3. 使用更安全的認證方式</h3><p>如果網站包含敏感資訊，考慮禁用匿名驗證，改用 Windows 認證或表單認證等更安全的方式。</p>
-<h3 id="4-啟用-HTTPS"><a href="#4-啟用-HTTPS" class="headerlink" title="4. 啟用 HTTPS"></a>4. 啟用 HTTPS</h3><p>使用 HTTPS 加密所有流量，特別是包含認證資訊的流量。</p>
-<h2 id="總結：不只是修復錯誤，而是理解背後的安全機制"><a href="#總結：不只是修復錯誤，而是理解背後的安全機制" class="headerlink" title="總結：不只是修復錯誤，而是理解背後的安全機制"></a>總結：不只是修復錯誤，而是理解背後的安全機制</h2><p>HTTP 401.3 錯誤雖然令人煩惱，但它實際上是 IIS 的安全機制在正常運作的結果。通過理解 IUSR 的角色和適當設定檔案系統權限，你不僅能解決這個錯誤，還能更好地掌握 IIS 的安全架構。</p>
+<h2 id="安全性最佳實踐">安全性最佳實踐</h2>
+<p>在解決 401.3 錯誤的同時，別忘了遵循以下安全性最佳實踐：</p>
+<h3 id="1-最小權限原則">1. 最小權限原則</h3>
+<p>只賦予必要的最低權限。例如，如果網站只需要讀取權限，就不要賦予寫入或修改權限。</p>
+<h3 id="2-定期審查權限設定">2. 定期審查權限設定</h3>
+<p>定期檢查並審查網站資料夾的權限設定，確保沒有不必要的權限被授予。</p>
+<h3 id="3-使用更安全的認證方式">3. 使用更安全的認證方式</h3>
+<p>如果網站包含敏感資訊，考慮禁用匿名驗證，改用 Windows 認證或表單認證等更安全的方式。</p>
+<h3 id="4-啟用-HTTPS">4. 啟用 HTTPS</h3>
+<p>使用 HTTPS 加密所有流量，特別是包含認證資訊的流量。</p>
+<h2 id="總結：不只是修復錯誤，而是理解背後的安全機制">總結：不只是修復錯誤，而是理解背後的安全機制</h2>
+<p>HTTP 401.3 錯誤雖然令人煩惱，但它實際上是 IIS 的安全機制在正常運作的結果。通過理解 IUSR 的角色和適當設定檔案系統權限，你不僅能解決這個錯誤，還能更好地掌握 IIS 的安全架構。</p>
 <p>下次當你遇到 401.3 錯誤時，不要慌張，記住：可能只是你的 IUSR「服務生」需要適當的「通行證」來為你的網站訪客提供服務。簡單地新增 IUSR 權限，往往就是解決這個問題的救命關鍵。</p>
 
     </div>
@@ -399,13 +423,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">330k</span>
+    <span title="總字數">351k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">5:01</span>
+    <span title="所需總閱讀時間">5:19</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

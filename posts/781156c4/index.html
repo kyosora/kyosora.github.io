@@ -142,16 +142,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">117</span>
+          <span class="site-state-item-count">124</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-count">64</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">173</span>
+        <span class="site-state-item-count">192</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -255,14 +255,16 @@
     
     
     <div class="post-body" itemprop="articleBody"><p>還記得那種半夜被電話吵醒，客服說網站掛了的恐懼嗎？還是每次看到網站載入速度慢得像蝸牛爬行，就想直接砸電腦的衝動？如果你也有這些困擾，那你絕對需要認識 Cloudflare 這個神器。</p>
-<h2 id="什麼是-Cloudflare？為什麼工程師都在用它？"><a href="#什麼是-Cloudflare？為什麼工程師都在用它？" class="headerlink" title="什麼是 Cloudflare？為什麼工程師都在用它？"></a>什麼是 Cloudflare？為什麼工程師都在用它？</h2><p>Cloudflare 簡單來說就是你網站的「超級保鑣兼快遞員」。它是全球最大的連接雲網路之一，擁有超過 330 個數據中心遍布世界各地。當使用者想要瀏覽你的網站時，Cloudflare 會：</p>
+<h2 id="什麼是-Cloudflare？為什麼工程師都在用它？">什麼是 Cloudflare？為什麼工程師都在用它？</h2>
+<p>Cloudflare 簡單來說就是你網站的「超級保鑣兼快遞員」。它是全球最大的連接雲網路之一，擁有超過 330 個數據中心遍布世界各地。當使用者想要瀏覽你的網站時，Cloudflare 會：</p>
 <ol>
 <li><strong>當保鑣</strong>：阻擋惡意攻擊，包括 DDoS 攻擊和駭客入侵</li>
 <li><strong>當快遞員</strong>：把你的網站內容快取在全球各地，讓使用者存取更快速</li>
 <li><strong>當翻譯機</strong>：提供 SSL 憑證，讓你的網站自動升級為 HTTPS</li>
 </ol>
 <p>根據 <a target="_blank" rel="noopener" href="https://blog.cloudflare.com/ddos-threat-report-for-2025-q1/">Cloudflare 2025 年第一季報告</a>，他們在短短三個月內就阻擋了 2,050 萬次 DDoS 攻擊，這數字比去年同期增長了 358%！而且他們擁有 388 Tbps 的網路容量，是史上最大 DDoS 攻擊的 23 倍。</p>
-<h2 id="免費方案就很夠用？Cloudflare-不藏私大公開"><a href="#免費方案就很夠用？Cloudflare-不藏私大公開" class="headerlink" title="免費方案就很夠用？Cloudflare 不藏私大公開"></a>免費方案就很夠用？Cloudflare 不藏私大公開</h2><p>很多人對「免費」總是心存疑慮，但 Cloudflare 的免費方案真的很佛心。根據 <a target="_blank" rel="noopener" href="https://www.cloudflare.com/plans/free/">Cloudflare 官方文件</a>，免費方案包含：</p>
+<h2 id="免費方案就很夠用？Cloudflare-不藏私大公開">免費方案就很夠用？Cloudflare 不藏私大公開</h2>
+<p>很多人對「免費」總是心存疑慮，但 Cloudflare 的免費方案真的很佛心。根據 <a target="_blank" rel="noopener" href="https://www.cloudflare.com/plans/free/">Cloudflare 官方文件</a>，免費方案包含：</p>
 <ul>
 <li><strong>無限制的 DDoS 防護</strong>：不管攻擊多大，都幫你擋下來</li>
 <li><strong>全球 CDN</strong>：網站速度直接提升 300%</li>
@@ -270,29 +272,40 @@
 <li><strong>基本的 DNS 管理</strong>：告別龜速的 DNS 解析</li>
 </ul>
 <p>當然，如果你的網站流量很大，或是需要更進階的功能，他們也有 Pro（$20/月）、Business（$200/月）和 Enterprise 方案可以選擇。</p>
-<h2 id="動手設定-Cloudflare：比泡泡麵還簡單的-5-步驟"><a href="#動手設定-Cloudflare：比泡泡麵還簡單的-5-步驟" class="headerlink" title="動手設定 Cloudflare：比泡泡麵還簡單的 5 步驟"></a>動手設定 Cloudflare：比泡泡麵還簡單的 5 步驟</h2><h3 id="步驟-1：註冊-Cloudflare-帳號"><a href="#步驟-1：註冊-Cloudflare-帳號" class="headerlink" title="步驟 1：註冊 Cloudflare 帳號"></a>步驟 1：註冊 Cloudflare 帳號</h3><p>前往 <a target="_blank" rel="noopener" href="https://www.cloudflare.com/">Cloudflare 官網</a>，註冊一個免費帳號。填入你的 Email 和密碼，就這麼簡單。</p>
-<h3 id="步驟-2：新增你的網域"><a href="#步驟-2：新增你的網域" class="headerlink" title="步驟 2：新增你的網域"></a>步驟 2：新增你的網域</h3><p>登入後，點擊「Add a site」，輸入你的網域名稱（例如：example.com）。記得不要加 www 或 http://，就單純的網域名稱就好。</p>
-<h3 id="步驟-3：選擇方案"><a href="#步驟-3：選擇方案" class="headerlink" title="步驟 3：選擇方案"></a>步驟 3：選擇方案</h3><p>對於大部分的個人網站和小型企業，免費方案就非常夠用了。如果你需要更多功能，再考慮升級。</p>
-<h3 id="步驟-4：確認-DNS-記錄"><a href="#步驟-4：確認-DNS-記錄" class="headerlink" title="步驟 4：確認 DNS 記錄"></a>步驟 4：確認 DNS 記錄</h3><p>Cloudflare 會自動掃描你現有的 DNS 記錄，並顯示給你確認。檢查一下是否有遺漏的記錄，特別是 A 記錄和 CNAME 記錄。</p>
-<h3 id="步驟-5：更新-Nameserver"><a href="#步驟-5：更新-Nameserver" class="headerlink" title="步驟 5：更新 Nameserver"></a>步驟 5：更新 Nameserver</h3><p>這是最關鍵的一步！Cloudflare 會提供兩個 nameserver 給你，像是：</p>
+<h2 id="動手設定-Cloudflare：比泡泡麵還簡單的-5-步驟">動手設定 Cloudflare：比泡泡麵還簡單的 5 步驟</h2>
+<h3 id="步驟-1：註冊-Cloudflare-帳號">步驟 1：註冊 Cloudflare 帳號</h3>
+<p>前往 <a target="_blank" rel="noopener" href="https://www.cloudflare.com">Cloudflare 官網</a>，註冊一個免費帳號。填入你的 Email 和密碼，就這麼簡單。</p>
+<h3 id="步驟-2：新增你的網域">步驟 2：新增你的網域</h3>
+<p>登入後，點擊「Add a site」，輸入你的網域名稱（例如：<a target="_blank" rel="noopener" href="http://example.com">example.com</a>）。記得不要加 www 或 http://，就單純的網域名稱就好。</p>
+<h3 id="步驟-3：選擇方案">步驟 3：選擇方案</h3>
+<p>對於大部分的個人網站和小型企業，免費方案就非常夠用了。如果你需要更多功能，再考慮升級。</p>
+<h3 id="步驟-4：確認-DNS-記錄">步驟 4：確認 DNS 記錄</h3>
+<p>Cloudflare 會自動掃描你現有的 DNS 記錄，並顯示給你確認。檢查一下是否有遺漏的記錄，特別是 A 記錄和 CNAME 記錄。</p>
+<h3 id="步驟-5：更新-Nameserver">步驟 5：更新 Nameserver</h3>
+<p>這是最關鍵的一步！Cloudflare 會提供兩個 nameserver 給你，像是：</p>
 <ul>
 <li><code>ns1.cloudflare.com</code></li>
 <li><code>ns2.cloudflare.com</code></li>
 </ul>
 <p>你需要到你的網域註冊商（如 GoDaddy、Namecheap 等）的控制面板，把原本的 nameserver 替換成 Cloudflare 提供的。</p>
 <p><strong>小提醒</strong>：DNS 更新通常需要 24 小時才會完全生效，但大部分情況下幾小時就搞定了。</p>
-<h2 id="進階設定：讓你的網站飛起來的秘密武器"><a href="#進階設定：讓你的網站飛起來的秘密武器" class="headerlink" title="進階設定：讓你的網站飛起來的秘密武器"></a>進階設定：讓你的網站飛起來的秘密武器</h2><h3 id="SSL-TLS-設定"><a href="#SSL-TLS-設定" class="headerlink" title="SSL/TLS 設定"></a>SSL/TLS 設定</h3><p>在 Cloudflare 控制面板中，前往「SSL/TLS」頁面，建議選擇「Full」模式。這樣可以確保從使用者到 Cloudflare，再從 Cloudflare 到你的伺服器，整個連線都是加密的。</p>
-<h3 id="快取設定"><a href="#快取設定" class="headerlink" title="快取設定"></a>快取設定</h3><p>到「Caching」頁面，啟用以下功能：</p>
+<h2 id="進階設定：讓你的網站飛起來的秘密武器">進階設定：讓你的網站飛起來的秘密武器</h2>
+<h3 id="SSL-TLS-設定">SSL/TLS 設定</h3>
+<p>在 Cloudflare 控制面板中，前往「SSL/TLS」頁面，建議選擇「Full」模式。這樣可以確保從使用者到 Cloudflare，再從 Cloudflare 到你的伺服器，整個連線都是加密的。</p>
+<h3 id="快取設定">快取設定</h3>
+<p>到「Caching」頁面，啟用以下功能：</p>
 <ul>
 <li><strong>Browser Cache TTL</strong>：設定瀏覽器快取時間，減少重複請求</li>
 <li><strong>Always Online</strong>：當你的伺服器掛掉時，Cloudflare 會顯示快取版本</li>
 </ul>
-<h3 id="效能優化"><a href="#效能優化" class="headerlink" title="效能優化"></a>效能優化</h3><p>在「Speed」頁面，啟用：</p>
+<h3 id="效能優化">效能優化</h3>
+<p>在「Speed」頁面，啟用：</p>
 <ul>
 <li><strong>Auto Minify</strong>：自動壓縮 HTML、CSS、JavaScript</li>
 <li><strong>Brotli 壓縮</strong>：比 Gzip 更高效的壓縮演算法</li>
 </ul>
-<h2 id="實際測試：看看效果有多驚人"><a href="#實際測試：看看效果有多驚人" class="headerlink" title="實際測試：看看效果有多驚人"></a>實際測試：看看效果有多驚人</h2><p>設定完成後，你可以用以下工具測試網站效能：</p>
+<h2 id="實際測試：看看效果有多驚人">實際測試：看看效果有多驚人</h2>
+<p>設定完成後，你可以用以下工具測試網站效能：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://gtmetrix.com/">GTmetrix</a>：綜合效能分析</li>
 <li><a target="_blank" rel="noopener" href="https://pagespeed.web.dev/">Google PageSpeed Insights</a>：Google 官方的速度測試工具</li>
@@ -303,10 +316,15 @@
 <li>SSL 評級變成 A+</li>
 <li>DDoS 攻擊被自動阻擋</li>
 </ul>
-<h2 id="常見問題解答"><a href="#常見問題解答" class="headerlink" title="常見問題解答"></a>常見問題解答</h2><p><strong>Q：使用 Cloudflare 會影響 SEO 嗎？</strong><br>A：完全相反！更快的載入速度和 HTTPS 加密都會提升你的 SEO 排名。</p>
-<p><strong>Q：免費方案有流量限制嗎？</strong><br>A：沒有！不管你的網站有多少流量，免費方案都沒有限制。</p>
-<p><strong>Q：如果我不滿意，可以隨時停用嗎？</strong><br>A：當然可以！只要把 nameserver 改回原本的設定就行了。</p>
-<h2 id="總結：為什麼你現在就該開始用-Cloudflare"><a href="#總結：為什麼你現在就該開始用-Cloudflare" class="headerlink" title="總結：為什麼你現在就該開始用 Cloudflare"></a>總結：為什麼你現在就該開始用 Cloudflare</h2><p>在這個網路攻擊日益頻繁的時代，不使用 Cloudflare 就像是開車不繫安全帶一樣危險。而且它的免費方案已經涵蓋了大部分網站需要的功能，CP 值簡直破表。</p>
+<h2 id="常見問題解答">常見問題解答</h2>
+<p><strong>Q：使用 Cloudflare 會影響 SEO 嗎？</strong><br>
+A：完全相反！更快的載入速度和 HTTPS 加密都會提升你的 SEO 排名。</p>
+<p><strong>Q：免費方案有流量限制嗎？</strong><br>
+A：沒有！不管你的網站有多少流量，免費方案都沒有限制。</p>
+<p><strong>Q：如果我不滿意，可以隨時停用嗎？</strong><br>
+A：當然可以！只要把 nameserver 改回原本的設定就行了。</p>
+<h2 id="總結：為什麼你現在就該開始用-Cloudflare">總結：為什麼你現在就該開始用 Cloudflare</h2>
+<p>在這個網路攻擊日益頻繁的時代，不使用 Cloudflare 就像是開車不繫安全帶一樣危險。而且它的免費方案已經涵蓋了大部分網站需要的功能，CP 值簡直破表。</p>
 <p>現在就動手設定吧！5 分鐘的時間投資，換來的是網站效能和安全性的大幅提升。你的使用者會感謝你，搜尋引擎也會給你更好的排名。</p>
 <p>別再猶豫了，讓 Cloudflare 成為你網站的最佳夥伴！</p>
 
@@ -368,13 +386,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">330k</span>
+    <span title="總字數">351k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">5:01</span>
+    <span title="所需總閱讀時間">5:19</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
