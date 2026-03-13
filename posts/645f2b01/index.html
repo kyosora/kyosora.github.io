@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="我用 OpenClaw 在 WSL2 + Docker 環境架了一個 Telegram Bot，接上 OpenAI Codex 的 vision model，打算讓它能看圖回答問題。結果使用者傳圖片過來，Bot 只回了一句「我看到的是 ，沒有實際圖片內容」。  這個 Bug 花了我整個晚上，最後發現根因是：OpenClaw 內部的 SSRF 防護機制建立了自己的 HTTP dispatcher，覆">
+<meta property="og:type" content="article">
+<meta property="og:title" content="curl 能下載、Node.js 卻 fetch failed——在 WSL2 + Docker 裡修好 OpenClaw Telegram Bot 圖片上傳的全過程">
+<meta property="og:url" content="https://kyosora.github.io/posts/645f2b01/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="我用 OpenClaw 在 WSL2 + Docker 環境架了一個 Telegram Bot，接上 OpenAI Codex 的 vision model，打算讓它能看圖回答問題。結果使用者傳圖片過來，Bot 只回了一句「我看到的是 ，沒有實際圖片內容」。  這個 Bug 花了我整個晚上，最後發現根因是：OpenClaw 內部的 SSRF 防護機制建立了自己的 HTTP dispatcher，覆">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2026-03-11T15:53:00.000Z">
+<meta property="article:modified_time" content="2026-03-13T07:33:12.168Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="WSL2">
+<meta property="article:tag" content="Node.js">
+<meta property="article:tag" content="Telegram Bot">
+<meta property="article:tag" content="OpenClaw">
+<meta property="article:tag" content="除錯">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/645f2b01/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/645f2b01/","path":"posts/645f2b01/","title":"curl 能下載、Node.js 卻 fetch failed——在 WSL2 + Docker 裡修好 OpenClaw Telegram Bot 圖片上傳的全過程"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>curl 能下載、Node.js 卻 fetch failed——在 WSL2 + Docker 裡修好 OpenClaw Telegram Bot 圖片上傳的全過程 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AF-OpenClaw"><span class="nav-number">1.</span> <span class="nav-text">什麼是 OpenClaw</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%92%B0%E5%A2%83"><span class="nav-number">2.</span> <span class="nav-text">環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%97%87%E7%8B%80%EF%BC%9A%E4%BA%8B%E4%BB%B6%E9%80%B2%E4%BE%86%E4%BA%86%EF%BC%8C%E5%9C%96%E7%89%87%E6%B2%92%E9%80%B2%E4%BE%86"><span class="nav-number">3.</span> <span class="nav-text">症狀：事件進來了，圖片沒進來</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E5%B1%A4%EF%BC%9AModel-%E4%B8%8D%E8%AA%8D%E7%82%BA%E8%87%AA%E5%B7%B1%E6%94%AF%E6%8F%B4%E5%9C%96%E7%89%87"><span class="nav-number">4.</span> <span class="nav-text">第一層：Model 不認為自己支援圖片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E5%B1%A4%EF%BC%9A%E4%B8%8B%E8%BC%89%E5%87%BD%E6%95%B8%E6%A0%B9%E6%9C%AC%E6%B2%92%E8%A2%AB%E5%91%BC%E5%8F%AB%EF%BC%9F"><span class="nav-number">5.</span> <span class="nav-text">第二層：下載函數根本沒被呼叫？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E5%B1%A4%EF%BC%9Acatch-%E5%90%83%E6%8E%89%E4%BA%86%E9%8C%AF%E8%AA%A4"><span class="nav-number">6.</span> <span class="nav-text">第三層：catch 吃掉了錯誤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E5%B1%A4%EF%BC%9Acurl-%E6%AD%A3%E5%B8%B8%EF%BC%8CNode-js-%E4%B8%8D%E8%A1%8C"><span class="nav-number">7.</span> <span class="nav-text">第四層：curl 正常，Node.js 不行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E5%B1%A4%EF%BC%9A%E6%89%BE%E5%88%B0%E7%9C%9F%E6%AD%A3%E7%9A%84%E5%85%87%E6%89%8B"><span class="nav-number">8.</span> <span class="nav-text">第五層：找到真正的兇手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%B3%95"><span class="nav-number">9.</span> <span class="nav-text">修法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B8%A9%E9%81%8E%E7%9A%84%E5%9D%91"><span class="nav-number">10.</span> <span class="nav-text">踩過的坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%A4%E9%8C%AF%E6%96%B9%E6%B3%95%E8%AB%96"><span class="nav-number">11.</span> <span class="nav-text">除錯方法論</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%A6-WSL2-Docker-Node-js-%E4%BD%BF%E7%94%A8%E8%80%85%E7%9A%84%E5%BB%BA%E8%AD%B0"><span class="nav-number">12.</span> <span class="nav-text">給 WSL2 + Docker + Node.js 使用者的建議</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%8C%E8%A8%98%EF%BC%9A%E5%AE%98%E6%96%B9%E5%9C%A8-2026-3-13-%E6%AD%A3%E5%BC%8F%E4%BF%AE%E5%BE%A9%E4%BA%86"><span class="nav-number">13.</span> <span class="nav-text">後記：官方在 2026.3.13 正式修復了</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">133</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">72</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">217</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/645f2b01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="curl 能下載、Node.js 卻 fetch failed——在 WSL2 + Docker 裡修好 OpenClaw Telegram Bot 圖片上傳的全過程 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          curl 能下載、Node.js 卻 fetch failed——在 WSL2 + Docker 裡修好 OpenClaw Telegram Bot 圖片上傳的全過程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2026-03-11 23:53:00" itemprop="dateCreated datePublished" datetime="2026-03-11T23:53:00+08:00">2026-03-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2026-03-13 15:33:12" itemprop="dateModified" datetime="2026-03-13T15:33:12+08:00">2026-03-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%B8%A9%E5%9D%91%E7%B4%80%E9%8C%84/" itemprop="url" rel="index"><span itemprop="name">踩坑紀錄</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%B8%A9%E5%9D%91%E7%B4%80%E9%8C%84/DevOps/" itemprop="url" rel="index"><span itemprop="name">DevOps</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>7.9k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>7 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>我用 <a target="_blank" rel="noopener" href="https://github.com/openclaw/openclaw">OpenClaw</a> 在 WSL2 + Docker 環境架了一個 Telegram Bot，接上 OpenAI Codex 的 vision model，打算讓它能看圖回答問題。結果使用者傳圖片過來，Bot 只回了一句「我看到的是 <code>&lt;media:image&gt;</code>，沒有實際圖片內容」。</p>
+<p>這個 Bug 花了我整個晚上，最後發現根因是：<strong>OpenClaw 內部的 SSRF 防護機制建立了自己的 HTTP dispatcher，覆蓋掉了 WSL2 專用的 IPv4 網路設定，導致圖片下載靜默失敗。</strong> <code>curl</code> 完全正常，Node.js <code>fetch</code> 卻怎麼都不行。</p>
+<p>這篇文章記錄完整的追蹤過程。如果你也用 OpenClaw 架 Telegram Bot、或在 WSL2 + Docker 裡跑 Node.js 服務遇到 <code>TypeError: fetch failed</code>，這篇或許能幫上忙。</p>
+<span id="more"></span>
+
+<h2 id="什麼是-OpenClaw"><a href="#什麼是-OpenClaw" class="headerlink" title="什麼是 OpenClaw"></a>什麼是 OpenClaw</h2><p><a target="_blank" rel="noopener" href="https://github.com/openclaw/openclaw">OpenClaw</a> 是一個開源的 AI agent gateway，可以把 LLM（Claude、GPT、Ollama 等）接上 Telegram、Discord、Slack 等聊天平台。它跑在 Docker 容器裡，用 Node.js 22 + grammy 處理 Telegram Bot API，內建 media 下載、vision pipeline、SSRF 防護等功能。</p>
+<p>我的設定是 OpenClaw gateway 跑在 WSL2 的 Docker 裡，接 OpenAI Codex GPT-5.3（支援 vision），透過 Telegram Bot 跟使用者互動。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 11 + WSL2 (Ubuntu 24.04)</li>
+<li>Docker Desktop，容器內跑 Node.js 22</li>
+<li>OpenClaw 2026.3.9（Docker compose 部署，2026.3.13 已官方修復）</li>
+<li>Model：OpenAI Codex GPT-5.3（支援 vision）</li>
+</ul>
+<h2 id="症狀：事件進來了，圖片沒進來"><a href="#症狀：事件進來了，圖片沒進來" class="headerlink" title="症狀：事件進來了，圖片沒進來"></a>症狀：事件進來了，圖片沒進來</h2><p>使用者傳圖片到 Telegram Bot，OpenClaw 收到事件，Bot 開始打字，然後兩分鐘後超時。回覆內容裡只看得到 <code>&lt;media:image&gt;</code> 這個 placeholder 文字，LLM 完全沒看到實際的圖片。</p>
+<p>在 OpenClaw 的 Discord 社群問了其他人，圖片功能正常。GitHub 上也有類似的 issue（<a target="_blank" rel="noopener" href="https://github.com/openclaw/openclaw/issues/7564">#7564</a>、<a target="_blank" rel="noopener" href="https://github.com/openclaw/openclaw/issues/23452">#23452</a>），但都沒有針對 WSL2 環境的解法。問題只出在我的環境。</p>
+<h2 id="第一層：Model-不認為自己支援圖片"><a href="#第一層：Model-不認為自己支援圖片" class="headerlink" title="第一層：Model 不認為自己支援圖片"></a>第一層：Model 不認為自己支援圖片</h2><p>先看 log，完全找不到任何 media 相關的記錄。零。</p>
+<p>追進 OpenClaw 的 compiled bundle（<code>/app/dist/reply-Bk3-pw7h.js</code>，沒有原始碼可以直接改），發現 vision pipeline 的入口有一個 gate：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">modelSupportsImages</span>(<span class="params">model</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> model.<span class="property">input</span>?.<span class="title function_">includes</span>(<span class="string">&quot;image&quot;</span>) ?? <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">detectAndLoadPromptImages</span>(<span class="params">params</span>) &#123;</span><br><span class="line">  <span class="comment">// 如果 model 不支援圖片，直接返回空陣列——靜默跳過</span></span><br><span class="line">  <span class="keyword">if</span> (!<span class="title function_">modelSupportsImages</span>(params.<span class="property">model</span>)) <span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="attr">images</span>: [], <span class="attr">detectedRefs</span>: [], <span class="attr">loadedCount</span>: <span class="number">0</span>, <span class="attr">skippedCount</span>: <span class="number">0</span></span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>問題出在 OpenClaw 的 model 解析邏輯。我用的 <code>openai-codex</code> provider 在 OpenClaw 的 static config 裡 <code>models: []</code> 是空陣列，model registry 查不到這個 model，fallback 路徑直接寫死了 <code>input: [&quot;text&quot;]</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// resolveModelWithRegistry fallback</span></span><br><span class="line"><span class="keyword">return</span> &#123;</span><br><span class="line">  provider,</span><br><span class="line">  <span class="attr">baseUrl</span>: providerConfig?.<span class="property">baseUrl</span>,</span><br><span class="line">  <span class="attr">input</span>: [<span class="string">&quot;text&quot;</span>],  <span class="comment">// ← 寫死 text-only，vision pipeline 永遠不會觸發</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>修法：</strong> 直接 patch bundle，把 <code>[&quot;text&quot;]</code> 改成 <code>[&quot;text&quot;, &quot;image&quot;]</code>。</p>
+<p>改完之後，<code>detectAndLoadPromptImages</code> 確實被呼叫了，<code>supports=true</code>。但圖片<strong>還是沒進來</strong>。</p>
+<h2 id="第二層：下載函數根本沒被呼叫？"><a href="#第二層：下載函數根本沒被呼叫？" class="headerlink" title="第二層：下載函數根本沒被呼叫？"></a>第二層：下載函數根本沒被呼叫？</h2><p>我在 bundle 裡注入了 6 個 <code>console.log</code> debug 點，覆蓋整條管線：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">processInboundMessage → resolveMedia → downloadAndSaveTelegramFile</span><br><span class="line">→ buildInboundMediaNote → detectAndLoadPromptImages</span><br></pre></td></tr></table></figure>
+
+<p>重啟容器，請使用者再傳一張圖。Log 出來了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[DEBUG] processInboundMessage: has_photo=true ✅</span><br><span class="line">[DEBUG] resolveMedia ENTRY: has_photo=true ✅</span><br><span class="line">[DEBUG] getFile result: &#123;&quot;file_path&quot;:&quot;photos/file_4.jpg&quot;&#125; ✅</span><br><span class="line">[DEBUG] buildInboundMediaNote MediaPaths=undefined ❌</span><br></pre></td></tr></table></figure>
+
+<p><code>resolveMedia</code> 進去了，Telegram API 的 <code>getFile</code> 也成功拿到 <code>file_path</code>。但接下來的 <code>downloadAndSaveTelegramFile</code> 裡放的「download succeeded」log <strong>完全沒出現</strong>，<code>catch</code> 裡的 log 也沒出現。<code>MediaPaths</code> 是 <code>undefined</code>。</p>
+<p>下載函數被呼叫了，但結果消失在黑洞裡。</p>
+<h2 id="第三層：catch-吃掉了錯誤"><a href="#第三層：catch-吃掉了錯誤" class="headerlink" title="第三層：catch 吃掉了錯誤"></a>第三層：catch 吃掉了錯誤</h2><p>原來 <code>catch</code> 只用了 <code>logVerbose</code>，這個函數在 Docker logs 裡不一定可見。加了 <code>console.log</code> 到 catch block，重啟再測：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[DEBUG] resolveMedia DOWNLOAD FAILED: MediaFetchError: Failed to fetch media</span><br><span class="line">from https://api.telegram.org/file/bot.../photos/file_4.jpg: TypeError: fetch failed</span><br></pre></td></tr></table></figure>
+
+<p><strong>圖片下載失敗了。</strong> <code>TypeError: fetch failed</code> — Node.js undici 的泛用錯誤。</p>
+<h2 id="第四層：curl-正常，Node-js-不行"><a href="#第四層：curl-正常，Node-js-不行" class="headerlink" title="第四層：curl 正常，Node.js 不行"></a>第四層：curl 正常，Node.js 不行</h2><p>在容器裡直接 curl 同一個 URL：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ curl -sS -o /dev/null -w <span class="string">&quot;http_code=%&#123;http_code&#125; time=%&#123;time_total&#125;s&quot;</span> \</span><br><span class="line">  <span class="string">&quot;https://api.telegram.org/file/bot.../photos/file_4.jpg&quot;</span></span><br><span class="line"></span><br><span class="line">http_code=200 <span class="keyword">time</span>=1.453145s size=24795</span><br></pre></td></tr></table></figure>
+
+<p>200，1.4 秒，24KB。完全正常。</p>
+<p>但 Node.js 的 <code>fetch</code> 就是不行。3 次 retry 全部失敗，耗時 6 秒後放棄。</p>
+<p><code>curl</code> 用系統 DNS resolver；Node.js 22 用 undici 自己的 HTTP client。WSL2 的 DNS proxy（<code>10.255.255.254</code>）在 IPv6 場景下會出問題，Node.js undici 特別容易踩到。</p>
+<h2 id="第五層：找到真正的兇手"><a href="#第五層：找到真正的兇手" class="headerlink" title="第五層：找到真正的兇手"></a>第五層：找到真正的兇手</h2><p>OpenClaw 的 Telegram 模組有一個專門為 WSL2 打造的 fetch wrapper：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">resolveTelegramFetch</span>(<span class="params">proxyFetch, options</span>) &#123;</span><br><span class="line">  <span class="comment">// WSL2 偵測：關閉 autoSelectFamily，強制 IPv4</span></span><br><span class="line">  <span class="comment">// autoSelectFamily=false, dnsResultOrder=ipv4first</span></span><br><span class="line">  <span class="comment">// 還有 sticky IPv4 fallback 機制</span></span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">async</span> (input, init) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> initialInit = <span class="title function_">withDispatcherIfMissing</span>(init, defaultDispatcher);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">await</span> <span class="title function_">sourceFetch</span>(input, initialInit);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="title function_">shouldRetryWithIpv4Fallback</span>(err)) &#123;</span><br><span class="line">        <span class="comment">// callerProvidedDispatcher=true 時不觸發 fallback</span></span><br><span class="line">        <span class="keyword">if</span> (callerProvidedDispatcher) <span class="keyword">return</span> <span class="title function_">sourceFetch</span>(input, init ?? &#123;&#125;);</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>這個 wrapper 處理了 WSL2 的 IPv6/DNS 問題。Bot 的 polling 連線用這個 fetch，所以 API 呼叫正常。</p>
+<p>但 OpenClaw 的圖片下載走了不同的路：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">downloadAndSaveTelegramFile</span><br><span class="line">  → fetchRemoteMedia（通用的 media 下載函數）</span><br><span class="line">    → fetchWithSsrFGuard（SSRF 防護層）</span><br><span class="line">      → createPinnedDispatcher（建立自己的 HTTP dispatcher）</span><br></pre></td></tr></table></figure>
+
+<p>OpenClaw 的 <code>fetchWithSsrFGuard</code> 為了防止 SSRF 攻擊，建立了自己的 <code>createPinnedDispatcher</code>。這個 dispatcher <strong>沒有</strong> WSL2 的 <code>autoSelectFamily=false</code> 和 <code>dnsResultOrder=ipv4first</code> 設定。</p>
+<p>更妙的是，因為 SSRF guard 在 <code>init</code> 裡塞了自己的 dispatcher，WSL2 fetch wrapper 偵測到 <code>callerProvidedDispatcher=true</code>，判斷「呼叫者有自己的 dispatcher，我不該覆蓋」，所以 <strong>IPv4 fallback 也不會觸發</strong>。</p>
+<p>完美的死鎖：</p>
+<ol>
+<li>SSRF guard 的 dispatcher 沒有 WSL2 設定 → fetch 失敗</li>
+<li>WSL2 wrapper 看到有 caller dispatcher → 不觸發 fallback</li>
+<li>3 次 retry 全部用同樣壞掉的 dispatcher → 全部失敗</li>
+<li>catch block 用 <code>logVerbose</code> → 錯誤被靜默吞掉</li>
+<li><code>resolveMedia</code> 返回 <code>null</code> → <code>MediaPaths=undefined</code> → 圖片消失</li>
+</ol>
+<h2 id="修法"><a href="#修法" class="headerlink" title="修法"></a>修法</h2><p><code>api.telegram.org</code> 是可信來源，不需要 SSRF 防護。直接讓 <code>downloadAndSaveTelegramFile</code> 用 <code>telegramFetchImpl</code>（已包含 WSL2 設定的 fetch），繞過 <code>fetchRemoteMedia</code> 和 SSRF guard：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">downloadAndSaveTelegramFile</span>(<span class="params">params</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> url = <span class="string">`https://api.telegram.org/file/bot<span class="subst">$&#123;params.token&#125;</span>/<span class="subst">$&#123;params.filePath&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="title function_">doFetch</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="comment">// 直接用 telegramFetchImpl，它有 WSL2 的 IPv4 設定</span></span><br><span class="line">    <span class="keyword">const</span> res = <span class="keyword">await</span> params.<span class="title function_">fetchImpl</span>(url, &#123;</span><br><span class="line">      <span class="attr">signal</span>: <span class="title class_">AbortSignal</span>.<span class="title function_">timeout</span>(<span class="number">30000</span>)</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">if</span> (!res.<span class="property">ok</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">MediaFetchError</span>(<span class="string">&quot;http_error&quot;</span>,</span><br><span class="line">        <span class="string">`HTTP <span class="subst">$&#123;res.status&#125;</span> from <span class="subst">$&#123;url&#125;</span>`</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">const</span> buffer = <span class="title class_">Buffer</span>.<span class="title function_">from</span>(<span class="keyword">await</span> res.<span class="title function_">arrayBuffer</span>());</span><br><span class="line">    <span class="keyword">if</span> (params.<span class="property">maxBytes</span> &amp;&amp; buffer.<span class="property">byteLength</span> &gt; params.<span class="property">maxBytes</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">MediaFetchError</span>(<span class="string">&quot;max_bytes&quot;</span>,</span><br><span class="line">        <span class="string">`Size <span class="subst">$&#123;buffer.byteLength&#125;</span> exceeds <span class="subst">$&#123;params.maxBytes&#125;</span>`</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> &#123; buffer, <span class="attr">contentType</span>: res.<span class="property">headers</span>.<span class="title function_">get</span>(<span class="string">&quot;content-type&quot;</span>) &#125;;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> fetched = <span class="keyword">await</span> <span class="title function_">retryAsync</span>(doFetch, &#123;</span><br><span class="line">    <span class="attr">attempts</span>: <span class="number">3</span>, <span class="attr">minDelayMs</span>: <span class="number">1500</span>, <span class="attr">maxDelayMs</span>: <span class="number">6000</span>, <span class="attr">jitter</span>: <span class="number">0.2</span></span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">saveMediaBuffer</span>(</span><br><span class="line">    fetched.<span class="property">buffer</span>, fetched.<span class="property">contentType</span>, <span class="string">&quot;inbound&quot;</span>, params.<span class="property">maxBytes</span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Patch 之後再傳圖片，log 終於出現了完整的管線：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[DEBUG] resolveMedia: download succeeded, path=/home/node/.openclaw/media/inbound/file_4---2de5c498.jpg</span><br><span class="line">[DEBUG] buildInboundMediaNote MediaPaths=[&quot;/home/node/.openclaw/media/inbound/file_4---2de5c498.jpg&quot;]</span><br><span class="line">[DEBUG] mediaNote=&quot;[media attached: /home/node/.openclaw/media/inbound/file_4---2de5c498.jpg (image/jpeg)]&quot;</span><br><span class="line">[DEBUG] detectAndLoadPromptImages model.input=[&quot;text&quot;,&quot;image&quot;] supports=true</span><br></pre></td></tr></table></figure>
+
+<p>Bot 回覆：「你傳的是 Windows 10 預設桌布，藍色背景，右側有發光的 Windows logo。」</p>
+<h2 id="踩過的坑"><a href="#踩過的坑" class="headerlink" title="踩過的坑"></a>踩過的坑</h2><table>
+<thead>
+<tr>
+<th>坑</th>
+<th>症狀</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Model 不支援圖片</td>
+<td>vision pipeline 被靜默跳過</td>
+<td>fallback 路徑 hardcode <code>input: [&quot;text&quot;]</code></td>
+</tr>
+<tr>
+<td>下載失敗被吞掉</td>
+<td>log 裡完全看不到錯誤</td>
+<td>catch 用 <code>logVerbose</code> 不一定輸出到 stdout</td>
+</tr>
+<tr>
+<td>curl 正常但 fetch 不行</td>
+<td><code>TypeError: fetch failed</code></td>
+<td>SSRF guard dispatcher 沒有 WSL2 IPv4 設定</td>
+</tr>
+<tr>
+<td>IPv4 fallback 不生效</td>
+<td>重試全部失敗</td>
+<td>SSRF guard 提供了自己的 dispatcher，觸發了 <code>callerProvidedDispatcher</code> 判斷</td>
+</tr>
+</tbody></table>
+<h2 id="除錯方法論"><a href="#除錯方法論" class="headerlink" title="除錯方法論"></a>除錯方法論</h2><p>這次追了五層才找到根因。回頭看，有效的做法是：</p>
+<p><strong>在 compiled bundle 裡注入 <code>console.log</code>。</strong> OpenClaw 跑的是 compiled JS bundle，沒有原始碼可以改，沒有 debug mode 可以開。用 Python 腳本做字串替換，在關鍵函數的入口、出口、catch block 各放一個 log。重啟容器就生效。</p>
+<p><strong>二分法定位。</strong> 管線有 7 個環節，先在頭尾放 log 確認範圍，再逐步縮小。第一輪就確認「resolveMedia 有進去但結果消失」，大幅縮小搜索空間。</p>
+<p><strong>永遠在 catch block 加 <code>console.log</code>。</strong> <code>logVerbose</code>、<code>log.debug</code>、<code>log.warn</code> 這些在容器環境可能不會輸出到 <code>docker logs</code>。追 bug 的時候，<code>console.log</code> 最可靠。</p>
+<p><strong>懷疑網路時，先 curl。</strong> 如果 curl 正常但 Node.js 不行，問題在 Node.js 的 HTTP client 層。WSL2 + Node.js 22 (undici) 是已知的問題組合。</p>
+<h2 id="給-WSL2-Docker-Node-js-使用者的建議"><a href="#給-WSL2-Docker-Node-js-使用者的建議" class="headerlink" title="給 WSL2 + Docker + Node.js 使用者的建議"></a>給 WSL2 + Docker + Node.js 使用者的建議</h2><ol>
+<li><strong>docker-compose.yml 加 DNS</strong>：<code>dns: [8.8.8.8, 8.8.4.4]</code>，避免用 WSL2 的 DNS proxy</li>
+<li><strong>注意 SSRF guard</strong>：OpenClaw 等框架的 media 下載會經過 SSRF 防護層，這層建立的 HTTP dispatcher 通常沒有 WSL2 的特殊設定</li>
+<li>**Node.js 22 的 <code>autoSelectFamily</code>**：預設會嘗試 IPv6 → IPv4 fallback，在 WSL2 環境可能造成 timeout。設 <code>autoSelectFamily: false</code> 強制只用 IPv4</li>
+<li>**<code>dnsResultOrder: &quot;ipv4first&quot;</code>**：讓 DNS 解析優先返回 IPv4 地址</li>
+<li><strong>hot-patch 要做記錄</strong>：容器重建後 patch 會消失，把修改腳本和說明存好</li>
+</ol>
+<p>這個 Bug 的本質不複雜——就是 HTTP dispatcher 設定不一致。但它被埋在 OpenClaw 的五層抽象底下，每一層都有合理的設計理由（SSRF 防護、DNS pinning、IPv6 支援），只是組合起來在 WSL2 這個特殊環境下剛好壞掉。</p>
+<p>順帶一提，這些 hot-patch 在 OpenClaw 容器重建後會消失。我把修改腳本存了下來，每次 <code>docker compose up</code> 之後重新跑一次就好。如果你也遇到一樣的問題，可以參考 GitHub issue <a target="_blank" rel="noopener" href="https://github.com/openclaw/openclaw/issues/7564">#7564</a> 和 <a target="_blank" rel="noopener" href="https://github.com/openclaw/openclaw/issues/23452">#23452</a> 的討論。</p>
+<h2 id="後記：官方在-2026-3-13-正式修復了"><a href="#後記：官方在-2026-3-13-正式修復了" class="headerlink" title="後記：官方在 2026.3.13 正式修復了"></a>後記：官方在 2026.3.13 正式修復了</h2><p>這篇文章發出兩天後，OpenClaw <code>2026.3.13</code> 版本合併了 <a target="_blank" rel="noopener" href="https://github.com/openclaw/openclaw/pull/44639">PR #44639</a>（<code>fix(telegram): thread media transport policy into SSRF</code>），正式修復了這個問題。</p>
+<p>官方的修法和我的分析完全一致：問題在於 SSRF guard 建立 dispatcher 時沒有把 Telegram 模組的 transport policy（WSL2 的 <code>autoSelectFamily=false</code>、<code>dnsResultOrder=ipv4first</code>）帶進去。修復方式是把 media transport policy 一路 thread 進 SSRF 層，讓 pinned dispatcher 也能繼承 WSL2 的網路設定。</p>
+<p>更新到 <code>2026.3.13</code> 之後，之前的 hot-patch 就不需要了。圖片下載直接走官方的程式碼路徑，SSRF 防護和 WSL2 相容性兩者兼得。</p>
+<p>回頭看，這次除錯最有價值的部分不是 patch 本身，而是定位問題的過程——從「圖片消失」到「SSRF dispatcher 覆蓋 WSL2 設定」，穿過五層抽象，每一層都需要在沒有原始碼的 compiled bundle 裡注入 debug log 才能看清。即使官方修了，這套方法論在下次遇到類似問題時還是用得上。</p>
+<p>有時候 Bug 不是誰寫錯了，是環境的排列組合超出了所有人的預期。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+              <a href="/tags/WSL2/" rel="tag"># WSL2</a>
+              <a href="/tags/Node-js/" rel="tag"># Node.js</a>
+              <a href="/tags/Telegram-Bot/" rel="tag"># Telegram Bot</a>
+              <a href="/tags/OpenClaw/" rel="tag"># OpenClaw</a>
+              <a href="/tags/%E9%99%A4%E9%8C%AF/" rel="tag"># 除錯</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/52f9695d/" rel="prev" title="用兩個 AI 建立自動化工作流：讓龍蝦當 PM，Claude Code 當工人">
+                  <i class="fa fa-angle-left"></i> 用兩個 AI 建立自動化工作流：讓龍蝦當 PM，Claude Code 當工人
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/94781d87/" rel="next" title="當AI有了自己的社群網路：Meta收購Moltbook背後的agent互聯革命">
+                  當AI有了自己的社群網路：Meta收購Moltbook背後的agent互聯革命 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">388k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">5:53</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

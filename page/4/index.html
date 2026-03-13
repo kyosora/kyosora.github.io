@@ -135,16 +135,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">124</span>
+          <span class="site-state-item-count">133</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">64</span>
+        <span class="site-state-item-count">72</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">192</span>
+        <span class="site-state-item-count">217</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -161,6 +161,1077 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/365c9a4d/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/365c9a4d/" class="post-title-link" itemprop="url">告別背包中自動喚醒的筆電：用 PowerShell 一鍵關閉藍牙裝置喚醒功能</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2025-03-31 14:30:00" itemprop="dateCreated datePublished" datetime="2025-03-31T14:30:00+08:00">2025-03-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E8%A1%93%E5%B0%8F%E6%8A%80%E5%B7%A7/" itemprop="url" rel="index"><span itemprop="name">技術小技巧</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E8%A1%93%E5%B0%8F%E6%8A%80%E5%B7%A7/Windows-%E8%AA%BF%E6%A0%A1/" itemprop="url" rel="index"><span itemprop="name">Windows 調校</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.7k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          告別背包中自動喚醒的筆電：用 PowerShell 一鍵關閉藍牙裝置喚醒功能
+你有沒有遇過這樣的情況：筆電明明已經關上放進背包，卻在包裡莫名其妙地自己開機，到了目的地打開包發現電腦不僅發燙，電量還徹底耗盡？這種「背包中開趴」的情況很可能是因為你的藍牙滑鼠或其他藍牙裝置在背包中被不小心碰觸，進而喚醒了電腦所導致。
+
+昨天我又一次經歷了這個惱人的問題，當我抵達咖啡廳後，打開背包才發現筆電已經沒電自動關機，整個下午的工作計畫全部泡湯。這次我決定徹底解決這個問題，找到了一個優雅的一勞永逸解法。
+
+罪魁禍首：藍牙裝置的喚醒權限
+Windows 預設允許許多連接的裝置具有「喚醒電腦」的權限，尤其是滑鼠和鍵
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/365c9a4d/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/bf4f4549/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/bf4f4549/" class="post-title-link" itemprop="url">IIS 401.3 權限錯誤完全解析：為什麼新增 IUSR 是救命關鍵</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2025-03-24 15:30:00" itemprop="dateCreated datePublished" datetime="2025-03-24T15:30:00+08:00">2025-03-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%B6%B2%E9%A0%81%E4%BC%BA%E6%9C%8D%E5%99%A8/" itemprop="url" rel="index"><span itemprop="name">網頁伺服器</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%B6%B2%E9%A0%81%E4%BC%BA%E6%9C%8D%E5%99%A8/%E6%95%85%E9%9A%9C%E6%8E%92%E9%99%A4/" itemprop="url" rel="index"><span itemprop="name">故障排除</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.9k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>3 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          當你的網站突然拒絕訪客，顯示 401.3 錯誤
+你是否曾經碰到過這樣的情境：辛苦架設好的網站部署到 IIS 上，一切設定看起來都很完美，但當你試著從瀏覽器訪問時，卻看到這樣讓人頭痛的錯誤訊息：
+
+HTTP 錯誤 401.3 - Unauthorized
+因為網頁伺服器上此資源的存取控制清單 (ACL) 設定或加密設定的緣故，您沒有檢視此目錄或網頁的權限。
+
+這個讓人抓狂的錯誤往往會讓你懷疑自己是不是漏了什麼重要設定，特別是當你確信已經正確配置網站的其他部分時。今天，我們就要徹底解析這個常見但令人困擾的問題，並解釋為什麼簡單地新增 IUSR 權限往往就能解決它。
+
+理解 HTTP 401.3 錯
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/bf4f4549/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/a6b782ce/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/a6b782ce/" class="post-title-link" itemprop="url">讓你的Claude如虎添翼：MCP功能實戰筆記</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2025-03-21 12:00:00" itemprop="dateCreated datePublished" datetime="2025-03-21T12:00:00+08:00">2025-03-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">AI工具</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI%E5%B7%A5%E5%85%B7/Claude/" itemprop="url" rel="index"><span itemprop="name">Claude</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>3.1k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>3 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          喚醒沉睡的潛能：Claude桌面版的隱藏神器
+還記得科幻電影中，AI助手能夠幫你整理檔案、搜尋資料、管理電腦嗎？這不再是科幻，而是現實。Anthropic最近悄悄為Claude桌面版添加了一項革命性功能——MCP（Model Context Protocol），讓你的AI助手終於能夠「看見」並「操作」你電腦中的檔案。
+
+我第一次發現這功能時，簡直驚呆了：「等等，這是說Claude現在可以幫我整理桌面上的混亂檔案？」沒錯，而且還能做更多。
+
+這篇文章將帶你一步步解鎖Claude的這項隱藏能力，讓你的AI助手真正成為你的數位管家。
+
+MCP是什麼？為何你應該立刻開啟它
+MCP（Model Cont
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/a6b782ce/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/8b54f310/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/8b54f310/" class="post-title-link" itemprop="url">Chocolatey 神技：兩行 PowerShell 搞定所有軟體重裝的煩惱</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2025-03-20 10:30:00" itemprop="dateCreated datePublished" datetime="2025-03-20T10:30:00+08:00">2025-03-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E5%85%B7%E6%8A%80%E5%B7%A7/" itemprop="url" rel="index"><span itemprop="name">工具技巧</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E5%85%B7%E6%8A%80%E5%B7%A7/Windows/" itemprop="url" rel="index"><span itemprop="name">Windows</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>4.9k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>4 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          還在為重灌電腦後需要一一下載安裝軟體而頭痛嗎？每次環境設定都像一場馬拉松般耗時費力？別擔心，今天我要介紹的 Chocolatey 神技，讓你只需準備兩行 PowerShell 指令，就能一鍵還原所有常用軟體，省下寶貴的時間來做更重要的事！
+
+Chocolatey 是什麼？為何我現在才知道？
+Chocolatey 是 Windows 平台上的套件管理工具，如果你用過 Linux 的 apt 或 Mac 的 Homebrew，就會覺得 Chocolatey 相當親切。它讓你能透過命令列來安裝、更新和管理各種軟體，不必再手動下載安裝檔、點擊下一步、同意條款⋯⋯這些繁瑣的步驟。
+
+想想看，你是否曾經歷
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/8b54f310/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/38af2cdf/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/38af2cdf/" class="post-title-link" itemprop="url">使用Google Search Console驗證與修復遭受DNS污染的IIS網站</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2025-02-03 18:30:10" itemprop="dateCreated datePublished" datetime="2025-02-03T18:30:10+08:00">2025-02-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%B6%B2%E8%B7%AF%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">網路安全</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%B6%B2%E8%B7%AF%E5%AE%89%E5%85%A8/%E7%B3%BB%E7%B5%B1%E7%B6%AD%E8%AD%B7/" itemprop="url" rel="index"><span itemprop="name">系統維護</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.7k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          Google Search Console簡介
+什麼是Google Search Console?
+Google Search Console(前身為Google網站管理員工具)是Google提供的免費網站監控與管理工具。它能協助網站管理員:
+
+ * 監控網站在Google搜尋中的表現
+ * 接收網站問題的警示通知
+ * 確認網站的擁有權
+ * 提交網站地圖(Sitemap)
+ * 查看網站的爬蟲數據
+
+為什麼需要使用Search Console?
+當網站遭受攻擊時,Search Console特別重要:
+
+ * 及時接收安全性警示
+ * 確認網站的真實擁有者
+ * 要求Google重新檢索網
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/38af2cdf/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/3b1b4c6d/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/3b1b4c6d/" class="post-title-link" itemprop="url">DeepSeek-R1 深度剖析：性價比超越Claude與GPT-4的AI新選擇</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2025-01-24 18:30:06" itemprop="dateCreated datePublished" datetime="2025-01-24T18:30:06+08:00">2025-01-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E6%85%A7/" itemprop="url" rel="index"><span itemprop="name">人工智慧</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1.8k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          在人工智慧競速發展的這幾年，企業開發者正面臨關鍵抉擇：如何用1/3成本實現超越GPT-4o的推理能力？ DeepSeek最新推出的R1模型給出令人驚豔的答案——憑藉獨創的動態推理路徑技術與三維資源壓縮架構，不僅在MMLU基準測試中以89.7分刷新紀錄，更實現較GPT-4o降低78%的推理成本。本文將透過架構層解析與實測數據，揭開這款「性價比屠夫」的技術突破。
+
+一、DeepSeek-R1核心特性
+1.1 動態推理路徑技術
+R1 模型通過創新性思維鏈API實現決策過程透明化，技術實現包含：
+
+ * 使用 與 標籤規範推理步驟
+   
+   
+ * 支援長鏈推理（Chain-of-Thought，
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/3b1b4c6d/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/e7617ff1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/e7617ff1/" class="post-title-link" itemprop="url">主管新任務來襲！資深工程師分享：7個訊號辨識成長機會或過勞陷阱</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2025-01-23 18:34:50" itemprop="dateCreated datePublished" datetime="2025-01-23T18:34:50+08:00">2025-01-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E5%A0%B4%E7%99%BC%E5%B1%95/" itemprop="url" rel="index"><span itemprop="name">職場發展</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1.6k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>1 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          「這個新專案很有挑戰性，我希望你能帶著新人一起完成。順便也導入一下 Code Review 機制...」
+
+身為資深工程師的你，聽到這句話的第一個反應是什麼？
+
+每個工程師的職涯裡，總會遇到這樣的關鍵時刻 - 主管突然拋出一個看似「機會」的重責大任。但在專案執行資源、時程與授權層級都不明確的情況下，這是踏上成長階梯的機會，還是隱藏的過勞陷阱？
+
+本文將分享一套量化的評估框架，幫助你在 48 小時內做出正確判斷。
+
+真實案例解析：一個令人困擾的週一早晨
+小明是團隊的資深工程師，週一早上收到主管 Alice 的 Slack 訊息：
+
+1
+
+
+Alice: 小明早安，公司最近接了一個新專案，預計 Q
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/e7617ff1/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/84e70c1e/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/84e70c1e/" class="post-title-link" itemprop="url">Quartz.NET 入門指南 - 打造可靠的.NET排程系統</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2025-01-16 18:06:09" itemprop="dateCreated datePublished" datetime="2025-01-16T18:06:09+08:00">2025-01-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/" itemprop="url" rel="index"><span itemprop="name">後端開發</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.5k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          前言
+在現代軟體開發中,排程任務是一個不可或缺的環節。無論是定期資料備份、報表產生、郵件發送,還是系統維護,都需要一個可靠的排程系統。Quartz.NET 就是一個強大的開源排程框架,它不僅提供了豐富的功能,還具備高度的靈活性和可靠性。
+
+Scheduler Job Store Thread Pool Jobs Triggers Listeners Plugins Quartz.NET 是什麼?
+Quartz.NET 是 Java Quartz 排程框架的 .NET 移植版本,它提供了企業級的排程功能:
+
+ * 支援複雜的排程模式(Cron表達式)
+ * 具備叢集功能,確保高可用性
+ * 提供
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/84e70c1e/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/901fe680/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/901fe680/" class="post-title-link" itemprop="url">Windows遠端桌面連線重置帳密教學</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2025-01-03 18:30:00" itemprop="dateCreated datePublished" datetime="2025-01-03T18:30:00+08:00">2025-01-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Windows%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">Windows教學</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>608</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>1 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          Windows遠端桌面連線重置帳密教學
+在使用Windows遠端桌面連線(Remote Desktop Connection, RDP)時，有時候可能會遇到因為多次輸入錯誤帳號密碼，導致系統暫時鎖定無法重新輸入的情況。本文將教你如何快速解決這個問題，並提供一些預防措施。
+
+問題說明
+當我們在進行遠端桌面連線時，如果連續輸入錯誤的帳號密碼，Windows會出現以下錯誤訊息：
+
+1
+
+
+無法使用這個認證登入到遠端電腦。請確認你的認證是有效的，然後再試一次。如果問題持續發生，請連絡系統管理員。
+
+
+這是Windows的安全機制，為了防止惡意程式暴力破解密碼而設計的保護措施。
+
+解決方法
+方法一：使用
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/901fe680/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -276,1110 +1347,8 @@ Windows 系統中,已安裝的軟體資訊主要儲存在以下登錄檔位置:
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/d4120792/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="kyosora">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kyosora 筆記">
-      <meta itemprop="description" content="個人技術筆記和學習心得分享">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | kyosora 筆記">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/posts/d4120792/" class="post-title-link" itemprop="url">邁入而立之年的2024回顧與2025展望 - 從0到1的投資之路</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">發表於</span>
-
-      <time title="創建時間：2025-01-01 18:39:00" itemprop="dateCreated datePublished" datetime="2025-01-01T18:39:00+08:00">2025-01-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分類於</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%94%9F%E6%B4%BB%E6%9C%AD%E8%A8%98/" itemprop="url" rel="index"><span itemprop="name">生活札記</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="文章字數">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">文章字數：</span>
-      <span>783</span>
-    </span>
-    <span class="post-meta-item" title="所需閱讀時間">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>1 分鐘</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          序言 - 三十而立的感悟
-時光飛逝，回首2024年，不知不覺已經走過了四年的職場生涯，也迎來了人生的第三個十年。古人說「三十而立」，對我來說，這確實是一個值得停下腳步，好好思考未來方向的時刻。
-
-2024年度成果總結
-持續寫作的堅持
-2024年總共完成了93篇文章，平均每個月將近8篇的產出量。寫作對我來說，不僅是記錄生活、分享經驗的方式，更是一種自我成長的過程。每一篇文章都代表了一次思考、一次沉澱，也是未來回顧時最珍貴的印記。
-
-工作與旅遊的平衡
-今年最難忘的經歷之一，莫過於公司安排的日本東京七天員工旅行。除了體驗日本的文化與美食，這次旅行也讓我對台灣的經濟現況有了新的認識。記得在東京銀座逛街
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/d4120792/#more" rel="contents">
-                閱讀全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/8d59eebe/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="kyosora">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kyosora 筆記">
-      <meta itemprop="description" content="個人技術筆記和學習心得分享">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | kyosora 筆記">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/posts/8d59eebe/" class="post-title-link" itemprop="url">Python程式打包成exe檔案的指南 - 使用PyInstaller打包PySide6應用程式</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">發表於</span>
-
-      <time title="創建時間：2024-12-23 10:30:00" itemprop="dateCreated datePublished" datetime="2024-12-23T10:30:00+08:00">2024-12-23</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分類於</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Python%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">Python教學</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="文章字數">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">文章字數：</span>
-      <span>1.5k</span>
-    </span>
-    <span class="post-meta-item" title="所需閱讀時間">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>1 分鐘</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          在開發完Python程式後,常常會需要將程式打包成exe檔案,方便在其他電腦上執行。本文將詳細說明如何使用PyInstaller工具,將Python程式打包成獨立的執行檔。特別針對使用PySide6開發的GUI應用程式,提供完整的打包設定和解決方案。
-
-打包工具介紹
-PyInstaller是目前最流行的Python打包工具之一,它可以:
-
- * 將Python程式和所需的函式庫打包成單一執行檔
- * 自動分析程式相依性
- * 支援多種Python套件
- * 跨平台打包支援
-
-打包的基本步驟
-1. 安裝PyInstaller
-首先需要安裝PyInstaller套件:
-
-1
-
-
-pip insta
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/8d59eebe/#more" rel="contents">
-                閱讀全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/dd7829e1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="kyosora">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kyosora 筆記">
-      <meta itemprop="description" content="個人技術筆記和學習心得分享">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | kyosora 筆記">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/posts/dd7829e1/" class="post-title-link" itemprop="url">寫 HEXO 部落格更有效率！跨平台桌面編輯器推薦</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">發表於</span>
-
-      <time title="創建時間：2024-12-21 18:30:00" itemprop="dateCreated datePublished" datetime="2024-12-21T18:30:00+08:00">2024-12-21</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分類於</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%96%A6/" itemprop="url" rel="index"><span itemprop="name">工具推薦</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="文章字數">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">文章字數：</span>
-      <span>953</span>
-    </span>
-    <span class="post-meta-item" title="所需閱讀時間">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>1 分鐘</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          你有遇過這些寫 HEXO 部落格的小困擾嗎？
-
- * 一邊寫文章一邊要切換視窗預覽效果
- * 想要快速修改文章的標題、分類和標籤要手動改 YAML
- * 分類和標籤越來越多，不知道之前用過哪些
- * 想要備份所有文章，還要自己一個一個找檔案
-
-如果有類似困擾的話，不妨試試看這個專為 HEXO 部落客設計的桌面編輯器 - HEXO Editor Desktop！
-
-🌟 HEXO Editor 有什麼特別的？
-這是一款開源的跨平台編輯器，專注於改善 HEXO 部落客的寫作體驗。透過圖形化介面，讓你可以更專注在內容創作上。
-
-主要功能
- 1. 一站式編輯環境
-    
-     * Markdow
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/dd7829e1/#more" rel="contents">
-                閱讀全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/64f9d1d6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="kyosora">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kyosora 筆記">
-      <meta itemprop="description" content="個人技術筆記和學習心得分享">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | kyosora 筆記">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/posts/64f9d1d6/" class="post-title-link" itemprop="url">SQL Server資料庫加密實戰:透明資料加密(TDE)完整實作指南</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">發表於</span>
-
-      <time title="創建時間：2024-12-20 18:43:00" itemprop="dateCreated datePublished" datetime="2024-12-20T18:43:00+08:00">2024-12-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分類於</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB/" itemprop="url" rel="index"><span itemprop="name">資料庫</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">資訊安全</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="文章字數">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">文章字數：</span>
-      <span>1.8k</span>
-    </span>
-    <span class="post-meta-item" title="所需閱讀時間">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>2 分鐘</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          前言
-隨著資安事件頻傳,如何保護資料庫中的敏感資料成為當前的重要課題。Microsoft SQL Server提供的透明資料加密(Transparent Data Encryption, TDE)是一個強大的解決方案,它能夠在資料寫入磁碟時自動加密,讀取時自動解密,對應用程式完全透明。本文將帶您一步步實作TDE,並深入探討其運作原理。
-
-TDE運作原理
-TDE的主要目的是保護資料庫檔案(.mdf、.ldf)中的靜態資料。當資料要寫入磁碟時,TDE會自動進行加密;當需要讀取資料時,則會自動解密。整個過程對應用程式來說是完全透明的,不需要修改任何程式碼。
-
-以下是TDE的運作流程:
-
-資料庫檔案 
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/64f9d1d6/#more" rel="contents">
-                閱讀全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/2a83fb82/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="kyosora">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kyosora 筆記">
-      <meta itemprop="description" content="個人技術筆記和學習心得分享">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | kyosora 筆記">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/posts/2a83fb82/" class="post-title-link" itemprop="url">圖解 C# yield - 5分鐘讓你輕鬆掌握迭代器</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">發表於</span>
-
-      <time title="創建時間：2024-12-19 10:00:00" itemprop="dateCreated datePublished" datetime="2024-12-19T10:00:00+08:00">2024-12-19</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分類於</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%A8%8B%E5%BC%8F%E9%96%8B%E7%99%BC/" itemprop="url" rel="index"><span itemprop="name">程式開發</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="文章字數">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">文章字數：</span>
-      <span>1.6k</span>
-    </span>
-    <span class="post-meta-item" title="所需閱讀時間">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>1 分鐘</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          C# yield 執行流程 開始 迭代器狀態機 呼叫 MoveNext() yield return 值 保存目前狀態 # 為什麼需要 yield?在C#開發中,我們經常需要處理大量數據的集合。傳統的做法是先將所有數據載入到記憶體中,再進行處理。但這種方式在處理大量數據時會佔用大量記憶體,影響程式效能。
-
-這時候就需要用到 yield 關鍵字。yield 可以讓我們實現延遲執行(Lazy Evaluation),也就是說,只有在真正需要數據時才進行處理,大大節省記憶體使用。
-
-yield 基本用法
-讓我們從一個簡單的例子開始:
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/2a83fb82/#more" rel="contents">
-                閱讀全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/93ae5adc/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="kyosora">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kyosora 筆記">
-      <meta itemprop="description" content="個人技術筆記和學習心得分享">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | kyosora 筆記">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/posts/93ae5adc/" class="post-title-link" itemprop="url">SQL Server CSV匯出終極攻略：3種工具效能實測，速度最高提升300%！</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">發表於</span>
-
-      <time title="創建時間：2024-12-17 18:10:09" itemprop="dateCreated datePublished" datetime="2024-12-17T18:10:09+08:00">2024-12-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分類於</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB%E7%AE%A1%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">資料庫管理</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="文章字數">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">文章字數：</span>
-      <span>8.4k</span>
-    </span>
-    <span class="post-meta-item" title="所需閱讀時間">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>8 分鐘</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          前言
-每個資料庫管理員都曾遇過這種情況：老闆說「我要這個報表，越快越好」，結果你發現要匯出的資料有好幾億筆…
-
-別擔心！本篇文章將完整介紹SQL Server三大CSV匯出工具：SQLCMD、BCP和SSIS的實戰技巧。透過實際案例分析和效能測試，教你如何選擇最適合的工具，並運用最佳化技巧大幅提升匯出效能！
-
-三大工具特色比較
- 1. SQLCMD
-    
-     * 優點：彈性高、容易整合自動化流程、指令碼管理方便
-     * 缺點：需要撰寫較多程式碼
-     * 適用場景：自動化排程作業、需要客製化處理的匯出工作
-    
-    
- 2. BCP (Bulk Copy Progr
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/93ae5adc/#more" rel="contents">
-                閱讀全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/dfa16eff/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="kyosora">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kyosora 筆記">
-      <meta itemprop="description" content="個人技術筆記和學習心得分享">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | kyosora 筆記">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/posts/dfa16eff/" class="post-title-link" itemprop="url">SQL Server 資料庫管理必學秘技：快速查詢物件修改時間</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">發表於</span>
-
-      <time title="創建時間：2024-12-16 18:15:05" itemprop="dateCreated datePublished" datetime="2024-12-16T18:15:05+08:00">2024-12-16</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分類於</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB/" itemprop="url" rel="index"><span itemprop="name">資料庫</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="文章字數">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">文章字數：</span>
-      <span>1.2k</span>
-    </span>
-    <span class="post-meta-item" title="所需閱讀時間">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>1 分鐘</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          前言
-在進行資料庫開發與維護時，經常需要知道資料表、檢視表或預存程序最後的修改時間。這些資訊對於：
-
- * 追蹤系統變更
- * 問題排除
- * 效能調校
- * 版本控制
-   都非常重要。本文將介紹幾個實用的SQL查詢技巧，讓你輕鬆掌握資料庫物件的時間資訊。
-
-查詢資料表與檢視表的修改時間
-以下是查詢資料表與檢視表修改時間的SQL：
-
-1
-2
-3
-4
-5
-6
-7
-8
-
-
-SELECT [name]           -- 物件名稱
-      ,create_date     -- 建立時間
-      ,modify_date     -- 修改時間
-      ,type_desc   
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/dfa16eff/#more" rel="contents">
-                閱讀全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/6e1c490b/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="kyosora">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kyosora 筆記">
-      <meta itemprop="description" content="個人技術筆記和學習心得分享">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | kyosora 筆記">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/posts/6e1c490b/" class="post-title-link" itemprop="url">SQL Server管理員必學：SQLCMD實戰指南</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">發表於</span>
-
-      <time title="創建時間：2024-12-15 18:52:15" itemprop="dateCreated datePublished" datetime="2024-12-15T18:52:15+08:00">2024-12-15</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分類於</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB%E7%AE%A1%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">資料庫管理</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="文章字數">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">文章字數：</span>
-      <span>3.1k</span>
-    </span>
-    <span class="post-meta-item" title="所需閱讀時間">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>3 分鐘</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          前言
-在管理大型SQL Server資料庫時,你是否遇過以下痛點？
-
- * 資料匯入匯出緩慢到讓人抓狂
- * 維護作業需要人工執行,常常加班到半夜
- * 大型資料庫備份還原總是出問題
- * 跨伺服器操作複雜又容易出錯
-
-別擔心！本篇完整剖析SQLCMD的所有實戰技巧,讓你輕鬆應對各種資料庫維運挑戰。無論你是資深DBA還是新手工程師,都能從中學到實用的技巧！
-
-SQLCMD 功能與效能概觀 SQLCMD 資料匯入匯出 批次處理優化 執行SQL指令 效能監控 資料庫備份 壓縮優化 自動化排程 錯誤處理 大型資料庫匯入效能比較 一般匯入 批次處理 最佳化設定 實戰經驗分享
-案例一：10TB 大型資料
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/6e1c490b/#more" rel="contents">
-                閱讀全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/690f008/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="kyosora">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kyosora 筆記">
-      <meta itemprop="description" content="個人技術筆記和學習心得分享">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | kyosora 筆記">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/posts/690f008/" class="post-title-link" itemprop="url">SQL Server管理員必學：SQLCMD完整應用指南</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">發表於</span>
-
-      <time title="創建時間：2024-12-14 18:28:35" itemprop="dateCreated datePublished" datetime="2024-12-14T18:28:35+08:00">2024-12-14</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分類於</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB%E7%AE%A1%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">資料庫管理</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="文章字數">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">文章字數：</span>
-      <span>1.8k</span>
-    </span>
-    <span class="post-meta-item" title="所需閱讀時間">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>2 分鐘</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          前言
-在管理大型SQL Server資料庫時,SQLCMD是一個不可或缺的命令列工具。無論是執行日常維護工作、資料匯入匯出,還是建立自動化作業,SQLCMD都能幫助我們更有效率地完成這些任務。本文將詳細介紹SQLCMD的各種應用方式,幫助你掌握這個強大的工具。
-
-SQLCMD 功能概觀 SQLCMD 資料匯入匯出 執行SQL指令 資料庫備份 自動化排程 SQLCMD基本語法
-SQLCMD的基本語法結構如下：
-
-1
-2
-3
-4
-5
-6
-7
-8
-
-
-sqlcmd 
--S <伺服器名稱>          -- 指定SQL Server執行個體
--U <使用者名稱>          -- 指定登入
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/690f008/#more" rel="contents">
-                閱讀全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一頁" aria-label="上一頁" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" title="下一頁" aria-label="下一頁" href="/page/5/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一頁" aria-label="上一頁" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" title="下一頁" aria-label="下一頁" href="/page/5/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -1401,13 +1370,13 @@ sqlcmd
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">351k</span>
+    <span title="總字數">388k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">5:19</span>
+    <span title="所需總閱讀時間">5:53</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

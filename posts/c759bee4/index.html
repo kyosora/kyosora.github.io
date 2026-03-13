@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="上週 Anthropic 和 Mozilla 聯合發了一篇公告：Claude Opus 4.6 在兩週內掃描了 Firefox 將近 6,000 個 C++ 檔案，提交 112 份報告，其中 22 個被確認為真實漏洞，14 個是高嚴重性。  這個數字什麼概念？2025 一整年 Firefox 修補的高嚴重性漏洞，大約是這次兩週產出的五倍。換句話說，Claude 兩週的產量接近 2025 全年的兩成">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI抓漏洞比人快？Claude兩週內在Firefox挖出22個安全漏洞的技術內幕">
+<meta property="og:url" content="https://kyosora.github.io/posts/c759bee4/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="上週 Anthropic 和 Mozilla 聯合發了一篇公告：Claude Opus 4.6 在兩週內掃描了 Firefox 將近 6,000 個 C++ 檔案，提交 112 份報告，其中 22 個被確認為真實漏洞，14 個是高嚴重性。  這個數字什麼概念？2025 一整年 Firefox 修補的高嚴重性漏洞，大約是這次兩週產出的五倍。換句話說，Claude 兩週的產量接近 2025 全年的兩成">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2026-03-09T18:30:00.000Z">
+<meta property="article:modified_time" content="2026-03-09T18:03:06.639Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Claude">
+<meta property="article:tag" content="Firefox">
+<meta property="article:tag" content="安全漏洞">
+<meta property="article:tag" content="AI安全研究">
+<meta property="article:tag" content="LLM應用">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/c759bee4/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/c759bee4/","path":"posts/c759bee4/","title":"AI抓漏洞比人快？Claude兩週內在Firefox挖出22個安全漏洞的技術內幕"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>AI抓漏洞比人快？Claude兩週內在Firefox挖出22個安全漏洞的技術內幕 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%83%E6%98%AF%E6%80%8E%E9%BA%BC%E6%8E%83%E7%9A%84%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">它是怎麼掃的？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#112-%E4%BB%BD%E5%A0%B1%E5%91%8A%EF%BC%8C22-%E5%80%8B%E7%9C%9F%E7%9A%84"><span class="nav-number">2.</span> <span class="nav-text">112 份報告，22 個真的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%BE%E6%BC%8F%E6%B4%9E%E5%BE%88%E8%A1%8C%EF%BC%8C%E5%AF%AB-Exploit-%E4%B8%8D%E8%A1%8C"><span class="nav-number">3.</span> <span class="nav-text">找漏洞很行，寫 Exploit 不行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Task-Verifier%EF%BC%9A%E8%AE%93-AI-%E8%83%BD%E6%B7%B1%E5%85%A5%E6%8E%A2%E7%B4%A2%E7%9A%84%E9%97%9C%E9%8D%B5"><span class="nav-number">4.</span> <span class="nav-text">Task Verifier：讓 AI 能深入探索的關鍵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8D%E9%96%8B%E7%99%BC%E8%80%85%E7%9A%84%E5%AF%A6%E9%9A%9B%E6%84%8F%E7%BE%A9"><span class="nav-number">5.</span> <span class="nav-text">對開發者的實際意義</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B8%E5%AD%97%E6%95%B4%E7%90%86"><span class="nav-number">6.</span> <span class="nav-text">數字整理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E7%9A%84%E7%9C%8B%E6%B3%95"><span class="nav-number">7.</span> <span class="nav-text">我的看法</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">133</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">72</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">217</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/c759bee4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="AI抓漏洞比人快？Claude兩週內在Firefox挖出22個安全漏洞的技術內幕 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AI抓漏洞比人快？Claude兩週內在Firefox挖出22個安全漏洞的技術內幕
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2026-03-10 02:30:00 / 修改時間：02:03:06" itemprop="dateCreated datePublished" datetime="2026-03-10T02:30:00+08:00">2026-03-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/%E8%B3%87%E5%AE%89/" itemprop="url" rel="index"><span itemprop="name">資安</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.4k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>上週 Anthropic 和 Mozilla 聯合發了一篇公告：Claude Opus 4.6 在兩週內掃描了 Firefox 將近 6,000 個 C++ 檔案，提交 112 份報告，其中 22 個被確認為真實漏洞，14 個是高嚴重性。</p>
+<p>這個數字什麼概念？2025 一整年 Firefox 修補的高嚴重性漏洞，大約是這次兩週產出的五倍。換句話說，Claude 兩週的產量接近 2025 全年的兩成。</p>
+<p>我花了一些時間讀完 Anthropic 的技術報告和 Mozilla 的回應，想整理出幾個工程師會在意的重點。</p>
+<h2 id="它是怎麼掃的？"><a href="#它是怎麼掃的？" class="headerlink" title="它是怎麼掃的？"></a>它是怎麼掃的？</h2><p>Anthropic 的團隊沒有直接丟整個 codebase 給 Claude 然後說「幫我找 bug」。他們分了兩個階段：</p>
+<p><strong>第一階段：驗證能力。</strong> 先拿 Firefox 舊版本中已知的 CVE，讓 Claude 看能不能重現。這步很關鍵——如果連已知漏洞都找不到，就沒必要往下走了。</p>
+<p><strong>第二階段：掃描未知漏洞。</strong> 從 JavaScript 引擎開始（這是瀏覽器最複雜、攻擊面最大的部分），逐步擴展到其他元件。兩週內掃了將近 6,000 個 C++ 檔案。</p>
+<p>第一個漏洞在探索開始 20 分鐘後就被發現了——一個 JavaScript 引擎裡的 <strong>Use After Free</strong> 記憶體漏洞。這類漏洞允許攻擊者用惡意內容覆寫已釋放的記憶體區塊，嚴重的話可以執行任意程式碼。</p>
+<p>一個研究員獨立驗證，另外兩個人再次確認，Claude 還生成了修補建議。</p>
+<h2 id="112-份報告，22-個真的"><a href="#112-份報告，22-個真的" class="headerlink" title="112 份報告，22 個真的"></a>112 份報告，22 個真的</h2><p>112 份報告裡只有 22 個被確認，代表誤報率大約 80%。這個數字看起來不太好看，但換個角度想：</p>
+<ul>
+<li>人類安全研究員的工具（fuzzer、靜態分析器）誤報率通常也在 70-90%</li>
+<li>重點是那 22 個真的漏洞的品質——14 個高嚴重性</li>
+<li>Mozilla 的團隊表示他們「幫助 Anthropic 理解什麼樣的發現值得提交 bug report」，代表後期的報告品質在提升</li>
+</ul>
+<p>Mozilla 對提交品質有三個要求：</p>
+<ol>
+<li>能重現漏洞的最小測試案例</li>
+<li>詳細的 Proof of Concept</li>
+<li>候選修補程式</li>
+</ol>
+<p>Claude 都做到了。不只是說「這裡有問題」，而是「這裡有問題，這樣可以重現，這是我建議的修法」。</p>
+<h2 id="找漏洞很行，寫-Exploit-不行"><a href="#找漏洞很行，寫-Exploit-不行" class="headerlink" title="找漏洞很行，寫 Exploit 不行"></a>找漏洞很行，寫 Exploit 不行</h2><p>這是整篇報告最有趣的部分。</p>
+<p>Anthropic 花了大約 4,000 美元的 API 費用，跑了幾百次迭代，試圖讓 Claude 把找到的漏洞寫成可運作的 exploit。</p>
+<p>結果？<strong>只有 2 個成功</strong>，而且只在刻意移除現代瀏覽器安全功能（例如 sandbox）的測試環境裡才能用。</p>
+<p>Anthropic 的結論是：</p>
+<blockquote>
+<p>找到漏洞的成本，比把漏洞變成攻擊的成本低一個數量級。</p>
+</blockquote>
+<p>翻成白話：Claude 是天生的防守方。它能高效率地找出問題，但要把問題武器化？目前的能力遠遠不夠。</p>
+<p>這對安全生態來說其實是好消息。防守方用 AI 找漏洞的效益，遠大於攻擊方用 AI 寫 exploit 的效益。至少目前是這樣。</p>
+<h2 id="Task-Verifier：讓-AI-能深入探索的關鍵"><a href="#Task-Verifier：讓-AI-能深入探索的關鍵" class="headerlink" title="Task Verifier：讓 AI 能深入探索的關鍵"></a>Task Verifier：讓 AI 能深入探索的關鍵</h2><p>報告裡提到一個技術細節我覺得特別值得注意：<strong>task verifier</strong>。</p>
+<p>Anthropic 建了一套驗證工具，在 Claude 探索 codebase 的過程中提供即時回饋。這讓 Claude 可以持續迭代，直到它確認：</p>
+<ol>
+<li>漏洞真的存在（不是誤判）</li>
+<li>修補後程式功能正常（不會修一個壞另一個）</li>
+</ol>
+<p>沒有這套 verifier，Claude 只是在猜。有了它，Claude 能進入「深度探索」模式——不斷嘗試、驗證、修正，直到找到真正的問題。</p>
+<p>這個模式其實跟人類安全研究員的工作流程很像：先有假設，驗證，失敗了就調整假設，再驗證。差別是 Claude 跑一輪的速度是分鐘級，人類是小時級。</p>
+<h2 id="對開發者的實際意義"><a href="#對開發者的實際意義" class="headerlink" title="對開發者的實際意義"></a>對開發者的實際意義</h2><p>如果你在維護一個中大型專案，這件事值得關注：</p>
+<p><strong>短期（現在就能做）：</strong></p>
+<ul>
+<li>AI 輔助的安全審計已經不是概念驗證了，Mozilla 和 Anthropic 已經證明它能在生產級 codebase 上運作</li>
+<li>Firefox 148 已經修了大部分被發現的漏洞，代表從發現到修補的流程是成熟的</li>
+</ul>
+<p><strong>中期（半年到一年）：</strong></p>
+<ul>
+<li>預期會有更多 AI 安全掃描工具進入市場</li>
+<li>對 C/C++ 專案特別有價值，因為記憶體安全漏洞是這類語言的先天弱點</li>
+<li>Rust 專案的安全掃描場景會不太一樣（邏輯錯誤 &gt; 記憶體錯誤）</li>
+</ul>
+<p><strong>值得思考的：</strong></p>
+<ul>
+<li>如果 AI 兩週能找到 22 個漏洞，那現在的 codebase 裡還有多少沒被發現的？</li>
+<li>安全研究員的角色會從「找漏洞的人」轉變為「驗證和排序 AI 報告的人」</li>
+<li>誰先用 AI 掃，誰就先修。攻擊者也能用同樣的技術找漏洞，但前面說了，exploit 化的難度高得多</li>
+</ul>
+<h2 id="數字整理"><a href="#數字整理" class="headerlink" title="數字整理"></a>數字整理</h2><table>
+<thead>
+<tr>
+<th>項目</th>
+<th>數據</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>掃描時間</td>
+<td>2 週（2026 年 2 月）</td>
+</tr>
+<tr>
+<td>使用模型</td>
+<td>Claude Opus 4.6</td>
+</tr>
+<tr>
+<td>掃描檔案數</td>
+<td>~6,000 個 C++ 檔案</td>
+</tr>
+<tr>
+<td>提交報告數</td>
+<td>112 份</td>
+</tr>
+<tr>
+<td>確認漏洞數</td>
+<td>22 個</td>
+</tr>
+<tr>
+<td>高嚴重性</td>
+<td>14 個</td>
+</tr>
+<tr>
+<td>中嚴重性</td>
+<td>7 個</td>
+</tr>
+<tr>
+<td>低嚴重性</td>
+<td>1 個</td>
+</tr>
+<tr>
+<td>Exploit 嘗試成本</td>
+<td>~$4,000 API 費用</td>
+</tr>
+<tr>
+<td>Exploit 成功數</td>
+<td>2 個（受限環境）</td>
+</tr>
+<tr>
+<td>修補版本</td>
+<td>Firefox 148.0</td>
+</tr>
+</tbody></table>
+<h2 id="我的看法"><a href="#我的看法" class="headerlink" title="我的看法"></a>我的看法</h2><p>這次合作最重要的不是「AI 找到了 22 個漏洞」這個標題，而是背後的不對稱性：</p>
+<p>防守方的成本在降低，攻擊方的成本沒有等比例降低。</p>
+<p>Claude 找一個漏洞可能花幾十美元的 API 費用，但要把同一個漏洞變成可用的攻擊，花了數千美元還只成功兩次。這個差距在未來只會更大，因為找漏洞是模式匹配問題（LLM 擅長的），而寫 exploit 需要對底層系統有精確理解和創造性繞過（LLM 目前的弱項）。</p>
+<p>Mozilla 在這件事上的態度也值得學習。他們不是被動等 Anthropic 送報告，而是主動參與，幫助定義什麼算有效的 bug report，確保流程能在真實的開發節奏中運作。</p>
+<p>如果你的公司有預算做安全審計，現在可能是把 AI 輔助掃描加入清單的時候了。不用取代人類安全專家，但讓 AI 先跑一輪，把低垂的果實摘掉，讓人類專家專注在更複雜的邏輯漏洞上。</p>
+<hr>
+<p><em>參考來源：<a target="_blank" rel="noopener" href="https://www.anthropic.com/news/mozilla-firefox-security">Anthropic Blog - Partnering with Mozilla to improve Firefox&#39;s security</a>、<a target="_blank" rel="noopener" href="https://techcrunch.com/2026/03/06/anthropics-claude-found-22-vulnerabilities-in-firefox-over-two-weeks/">TechCrunch 報導</a>、<a target="_blank" rel="noopener" href="https://blog.mozilla.org/en/firefox/hardening-firefox-anthropic-red-team/">Mozilla Blog</a></em></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Claude/" rel="tag"># Claude</a>
+              <a href="/tags/Firefox/" rel="tag"># Firefox</a>
+              <a href="/tags/%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E/" rel="tag"># 安全漏洞</a>
+              <a href="/tags/AI%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/" rel="tag"># AI安全研究</a>
+              <a href="/tags/LLM%E6%87%89%E7%94%A8/" rel="tag"># LLM應用</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/78c0d8a7/" rel="prev" title="當 OpenAI 搶下五角大廈合約：一場讓 250 萬用戶出走的豪賭">
+                  <i class="fa fa-angle-left"></i> 當 OpenAI 搶下五角大廈合約：一場讓 250 萬用戶出走的豪賭
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/3ef32254/" rel="next" title="睡覺時讓AI跑100個實驗：Karpathy的autoresearch怎麼用630行程式碼改變ML研究">
+                  睡覺時讓AI跑100個實驗：Karpathy的autoresearch怎麼用630行程式碼改變ML研究 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">388k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">5:53</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="凌晨三點，你的電腦正在幫你分析美股、寫技術文章、整理筆記。早上七點，一份完整的晨報自動推送到你的 Notion。白天你在 Telegram 對一隻機器龍蝦說「幫我查一下 NVIDIA 最新財報」，它寫好任務單，另一個 AI 在背景默默把事情做完。  這不是科幻小說，這是我用 Claude Code 和 OpenClaw 搭出來的雙 AI 工作流。  為什麼要用兩個 AI？ 一個 AI 做所有事情聽">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用兩個 AI 建立自動化工作流：讓龍蝦當 PM，Claude Code 當工人">
+<meta property="og:url" content="https://kyosora.github.io/posts/52f9695d/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="凌晨三點，你的電腦正在幫你分析美股、寫技術文章、整理筆記。早上七點，一份完整的晨報自動推送到你的 Notion。白天你在 Telegram 對一隻機器龍蝦說「幫我查一下 NVIDIA 最新財報」，它寫好任務單，另一個 AI 在背景默默把事情做完。  這不是科幻小說，這是我用 Claude Code 和 OpenClaw 搭出來的雙 AI 工作流。  為什麼要用兩個 AI？ 一個 AI 做所有事情聽">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2026-03-11T11:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-11T12:01:28.614Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Claude Code">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="自動化">
+<meta property="article:tag" content="OpenClaw">
+<meta property="article:tag" content="AI">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/52f9695d/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/52f9695d/","path":"posts/52f9695d/","title":"用兩個 AI 建立自動化工作流：讓龍蝦當 PM，Claude Code 當工人"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>用兩個 AI 建立自動化工作流：讓龍蝦當 PM，Claude Code 當工人 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E8%A6%81%E7%94%A8%E5%85%A9%E5%80%8B-AI%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">為什麼要用兩個 AI？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B4%E9%AB%94%E6%9E%B6%E6%A7%8B"><span class="nav-number">2.</span> <span class="nav-text">整體架構</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E8%AE%93-CC-%E8%B7%91%E5%A4%9C%E7%8F%AD"><span class="nav-number">3.</span> <span class="nav-text">第一步：讓 CC 跑夜班</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%9D-Claude-Code"><span class="nav-number">3.1.</span> <span class="nav-text">安裝 Claude Code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BB%BA%E7%AB%8B%E5%A4%9C%E7%8F%AD%E7%9B%AE%E9%8C%84"><span class="nav-number">3.2.</span> <span class="nav-text">建立夜班目錄</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%AB%E5%A4%9C%E7%8F%AD%E8%85%B3%E6%9C%AC"><span class="nav-number">3.3.</span> <span class="nav-text">寫夜班腳本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%AB-Prompt"><span class="nav-number">3.4.</span> <span class="nav-text">寫 Prompt</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E8%AD%B7%E6%AC%84"><span class="nav-number">3.5.</span> <span class="nav-text">安全護欄</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A8%AD%E5%AE%9A-Cron"><span class="nav-number">3.6.</span> <span class="nav-text">設定 Cron</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E5%8A%A0%E5%85%A5%E9%BE%8D%E8%9D%A6%E7%95%B6-PM"><span class="nav-number">4.</span> <span class="nav-text">第二步：加入龍蝦當 PM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%9D-OpenClaw"><span class="nav-number">4.1.</span> <span class="nav-text">安裝 OpenClaw</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%9C%E9%8D%B5%E8%A8%AD%E5%AE%9A"><span class="nav-number">4.2.</span> <span class="nav-text">關鍵設定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%BE%8D%E8%9D%A6%E7%9A%84%E8%A7%92%E8%89%B2"><span class="nav-number">4.3.</span> <span class="nav-text">龍蝦的角色</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E7%99%BD%E5%A4%A9%E4%BB%BB%E5%8B%99%E6%B4%BE%E7%99%BC%EF%BC%88%E8%BC%95%E9%87%8F%E6%AA%A2%E6%9F%A5%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">第三步：白天任務派發（輕量檢查）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E8%A8%AD%E8%A8%88"><span class="nav-number">6.</span> <span class="nav-text">安全設計</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E5%A4%A9%E7%9A%84%E9%81%8B%E4%BD%9C%E5%AF%A6%E6%B3%81"><span class="nav-number">7.</span> <span class="nav-text">一天的運作實況</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8A%B1%E4%BA%86%E5%A4%9A%E5%B0%91%E9%8C%A2%EF%BC%9F"><span class="nav-number">8.</span> <span class="nav-text">花了多少錢？</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">133</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">72</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">217</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/52f9695d/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="用兩個 AI 建立自動化工作流：讓龍蝦當 PM，Claude Code 當工人 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          用兩個 AI 建立自動化工作流：讓龍蝦當 PM，Claude Code 當工人
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2026-03-11 19:00:00 / 修改時間：20:01:28" itemprop="dateCreated datePublished" datetime="2026-03-11T19:00:00+08:00">2026-03-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E8%A1%93%E7%AD%86%E8%A8%98/" itemprop="url" rel="index"><span itemprop="name">技術筆記</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>5.8k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>5 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>凌晨三點，你的電腦正在幫你分析美股、寫技術文章、整理筆記。早上七點，一份完整的晨報自動推送到你的 Notion。白天你在 Telegram 對一隻機器龍蝦說「幫我查一下 NVIDIA 最新財報」，它寫好任務單，另一個 AI 在背景默默把事情做完。</p>
+<p>這不是科幻小說，這是我用 Claude Code 和 OpenClaw 搭出來的雙 AI 工作流。</p>
+<h2 id="為什麼要用兩個-AI？"><a href="#為什麼要用兩個-AI？" class="headerlink" title="為什麼要用兩個 AI？"></a>為什麼要用兩個 AI？</h2><p>一個 AI 做所有事情聽起來很美好，但實際跑起來會撞到幾個牆：</p>
+<p><strong>Claude Code（CC）</strong> 是命令列工具，擅長深度工作——寫程式碼、分析資料、產出長篇內容。但它沒有常駐能力，不能 24 小時掛在那裡等你的訊息。</p>
+<p><strong>OpenClaw（龍蝦）</strong> 是 Docker 容器裡的常駐 AI 閘道，可以接 Telegram、Discord、Slack。它 24 小時在線，隨時能回你訊息。但它的強項是溝通和協調，不是深度工作。</p>
+<p>把兩者組合起來：龍蝦當 PM 負責接單和調度，CC 當工人負責執行，各做各擅長的事。</p>
+<h2 id="整體架構"><a href="#整體架構" class="headerlink" title="整體架構"></a>整體架構</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">你（Telegram）</span><br><span class="line">  │</span><br><span class="line">  ▼</span><br><span class="line">龍蝦（OpenClaw Docker，24/7 常駐）</span><br><span class="line">  │  接收指令、理解需求、寫任務包</span><br><span class="line">  │</span><br><span class="line">  ▼</span><br><span class="line">共享檔案（~/shared/night_chat.md）</span><br><span class="line">  │  任務包放這裡，進度回報也在這裡</span><br><span class="line">  │</span><br><span class="line">  ▼</span><br><span class="line">CC（Claude Code CLI，cron 觸發）</span><br><span class="line">  │  讀任務 → 執行 → 回報</span><br><span class="line">  │</span><br><span class="line">  ▼</span><br><span class="line">產出（晨報、Obsidian 筆記、Blog 文章）</span><br></pre></td></tr></table></figure>
+
+<p>零額外花費——CC 用的是 Claude Max 訂閱的 <code>claude -p</code>，龍蝦用的是 ChatGPT Plus 的 Codex OAuth。你本來就在付這兩筆訂閱。</p>
+<h2 id="第一步：讓-CC-跑夜班"><a href="#第一步：讓-CC-跑夜班" class="headerlink" title="第一步：讓 CC 跑夜班"></a>第一步：讓 CC 跑夜班</h2><h3 id="安裝-Claude-Code"><a href="#安裝-Claude-Code" class="headerlink" title="安裝 Claude Code"></a>安裝 Claude Code</h3><p>如果你還沒裝，先把 Claude Code CLI 裝好：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g @anthropic-ai/claude-code</span><br></pre></td></tr></table></figure>
+
+<p>確認 <code>claude -p &quot;hello&quot;</code> 能正常回應。</p>
+<h3 id="建立夜班目錄"><a href="#建立夜班目錄" class="headerlink" title="建立夜班目錄"></a>建立夜班目錄</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p ~/night-shift ~/logs ~/shared</span><br></pre></td></tr></table></figure>
+
+<h3 id="寫夜班腳本"><a href="#寫夜班腳本" class="headerlink" title="寫夜班腳本"></a>寫夜班腳本</h3><p><code>~/night-shift/night.sh</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># AI 夜班腳本 — 每小時由 cron 觸發</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> PATH=<span class="string">&quot;/mnt/c/Program Files/nodejs:<span class="variable">$PATH</span>&quot;</span>  <span class="comment"># WSL 需要加上 Windows 的 node 路徑</span></span><br><span class="line"></span><br><span class="line">LOCKFILE=<span class="string">&quot;/tmp/night-shift.lock&quot;</span></span><br><span class="line">LOGDIR=<span class="string">&quot;<span class="variable">$HOME</span>/logs&quot;</span></span><br><span class="line">REPORT=<span class="string">&quot;<span class="variable">$HOME</span>/night_report.md&quot;</span></span><br><span class="line">PROMPT_FILE=<span class="string">&quot;<span class="variable">$HOME</span>/night-shift/prompt.txt&quot;</span></span><br><span class="line">WORKDIR=<span class="string">&quot;<span class="variable">$HOME</span>/night-shift&quot;</span></span><br><span class="line">NIGHT_START=1</span><br><span class="line">NIGHT_END=6</span><br><span class="line"></span><br><span class="line"><span class="comment"># 防止 cron 重複啟動</span></span><br><span class="line"><span class="keyword">if</span> [ -f <span class="string">&quot;<span class="variable">$LOCKFILE</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">    PID=$(<span class="built_in">cat</span> <span class="string">&quot;<span class="variable">$LOCKFILE</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">kill</span> -0 <span class="string">&quot;<span class="variable">$PID</span>&quot;</span> 2&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;<span class="subst">$(date)</span>: Already running (PID <span class="variable">$PID</span>), skipping.&quot;</span> &gt;&gt; <span class="string">&quot;<span class="variable">$LOGDIR</span>/night.log&quot;</span></span><br><span class="line">        <span class="built_in">exit</span> 0</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"><span class="built_in">echo</span> $$ &gt; <span class="string">&quot;<span class="variable">$LOCKFILE</span>&quot;</span></span><br><span class="line"><span class="built_in">trap</span> <span class="string">&quot;rm -f <span class="variable">$LOCKFILE</span>&quot;</span> EXIT</span><br><span class="line"></span><br><span class="line"><span class="comment"># 確認在夜班時間窗口內</span></span><br><span class="line">HOUR=$(<span class="built_in">date</span> +%-H)</span><br><span class="line"><span class="keyword">if</span> [ <span class="string">&quot;<span class="variable">$HOUR</span>&quot;</span> -lt <span class="string">&quot;<span class="variable">$NIGHT_START</span>&quot;</span> ] || [ <span class="string">&quot;<span class="variable">$HOUR</span>&quot;</span> -ge <span class="string">&quot;<span class="variable">$NIGHT_END</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">exit</span> 0</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">ROUND=$((HOUR - NIGHT_START + <span class="number">1</span>))</span><br><span class="line">PROMPT=$(<span class="built_in">cat</span> <span class="string">&quot;<span class="variable">$PROMPT_FILE</span>&quot;</span>)</span><br><span class="line">PROMPT=<span class="string">&quot;<span class="variable">$PROMPT</span></span></span><br><span class="line"><span class="string">- 今日日期: <span class="subst">$(date +%Y-%m-%d)</span></span></span><br><span class="line"><span class="string">- 目前時間: <span class="subst">$(date +%H:%M)</span></span></span><br><span class="line"><span class="string">- 本輪次: 第 <span class="variable">$&#123;ROUND&#125;</span> 輪&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> <span class="string">&quot;<span class="variable">$WORKDIR</span>&quot;</span></span><br><span class="line"><span class="built_in">timeout</span> 3000 claude -p <span class="string">&quot;<span class="variable">$PROMPT</span>&quot;</span> \</span><br><span class="line">    --no-session-persistence \</span><br><span class="line">    --dangerously-skip-permissions \</span><br><span class="line">    &gt;&gt; <span class="string">&quot;<span class="variable">$LOGDIR</span>/night.log&quot;</span> 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
+
+<h3 id="寫-Prompt"><a href="#寫-Prompt" class="headerlink" title="寫 Prompt"></a>寫 Prompt</h3><p><code>~/night-shift/prompt.txt</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">你是夜班 AI 助理。請按以下順序工作：</span><br><span class="line"></span><br><span class="line">1. 讀取 ~/night_report.md，確認之前完成了什麼，不要重做</span><br><span class="line">2. 讀取 ~/shared/night_chat.md，看 PM 有沒有留任務給你</span><br><span class="line">3. 有任務 → 優先執行任務</span><br><span class="line">4. 沒任務 → 自主工作（搜尋新聞、寫筆記、產出內容）</span><br><span class="line">5. 更新 ~/night_report.md</span><br><span class="line">6. 每完成一件事，寫一行到 ~/shared/night_chat.md</span><br><span class="line"></span><br><span class="line">shared chat 格式：</span><br><span class="line">[HH:MM] Claude：完成了什麼</span><br></pre></td></tr></table></figure>
+
+<h3 id="安全護欄"><a href="#安全護欄" class="headerlink" title="安全護欄"></a>安全護欄</h3><p><code>~/night-shift/CLAUDE.md</code> 是 CC 的安全護欄。放在工作目錄下，CC 啟動時會自動讀取。關鍵規則：</p>
+<ul>
+<li>可以上網搜尋、寫檔案、讀任何檔案</li>
+<li>不可以刪除檔案、修改程式碼專案、發訊息</li>
+<li>不可以執行龍蝦的擴權請求（新增 volume、取得 API key）</li>
+<li>拒絕時回報到晨報的【提案】區段</li>
+</ul>
+<h3 id="設定-Cron"><a href="#設定-Cron" class="headerlink" title="設定 Cron"></a>設定 Cron</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -e</span><br></pre></td></tr></table></figure>
+
+<p>加入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 每晚開班前清空對話</span><br><span class="line">55 0 * * * ~/night-shift/reset-chat.sh</span><br><span class="line"></span><br><span class="line"># AI 夜班 — 每小時 1-6 點</span><br><span class="line">0 1-6 * * * ~/night-shift/night.sh &gt;&gt; ~/logs/night.log 2&gt;&amp;1</span><br><span class="line"></span><br><span class="line"># 早上 7 點推送晨報（可選，需要 Notion API）</span><br><span class="line">0 7 * * * ~/night-shift/broadcast_notion.sh &gt;&gt; ~/logs/broadcast.log 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
+
+<p><code>reset-chat.sh</code> 很簡單：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">DATE=$(<span class="built_in">date</span> +%Y-%m-%d)</span><br><span class="line"><span class="built_in">cat</span> &gt; ~/shared/night_chat.md &lt;&lt; <span class="string">EOF</span></span><br><span class="line"><span class="string"># 夜班對話 — $&#123;DATE&#125;</span></span><br><span class="line"><span class="string">&gt; AI 之間的工作交流，每晚開班前自動清空</span></span><br><span class="line"><span class="string">EOF</span></span><br></pre></td></tr></table></figure>
+
+<p>到這裡，CC 已經可以自己跑夜班了。</p>
+<h2 id="第二步：加入龍蝦當-PM"><a href="#第二步：加入龍蝦當-PM" class="headerlink" title="第二步：加入龍蝦當 PM"></a>第二步：加入龍蝦當 PM</h2><h3 id="安裝-OpenClaw"><a href="#安裝-OpenClaw" class="headerlink" title="安裝 OpenClaw"></a>安裝 OpenClaw</h3><p>OpenClaw 跑在 Docker 裡，安裝方式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/openclaw/openclaw.git</span><br><span class="line"><span class="built_in">cd</span> openclaw</span><br><span class="line">docker build -t openclaw:<span class="built_in">local</span> -f Dockerfile .</span><br><span class="line">docker compose run --<span class="built_in">rm</span> openclaw-cli onboard  <span class="comment"># 設定 Telegram bot</span></span><br><span class="line">docker compose up -d openclaw-gateway</span><br></pre></td></tr></table></figure>
+
+<p>onboard 過程中會要你輸入 Telegram Bot Token（跟 @BotFather 申請）和選擇 AI 模型。</p>
+<h3 id="關鍵設定"><a href="#關鍵設定" class="headerlink" title="關鍵設定"></a>關鍵設定</h3><p>在 <code>docker-compose.yml</code> 的 volumes 裡，確保龍蝦能讀到共享檔案：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">~/.openclaw:/home/node/.openclaw</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">~/shared:/mnt/shared:rw</span>          <span class="comment"># 共享對話目錄</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">~/:/mnt/host:ro</span>                   <span class="comment"># 主機家目錄（唯讀）</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="龍蝦的角色"><a href="#龍蝦的角色" class="headerlink" title="龍蝦的角色"></a>龍蝦的角色</h3><p>龍蝦透過 Telegram 接你的指令，理解需求後把任務包寫到 <code>~/shared/night_chat.md</code>。任務包格式：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[21:30] 洛布：任務包#2026-03-11-night</span><br><span class="line"><span class="bullet">-</span> 目標：研究三個 AI Agent 框架的優缺點比較</span><br><span class="line"><span class="bullet">-</span> 驗收標準：</span><br><span class="line">  1) 每個框架至少 500 字分析</span><br><span class="line">  2) 附比較表格</span><br><span class="line">  3) 寫成 Obsidian 筆記</span><br><span class="line"><span class="bullet">-</span> 截止時間：2026-03-12 06:30</span><br></pre></td></tr></table></figure>
+
+<p>CC 啟動後第一件事就是讀這個檔案，看到任務包就開始做。</p>
+<h2 id="第三步：白天任務派發（輕量檢查）"><a href="#第三步：白天任務派發（輕量檢查）" class="headerlink" title="第三步：白天任務派發（輕量檢查）"></a>第三步：白天任務派發（輕量檢查）</h2><p>夜班是全自動的。但白天呢？你可能中午突然想到一件事，跟龍蝦說「幫我查個東西」，龍蝦寫了任務包，但 CC 要等到凌晨才會啟動——太慢了。</p>
+<p>解法：白天每小時跑一個輕量檢查腳本。不是每次都啟動 CC（那太浪費 token），而是先檢查有沒有新任務，有才叫 CC 起來。</p>
+<p><code>~/night-shift/day-check.sh</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># 白天任務檢查 — 輕量級</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> PATH=<span class="string">&quot;/mnt/c/Program Files/nodejs:<span class="variable">$PATH</span>&quot;</span></span><br><span class="line"></span><br><span class="line">SHARED_CHAT=<span class="string">&quot;<span class="variable">$HOME</span>/shared/night_chat.md&quot;</span></span><br><span class="line">STAMP_FILE=<span class="string">&quot;/tmp/day-check-last&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 比對修改時間</span></span><br><span class="line">CURRENT_MTIME=$(<span class="built_in">stat</span> -c %Y <span class="string">&quot;<span class="variable">$SHARED_CHAT</span>&quot;</span> 2&gt;/dev/null)</span><br><span class="line">LAST_MTIME=$(<span class="built_in">cat</span> <span class="string">&quot;<span class="variable">$STAMP_FILE</span>&quot;</span> 2&gt;/dev/null || <span class="built_in">echo</span> <span class="string">&quot;0&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ <span class="string">&quot;<span class="variable">$CURRENT_MTIME</span>&quot;</span> = <span class="string">&quot;<span class="variable">$LAST_MTIME</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;<span class="subst">$(date)</span>: No changes, skipping.&quot;</span> &gt;&gt; ~/logs/day.log</span><br><span class="line">    <span class="built_in">exit</span> 0</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 有變動，掃描任務包關鍵字</span></span><br><span class="line"><span class="keyword">if</span> ! grep -qE <span class="string">&#x27;(任務包|目標：|驗收標準)&#x27;</span> <span class="string">&quot;<span class="variable">$SHARED_CHAT</span>&quot;</span>; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;<span class="subst">$(date)</span>: Changed but no task found.&quot;</span> &gt;&gt; ~/logs/day.log</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$CURRENT_MTIME</span>&quot;</span> &gt; <span class="string">&quot;<span class="variable">$STAMP_FILE</span>&quot;</span></span><br><span class="line">    <span class="built_in">exit</span> 0</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 有任務！啟動 CC</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;<span class="subst">$(date)</span>: Task detected, launching CC.&quot;</span> &gt;&gt; ~/logs/day.log</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$CURRENT_MTIME</span>&quot;</span> &gt; <span class="string">&quot;<span class="variable">$STAMP_FILE</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> ~/night-shift</span><br><span class="line"><span class="built_in">timeout</span> 3000 claude -p <span class="string">&quot;<span class="subst">$(cat ~/night-shift/day-prompt.txt)</span></span></span><br><span class="line"><span class="string">- 今日日期: <span class="subst">$(date +%Y-%m-%d)</span></span></span><br><span class="line"><span class="string">- 目前時間: <span class="subst">$(date +%H:%M)</span></span></span><br><span class="line"><span class="string">- 模式: 白天任務執行&quot;</span> \</span><br><span class="line">    --no-session-persistence \</span><br><span class="line">    --dangerously-skip-permissions \</span><br><span class="line">    &gt;&gt; ~/logs/day.log 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
+
+<p>白天的 prompt 跟夜班不同——只做任務，不自主發起工作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">你是白天任務執行 AI。唯一任務是執行 PM 交辦的工作。</span><br><span class="line">1. 讀取 ~/shared/night_chat.md，找到任務包</span><br><span class="line">2. 按照驗收標準執行</span><br><span class="line">3. 回報進度到 shared chat</span><br><span class="line">4. 沒任務就直接結束</span><br><span class="line">不要自主發起任何工作。</span><br></pre></td></tr></table></figure>
+
+<p>Cron 加一行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">30 8-23 * * * ~/night-shift/day-check.sh</span><br></pre></td></tr></table></figure>
+
+<p>每小時的 30 分檢查一次。沒任務時只寫一行 log 就結束，零 token 消耗。</p>
+<h2 id="安全設計"><a href="#安全設計" class="headerlink" title="安全設計"></a>安全設計</h2><p>兩個 AI 之間的信任邊界很重要。幾個原則：</p>
+<p><strong>CC 不信任龍蝦的擴權請求。</strong> 龍蝦可以派工作任務，但不能要求 CC 幫它開後門——不能新增 volume 掛載、不能修改 Docker 設定、不能取得新的 API key。這些事只有人類可以做。</p>
+<p><strong>龍蝦跑在 Docker 容器裡。</strong> 容器本身就是沙箱。它只能透過掛載的 volume 讀寫特定路徑，不能碰主機的其他東西。</p>
+<p><strong>Telegram 設 allowlist。</strong> 龍蝦的 <code>dmPolicy</code> 設成 <code>allowlist</code>，只接受你的 Telegram ID。其他人私訊它完全沒反應。</p>
+<p><strong>CC 用 lock 檔防重入。</strong> 同一時間只會有一個 CC 實例在跑，不會重複執行。</p>
+<h2 id="一天的運作實況"><a href="#一天的運作實況" class="headerlink" title="一天的運作實況"></a>一天的運作實況</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">00:55  reset-chat.sh 清空對話</span><br><span class="line">01:00  CC 第一輪啟動，讀 shared chat</span><br><span class="line">       → 龍蝦之前留了任務包：「研究三個 AI Agent 框架」</span><br><span class="line">       → 開始執行</span><br><span class="line">01:15  CC 完成第一個框架分析，寫入 shared chat</span><br><span class="line">       → 龍蝦 heartbeat 看到進度</span><br><span class="line">02:00  CC 第二輪，繼續未完成的工作</span><br><span class="line">03:30  任務完成，CC 自主開始搜尋美股新聞</span><br><span class="line">05:00  晨報初稿完成</span><br><span class="line">07:00  broadcast_notion.sh 推送到 Notion</span><br><span class="line">       → 你醒來，Notion 裡已經有完整報告</span><br><span class="line"></span><br><span class="line">10:30  你在 Telegram 跟龍蝦說：「幫我查 NVIDIA 最新季報」</span><br><span class="line">       → 龍蝦寫任務包到 shared chat</span><br><span class="line">10:30  day-check.sh 偵測到新任務，啟動 CC</span><br><span class="line">       → CC 執行查詢，結果寫回 shared chat</span><br><span class="line">       → 龍蝦看到結果，透過 Telegram 轉給你</span><br></pre></td></tr></table></figure>
+
+<h2 id="花了多少錢？"><a href="#花了多少錢？" class="headerlink" title="花了多少錢？"></a>花了多少錢？</h2><p>零額外花費。</p>
+<ul>
+<li>Claude Code 用的是 Claude Max 訂閱（月費制，無限使用 <code>claude -p</code>）</li>
+<li>OpenClaw 用的是 ChatGPT Plus 的 Codex OAuth（月費制）</li>
+<li>Docker 跑在本地 WSL，不需要雲端伺服器</li>
+</ul>
+<p>你本來就在付這兩筆訂閱，只是讓它們在你睡覺的時候也幫你做事。</p>
+<p>兩個 AI 的分工協作，比一個 AI 做所有事情好得多。PM 做 PM 的事，工人做工人的事，各司其職。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Claude-Code/" rel="tag"># Claude Code</a>
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+              <a href="/tags/%E8%87%AA%E5%8B%95%E5%8C%96/" rel="tag"># 自動化</a>
+              <a href="/tags/OpenClaw/" rel="tag"># OpenClaw</a>
+              <a href="/tags/AI/" rel="tag"># AI</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/69899638/" rel="prev" title="Apple花10億選Google不選Claude：Siri重生背後的AI權力遊戲">
+                  <i class="fa fa-angle-left"></i> Apple花10億選Google不選Claude：Siri重生背後的AI權力遊戲
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/645f2b01/" rel="next" title="curl 能下載、Node.js 卻 fetch failed——在 WSL2 + Docker 裡修好 OpenClaw Telegram Bot 圖片上傳的全過程">
+                  curl 能下載、Node.js 卻 fetch failed——在 WSL2 + Docker 裡修好 OpenClaw Telegram Bot 圖片上傳的全過程 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">388k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">5:53</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

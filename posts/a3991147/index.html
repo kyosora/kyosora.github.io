@@ -27,7 +27,7 @@
 <meta property="og:description" content="上週我在整理自己的 CLAUDE.md 時，發現它已經膨脹到快 800 行。規則疊規則、範例套範例，像一本員工手冊。直覺告訴我這樣「比較完整」，但實際體感是——Claude Code 有時會忽略我寫在後半段的指令，偶爾還會把兩條規則搞混。  然後我讀到 SkillsBench 這篇論文，它用 7,308 條執行軌跡和 84 個任務做了一件事：測量「給 AI Agent 的操作指引（Skills）」">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2026-03-08T02:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-08T01:53:06.483Z">
+<meta property="article:modified_time" content="2026-03-09T01:32:50.623Z">
 <meta property="article:author" content="kyosora">
 <meta property="article:tag" content="LLM">
 <meta property="article:tag" content="Claude Code">
@@ -142,16 +142,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">124</span>
+          <span class="site-state-item-count">133</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">64</span>
+        <span class="site-state-item-count">72</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">192</span>
+        <span class="site-state-item-count">217</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -206,9 +206,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">發表於</span>
-      
 
-      <time title="創建時間：2026-03-08 10:00:00 / 修改時間：09:53:06" itemprop="dateCreated datePublished" datetime="2026-03-08T10:00:00+08:00">2026-03-08</time>
+      <time title="創建時間：2026-03-08 10:00:00" itemprop="dateCreated datePublished" datetime="2026-03-08T10:00:00+08:00">2026-03-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2026-03-09 09:32:50" itemprop="dateModified" datetime="2026-03-09T09:32:50+08:00">2026-03-09</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -248,15 +254,13 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>上週我在整理自己的 <a target="_blank" rel="noopener" href="http://CLAUDE.md">CLAUDE.md</a> 時，發現它已經膨脹到快 800 行。規則疊規則、範例套範例，像一本員工手冊。直覺告訴我這樣「比較完整」，但實際體感是——Claude Code 有時會忽略我寫在後半段的指令，偶爾還會把兩條規則搞混。</p>
+    <div class="post-body" itemprop="articleBody"><p>上週我在整理自己的 CLAUDE.md 時，發現它已經膨脹到快 800 行。規則疊規則、範例套範例，像一本員工手冊。直覺告訴我這樣「比較完整」，但實際體感是——Claude Code 有時會忽略我寫在後半段的指令，偶爾還會把兩條規則搞混。</p>
 <p>然後我讀到 SkillsBench 這篇論文，它用 7,308 條執行軌跡和 84 個任務做了一件事：測量「給 AI Agent 的操作指引（Skills）」到底給多少、寫多長才有效。</p>
 <p>結論讓我重新打開編輯器，把那 800 行砍掉一半。</p>
-<h2 id="先講數字">先講數字</h2>
-<p>研究團隊在 Claude Code、Codex CLI、Gemini CLI 三個平台上，測試了七種模型配置。每個任務跑五次，用程式化斷言判定通過與否——不是讓另一個 LLM 當裁判，是寫死的測試。</p>
+<h2 id="先講數字"><a href="#先講數字" class="headerlink" title="先講數字"></a>先講數字</h2><p>研究團隊在 Claude Code、Codex CLI、Gemini CLI 三個平台上，測試了七種模型配置。每個任務跑五次，用程式化斷言判定通過與否——不是讓另一個 LLM 當裁判，是寫死的測試。</p>
 <p>整體結論：精心撰寫的 Skills 平均提升 16.2 個百分點。這個數字本身不意外，有指引當然比沒有好。</p>
 <p>意外的是拆開來看的時候。</p>
-<h2 id="2-3-條指引是甜蜜點，4-條以上開始拖後腿">2-3 條指引是甜蜜點，4 條以上開始拖後腿</h2>
-<table>
+<h2 id="2-3-條指引是甜蜜點，4-條以上開始拖後腿"><a href="#2-3-條指引是甜蜜點，4-條以上開始拖後腿" class="headerlink" title="2-3 條指引是甜蜜點，4 條以上開始拖後腿"></a>2-3 條指引是甜蜜點，4 條以上開始拖後腿</h2><table>
 <thead>
 <tr>
 <th>Skills 數量</th>
@@ -265,8 +269,7 @@
 <th>差距</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>1 條</td>
 <td>42.2%</td>
 <td>24.4%</td>
@@ -284,13 +287,11 @@
 <td>26.9%</td>
 <td>+5.9pp</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>1 條和 2-3 條的效果幾乎一樣好，都在 +17～18pp。但一旦超過 4 條，提升直接腰斬到 +5.9pp。</p>
 <p>不是「邊際遞減」那種溫和的下滑，是斷崖式掉落。</p>
 <p>原因不難理解。LLM 的 context window 是有限的，每多一條 Skill 就多佔一段 token 預算。當指引太多，模型需要在大量程序性內容中篩選「哪段跟當前任務有關」，這個篩選本身就會出錯。論文用了一個精準的詞：<strong>cognitive overhead</strong>——認知負荷。</p>
-<h2 id="「全面文件」是最差的寫法">「全面文件」是最差的寫法</h2>
-<p>研究進一步把 Skills 按撰寫風格分成四種：</p>
+<h2 id="「全面文件」是最差的寫法"><a href="#「全面文件」是最差的寫法" class="headerlink" title="「全面文件」是最差的寫法"></a>「全面文件」是最差的寫法</h2><p>研究進一步把 Skills 按撰寫風格分成四種：</p>
 <table>
 <thead>
 <tr>
@@ -299,8 +300,7 @@
 <th>相比無 Skills</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>Detailed（詳細但聚焦）</td>
 <td>42.7%</td>
 <td><strong>+18.8pp</strong></td>
@@ -320,37 +320,32 @@
 <td>39.9%</td>
 <td><strong>-2.9pp</strong></td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>Detailed 和 Compact 效果最好。Standard 普通。Comprehensive——就是那種試圖涵蓋所有情境、所有邊界條件的百科全書式文件——效果是<strong>負的</strong>。</p>
 <p>比不給還差。</p>
 <p>論文的解釋是：「Agent 在冗長的 Skills 內容中難以提取相關資訊，過於精心編排的 Skills 會消耗 context 預算。」</p>
-<p>這段話值得所有正在維護 <a target="_blank" rel="noopener" href="http://CLAUDE.md">CLAUDE.md</a> 的人貼在螢幕上。</p>
-<h2 id="為什麼-Detailed-贏了-Comprehensive">為什麼 Detailed 贏了 Comprehensive</h2>
-<p>Detailed 和 Comprehensive 聽起來很像，差別在哪？</p>
+<p>這段話值得所有正在維護 CLAUDE.md 的人貼在螢幕上。</p>
+<h2 id="為什麼-Detailed-贏了-Comprehensive"><a href="#為什麼-Detailed-贏了-Comprehensive" class="headerlink" title="為什麼 Detailed 贏了 Comprehensive"></a>為什麼 Detailed 贏了 Comprehensive</h2><p>Detailed 和 Comprehensive 聽起來很像，差別在哪？</p>
 <p><strong>Detailed</strong> 是針對特定任務類型的深入指引。它會告訴你：「處理這類問題時，第一步做 X，第二步做 Y，注意 Z 這個坑。」步驟明確，範圍收斂。</p>
-<p><strong>Comprehensive</strong> 試圖覆蓋所有可能。它會說：「這個領域有 A、B、C、D 四種情境，A 的時候要注意 1、2、3，B 的時候要注意 4、5、6…」面面俱到，但模型讀完之後反而不知道當前這個具體任務該用哪段。</p>
+<p><strong>Comprehensive</strong> 試圖覆蓋所有可能。它會說：「這個領域有 A、B、C、D 四種情境，A 的時候要注意 1、2、3，B 的時候要注意 4、5、6...」面面俱到，但模型讀完之後反而不知道當前這個具體任務該用哪段。</p>
 <p>這跟人類讀文件的經驗完全一致。一份 200 頁的操作手冊不如一張針對你當前任務的 checklist。</p>
-<h2 id="這對你的-CLAUDE-md-意味著什麼">這對你的 <a target="_blank" rel="noopener" href="http://CLAUDE.md">CLAUDE.md</a> 意味著什麼</h2>
-<p>我根據這篇論文的發現，重新審視了自己的做法。幾個具體的調整：</p>
+<h2 id="這對你的-CLAUDE-md-意味著什麼"><a href="#這對你的-CLAUDE-md-意味著什麼" class="headerlink" title="這對你的 CLAUDE.md 意味著什麼"></a>這對你的 CLAUDE.md 意味著什麼</h2><p>我根據這篇論文的發現，重新審視了自己的做法。幾個具體的調整：</p>
 <p><strong>一、把「通用規則」和「任務指引」分開。</strong></p>
-<p>通用規則（命名慣例、錯誤處理風格）放在 <a target="_blank" rel="noopener" href="http://CLAUDE.md">CLAUDE.md</a>。任務特定的操作步驟放在獨立的 Skills 檔案裡，只在需要時載入。不要把所有東西塞進同一份文件。</p>
+<p>通用規則（命名慣例、錯誤處理風格）放在 CLAUDE.md。任務特定的操作步驟放在獨立的 Skills 檔案裡，只在需要時載入。不要把所有東西塞進同一份文件。</p>
 <p><strong>二、每份指引控制在 2-3 個核心重點。</strong></p>
 <p>寫完之後問自己：「如果只能保留三條規則，留哪三條？」其餘的刪掉，或者拆到另一份文件裡。</p>
 <p><strong>三、用 Detailed 而非 Comprehensive 的風格。</strong></p>
-<p>不要試圖列舉所有可能的情境。針對最常見的任務類型，寫具體的操作步驟和陷阱提醒。「當你遇到 X 問題時，先檢查 Y，然後做 Z」比「X 問題有 A、B、C 三種成因，分別對應…」有效得多。</p>
+<p>不要試圖列舉所有可能的情境。針對最常見的任務類型，寫具體的操作步驟和陷阱提醒。「當你遇到 X 問題時，先檢查 Y，然後做 Z」比「X 問題有 A、B、C 三種成因，分別對應...」有效得多。</p>
 <p><strong>四、定期瘦身。</strong></p>
-<p><a target="_blank" rel="noopener" href="http://CLAUDE.md">CLAUDE.md</a> 會自然膨脹。每隔一段時間回頭看，問問自己：「這條規則最近三次 Claude 有遵守嗎？」如果沒有，可能不是規則寫得不夠詳細，而是它被淹沒在太多其他規則裡了。砍掉周圍的雜訊，比加粗標題更有效。</p>
-<h2 id="一個更大的啟示：小模型-精準指引-≈-大模型裸跑">一個更大的啟示：小模型 + 精準指引 ≈ 大模型裸跑</h2>
-<p>論文還有一個發現值得一提。Claude Haiku 4.5 加上 Skills 的通過率是 27.7%，而 Opus 4.5 不加 Skills 是 22.0%。</p>
+<p>CLAUDE.md 會自然膨脹。每隔一段時間回頭看，問問自己：「這條規則最近三次 Claude 有遵守嗎？」如果沒有，可能不是規則寫得不夠詳細，而是它被淹沒在太多其他規則裡了。砍掉周圍的雜訊，比加粗標題更有效。</p>
+<h2 id="一個更大的啟示：小模型-精準指引-≈-大模型裸跑"><a href="#一個更大的啟示：小模型-精準指引-≈-大模型裸跑" class="headerlink" title="一個更大的啟示：小模型 + 精準指引 ≈ 大模型裸跑"></a>一個更大的啟示：小模型 + 精準指引 ≈ 大模型裸跑</h2><p>論文還有一個發現值得一提。Claude Haiku 4.5 加上 Skills 的通過率是 27.7%，而 Opus 4.5 不加 Skills 是 22.0%。</p>
 <p>小模型配上精準的操作指引，跑贏了大模型裸奔。</p>
 <p>這意味著與其花錢升級到最貴的模型，不如花時間把指引寫好。2-3 條精準的 Skills，效果可能比模型升一級更明顯。當然，大模型加上好的 Skills 效果更好（Opus 4.5 + Skills 拿到最高的 +23.3pp 提升），但如果預算有限，投資在指引品質上的 ROI 更高。</p>
-<h2 id="自己寫的-Skills-沒用">自己寫的 Skills 沒用</h2>
-<p>最後一個殘酷的事實：研究讓模型自己生成 Skills，結果平均 -1.3pp。比不給還差。</p>
+<h2 id="自己寫的-Skills-沒用"><a href="#自己寫的-Skills-沒用" class="headerlink" title="自己寫的 Skills 沒用"></a>自己寫的 Skills 沒用</h2><p>最後一個殘酷的事實：研究讓模型自己生成 Skills，結果平均 -1.3pp。比不給還差。</p>
 <p>模型能辨識「這個任務需要某類專業知識」，但生成出來的程序性指引不夠精確。它知道方向，但寫不出能讓自己真正照著做的步驟。</p>
 <p>這代表「讓 AI 自己寫自己的操作手冊」目前行不通。人類策展仍然必要——至少在這個階段。</p>
 <hr>
-<p>回到我那份 800 行的 <a target="_blank" rel="noopener" href="http://CLAUDE.md">CLAUDE.md</a>。砍完之後剩 400 行左右，核心規則從十幾條收到六條。前兩天的使用體感是：Claude Code 對剩下的規則遵守率明顯提高了。</p>
+<p>回到我那份 800 行的 CLAUDE.md。砍完之後剩 400 行左右，核心規則從十幾條收到六條。前兩天的使用體感是：Claude Code 對剩下的規則遵守率明顯提高了。</p>
 <p>少即是多。這不是什麼禪意格言，是 7,308 次實驗跑出來的數據。</p>
 <hr>
 <p><strong>論文連結：</strong> <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2602.12670">SkillsBench: Benchmarking How Well Agent Skills Work Across Diverse Tasks</a></p>
@@ -413,13 +408,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">351k</span>
+    <span title="總字數">388k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">5:19</span>
+    <span title="所需總閱讀時間">5:53</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

@@ -19,12 +19,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="前情提要：突如其來的測試環境危機 最近台電因為白帽滲透測試的關係，需要暫時關閉測試機。但開發團隊偶爾還是需要測試環境來驗證功能，於是我們決定把程式架在其他環境上。原本想說簡單設個 IIS IP 白名單就能解決，沒想到踩到了一個大坑…  問題出現：IP 白名單完全失效 當我興高采烈地在 IIS 管理器中設定「IP 位址及網域限制」，把信任的 IP 加入白名單後，發現一個詭異的現象：   * 設定為「">
+    <meta name="description" content="前情提要：突如其來的測試環境危機 最近台電因為白帽滲透測試的關係，需要暫時關閉測試機。但開發團隊偶爾還是需要測試環境來驗證功能，於是我們決定把程式架在其他環境上。原本想說簡單設個 IIS IP 白名單就能解決，沒想到踩到了一個大坑...  問題出現：IP 白名單完全失效 當我興高采烈地在 IIS 管理器中設定「IP 位址及網域限制」，把信任的 IP 加入白名單後，發現一個詭異的現象：   * 設定">
 <meta property="og:type" content="article">
 <meta property="og:title" content="當 IIS 遇到代理伺服器：如何在複雜網路環境下實現真實 IP 白名單控制">
 <meta property="og:url" content="https://kyosora.github.io/posts/9b217823/">
 <meta property="og:site_name" content="kyosora 筆記">
-<meta property="og:description" content="前情提要：突如其來的測試環境危機 最近台電因為白帽滲透測試的關係，需要暫時關閉測試機。但開發團隊偶爾還是需要測試環境來驗證功能，於是我們決定把程式架在其他環境上。原本想說簡單設個 IIS IP 白名單就能解決，沒想到踩到了一個大坑…  問題出現：IP 白名單完全失效 當我興高采烈地在 IIS 管理器中設定「IP 位址及網域限制」，把信任的 IP 加入白名單後，發現一個詭異的現象：   * 設定為「">
+<meta property="og:description" content="前情提要：突如其來的測試環境危機 最近台電因為白帽滲透測試的關係，需要暫時關閉測試機。但開發團隊偶爾還是需要測試環境來驗證功能，於是我們決定把程式架在其他環境上。原本想說簡單設個 IIS IP 白名單就能解決，沒想到踩到了一個大坑...  問題出現：IP 白名單完全失效 當我興高采烈地在 IIS 管理器中設定「IP 位址及網域限制」，把信任的 IP 加入白名單後，發現一個詭異的現象：   * 設定">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2025-07-01T07:30:00.000Z">
 <meta property="article:modified_time" content="2025-12-08T07:36:07.434Z">
@@ -142,16 +142,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">124</span>
+          <span class="site-state-item-count">133</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">64</span>
+        <span class="site-state-item-count">72</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">192</span>
+        <span class="site-state-item-count">217</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -254,26 +254,26 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h2 id="前情提要：突如其來的測試環境危機">前情提要：突如其來的測試環境危機</h2>
-<p>最近台電因為白帽滲透測試的關係，需要暫時關閉測試機。但開發團隊偶爾還是需要測試環境來驗證功能，於是我們決定把程式架在其他環境上。原本想說簡單設個 IIS IP 白名單就能解決，沒想到踩到了一個大坑…</p>
-<h2 id="問題出現：IP-白名單完全失效">問題出現：IP 白名單完全失效</h2>
-<p>當我興高采烈地在 IIS 管理器中設定「IP 位址及網域限制」，把信任的 IP 加入白名單後，發現一個詭異的現象：</p>
+    <div class="post-body" itemprop="articleBody"><h2 id="前情提要：突如其來的測試環境危機"><a href="#前情提要：突如其來的測試環境危機" class="headerlink" title="前情提要：突如其來的測試環境危機"></a>前情提要：突如其來的測試環境危機</h2><p>最近台電因為白帽滲透測試的關係，需要暫時關閉測試機。但開發團隊偶爾還是需要測試環境來驗證功能，於是我們決定把程式架在其他環境上。原本想說簡單設個 IIS IP 白名單就能解決，沒想到踩到了一個大坑...</p>
+<h2 id="問題出現：IP-白名單完全失效"><a href="#問題出現：IP-白名單完全失效" class="headerlink" title="問題出現：IP 白名單完全失效"></a>問題出現：IP 白名單完全失效</h2><p>當我興高采烈地在 IIS 管理器中設定「IP 位址及網域限制」，把信任的 IP 加入白名單後，發現一個詭異的現象：</p>
 <ul>
 <li>設定為「允許所有」→ 正常運作 ✅</li>
 <li>設定為「拒絕未指定，只允許白名單」→ 所有人都 403 錯誤 ❌</li>
 </ul>
 <p>檢查 IIS Log 後發現真相大白：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">c-ip: 192.168.0.28  # 所有請求都顯示這個 IP！</span><br></pre></td></tr></table></figure>
+
 <p>原來所有外部請求都是透過 <code>192.168.0.28</code> 這台 Proxy Relay 伺服器轉發過來的。IIS 只看得到代理伺服器的 IP，完全拿不到真實的客戶端 IP。</p>
-<h2 id="深入追查：尋找真實-IP-的蹤跡">深入追查：尋找真實 IP 的蹤跡</h2>
-<p>建立一個簡單的測試頁面來檢查所有可能的 HTTP 標頭：</p>
+<h2 id="深入追查：尋找真實-IP-的蹤跡"><a href="#深入追查：尋找真實-IP-的蹤跡" class="headerlink" title="深入追查：尋找真實 IP 的蹤跡"></a>深入追查：尋找真實 IP 的蹤跡</h2><p>建立一個簡單的測試頁面來檢查所有可能的 HTTP 標頭：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ Page Language=&quot;C#&quot; %&gt;</span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;&lt;title&gt;IP 偵測&lt;/title&gt;&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;%</span><br><span class="line">    Response.Write(&quot;REMOTE_ADDR: &quot; + Request.ServerVariables[&quot;REMOTE_ADDR&quot;] + &quot;&lt;br&gt;&quot;);</span><br><span class="line">    Response.Write(&quot;HTTP_X_FORWARDED_FOR: &quot; + Request.ServerVariables[&quot;HTTP_X_FORWARDED_FOR&quot;] + &quot;&lt;br&gt;&quot;);</span><br><span class="line">    Response.Write(&quot;HTTP_X_REAL_IP: &quot; + Request.ServerVariables[&quot;HTTP_X_REAL_IP&quot;] + &quot;&lt;br&gt;&quot;);</span><br><span class="line">    %&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
 <p>測試結果發現關鍵線索：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">REMOTE_ADDR: 192.168.0.28</span><br><span class="line">HTTP_X_FORWARDED_FOR: 125.228.130.66:12872</span><br></pre></td></tr></table></figure>
+
 <p>太好了！代理伺服器有正確傳送真實 IP，只是格式是 <code>IP:PORT</code>。</p>
-<h2 id="解決方案一：URL-Rewrite-改寫-REMOTE-ADDR">解決方案一：URL Rewrite 改寫 REMOTE_ADDR</h2>
-<p>首先確認 IIS 已安裝 URL Rewrite 模組，然後在 <code>web.config</code> 中加入：</p>
+<h2 id="解決方案一：URL-Rewrite-改寫-REMOTE-ADDR"><a href="#解決方案一：URL-Rewrite-改寫-REMOTE-ADDR" class="headerlink" title="解決方案一：URL Rewrite 改寫 REMOTE_ADDR"></a>解決方案一：URL Rewrite 改寫 REMOTE_ADDR</h2><p>首先確認 IIS 已安裝 URL Rewrite 模組，然後在 <code>web.config</code> 中加入：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">rewrite</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rules</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">rule</span> <span class="attr">name</span>=<span class="string">&quot;Extract Real IP&quot;</span> <span class="attr">stopProcessing</span>=<span class="string">&quot;false&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">match</span> <span class="attr">url</span>=<span class="string">&quot;.*&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">conditions</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">add</span> <span class="attr">input</span>=<span class="string">&quot;&#123;HTTP_X_FORWARDED_FOR&#125;&quot;</span> <span class="attr">pattern</span>=<span class="string">&quot;^([^:]+)&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">conditions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">serverVariables</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">set</span> <span class="attr">name</span>=<span class="string">&quot;REMOTE_ADDR&quot;</span> <span class="attr">value</span>=<span class="string">&quot;&#123;C:1&#125;&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">serverVariables</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">type</span>=<span class="string">&quot;None&quot;</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">rule</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">rules</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">rewrite</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
 <p><strong>重要：</strong> 需要在 IIS 的「URL 重寫」功能中先新增允許修改的伺服器變數：</p>
 <ol>
 <li>點選「URL 重寫」</li>
@@ -282,8 +282,8 @@
 </ol>
 <p>設定完成後測試：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">REMOTE_ADDR: 125.228.130.66  # 成功改寫！</span><br></pre></td></tr></table></figure>
-<h2 id="意外發現：IIS-IP-限制的執行時機陷阱">意外發現：IIS IP 限制的執行時機陷阱</h2>
-<p>興奮地以為問題解決了，結果發現 IIS 的「IP 位址及網域限制」還是不行！</p>
+
+<h2 id="意外發現：IIS-IP-限制的執行時機陷阱"><a href="#意外發現：IIS-IP-限制的執行時機陷阱" class="headerlink" title="意外發現：IIS IP 限制的執行時機陷阱"></a>意外發現：IIS IP 限制的執行時機陷阱</h2><p>興奮地以為問題解決了，結果發現 IIS 的「IP 位址及網域限制」還是不行！</p>
 <p>深入研究後發現：<strong>IIS 的 IP 限制功能執行在請求處理管道的早期階段，在 URL Rewrite 之前</strong>。所以它仍然看到的是原始的 <code>c-ip</code>，而不是改寫後的 <code>REMOTE_ADDR</code>。</p>
 <p>這解釋了為什麼 IIS Log 中：</p>
 <ul>
@@ -291,24 +291,22 @@
 <li><code>X-Forwarded-For</code> 正確顯示真實 IP</li>
 <li>URL Rewrite 成功但 IP 限制失效</li>
 </ul>
-<h2 id="解決方案二：程式碼層面的-IP-控制">解決方案二：程式碼層面的 IP 控制</h2>
-<p>既然 IIS 內建功能不給力，我們就自己來！在 <code>Global.asax.cs</code> 中實作：</p>
+<h2 id="解決方案二：程式碼層面的-IP-控制"><a href="#解決方案二：程式碼層面的-IP-控制" class="headerlink" title="解決方案二：程式碼層面的 IP 控制"></a>解決方案二：程式碼層面的 IP 控制</h2><p>既然 IIS 內建功能不給力，我們就自己來！在 <code>Global.asax.cs</code> 中實作：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">Application_BeginRequest</span>(<span class="params"><span class="built_in">object</span> sender, EventArgs e</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 檢查是否啟用 IP 限制</span></span><br><span class="line">    <span class="built_in">bool</span> enableIPRestriction = ConfigurationManager.AppSettings[<span class="string">&quot;EnableIPRestriction&quot;</span>] == <span class="string">&quot;true&quot;</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (enableIPRestriction &amp;&amp; Request.Url.AbsolutePath.ToLower().StartsWith(<span class="string">&quot;/stationmanager&quot;</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> allowedIPsConfig = ConfigurationManager.AppSettings[<span class="string">&quot;AllowedIPs&quot;</span>] ?? <span class="string">&quot;&quot;</span>;</span><br><span class="line">        <span class="built_in">string</span>[] allowedIPs = allowedIPsConfig.Split(<span class="string">&#x27;,&#x27;</span>).Select(ip =&gt; ip.Trim()).ToArray();</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">string</span> forwardedFor = Request.ServerVariables[<span class="string">&quot;HTTP_X_FORWARDED_FOR&quot;</span>];</span><br><span class="line">        <span class="built_in">string</span> clientIP = <span class="string">&quot;&quot;</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(forwardedFor))</span><br><span class="line">        &#123;</span><br><span class="line">            clientIP = forwardedFor.Split(<span class="string">&#x27;:&#x27;</span>)[<span class="number">0</span>]; <span class="comment">// 移除 port 部分</span></span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (!allowedIPs.Contains(clientIP))</span><br><span class="line">        &#123;</span><br><span class="line">            Response.StatusCode = <span class="number">403</span>;</span><br><span class="line">            Response.Write(<span class="string">&quot;Access Denied&quot;</span>);</span><br><span class="line">            Response.End();</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 其他處理邏輯...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="最佳實務：環境分離的設定管理">最佳實務：環境分離的設定管理</h2>
-<p>為了避免正式機和測試機搞混，在 <code>web.config</code> 中加入可設定的開關：</p>
+
+<h2 id="最佳實務：環境分離的設定管理"><a href="#最佳實務：環境分離的設定管理" class="headerlink" title="最佳實務：環境分離的設定管理"></a>最佳實務：環境分離的設定管理</h2><p>為了避免正式機和測試機搞混，在 <code>web.config</code> 中加入可設定的開關：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">appSettings</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- IP 限制設定 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">add</span> <span class="attr">key</span>=<span class="string">&quot;EnableIPRestriction&quot;</span> <span class="attr">value</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">add</span> <span class="attr">key</span>=<span class="string">&quot;AllowedIPs&quot;</span> <span class="attr">value</span>=<span class="string">&quot;125.228.130.66,另一個IP&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">appSettings</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
 <p>這樣就能：</p>
 <ul>
 <li><strong>測試機</strong>：<code>EnableIPRestriction = true</code></li>
 <li><strong>正式機</strong>：<code>EnableIPRestriction = false</code></li>
 </ul>
-<h2 id="加碼：IIS-Log-顯示真實-IP">加碼：IIS Log 顯示真實 IP</h2>
-<p>為了方便追蹤，可以讓 IIS Log 也顯示真實 IP：</p>
+<h2 id="加碼：IIS-Log-顯示真實-IP"><a href="#加碼：IIS-Log-顯示真實-IP" class="headerlink" title="加碼：IIS Log 顯示真實 IP"></a>加碼：IIS Log 顯示真實 IP</h2><p>為了方便追蹤，可以讓 IIS Log 也顯示真實 IP：</p>
 <ol>
 <li>IIS 管理器 → 網站 → 「記錄」</li>
 <li>「選取欄位」→ 「自訂欄位」</li>
-<li>新增：
-<ul>
+<li>新增：<ul>
 <li>欄位名稱：<code>X-Forwarded-For</code></li>
 <li>來源：<code>Request Header</code></li>
 <li>來源名稱：<code>X-Forwarded-For</code></li>
@@ -317,18 +315,13 @@
 </ol>
 <p>之後 Log 就會顯示：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">c-ip: 192.168.0.28  X-Forwarded-For: 125.228.130.66:14185</span><br></pre></td></tr></table></figure>
-<h2 id="踩坑總結">踩坑總結</h2>
-<p>這次解決問題的過程學到幾個重點：</p>
-<p><strong>網路架構很重要</strong><br>
-有代理伺服器的環境下，要搞清楚真實 IP 的傳遞方式。</p>
-<p><strong>IIS 功能的執行時機</strong><br>
-不是所有 IIS 功能都能配合 URL Rewrite，要了解請求處理管道的順序。</p>
-<p><strong>設定檔化設計</strong><br>
-多環境部署時，要設計成可設定的方式，避免程式碼硬編碼。</p>
-<p><strong>善用除錯工具</strong><br>
-建立簡單的測試頁面可以快速定位問題，比盲目調整設定有效多了。</p>
-<h2 id="後記">後記</h2>
-<p>原本以為是個簡單的 IP 白名單設定，結果挖出了代理伺服器、IIS 請求管道、URL Rewrite 等一堆技術細節。雖然過程有點曲折，但最終找到了一個既實用又彈性的解決方案。</p>
+
+<h2 id="踩坑總結"><a href="#踩坑總結" class="headerlink" title="踩坑總結"></a>踩坑總結</h2><p>這次解決問題的過程學到幾個重點：</p>
+<p><strong>網路架構很重要</strong><br>有代理伺服器的環境下，要搞清楚真實 IP 的傳遞方式。</p>
+<p><strong>IIS 功能的執行時機</strong><br>不是所有 IIS 功能都能配合 URL Rewrite，要了解請求處理管道的順序。</p>
+<p><strong>設定檔化設計</strong><br>多環境部署時，要設計成可設定的方式，避免程式碼硬編碼。</p>
+<p><strong>善用除錯工具</strong><br>建立簡單的測試頁面可以快速定位問題，比盲目調整設定有效多了。</p>
+<h2 id="後記"><a href="#後記" class="headerlink" title="後記"></a>後記</h2><p>原本以為是個簡單的 IP 白名單設定，結果挖出了代理伺服器、IIS 請求管道、URL Rewrite 等一堆技術細節。雖然過程有點曲折，但最終找到了一個既實用又彈性的解決方案。</p>
 
     </div>
 
@@ -388,13 +381,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">351k</span>
+    <span title="總字數">388k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">5:19</span>
+    <span title="所需總閱讀時間">5:53</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
