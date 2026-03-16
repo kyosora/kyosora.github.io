@@ -128,7 +128,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#yield-%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">yield 基本用法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#yield-break-%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">yield break 的使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#yield-%E7%9A%84%E6%87%89%E7%94%A8%E5%A0%B4%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">yield 的應用場景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%80%E4%BD%B3%E5%AF%A6%E8%B8%90%E8%88%87%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85"><span class="nav-number">4.</span> <span class="nav-text">最佳實踐與注意事項</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">5.</span> <span class="nav-text">結論</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">yield 基本用法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">yield break 的使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">yield 的應用場景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">最佳實踐與注意事項</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">結論</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -141,16 +141,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">133</span>
+          <span class="site-state-item-count">147</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">72</span>
+        <span class="site-state-item-count">83</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">217</span>
+        <span class="site-state-item-count">261</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -283,17 +283,17 @@
     </defs>
 </svg>
 # 為什麼需要 yield?
-
 <p>在C#開發中,我們經常需要處理大量數據的集合。傳統的做法是先將所有數據載入到記憶體中,再進行處理。但這種方式在處理大量數據時會佔用大量記憶體,影響程式效能。</p>
 <p>這時候就需要用到 yield 關鍵字。yield 可以讓我們實現延遲執行(Lazy Evaluation),也就是說,只有在真正需要數據時才進行處理,大大節省記憶體使用。</p>
-<h1 id="yield-基本用法"><a href="#yield-基本用法" class="headerlink" title="yield 基本用法"></a>yield 基本用法</h1><p>讓我們從一個簡單的例子開始:</p>
+<h1>yield 基本用法</h1>
+<p>讓我們從一個簡單的例子開始:</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 yield return 產生費波那契數列</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> IEnumerable&lt;<span class="built_in">int</span>&gt; <span class="title">Fibonacci</span>(<span class="params"><span class="built_in">int</span> count</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">int</span> current = <span class="number">0</span>;</span><br><span class="line">    <span class="built_in">int</span> next = <span class="number">1</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 產生指定數量的費波那契數</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; count; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> current;  <span class="comment">// 返回當前數字</span></span><br><span class="line">        <span class="built_in">int</span> temp = next;</span><br><span class="line">        next = current + next;</span><br><span class="line">        current = temp;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用方式</span></span><br><span class="line"><span class="keyword">foreach</span> (<span class="function"><span class="built_in">int</span> number <span class="keyword">in</span> <span class="title">Fibonacci</span>(<span class="params"><span class="number">10</span></span>))</span></span><br><span class="line">&#123;</span><br><span class="line">    Console.WriteLine(number);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>在這個例子中,yield return 會在每次迭代時返回一個數字,而不是一次性計算出所有數字。這意味著即使我們要產生一百萬個費波那契數,程式也不會一次佔用大量記憶體。</p>
-<h1 id="yield-break-的使用"><a href="#yield-break-的使用" class="headerlink" title="yield break 的使用"></a>yield break 的使用</h1><p>有時候我們需要在某個條件下提前結束迭代,這時可以使用 yield break:</p>
+<h1>yield break 的使用</h1>
+<p>有時候我們需要在某個條件下提前結束迭代,這時可以使用 yield break:</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 讀取文件直到遇到空行</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> IEnumerable&lt;<span class="built_in">string</span>&gt; <span class="title">ReadUntilEmptyLine</span>(<span class="params"><span class="built_in">string</span> filePath</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">using</span> (StreamReader reader = <span class="keyword">new</span> StreamReader(filePath))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> line;</span><br><span class="line">        <span class="keyword">while</span> ((line = reader.ReadLine()) != <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(line))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">yield</span> <span class="keyword">break</span>;  <span class="comment">// 遇到空行就結束迭代</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">return</span> line;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="yield-的應用場景"><a href="#yield-的應用場景" class="headerlink" title="yield 的應用場景"></a>yield 的應用場景</h1><ol>
+<h1>yield 的應用場景</h1>
+<ol>
 <li>大文件處理</li>
 <li>數據庫分頁查詢</li>
 <li>自定義集合類別</li>
@@ -301,14 +301,15 @@
 </ol>
 <p>以數據庫分頁查詢為例:</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> IEnumerable&lt;User&gt; <span class="title">GetUsersByPage</span>(<span class="params"><span class="built_in">int</span> pageSize</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">int</span> offset = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 每次只查詢一頁的數據</span></span><br><span class="line">        <span class="keyword">var</span> users = dbContext.Users</span><br><span class="line">            .Skip(offset)</span><br><span class="line">            .Take(pageSize)</span><br><span class="line">            .ToList();</span><br><span class="line">            </span><br><span class="line">        <span class="keyword">if</span> (!users.Any())</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> user <span class="keyword">in</span> users)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">return</span> user;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        offset += pageSize;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="最佳實踐與注意事項"><a href="#最佳實踐與注意事項" class="headerlink" title="最佳實踐與注意事項"></a>最佳實踐與注意事項</h1><ol>
+<h1>最佳實踐與注意事項</h1>
+<ol>
 <li>yield 方法內不能使用 try-catch-finally</li>
 <li>yield return 只能在方法內直接使用</li>
 <li>yield 方法的返回類型必須是 IEnumerable 或相關介面</li>
 <li>避免在 yield return 中執行耗時操作</li>
 </ol>
-<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>yield 是C#中非常強大的功能,能夠幫助我們編寫更高效的程式碼。通過延遲執行的特性,我們可以更好地控制記憶體使用,提升程式效能。</p>
+<h1>結論</h1>
+<p>yield 是C#中非常強大的功能,能夠幫助我們編寫更高效的程式碼。通過延遲執行的特性,我們可以更好地控制記憶體使用,提升程式效能。</p>
 <p>要進一步了解 yield 的使用,可以參考:</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-tw/dotnet/csharp/language-reference/keywords/yield">Microsoft C# 文檔</a></li>
@@ -371,13 +372,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">388k</span>
+    <span title="總字數">433k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">5:53</span>
+    <span title="所需總閱讀時間">6:33</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

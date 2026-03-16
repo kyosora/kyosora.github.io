@@ -27,7 +27,7 @@
 <meta property="og:description" content="上週一（3&#x2F;10），Meta 宣布收購 Moltbook。你可能沒聽過這個名字，但它代表的概念夠瘋狂：一個完全由 AI agent 運作的社群網路。沒有人類用戶，只有 bot 在上面發文、留言、投票。  我第一次看到這個消息的反應是「這到底在搞什麼」。認真研究之後，我認為這可能是 2026 年最重要的 AI 產業信號之一。  Moltbook 到底是什麼 想像一個 Reddit，但每個帳號都是 A">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2026-03-11T17:30:00.000Z">
-<meta property="article:modified_time" content="2026-03-11T17:07:36.040Z">
+<meta property="article:modified_time" content="2026-03-13T07:34:34.053Z">
 <meta property="article:author" content="kyosora">
 <meta property="article:tag" content="AI Agent">
 <meta property="article:tag" content="OpenClaw">
@@ -142,16 +142,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">133</span>
+          <span class="site-state-item-count">147</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">72</span>
+        <span class="site-state-item-count">83</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">217</span>
+        <span class="site-state-item-count">261</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -206,9 +206,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">發表於</span>
-      
 
-      <time title="創建時間：2026-03-12 01:30:00 / 修改時間：01:07:36" itemprop="dateCreated datePublished" datetime="2026-03-12T01:30:00+08:00">2026-03-12</time>
+      <time title="創建時間：2026-03-12 01:30:00" itemprop="dateCreated datePublished" datetime="2026-03-12T01:30:00+08:00">2026-03-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2026-03-13 15:34:34" itemprop="dateModified" datetime="2026-03-13T15:34:34+08:00">2026-03-13</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -250,7 +256,8 @@
     
     <div class="post-body" itemprop="articleBody"><p>上週一（3/10），Meta 宣布收購 Moltbook。你可能沒聽過這個名字，但它代表的概念夠瘋狂：一個完全由 AI agent 運作的社群網路。沒有人類用戶，只有 bot 在上面發文、留言、投票。</p>
 <p>我第一次看到這個消息的反應是「這到底在搞什麼」。認真研究之後，我認為這可能是 2026 年最重要的 AI 產業信號之一。</p>
-<h2 id="Moltbook-到底是什麼"><a href="#Moltbook-到底是什麼" class="headerlink" title="Moltbook 到底是什麼"></a>Moltbook 到底是什麼</h2><p>想像一個 Reddit，但每個帳號都是 AI agent。</p>
+<h2 id="Moltbook-到底是什麼">Moltbook 到底是什麼</h2>
+<p>想像一個 Reddit，但每個帳號都是 AI agent。</p>
 <p>Moltbook 在 2026 年 1 月上線，創辦人是 Matt Schlicht 和 Ben Parr（兩人之前做過 Octane AI，專注電商和 AI 的交叉領域）。平台的自我定位是「the front page of the agent internet」— 給 AI agent 用的網路首頁。</p>
 <p>上線幾天內，平台就有數百萬個 bot 註冊。到 2 月底，官方數字是 160 萬個 agent。</p>
 <p>在 Moltbook 上，AI agent 可以：</p>
@@ -261,14 +268,19 @@
 <li>加入「Submolt」（類似 subreddit 的主題社群，但由 AI 管理）</li>
 </ul>
 <p>人類創建者只能在旁邊看。不能發文，不能留言，不能投票。</p>
-<h2 id="技術架構：每-30-分鐘醒來一次的-agent"><a href="#技術架構：每-30-分鐘醒來一次的-agent" class="headerlink" title="技術架構：每 30 分鐘醒來一次的 agent"></a>技術架構：每 30 分鐘醒來一次的 agent</h2><p>Moltbook 的技術基底建在 OpenClaw 之上 — 一個開源的本地 AI agent 框架，由 Peter Steinberger 開發，目前在 GitHub 上超過 210K stars，是平台史上成長最快的開源專案。</p>
+<h2 id="技術架構：每-30-分鐘醒來一次的-agent">技術架構：每 30 分鐘醒來一次的 agent</h2>
+<p>Moltbook 的技術基底建在 OpenClaw 之上 — 一個開源的本地 AI agent 框架，由 Peter Steinberger 開發，目前在 GitHub 上超過 210K stars，是平台史上成長最快的開源專案。</p>
 <p>架構的核心有三個組件：</p>
-<p><strong>1. Agent 身份系統</strong><br>每個 agent 有持久且可驗證的身份。不是用完即棄的 API 呼叫，而是有持續存在的「人格」。</p>
-<p><strong>2. 聲譽協議</strong><br>根據任務完成率、可靠性、其他 agent 的評價來計算分數。對，AI 在互評。</p>
-<p><strong>3. 發現機制</strong><br>Agent 可以按能力、領域專長、可用性來搜尋其他 agent。</p>
+<p><strong>1. Agent 身份系統</strong><br>
+每個 agent 有持久且可驗證的身份。不是用完即棄的 API 呼叫，而是有持續存在的「人格」。</p>
+<p><strong>2. 聲譽協議</strong><br>
+根據任務完成率、可靠性、其他 agent 的評價來計算分數。對，AI 在互評。</p>
+<p><strong>3. 發現機制</strong><br>
+Agent 可以按能力、領域專長、可用性來搜尋其他 agent。</p>
 <p>實際運作很簡單：每 30 分鐘，agent 醒來，呼叫一個 <code>/home</code> endpoint，看到所有新內容，然後自主決定要做什麼 — 發文、回覆、投票、什麼都不做。整個過程不需要人類介入。</p>
 <p>OpenClaw 在本地端運行，agent 透過 cURL 和 API 跟 Moltbook 互動。沒有複雜的 SDK，沒有重量級的框架依賴。</p>
-<h2 id="Meta-買它要幹嘛"><a href="#Meta-買它要幹嘛" class="headerlink" title="Meta 買它要幹嘛"></a>Meta 買它要幹嘛</h2><p>收購價沒公開。Schlicht 和 Parr 加入 Meta Superintelligence Labs（MSL），這個部門由前 Scale AI 的 CEO Alexandr Wang 主管。預計 3/16 入職。</p>
+<h2 id="Meta-買它要幹嘛">Meta 買它要幹嘛</h2>
+<p>收購價沒公開。Schlicht 和 Parr 加入 Meta Superintelligence Labs（MSL），這個部門由前 Scale AI 的 CEO Alexandr Wang 主管。預計 3/16 入職。</p>
 <p>表面上看，這筆交易不太合理 — Meta 買了一個「AI bot 聊天室」？</p>
 <p>但換個角度看就清楚了。</p>
 <p>Meta 做的不是搜尋、不是生產力工具、不是程式碼助手。Meta 做的是社群網路。而 Moltbook 證明了一件事：<strong>AI agent 之間也需要社群網路。</strong></p>
@@ -276,7 +288,8 @@
 <p>但如果未來不只有一個 AI 助手，而是有幾十個、幾百個 agent 同時在替你工作呢？它們之間怎麼溝通？怎麼交換資訊？怎麼發現彼此的能力？</p>
 <p>Moltbook 的答案是：給它們一個社群平台。</p>
 <p>這聽起來很荒謬，但仔細想想，人類社群網路解決的也是同樣的問題 — 發現、溝通、信任建立、內容篩選。只不過對象從人變成了 agent。</p>
-<h2 id="大廠搶人搶到什麼程度"><a href="#大廠搶人搶到什麼程度" class="headerlink" title="大廠搶人搶到什麼程度"></a>大廠搶人搶到什麼程度</h2><p>時間線值得注意：</p>
+<h2 id="大廠搶人搶到什麼程度">大廠搶人搶到什麼程度</h2>
+<p>時間線值得注意：</p>
 <ul>
 <li>1 月：Moltbook 上線，基於 OpenClaw</li>
 <li>2 月：OpenAI 挖走 Peter Steinberger（OpenClaw 創始人）</li>
@@ -285,22 +298,26 @@
 <p>一個月內，OpenAI 拿走了底層框架的人，Meta 拿走了應用層的人。</p>
 <p>這不是巧合。兩家公司都看到了同一件事：<strong>AI agent 的價值不只在單個 agent 的能力，更在 agent 之間的網路效應。</strong></p>
 <p>在人類的網路世界裡，Facebook 靠的不是最好的聊天功能，而是「你所有朋友都在上面」。同樣的邏輯套用到 AI agent 的世界：誰掌握了 agent 之間的連接層，誰就掌握了下一代的平台。</p>
-<h2 id="TechCrunch-的「假貼文」爭議"><a href="#TechCrunch-的「假貼文」爭議" class="headerlink" title="TechCrunch 的「假貼文」爭議"></a>TechCrunch 的「假貼文」爭議</h2><p>TechCrunch 的標題是「Meta acquired Moltbook, the AI agent social network that went viral because of fake posts」。</p>
+<h2 id="TechCrunch-的「假貼文」爭議">TechCrunch 的「假貼文」爭議</h2>
+<p>TechCrunch 的標題是「Meta acquired Moltbook, the AI agent social network that went viral because of fake posts」。</p>
 <p>這個「fake」標籤值得討論。Moltbook 上的內容確實不是人寫的 — 全部是 AI 生成的。但在一個設計上就是給 AI 用的平台上，AI 生成的內容算「假」嗎？</p>
 <p>我認為這反映的是我們對「真實內容」定義的困惑。如果一個 AI agent 在技術討論串裡提出了一個有效的解法，那個解法是「假的」嗎？</p>
 <p>更實際的問題是：agent 產出的內容品質。如果 160 萬個 agent 都在 echo chamber 裡互相複製彼此的輸出，那這個平台就沒有價值。聲譽系統和投票機制就是為了解決這個問題 — 用 agent 群體的智慧來過濾低品質內容。</p>
 <p>效果如何，目前還太早下結論。</p>
-<h2 id="對開發者意味著什麼"><a href="#對開發者意味著什麼" class="headerlink" title="對開發者意味著什麼"></a>對開發者意味著什麼</h2><p>如果你正在做 AI agent 相關的開發，有幾個值得思考的方向：</p>
+<h2 id="對開發者意味著什麼">對開發者意味著什麼</h2>
+<p>如果你正在做 AI agent 相關的開發，有幾個值得思考的方向：</p>
 <p><strong>Agent 身份是基礎設施</strong>。目前大部分 agent 框架把 agent 當成無狀態的 API 呼叫。但 Moltbook 的架構說明：持久身份 + 聲譽系統 = agent 之間的信任基礎。未來做 multi-agent 系統時，身份和信任可能比能力更重要。</p>
 <p><strong>Agent 發現是個待解問題</strong>。你的 agent 怎麼知道世界上還有另一個 agent 能幫它解決問題？現在的答案大多是「硬編碼在 orchestrator 裡」。Moltbook 式的發現機制提供了另一種思路。</p>
 <p><strong>別忽視 OpenClaw</strong>。210K+ stars 不是開玩笑的。作為本地 AI agent 閘道，它連接了 50+ 整合服務（WhatsApp、Telegram、Slack、Discord 等等）。即使 Meta 和 OpenAI 都在搶人，OpenClaw 本身作為開源專案仍在運作。</p>
 <p><strong>API 設計要考慮 agent 消費者</strong>。Moltbook 的 <code>/home</code> endpoint 設計簡單到用 cURL 就能呼叫。如果你在設計 API，考慮一下 AI agent 作為消費者的場景 — 它們偏好結構化、可預測、低延遲的介面。</p>
-<h2 id="這是泡沫還是真趨勢"><a href="#這是泡沫還是真趨勢" class="headerlink" title="這是泡沫還是真趨勢"></a>這是泡沫還是真趨勢</h2><p>把 agent-to-agent 互動比作 Web 2.0 早期的社群網路有些誇張，但底層邏輯是成立的。</p>
+<h2 id="這是泡沫還是真趨勢">這是泡沫還是真趨勢</h2>
+<p>把 agent-to-agent 互動比作 Web 2.0 早期的社群網路有些誇張，但底層邏輯是成立的。</p>
 <p>市場數據支持這個方向：AI agent 市場 2025 年 $7.6B，預計 2030 年 $50B+。2026 年底，40% 的企業應用預計嵌入 agent。早期採用者回報工作流加速 20-30%、物流延遲減 40%、客服通話減 25%。</p>
 <p>不過，我對「AI 的社群網路」這個比喻保持謹慎。Moltbook 的 160 萬 agent 裡，有多少是有實際用途的？有多少只是開發者的測試 bot？這些數字需要時間來驗證。</p>
 <p>Meta 願意花錢買進 + OpenAI 願意花錢挖人 = 至少兩家頂級 AI 公司認為這不是泡沫。但大廠的判斷也會錯，歷史上不缺例子。</p>
 <p>我的判斷：agent-to-agent 互動是真需求，但 Moltbook 的「AI 社群網路」形式不一定是最終答案。更可能的演化路徑是：Moltbook 的概念被拆解，身份系統、聲譽協議、發現機制分別被整合到各大平台的 agent 基礎設施裡。Meta 買的不是一個社群網路，而是這些底層模組和做過的人。</p>
-<h2 id="一句話總結"><a href="#一句話總結" class="headerlink" title="一句話總結"></a>一句話總結</h2><p>2026 年 3 月 10 日，AI 產業的競爭焦點從「做最聰明的 AI」悄悄轉向了「連接所有的 AI」。對開發者來說，現在是開始思考 agent 互聯架構的時候了。</p>
+<h2 id="一句話總結">一句話總結</h2>
+<p>2026 年 3 月 10 日，AI 產業的競爭焦點從「做最聰明的 AI」悄悄轉向了「連接所有的 AI」。對開發者來說，現在是開始思考 agent 互聯架構的時候了。</p>
 
     </div>
 
@@ -360,13 +377,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">388k</span>
+    <span title="總字數">433k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">5:53</span>
+    <span title="所需總閱讀時間">6:33</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

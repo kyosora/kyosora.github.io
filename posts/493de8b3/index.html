@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="3 月 9 日，Anthropic 同時在加州北區聯邦法院和華盛頓特區上訴法院提起訴訟，控告美國國防部違法將其列為「供應鏈風險」。原因很單純：CEO Dario Amodei 拒絕讓 Claude 被用於大規模監控美國公民，也拒絕讓它操控自主武器。  這不是一般的商業糾紛。這是一家估值數百億美元的 AI 公司，因為堅持技術紅線而被自己國家的軍方封殺。  兩條紅線 Anthropic 和五角大廈的談">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Anthropic 拒絕讓 AI 做武器，被美國政府列入黑名單：技術紅線背後的架構抉擇">
+<meta property="og:url" content="https://kyosora.github.io/posts/493de8b3/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="3 月 9 日，Anthropic 同時在加州北區聯邦法院和華盛頓特區上訴法院提起訴訟，控告美國國防部違法將其列為「供應鏈風險」。原因很單純：CEO Dario Amodei 拒絕讓 Claude 被用於大規模監控美國公民，也拒絕讓它操控自主武器。  這不是一般的商業糾紛。這是一家估值數百億美元的 AI 公司，因為堅持技術紅線而被自己國家的軍方封殺。  兩條紅線 Anthropic 和五角大廈的談">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2026-03-14T18:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-14T17:08:03.228Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Claude">
+<meta property="article:tag" content="Anthropic">
+<meta property="article:tag" content="AI 安全">
+<meta property="article:tag" content="美國國防部">
+<meta property="article:tag" content="AI 倫理">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/493de8b3/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/493de8b3/","path":"posts/493de8b3/","title":"Anthropic 拒絕讓 AI 做武器，被美國政府列入黑名單：技術紅線背後的架構抉擇"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Anthropic 拒絕讓 AI 做武器，被美國政府列入黑名單：技術紅線背後的架構抉擇 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A9%E6%A2%9D%E7%B4%85%E7%B7%9A"><span class="nav-number">1.</span> <span class="nav-text">兩條紅線</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E8%A1%93%E5%B1%A4%E9%9D%A2%EF%BC%9A%E7%B4%85%E7%B7%9A%E6%80%8E%E9%BA%BC%E5%AF%A6%E4%BD%9C%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">技術層面：紅線怎麼實作？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC-Microsoft-%E7%AB%99%E5%9C%A8-Anthropic-%E9%80%99%E9%82%8A%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">為什麼 Microsoft 站在 Anthropic 這邊？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%A3%E9%8E%96%E5%8F%8D%E6%87%89"><span class="nav-number">4.</span> <span class="nav-text">連鎖反應</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E7%9A%84%E8%A7%80%E5%AF%9F"><span class="nav-number">5.</span> <span class="nav-text">我的觀察</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%96%8B%E7%99%BC%E8%80%85%E8%A9%B2%E6%B3%A8%E6%84%8F%E4%BB%80%E9%BA%BC"><span class="nav-number">6.</span> <span class="nav-text">開發者該注意什麼</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">147</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">261</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/493de8b3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Anthropic 拒絕讓 AI 做武器，被美國政府列入黑名單：技術紅線背後的架構抉擇 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Anthropic 拒絕讓 AI 做武器，被美國政府列入黑名單：技術紅線背後的架構抉擇
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2026-03-15 02:00:00 / 修改時間：01:08:03" itemprop="dateCreated datePublished" datetime="2026-03-15T02:00:00+08:00">2026-03-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/" itemprop="url" rel="index"><span itemprop="name">產業觀察</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.7k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>3 月 9 日，Anthropic 同時在加州北區聯邦法院和華盛頓特區上訴法院提起訴訟，控告美國國防部違法將其列為「供應鏈風險」。原因很單純：CEO Dario Amodei 拒絕讓 Claude 被用於大規模監控美國公民，也拒絕讓它操控自主武器。</p>
+<p>這不是一般的商業糾紛。這是一家估值數百億美元的 AI 公司，因為堅持技術紅線而被自己國家的軍方封殺。</p>
+<h2 id="兩條紅線">兩條紅線</h2>
+<p>Anthropic 和五角大廈的談判卡在兩個條款上：</p>
+<ol>
+<li><strong>禁止大規模監控</strong>：Claude 不能被用來對美國公民進行未經授權的大規模數據蒐集和分析</li>
+<li><strong>禁止自主武器</strong>：Claude 不能作為完全自主殺傷性武器的決策核心</li>
+</ol>
+<p>Amodei 的立場很明確——這兩條不談。五角大廈的回應也很明確——那你就別做政府生意了。</p>
+<p>2 月底，國防部正式將 Anthropic 列入「供應鏈風險」名單。這個標籤的殺傷力不只是失去國防合約，而是所有聯邦政府承包商在六個月內都必須停止使用 Claude。根據 Anthropic 的法庭文件，超過 100 家企業客戶已經就此聯繫他們，可能影響「數億美元」營收。</p>
+<h2 id="技術層面：紅線怎麼實作？">技術層面：紅線怎麼實作？</h2>
+<p>這裡值得從工程角度思考一個問題：AI 模型的使用限制，到底是靠什麼機制實現的？</p>
+<p>答案是多層防線。</p>
+<p><strong>第一層：Constitutional AI 訓練</strong></p>
+<p>Anthropic 的 Claude 從訓練階段就植入了行為準則。這不是簡單的關鍵字過濾，而是透過 RLHF（Reinforcement Learning from Human Feedback）和 Constitutional AI 框架，讓模型在生成回應之前自我審查。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">使用者輸入 → 模型推理 → 憲法原則檢查 → 輸出</span><br><span class="line">                              ↓</span><br><span class="line">                        違反？→ 拒絕或修正</span><br></pre></td></tr></table></figure>
+<p>這個機制的核心挑戰在於：你怎麼定義「大規模監控」和「自主武器」的邊界？分析一千筆公開犯罪紀錄算不算監控？drone 的自動導航系統算不算自主武器？</p>
+<p><strong>第二層：API 層的 usage policy enforcement</strong></p>
+<p>即使模型訓練時沒有涵蓋所有邊界情況，API 層可以加入額外的請求分類器。Anthropic 的企業版 API 會對每個請求做意圖分類，標記可能涉及違規用途的調用。</p>
+<p><strong>第三層：合約層的審計條款</strong></p>
+<p>Anthropic 要求在合約中明確規定定期審計權。五角大廈拒絕的正是這一點——他們不想讓一家私人公司有權審計軍方如何使用 AI 工具。</p>
+<p>從國防部的角度，這個立場也能理解。讓一家商業公司對軍事行動有「否決權」（原文用的詞是 “operational veto power”），確實觸及了國家安全的敏感地帶。</p>
+<h2 id="為什麼-Microsoft-站在-Anthropic-這邊？">為什麼 Microsoft 站在 Anthropic 這邊？</h2>
+<p>3 月 10 日，Microsoft 向法院提交支持 Anthropic 的臨時禁制令意見書。這很值得玩味——Microsoft 是 OpenAI 的最大投資者，OpenAI 才剛簽下五角大廈的 AI 合約。</p>
+<p>Microsoft 的論點很務實：「供應鏈風險」標籤如果被用來懲罰設定使用限制的 AI 公司，那整個企業 AI 採購市場都會受到寒蟬效應。今天是 Anthropic，明天可能是 Azure AI。</p>
+<p>更有意思的是，OpenAI 和 Google DeepMind 的數十名科學家以個人名義提交了法庭之友意見書，支持 Anthropic 的立場。連競爭對手的員工都站出來了。</p>
+<h2 id="連鎖反應">連鎖反應</h2>
+<p>五角大廈 CTO 在 3/12 公開說 Claude 會「污染」國防供應鏈。這個措辭引起了整個 AI 產業的警覺。</p>
+<p><strong>對 AI 公司的影響：</strong></p>
+<ul>
+<li>你要做政府生意，就必須放棄對模型用途的控制權</li>
+<li>你要堅持倫理紅線，就可能被排除在最大的單一買方市場之外</li>
+<li>中間地帶正在消失</li>
+</ul>
+<p><strong>對開發者的影響：</strong></p>
+<ul>
+<li>如果你的產品用了 Claude API，而你的客戶是聯邦承包商，六個月內你需要換模型</li>
+<li>API 提供者的政治風險成為了技術選型的新變數</li>
+<li>多模型架構（同時整合多家 LLM）從「好有」變成「必要」</li>
+</ul>
+<p><strong>對整個產業的影響：</strong></p>
+<ul>
+<li>OpenAI 簽五角大廈合約時也加了限制條款（Altman 3/3 承認「rushed」，已修訂加入禁止大規模監控條款）</li>
+<li>Palantir 3/12 表示會繼續使用 Claude——即使五角大廈已發出禁令</li>
+<li>AI 安全不再只是學術討論，它直接影響商業模式和估值</li>
+</ul>
+<h2 id="我的觀察">我的觀察</h2>
+<p>Anthropic 走了一條危險但邏輯自洽的路。</p>
+<p>他們的商業模式建立在「最安全的 AI」這個品牌定位上。如果為了一紙國防合約放棄紅線，品牌定位崩塌，反而損失更大。企業客戶選擇 Claude 而不是 GPT 或 Gemini，有一部分原因就是 Anthropic 對安全的承諾。</p>
+<p>但這條路的風險也很真實。被聯邦政府貼上「供應鏈風險」標籤，這不是普通的負面新聞。即使最終法院判 Anthropic 勝訴，這個標籤存在的每一天都在蠶食客戶信心。</p>
+<p>從技術架構的角度，這件事揭示了一個更根本的問題：<strong>AI 模型的使用控制權應該在誰手上？</strong></p>
+<p>訓練模型的公司？部署模型的平台？使用模型的組織？還是受模型影響的公民？</p>
+<p>現在沒有標準答案。全美 27 個州有 78 個 AI 法案正在審議。Washington 州剛通過 HB 2225（AI 聊天機器人安全法），Virginia 通過了三項 AI 法案。立法者在試圖回答這個問題，但速度遠跟不上技術發展。</p>
+<h2 id="開發者該注意什麼">開發者該注意什麼</h2>
+<p>如果你在做 AI 整合：</p>
+<p><strong>短期（這個月）：</strong></p>
+<ul>
+<li>檢查你的供應鏈是否有 Anthropic / Claude 的依賴</li>
+<li>如果客戶群包含聯邦承包商，準備替代方案</li>
+<li>關注法院判決——臨時禁制令的結果可能在數週內出爐</li>
+</ul>
+<p><strong>中期（Q2-Q3）：</strong></p>
+<ul>
+<li>在架構上支援多 LLM 切換。不只是 Anthropic 風險，任何單一模型提供者都可能遇到政策風險</li>
+<li>建立模型抽象層，讓 LLM 切換成本降到最低</li>
+</ul>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 模型抽象層的基本概念</span></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">LLMProvider</span> &#123;</span><br><span class="line">  <span class="title function_">complete</span>(<span class="attr">prompt</span>: <span class="built_in">string</span>, <span class="attr">options</span>: <span class="title class_">CompletionOptions</span>): <span class="title class_">Promise</span>&lt;<span class="built_in">string</span>&gt;</span><br><span class="line">  <span class="title function_">embed</span>(<span class="attr">text</span>: <span class="built_in">string</span>): <span class="title class_">Promise</span>&lt;<span class="built_in">number</span>[]&gt;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 實際使用時透過 factory 選擇</span></span><br><span class="line"><span class="keyword">const</span> llm = <span class="title function_">createProvider</span>(config.<span class="property">preferredModel</span>, &#123;</span><br><span class="line">  <span class="attr">fallback</span>: config.<span class="property">fallbackModel</span>  <span class="comment">// Anthropic 掛了自動切到 OpenAI</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p><strong>長期：</strong></p>
+<ul>
+<li>AI 合規會變成跟 GDPR 一樣的必修課</li>
+<li>「你的 AI 模型可以做什麼、不能做什麼」將成為企業採購的標準問題</li>
+<li>考慮在你的 AI 功能中實作可審計的使用日誌，不管法律要不要求</li>
+</ul>
+<p>Anthropic 和五角大廈的這場仗不會快速結束。但它把一個原本停留在論文裡的問題搬到了法庭上，搬到了所有 AI 公司的商業決策桌上。</p>
+<p>你的模型，你能控制它被怎麼用嗎？</p>
+<p>答案正在被重新定義。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Claude/" rel="tag"># Claude</a>
+              <a href="/tags/Anthropic/" rel="tag"># Anthropic</a>
+              <a href="/tags/AI-%E5%AE%89%E5%85%A8/" rel="tag"># AI 安全</a>
+              <a href="/tags/%E7%BE%8E%E5%9C%8B%E5%9C%8B%E9%98%B2%E9%83%A8/" rel="tag"># 美國國防部</a>
+              <a href="/tags/AI-%E5%80%AB%E7%90%86/" rel="tag"># AI 倫理</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/f0b3a61e/" rel="prev" title="AI 比人類更會操作電腦了：GPT-5.4 Computer Use 技術拆解與開發者該注意的三件事">
+                  <i class="fa fa-angle-left"></i> AI 比人類更會操作電腦了：GPT-5.4 Computer Use 技術拆解與開發者該注意的三件事
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/7e720bb2/" rel="next" title="GTC 2026 前夕：Vera Rubin 架構與 NemoClaw 將如何改變 AI 開發者的日常">
+                  GTC 2026 前夕：Vera Rubin 架構與 NemoClaw 將如何改變 AI 開發者的日常 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">433k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">6:33</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

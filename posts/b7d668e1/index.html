@@ -27,10 +27,10 @@
 <meta property="og:description" content="上週我在幫公司的 AI Agent 接上第 47 個 MCP server 時，API 帳單跳了一個數字讓我差點從椅子上摔下來。  不是因為用量暴增。是因為每一次 API 呼叫，光是把 36 個 MCP server 的工具定義塞進 context，就吃掉了將近 40,000 tokens。模型還沒開始思考，錢已經燒了一半。  3 月 5 日 OpenAI 發布 GPT-5.4 時，benchma">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2026-03-11T20:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-11T20:03:48.218Z">
+<meta property="article:modified_time" content="2026-03-13T07:34:34.057Z">
 <meta property="article:author" content="kyosora">
-<meta property="article:tag" content="LLM">
 <meta property="article:tag" content="AI Agent">
+<meta property="article:tag" content="LLM">
 <meta property="article:tag" content="GPT-5.4">
 <meta property="article:tag" content="Tool Search">
 <meta property="article:tag" content="架構設計">
@@ -142,16 +142,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">133</span>
+          <span class="site-state-item-count">147</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">72</span>
+        <span class="site-state-item-count">83</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">217</span>
+        <span class="site-state-item-count">261</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -206,9 +206,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">發表於</span>
-      
 
-      <time title="創建時間：2026-03-12 04:00:00 / 修改時間：04:03:48" itemprop="dateCreated datePublished" datetime="2026-03-12T04:00:00+08:00">2026-03-12</time>
+      <time title="創建時間：2026-03-12 04:00:00" itemprop="dateCreated datePublished" datetime="2026-03-12T04:00:00+08:00">2026-03-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2026-03-13 15:34:34" itemprop="dateModified" datetime="2026-03-13T15:34:34+08:00">2026-03-13</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -251,7 +257,8 @@
     <div class="post-body" itemprop="articleBody"><p>上週我在幫公司的 AI Agent 接上第 47 個 MCP server 時，API 帳單跳了一個數字讓我差點從椅子上摔下來。</p>
 <p>不是因為用量暴增。是因為每一次 API 呼叫，光是把 36 個 MCP server 的工具定義塞進 context，就吃掉了將近 40,000 tokens。模型還沒開始思考，錢已經燒了一半。</p>
 <p>3 月 5 日 OpenAI 發布 GPT-5.4 時，benchmark 數字和 Computer Use 搶走了所有目光。但對我來說，最值得注意的功能只有一個——Tool Search。</p>
-<h2 id="工具爆炸問題：你可能已經踩到了"><a href="#工具爆炸問題：你可能已經踩到了" class="headerlink" title="工具爆炸問題：你可能已經踩到了"></a>工具爆炸問題：你可能已經踩到了</h2><p>先說個數字。一個標準的 function calling 工具定義，包含名稱、描述、參數 schema，平均佔 200-500 tokens。聽起來不多？</p>
+<h2 id="工具爆炸問題：你可能已經踩到了">工具爆炸問題：你可能已經踩到了</h2>
+<p>先說個數字。一個標準的 function calling 工具定義，包含名稱、描述、參數 schema，平均佔 200-500 tokens。聽起來不多？</p>
 <p>算一下：</p>
 <ul>
 <li>10 個工具 → ~3,000 tokens（還好）</li>
@@ -262,40 +269,44 @@
 <p>問題不只是成本。工具定義佔的 context 越多，留給實際對話和推理的空間就越少。我在實測中觀察到，當工具定義超過 context 的 30%，模型選錯工具的機率明顯上升。它會開始「分心」——在幾百個工具的描述裡迷路。</p>
 <p>你可能會說：「我的 Agent 哪需要 500 個工具？」</p>
 <p>如果你在做企業級的 Agent 系統，接了 CRM、ERP、專案管理、程式碼倉庫、監控系統、文件平台⋯⋯每個系統暴露 10-20 個 API endpoint，加起來就是幾百個。這不是假設性場景，這是我現在每天面對的現實。</p>
-<h2 id="GPT-5-4-的解法：Tool-Search"><a href="#GPT-5-4-的解法：Tool-Search" class="headerlink" title="GPT-5.4 的解法：Tool Search"></a>GPT-5.4 的解法：Tool Search</h2><p>OpenAI 的做法直覺到讓人想問「為什麼之前沒有」。</p>
+<h2 id="GPT-5-4-的解法：Tool-Search">GPT-5.4 的解法：Tool Search</h2>
+<p>OpenAI 的做法直覺到讓人想問「為什麼之前沒有」。</p>
 <p>傳統方式：每次 API 呼叫，把所有工具定義塞進 request。</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 傳統：一次全塞</span></span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;model&quot;</span><span class="punctuation">:</span> <span class="string">&quot;gpt-5.2&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;messages&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span>...<span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;tools&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="comment">// 工具 1 定義（~300 tokens）</span></span><br><span class="line">    <span class="comment">// 工具 2 定義（~250 tokens）</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// 工具 200 定義（~400 tokens）</span></span><br><span class="line">    <span class="comment">// 總共：~60,000 tokens，還沒開始對話</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p>Tool Search 方式：只傳一份輕量的工具清單（名稱 + 一句描述），模型需要時才查詢完整定義。</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Tool Search：按需載入</span></span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;model&quot;</span><span class="punctuation">:</span> <span class="string">&quot;gpt-5.4&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;messages&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span>...<span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;tools&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;tool_search&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;tool_search&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;tools&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">          <span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;create_jira_ticket&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;建立 Jira 工單&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;query_database&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;查詢 PostgreSQL 資料庫&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;send_slack_message&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;發送 Slack 訊息&quot;</span><span class="punctuation">&#125;</span></span><br><span class="line">          <span class="comment">// ...還有 197 個，但每個只佔 ~20 tokens</span></span><br><span class="line">        <span class="punctuation">]</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p>模型看到使用者的需求後，先在輕量清單中搜尋可能需要的工具，再呼叫 tool search 取得完整的參數 schema。完整定義會被注入到 context 尾端，不會破壞前面的 cache。</p>
 <p>OpenAI 用 Scale 的 MCP Atlas benchmark 測試了這個方法：36 個 MCP server、250 個任務，tool search 配置減少了 47% 的 token 用量，準確率不變。</p>
 <p>47%。將近一半的 token 省下來了。</p>
-<h2 id="這不是新概念：RAG-for-Tools"><a href="#這不是新概念：RAG-for-Tools" class="headerlink" title="這不是新概念：RAG for Tools"></a>這不是新概念：RAG for Tools</h2><p>如果你做過 RAG（Retrieval Augmented Generation），Tool Search 的思路會讓你有似曾相識的感覺。</p>
+<h2 id="這不是新概念：RAG-for-Tools">這不是新概念：RAG for Tools</h2>
+<p>如果你做過 RAG（Retrieval Augmented Generation），Tool Search 的思路會讓你有似曾相識的感覺。</p>
 <p>RAG 解決的問題：模型不可能把整個知識庫塞進 context，所以先用向量搜尋找到相關文件，再把文件塞進 context。</p>
 <p>Tool Search 解決的問題：模型不可能把所有工具定義塞進 context，所以先用搜尋找到相關工具，再把工具定義塞進 context。</p>
 <p>一模一樣的模式。區別在於 OpenAI 把這個流程內建到模型裡，不需要開發者自己搭 pipeline。</p>
 <p>但如果你用的不是 GPT-5.4 呢？或者你需要更細粒度的控制？</p>
-<h2 id="自己做-Tool-Search：三種實作方式"><a href="#自己做-Tool-Search：三種實作方式" class="headerlink" title="自己做 Tool Search：三種實作方式"></a>自己做 Tool Search：三種實作方式</h2><h3 id="方式一：語意搜尋（最通用）"><a href="#方式一：語意搜尋（最通用）" class="headerlink" title="方式一：語意搜尋（最通用）"></a>方式一：語意搜尋（最通用）</h3><p>把工具描述做成 embedding，使用者輸入進來時，先跑向量搜尋找到最相關的 5-10 個工具，只把這些工具的完整定義傳給模型。</p>
+<h2 id="自己做-Tool-Search：三種實作方式">自己做 Tool Search：三種實作方式</h2>
+<h3 id="方式一：語意搜尋（最通用）">方式一：語意搜尋（最通用）</h3>
+<p>把工具描述做成 embedding，使用者輸入進來時，先跑向量搜尋找到最相關的 5-10 個工具，只把這些工具的完整定義傳給模型。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI</span><br><span class="line"></span><br><span class="line">client = OpenAI()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 事先建好工具的 embedding 索引</span></span><br><span class="line">tool_embeddings = &#123;&#125;</span><br><span class="line"><span class="keyword">for</span> tool <span class="keyword">in</span> all_tools:</span><br><span class="line">    response = client.embeddings.create(</span><br><span class="line">        model=<span class="string">&quot;text-embedding-3-small&quot;</span>,</span><br><span class="line">        <span class="built_in">input</span>=<span class="string">f&quot;<span class="subst">&#123;tool[<span class="string">&#x27;name&#x27;</span>]&#125;</span>: <span class="subst">&#123;tool[<span class="string">&#x27;description&#x27;</span>]&#125;</span>&quot;</span></span><br><span class="line">    )</span><br><span class="line">    tool_embeddings[tool[<span class="string">&quot;name&quot;</span>]] = &#123;</span><br><span class="line">        <span class="string">&quot;embedding&quot;</span>: response.data[<span class="number">0</span>].embedding,</span><br><span class="line">        <span class="string">&quot;definition&quot;</span>: tool</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">search_tools</span>(<span class="params">user_message: <span class="built_in">str</span>, top_k: <span class="built_in">int</span> = <span class="number">8</span></span>) -&gt; <span class="built_in">list</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;根據使用者輸入，找出最相關的工具&quot;&quot;&quot;</span></span><br><span class="line">    query_embedding = client.embeddings.create(</span><br><span class="line">        model=<span class="string">&quot;text-embedding-3-small&quot;</span>,</span><br><span class="line">        <span class="built_in">input</span>=user_message</span><br><span class="line">    ).data[<span class="number">0</span>].embedding</span><br><span class="line"></span><br><span class="line">    scores = []</span><br><span class="line">    <span class="keyword">for</span> name, data <span class="keyword">in</span> tool_embeddings.items():</span><br><span class="line">        <span class="comment"># cosine similarity</span></span><br><span class="line">        score = np.dot(query_embedding, data[<span class="string">&quot;embedding&quot;</span>])</span><br><span class="line">        scores.append((name, score, data[<span class="string">&quot;definition&quot;</span>]))</span><br><span class="line"></span><br><span class="line">    scores.sort(key=<span class="keyword">lambda</span> x: x[<span class="number">1</span>], reverse=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">return</span> [item[<span class="number">2</span>] <span class="keyword">for</span> item <span class="keyword">in</span> scores[:top_k]]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用</span></span><br><span class="line">relevant_tools = search_tools(<span class="string">&quot;幫我建一張 Jira ticket 追蹤這個 bug&quot;</span>)</span><br><span class="line">response = client.chat.completions.create(</span><br><span class="line">    model=<span class="string">&quot;claude-opus-4-6&quot;</span>,  <span class="comment"># 任何模型都能用</span></span><br><span class="line">    messages=[&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: <span class="string">&quot;幫我建一張 Jira ticket 追蹤這個 bug&quot;</span>&#125;],</span><br><span class="line">    tools=relevant_tools  <span class="comment"># 只傳 8 個工具，不是 200 個</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<p>優點：模型無關，Claude、Gemini、開源模型都能用。<br>缺點：語意搜尋可能漏掉邊緣案例的工具。</p>
-<h3 id="方式二：分類路由（最快）"><a href="#方式二：分類路由（最快）" class="headerlink" title="方式二：分類路由（最快）"></a>方式二：分類路由（最快）</h3><p>如果你的工具可以按領域分組，先判斷使用者意圖屬於哪個分類，再載入那個分類的工具。</p>
+<p>優點：模型無關，Claude、Gemini、開源模型都能用。<br>
+缺點：語意搜尋可能漏掉邊緣案例的工具。</p>
+<h3 id="方式二：分類路由（最快）">方式二：分類路由（最快）</h3>
+<p>如果你的工具可以按領域分組，先判斷使用者意圖屬於哪個分類，再載入那個分類的工具。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">TOOL_CATEGORIES = &#123;</span><br><span class="line">    <span class="string">&quot;project_management&quot;</span>: [<span class="string">&quot;create_jira_ticket&quot;</span>, <span class="string">&quot;update_ticket&quot;</span>, <span class="string">&quot;list_sprints&quot;</span>, ...],</span><br><span class="line">    <span class="string">&quot;database&quot;</span>: [<span class="string">&quot;query_database&quot;</span>, <span class="string">&quot;create_table&quot;</span>, <span class="string">&quot;run_migration&quot;</span>, ...],</span><br><span class="line">    <span class="string">&quot;communication&quot;</span>: [<span class="string">&quot;send_slack_message&quot;</span>, <span class="string">&quot;create_channel&quot;</span>, <span class="string">&quot;send_email&quot;</span>, ...],</span><br><span class="line">    <span class="string">&quot;monitoring&quot;</span>: [<span class="string">&quot;get_metrics&quot;</span>, <span class="string">&quot;create_alert&quot;</span>, <span class="string">&quot;query_logs&quot;</span>, ...],</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">route_to_category</span>(<span class="params">user_message: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;用小模型快速分類意圖&quot;&quot;&quot;</span></span><br><span class="line">    response = client.chat.completions.create(</span><br><span class="line">        model=<span class="string">&quot;gpt-5.4-mini&quot;</span>,  <span class="comment"># 用最便宜的模型做路由</span></span><br><span class="line">        messages=[&#123;</span><br><span class="line">            <span class="string">&quot;role&quot;</span>: <span class="string">&quot;system&quot;</span>,</span><br><span class="line">            <span class="string">&quot;content&quot;</span>: <span class="string">f&quot;分類使用者意圖。只回覆分類名稱：<span class="subst">&#123;<span class="built_in">list</span>(TOOL_CATEGORIES.keys())&#125;</span>&quot;</span></span><br><span class="line">        &#125;, &#123;</span><br><span class="line">            <span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>,</span><br><span class="line">            <span class="string">&quot;content&quot;</span>: user_message</span><br><span class="line">        &#125;],</span><br><span class="line">        max_tokens=<span class="number">20</span></span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> response.choices[<span class="number">0</span>].message.content.strip()</span><br></pre></td></tr></table></figure>
-
-<p>優點：延遲最低，token 消耗最小。<br>缺點：跨領域的需求（「查資料庫然後發 Slack 通知」）需要額外處理。</p>
-<h3 id="方式三：兩階段呼叫（最精確）"><a href="#方式三：兩階段呼叫（最精確）" class="headerlink" title="方式三：兩階段呼叫（最精確）"></a>方式三：兩階段呼叫（最精確）</h3><p>第一階段讓模型看工具名稱和一句描述，選出它需要的工具。第二階段再傳入完整定義。</p>
+<p>優點：延遲最低，token 消耗最小。<br>
+缺點：跨領域的需求（「查資料庫然後發 Slack 通知」）需要額外處理。</p>
+<h3 id="方式三：兩階段呼叫（最精確）">方式三：兩階段呼叫（最精確）</h3>
+<p>第一階段讓模型看工具名稱和一句描述，選出它需要的工具。第二階段再傳入完整定義。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">two_stage_tool_call</span>(<span class="params">user_message: <span class="built_in">str</span></span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">    <span class="comment"># 階段一：選工具</span></span><br><span class="line">    tool_index = [</span><br><span class="line">        &#123;<span class="string">&quot;name&quot;</span>: t[<span class="string">&quot;name&quot;</span>], <span class="string">&quot;description&quot;</span>: t[<span class="string">&quot;description&quot;</span>][:<span class="number">80</span>]&#125;</span><br><span class="line">        <span class="keyword">for</span> t <span class="keyword">in</span> all_tools</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line">    selection = client.chat.completions.create(</span><br><span class="line">        model=<span class="string">&quot;claude-opus-4-6&quot;</span>,</span><br><span class="line">        messages=[&#123;</span><br><span class="line">            <span class="string">&quot;role&quot;</span>: <span class="string">&quot;system&quot;</span>,</span><br><span class="line">            <span class="string">&quot;content&quot;</span>: (</span><br><span class="line">                <span class="string">&quot;根據使用者需求，從工具清單中選出需要的工具名稱。&quot;</span></span><br><span class="line">                <span class="string">&quot;回覆 JSON 陣列，例如：[\&quot;tool_a\&quot;, \&quot;tool_b\&quot;]&quot;</span></span><br><span class="line">            )</span><br><span class="line">        &#125;, &#123;</span><br><span class="line">            <span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>,</span><br><span class="line">            <span class="string">&quot;content&quot;</span>: <span class="string">f&quot;需求：<span class="subst">&#123;user_message&#125;</span>\n\n可用工具：<span class="subst">&#123;tool_index&#125;</span>&quot;</span></span><br><span class="line">        &#125;]</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    selected_names = json.loads(selection.choices[<span class="number">0</span>].message.content)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 階段二：用完整定義執行</span></span><br><span class="line">    selected_tools = [t <span class="keyword">for</span> t <span class="keyword">in</span> all_tools <span class="keyword">if</span> t[<span class="string">&quot;name&quot;</span>] <span class="keyword">in</span> selected_names]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> client.chat.completions.create(</span><br><span class="line">        model=<span class="string">&quot;claude-opus-4-6&quot;</span>,</span><br><span class="line">        messages=[&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: user_message&#125;],</span><br><span class="line">        tools=selected_tools</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
-
 <p>這本質上就是 GPT-5.4 在模型內部做的事，只是我們手動拆成兩步。</p>
-<h2 id="實戰考量：哪些坑要注意"><a href="#實戰考量：哪些坑要注意" class="headerlink" title="實戰考量：哪些坑要注意"></a>實戰考量：哪些坑要注意</h2><p><strong>Cache 友好性。</strong> GPT-5.4 的 tool search 把新工具定義注入到 context 尾端，這保留了前面訊息的 cache。如果你自己做，記得也要這樣處理——別把動態載入的工具定義插到 system prompt 中間，那會讓整個 cache 失效。</p>
+<h2 id="實戰考量：哪些坑要注意">實戰考量：哪些坑要注意</h2>
+<p><strong>Cache 友好性。</strong> GPT-5.4 的 tool search 把新工具定義注入到 context 尾端，這保留了前面訊息的 cache。如果你自己做，記得也要這樣處理——別把動態載入的工具定義插到 system prompt 中間，那會讓整個 cache 失效。</p>
 <p><strong>Fallback 機制。</strong> 語意搜尋不是 100% 準確的。我的做法是：如果模型在第一輪沒有呼叫任何工具（可能是搜尋漏掉了），自動觸發一次全量工具載入重試。一次重試的成本比每次都傳全量低得多。</p>
 <p><strong>工具描述的品質決定一切。</strong> Tool search 是靠描述來匹配的。如果你的工具描述是「執行操作 A」這種廢話，搜尋準確率會很低。每個工具描述應該包含：它做什麼、在什麼場景用、輸入輸出是什麼。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ❌ 爛描述</span></span><br><span class="line">&#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;process_data&quot;</span>, <span class="string">&quot;description&quot;</span>: <span class="string">&quot;處理資料&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># ✅ 好描述</span></span><br><span class="line">&#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;process_data&quot;</span>, <span class="string">&quot;description&quot;</span>: <span class="string">&quot;從 PostgreSQL 查詢銷售資料，按月份彙總，回傳 CSV 格式。用於產生月報表。&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
-
 <p><strong>監控工具選擇的準確率。</strong> 上線之後，記錄每次 tool search 選了哪些工具、最終用了哪些。如果「選了但沒用」的比例超過 50%，說明你的搜尋太寬鬆；如果使用者經常需要手動指定工具，說明搜尋太嚴格。</p>
-<h2 id="那我該用-GPT-5-4-內建的，還是自己做？"><a href="#那我該用-GPT-5-4-內建的，還是自己做？" class="headerlink" title="那我該用 GPT-5.4 內建的，還是自己做？"></a>那我該用 GPT-5.4 內建的，還是自己做？</h2><p>簡單的判斷框架：</p>
+<h2 id="那我該用-GPT-5-4-內建的，還是自己做？">那我該用 GPT-5.4 內建的，還是自己做？</h2>
+<p>簡單的判斷框架：</p>
 <table>
 <thead>
 <tr>
@@ -303,7 +314,8 @@
 <th>建議</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>工具 &lt; 30 個</td>
 <td>不需要 tool search，全部傳就好</td>
 </tr>
@@ -323,9 +335,11 @@
 <td>需要跨模型切換</td>
 <td>自己做，保持模型無關性</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>我目前的做法是自己做語意搜尋 + 分類路由的混合方案，因為我們的 Agent 需要在不同模型之間切換（成本考量，簡單任務用便宜模型，複雜任務用 Opus 或 GPT-5.4）。</p>
-<h2 id="往前看：工具管理會變成基礎設施"><a href="#往前看：工具管理會變成基礎設施" class="headerlink" title="往前看：工具管理會變成基礎設施"></a>往前看：工具管理會變成基礎設施</h2><p>MCP（Model Context Protocol）讓工具的定義和發現有了標準協議。Tool Search 讓工具的載入變成按需。下一步很可能是工具的版本管理和權限控制。</p>
+<h2 id="往前看：工具管理會變成基礎設施">往前看：工具管理會變成基礎設施</h2>
+<p>MCP（Model Context Protocol）讓工具的定義和發現有了標準協議。Tool Search 讓工具的載入變成按需。下一步很可能是工具的版本管理和權限控制。</p>
 <p>當 AI Agent 接的工具數量從幾十個變成幾百個，「工具管理」本身就會變成一個需要專門設計的子系統——類似微服務架構裡的服務發現（service discovery）。</p>
 <p>你不會讓一個微服務在啟動時把所有其他服務的 API schema 載入記憶體。同樣的道理，你不應該讓 AI Agent 在每次對話時載入所有工具定義。</p>
 <p>Tool Search 不是什麼革命性突破。它只是把我們在分散式系統裡用了十年的模式，搬到了 LLM 的世界。但有時候，把已知的好模式用在新場景，就是最好的工程決策。</p>
@@ -338,8 +352,8 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/LLM/" rel="tag"># LLM</a>
               <a href="/tags/AI-Agent/" rel="tag"># AI Agent</a>
+              <a href="/tags/LLM/" rel="tag"># LLM</a>
               <a href="/tags/GPT-5-4/" rel="tag"># GPT-5.4</a>
               <a href="/tags/Tool-Search/" rel="tag"># Tool Search</a>
               <a href="/tags/%E6%9E%B6%E6%A7%8B%E8%A8%AD%E8%A8%88/" rel="tag"># 架構設計</a>
@@ -354,6 +368,9 @@
                 </a>
             </div>
             <div class="post-nav-item">
+                <a href="/posts/8fc22a0c/" rel="next" title="NVIDIA 要做自己的 AI Agent 平台了：NemoClaw 技術架構解讀與開發者該注意的三件事">
+                  NVIDIA 要做自己的 AI Agent 平台了：NemoClaw 技術架構解讀與開發者該注意的三件事 <i class="fa fa-angle-right"></i>
+                </a>
             </div>
           </div>
     </footer>
@@ -385,13 +402,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">388k</span>
+    <span title="總字數">433k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">5:53</span>
+    <span title="所需總閱讀時間">6:33</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

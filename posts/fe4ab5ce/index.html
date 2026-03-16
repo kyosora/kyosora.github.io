@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="上個月我在幫一個客服系統接 AI，工具列表長到我自己看了都頭痛——查訂單、退款、修改地址、查庫存、轉人工、寄信、查物流……加起來 47 個 function definition。每次 API 呼叫，光是把這些工具塞進 prompt 就吃掉 8,000 多個 token。使用者問一句「我的包裹到哪了」，模型還得先讀完退款政策和寄信格式才能回答。  GPT-5.4 在三月初發布時帶來的 Tool S">
+<meta property="og:type" content="article">
+<meta property="og:title" content="你的 AI 應用塞了 50 個工具？GPT-5.4 的 Tool Search 讓你省下一半 token">
+<meta property="og:url" content="https://kyosora.github.io/posts/fe4ab5ce/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="上個月我在幫一個客服系統接 AI，工具列表長到我自己看了都頭痛——查訂單、退款、修改地址、查庫存、轉人工、寄信、查物流……加起來 47 個 function definition。每次 API 呼叫，光是把這些工具塞進 prompt 就吃掉 8,000 多個 token。使用者問一句「我的包裹到哪了」，模型還得先讀完退款政策和寄信格式才能回答。  GPT-5.4 在三月初發布時帶來的 Tool S">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2026-03-14T21:10:00.000Z">
+<meta property="article:modified_time" content="2026-03-14T21:02:39.130Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="GPT-5.4">
+<meta property="article:tag" content="MCP">
+<meta property="article:tag" content="Tool Search">
+<meta property="article:tag" content="Function Calling">
+<meta property="article:tag" content="Token 優化">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/fe4ab5ce/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/fe4ab5ce/","path":"posts/fe4ab5ce/","title":"你的 AI 應用塞了 50 個工具？GPT-5.4 的 Tool Search 讓你省下一半 token"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>你的 AI 應用塞了 50 個工具？GPT-5.4 的 Tool Search 讓你省下一半 token | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%95%8F%E9%A1%8C%E7%9A%84%E6%A0%B9%E6%BA%90%EF%BC%9A%E4%BD%A0%E4%BB%98%E9%8C%A2%E8%AE%93%E6%A8%A1%E5%9E%8B%E8%AE%80%E5%AE%83%E7%94%A8%E4%B8%8D%E5%88%B0%E7%9A%84%E6%9D%B1%E8%A5%BF"><span class="nav-number">1.</span> <span class="nav-text">問題的根源：你付錢讓模型讀它用不到的東西</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tool-Search-%E6%80%8E%E9%BA%BC%E9%81%8B%E4%BD%9C"><span class="nav-number">2.</span> <span class="nav-text">Tool Search 怎麼運作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E9%9A%9B%E6%80%8E%E9%BA%BC%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">實際怎麼用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%B0%8F%E7%AF%84%E4%BE%8B%EF%BC%9A%E5%BB%B6%E9%81%B2%E8%BC%89%E5%85%A5%E5%96%AE%E4%B8%80%E5%87%BD%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text">最小範例：延遲載入單一函式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%B2%E9%9A%8E%E7%94%A8%E6%B3%95%EF%BC%9ANamespace-%E5%88%86%E7%B5%84"><span class="nav-number">3.2.</span> <span class="nav-text">進階用法：Namespace 分組</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%90%AD%E9%85%8D-MCP-Server"><span class="nav-number">3.3.</span> <span class="nav-text">搭配 MCP Server</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%99%82%E5%80%99%E8%A9%B2%E7%94%A8%E3%80%81%E4%BB%80%E9%BA%BC%E6%99%82%E5%80%99%E4%B8%8D%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">什麼時候該用、什麼時候不用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%BE%E5%80%8B%E5%AE%B9%E6%98%93%E8%B8%A9%E7%9A%84%E5%9D%91"><span class="nav-number">5.</span> <span class="nav-text">幾個容易踩的坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%99%E5%80%8B%E6%A8%A1%E5%BC%8F%E7%9A%84%E6%9B%B4%E5%A4%A7%E6%84%8F%E7%BE%A9"><span class="nav-number">6.</span> <span class="nav-text">這個模式的更大意義</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">147</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">261</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/fe4ab5ce/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="你的 AI 應用塞了 50 個工具？GPT-5.4 的 Tool Search 讓你省下一半 token | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          你的 AI 應用塞了 50 個工具？GPT-5.4 的 Tool Search 讓你省下一半 token
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2026-03-15 05:10:00 / 修改時間：05:02:39" itemprop="dateCreated datePublished" datetime="2026-03-15T05:10:00+08:00">2026-03-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI-%E9%96%8B%E7%99%BC/" itemprop="url" rel="index"><span itemprop="name">AI 開發</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI-%E9%96%8B%E7%99%BC/%E6%9E%B6%E6%A7%8B%E8%A8%AD%E8%A8%88/" itemprop="url" rel="index"><span itemprop="name">架構設計</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>5.8k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>5 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>上個月我在幫一個客服系統接 AI，工具列表長到我自己看了都頭痛——查訂單、退款、修改地址、查庫存、轉人工、寄信、查物流……加起來 47 個 function definition。每次 API 呼叫，光是把這些工具塞進 prompt 就吃掉 8,000 多個 token。使用者問一句「我的包裹到哪了」，模型還得先讀完退款政策和寄信格式才能回答。</p>
+<p>GPT-5.4 在三月初發布時帶來的 Tool Search 機制，直接解決了這個問題。</p>
+<h2 id="問題的根源：你付錢讓模型讀它用不到的東西">問題的根源：你付錢讓模型讀它用不到的東西</h2>
+<p>傳統的 function calling 很直觀——你把所有工具的 JSON schema 丟進 <code>tools</code> 陣列，模型看完後決定要呼叫哪個。問題是，模型不管用不用，都得讀。</p>
+<p>算一筆帳：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">一個工具定義 ≈ 150-300 tokens</span><br><span class="line">30 個工具 ≈ 4,500-9,000 tokens</span><br><span class="line">每次對話 10 輪 ≈ 45,000-90,000 tokens 花在重複讀工具定義</span><br></pre></td></tr></table></figure>
+<p>這些 token 不產生任何價值。它們只是讓模型知道「我有這些能力」，但 90% 的對話只會用到 2-3 個工具。</p>
+<p>更糟的是，工具太多會讓 prompt cache 失效。每次你改動一個工具的定義，整個 cache 就得重建。</p>
+<h2 id="Tool-Search-怎麼運作">Tool Search 怎麼運作</h2>
+<p>核心概念很簡單：模型一開始只拿到工具的「目錄」（名稱和簡短描述），需要的時候再查完整定義。</p>
+<p>運作流程：</p>
+<ol>
+<li>你把工具標記為 <code>defer_loading: true</code></li>
+<li>模型收到的是輕量清單——每個工具只有名稱和一行描述</li>
+<li>使用者問問題時，模型根據描述判斷需要哪些工具</li>
+<li>模型發出 tool search 請求，系統才載入完整的參數定義</li>
+<li>模型用載入的工具完成任務</li>
+</ol>
+<p>OpenAI 用 Scale 的 MCP Atlas benchmark 測過——250 個任務、36 個 MCP server，Tool Search 省下 47% 的 token，準確率不變。</p>
+<h2 id="實際怎麼用">實際怎麼用</h2>
+<h3 id="最小範例：延遲載入單一函式">最小範例：延遲載入單一函式</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI</span><br><span class="line"></span><br><span class="line">client = OpenAI()</span><br><span class="line"></span><br><span class="line">response = client.responses.create(</span><br><span class="line">    model=<span class="string">&quot;gpt-5.4&quot;</span>,</span><br><span class="line">    <span class="built_in">input</span>=<span class="string">&quot;我的訂單 ORD-12345 到哪了？&quot;</span>,</span><br><span class="line">    tools=[</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;function&quot;</span>,</span><br><span class="line">            <span class="string">&quot;name&quot;</span>: <span class="string">&quot;track_order&quot;</span>,</span><br><span class="line">            <span class="string">&quot;description&quot;</span>: <span class="string">&quot;用訂單編號查詢物流狀態和預計到貨時間&quot;</span>,</span><br><span class="line">            <span class="string">&quot;parameters&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;type&quot;</span>: <span class="string">&quot;object&quot;</span>,</span><br><span class="line">                <span class="string">&quot;properties&quot;</span>: &#123;</span><br><span class="line">                    <span class="string">&quot;order_id&quot;</span>: &#123;<span class="string">&quot;type&quot;</span>: <span class="string">&quot;string&quot;</span>&#125;</span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">&quot;required&quot;</span>: [<span class="string">&quot;order_id&quot;</span>]</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="string">&quot;defer_loading&quot;</span>: <span class="literal">True</span>  <span class="comment"># 關鍵：延遲載入</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;function&quot;</span>,</span><br><span class="line">            <span class="string">&quot;name&quot;</span>: <span class="string">&quot;process_refund&quot;</span>,</span><br><span class="line">            <span class="string">&quot;description&quot;</span>: <span class="string">&quot;處理退款申請，需要訂單編號和退款原因&quot;</span>,</span><br><span class="line">            <span class="string">&quot;parameters&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;type&quot;</span>: <span class="string">&quot;object&quot;</span>,</span><br><span class="line">                <span class="string">&quot;properties&quot;</span>: &#123;</span><br><span class="line">                    <span class="string">&quot;order_id&quot;</span>: &#123;<span class="string">&quot;type&quot;</span>: <span class="string">&quot;string&quot;</span>&#125;,</span><br><span class="line">                    <span class="string">&quot;reason&quot;</span>: &#123;<span class="string">&quot;type&quot;</span>: <span class="string">&quot;string&quot;</span>&#125;</span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">&quot;required&quot;</span>: [<span class="string">&quot;order_id&quot;</span>, <span class="string">&quot;reason&quot;</span>]</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="string">&quot;defer_loading&quot;</span>: <span class="literal">True</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    tool_search=<span class="literal">True</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>使用者問物流，模型只會載入 <code>track_order</code> 的完整 schema。<code>process_refund</code> 的參數定義從頭到尾沒被讀過。</p>
+<h3 id="進階用法：Namespace-分組">進階用法：Namespace 分組</h3>
+<p>兩個工具看不出差異。真正的價值在你有 30+ 工具的時候——用 namespace 分組：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">tools = [</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;type&quot;</span>: <span class="string">&quot;namespace&quot;</span>,</span><br><span class="line">        <span class="string">&quot;name&quot;</span>: <span class="string">&quot;order_management&quot;</span>,</span><br><span class="line">        <span class="string">&quot;description&quot;</span>: <span class="string">&quot;訂單相關操作：查詢、修改、取消、退款&quot;</span>,</span><br><span class="line">        <span class="string">&quot;functions&quot;</span>: [</span><br><span class="line">            &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;get_order&quot;</span>, <span class="string">&quot;description&quot;</span>: <span class="string">&quot;查詢訂單詳情&quot;</span>, <span class="string">&quot;defer_loading&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;parameters&quot;</span>: &#123;... &#125;&#125;,</span><br><span class="line">            &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;cancel_order&quot;</span>, <span class="string">&quot;description&quot;</span>: <span class="string">&quot;取消未出貨訂單&quot;</span>, <span class="string">&quot;defer_loading&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;parameters&quot;</span>: &#123;... &#125;&#125;,</span><br><span class="line">            &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;modify_address&quot;</span>, <span class="string">&quot;description&quot;</span>: <span class="string">&quot;修改收貨地址&quot;</span>, <span class="string">&quot;defer_loading&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;parameters&quot;</span>: &#123;... &#125;&#125;,</span><br><span class="line">            &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;process_refund&quot;</span>, <span class="string">&quot;description&quot;</span>: <span class="string">&quot;處理退款&quot;</span>, <span class="string">&quot;defer_loading&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;parameters&quot;</span>: &#123;... &#125;&#125;,</span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;type&quot;</span>: <span class="string">&quot;namespace&quot;</span>,</span><br><span class="line">        <span class="string">&quot;name&quot;</span>: <span class="string">&quot;logistics&quot;</span>,</span><br><span class="line">        <span class="string">&quot;description&quot;</span>: <span class="string">&quot;物流追蹤：包裹狀態、預計到貨、配送異常&quot;</span>,</span><br><span class="line">        <span class="string">&quot;functions&quot;</span>: [</span><br><span class="line">            &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;track_package&quot;</span>, <span class="string">&quot;description&quot;</span>: <span class="string">&quot;追蹤包裹即時位置&quot;</span>, <span class="string">&quot;defer_loading&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;parameters&quot;</span>: &#123;... &#125;&#125;,</span><br><span class="line">            &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;report_issue&quot;</span>, <span class="string">&quot;description&quot;</span>: <span class="string">&quot;回報配送異常&quot;</span>, <span class="string">&quot;defer_loading&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;parameters&quot;</span>: &#123;... &#125;&#125;,</span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;type&quot;</span>: <span class="string">&quot;namespace&quot;</span>,</span><br><span class="line">        <span class="string">&quot;name&quot;</span>: <span class="string">&quot;customer_support&quot;</span>,</span><br><span class="line">        <span class="string">&quot;description&quot;</span>: <span class="string">&quot;客服操作：轉接人工、滿意度調查、工單建立&quot;</span>,</span><br><span class="line">        <span class="string">&quot;functions&quot;</span>: [</span><br><span class="line">            &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;transfer_agent&quot;</span>, <span class="string">&quot;description&quot;</span>: <span class="string">&quot;轉接人工客服&quot;</span>, <span class="string">&quot;defer_loading&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;parameters&quot;</span>: &#123;... &#125;&#125;,</span><br><span class="line">            &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;create_ticket&quot;</span>, <span class="string">&quot;description&quot;</span>: <span class="string">&quot;建立客服工單&quot;</span>, <span class="string">&quot;defer_loading&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;parameters&quot;</span>: &#123;... &#125;&#125;,</span><br><span class="line">            &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;send_survey&quot;</span>, <span class="string">&quot;description&quot;</span>: <span class="string">&quot;發送滿意度調查&quot;</span>, <span class="string">&quot;defer_loading&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;parameters&quot;</span>: &#123;... &#125;&#125;,</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>使用者問「包裹到哪了」→ 模型只載入 <code>logistics</code> namespace 裡的函式。<code>order_management</code> 和 <code>customer_support</code> 完全不碰。</p>
+<p>OpenAI 的建議是每個 namespace 不超過 10 個函式。這不是硬限制，但超過後模型挑選工具的準確率會下降。</p>
+<h3 id="搭配-MCP-Server">搭配 MCP Server</h3>
+<p>Tool Search 和 MCP 是天生搭配。MCP server 本身就是一組工具的集合，直接延遲載入整個 server：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">tools = [</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;type&quot;</span>: <span class="string">&quot;mcp&quot;</span>,</span><br><span class="line">        <span class="string">&quot;server_label&quot;</span>: <span class="string">&quot;inventory&quot;</span>,</span><br><span class="line">        <span class="string">&quot;server_url&quot;</span>: <span class="string">&quot;https://mcp.example.com/inventory&quot;</span>,</span><br><span class="line">        <span class="string">&quot;description&quot;</span>: <span class="string">&quot;庫存管理系統：查詢庫存、預留庫存、庫存異動歷史&quot;</span>,</span><br><span class="line">        <span class="string">&quot;defer_loading&quot;</span>: <span class="literal">True</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;type&quot;</span>: <span class="string">&quot;mcp&quot;</span>,</span><br><span class="line">        <span class="string">&quot;server_label&quot;</span>: <span class="string">&quot;crm&quot;</span>,</span><br><span class="line">        <span class="string">&quot;server_url&quot;</span>: <span class="string">&quot;https://mcp.example.com/crm&quot;</span>,</span><br><span class="line">        <span class="string">&quot;description&quot;</span>: <span class="string">&quot;客戶關係管理：客戶資料、互動紀錄、標籤管理&quot;</span>,</span><br><span class="line">        <span class="string">&quot;defer_loading&quot;</span>: <span class="literal">True</span></span><br><span class="line">    &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>模型看到的只有兩行描述。背後可能各有 20 個 endpoint，但在用到之前，一個 token 都不浪費。</p>
+<h2 id="什麼時候該用、什麼時候不用">什麼時候該用、什麼時候不用</h2>
+<p><strong>適合用的場景：</strong></p>
+<ul>
+<li>工具超過 10 個的應用（token 節省開始有感）</li>
+<li>多租戶系統，不同客戶有不同工具集</li>
+<li>整合多個 MCP server 的 agent 系統</li>
+<li>對話輪數多的應用（累積節省可觀）</li>
+</ul>
+<p><strong>不需要的場景：</strong></p>
+<ul>
+<li>工具在 5 個以內，定義也短——延遲載入的 overhead 不值得</li>
+<li>每次對話都會用到所有工具（比如一個專門做資料分析的 agent，固定用 query + chart + export 三件套）</li>
+<li>用的不是 GPT-5.4（目前只有這個模型支援）</li>
+</ul>
+<h2 id="幾個容易踩的坑">幾個容易踩的坑</h2>
+<p><strong>描述寫太爛，模型找不到正確工具。</strong> Tool Search 的準確度完全取決於你怎麼寫 description。「處理訂單」太模糊，「取消未出貨的訂單並觸發退款流程」才夠精確。模型是靠描述做語意搜尋，不是靠函式名稱。</p>
+<p><strong>Namespace 太大。</strong> 把 30 個函式塞進一個 namespace 等於沒分。保持每個 namespace 3-8 個函式，讓模型能快速定位。</p>
+<p><strong>混用延遲和非延遲工具時的 cache 行為。</strong> 非延遲的工具定義會進 prompt cache，延遲的不會。如果你有 3 個核心工具每次都用，把它們設成非延遲，其他的延遲載入。這樣核心工具享受 cache，其餘的享受 token 節省。</p>
+<p><strong>忘記處理 tool_search 事件。</strong> 如果你用 streaming，Tool Search 會產生一個新的事件類型。確認你的事件處理邏輯有覆蓋到，不然會 silent fail。</p>
+<h2 id="這個模式的更大意義">這個模式的更大意義</h2>
+<p>Tool Search 不只是一個省 token 的技巧。它反映了 AI 應用架構正在從「靜態配置」走向「動態發現」。</p>
+<p>傳統做法是預先定義好模型能做什麼。Tool Search 讓模型在執行時才決定需要什麼能力。這和微服務架構裡的 service discovery 是同一個思路——你不需要在啟動時知道所有服務的位置，runtime 去問 registry 就好。</p>
+<p>對開發者來說，這意味著你可以建造工具數量不受限的 agent 系統。一個企業級 agent 接 50 個 MCP server、每個有 10 個 endpoint，總共 500 個工具——傳統做法要 75,000-150,000 tokens 只是為了告訴模型「你能做什麼」。Tool Search 把這個數字壓到幾千。</p>
+<p>當然，前提是你的 namespace 分得好、描述寫得準。垃圾進、垃圾出，這條鐵律在 AI 工具設計上一樣成立。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/GPT-5-4/" rel="tag"># GPT-5.4</a>
+              <a href="/tags/MCP/" rel="tag"># MCP</a>
+              <a href="/tags/Tool-Search/" rel="tag"># Tool Search</a>
+              <a href="/tags/Function-Calling/" rel="tag"># Function Calling</a>
+              <a href="/tags/Token-%E5%84%AA%E5%8C%96/" rel="tag"># Token 優化</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/e8a58ea9/" rel="prev" title="你的 AI 模型不需要永遠在思考：Phi-4-reasoning-vision 的思考開關機制拆解">
+                  <i class="fa fa-angle-left"></i> 你的 AI 模型不需要永遠在思考：Phi-4-reasoning-vision 的思考開關機制拆解
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/8dfdf7f6/" rel="next" title="一家車廠要蓋全世界最大 AI 晶片廠：Tesla Terafab 背後的技術野心與開發者該注意的事">
+                  一家車廠要蓋全世界最大 AI 晶片廠：Tesla Terafab 背後的技術野心與開發者該注意的事 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">433k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">6:33</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

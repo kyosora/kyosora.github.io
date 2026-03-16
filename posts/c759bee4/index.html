@@ -27,7 +27,7 @@
 <meta property="og:description" content="上週 Anthropic 和 Mozilla 聯合發了一篇公告：Claude Opus 4.6 在兩週內掃描了 Firefox 將近 6,000 個 C++ 檔案，提交 112 份報告，其中 22 個被確認為真實漏洞，14 個是高嚴重性。  這個數字什麼概念？2025 一整年 Firefox 修補的高嚴重性漏洞，大約是這次兩週產出的五倍。換句話說，Claude 兩週的產量接近 2025 全年的兩成">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2026-03-09T18:30:00.000Z">
-<meta property="article:modified_time" content="2026-03-09T18:03:06.639Z">
+<meta property="article:modified_time" content="2026-03-13T07:34:34.030Z">
 <meta property="article:author" content="kyosora">
 <meta property="article:tag" content="Claude">
 <meta property="article:tag" content="Firefox">
@@ -142,16 +142,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">133</span>
+          <span class="site-state-item-count">147</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">72</span>
+        <span class="site-state-item-count">83</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">217</span>
+        <span class="site-state-item-count">261</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -206,9 +206,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">發表於</span>
-      
 
-      <time title="創建時間：2026-03-10 02:30:00 / 修改時間：02:03:06" itemprop="dateCreated datePublished" datetime="2026-03-10T02:30:00+08:00">2026-03-10</time>
+      <time title="創建時間：2026-03-10 02:30:00" itemprop="dateCreated datePublished" datetime="2026-03-10T02:30:00+08:00">2026-03-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2026-03-13 15:34:34" itemprop="dateModified" datetime="2026-03-13T15:34:34+08:00">2026-03-13</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -251,12 +257,14 @@
     <div class="post-body" itemprop="articleBody"><p>上週 Anthropic 和 Mozilla 聯合發了一篇公告：Claude Opus 4.6 在兩週內掃描了 Firefox 將近 6,000 個 C++ 檔案，提交 112 份報告，其中 22 個被確認為真實漏洞，14 個是高嚴重性。</p>
 <p>這個數字什麼概念？2025 一整年 Firefox 修補的高嚴重性漏洞，大約是這次兩週產出的五倍。換句話說，Claude 兩週的產量接近 2025 全年的兩成。</p>
 <p>我花了一些時間讀完 Anthropic 的技術報告和 Mozilla 的回應，想整理出幾個工程師會在意的重點。</p>
-<h2 id="它是怎麼掃的？"><a href="#它是怎麼掃的？" class="headerlink" title="它是怎麼掃的？"></a>它是怎麼掃的？</h2><p>Anthropic 的團隊沒有直接丟整個 codebase 給 Claude 然後說「幫我找 bug」。他們分了兩個階段：</p>
+<h2 id="它是怎麼掃的？">它是怎麼掃的？</h2>
+<p>Anthropic 的團隊沒有直接丟整個 codebase 給 Claude 然後說「幫我找 bug」。他們分了兩個階段：</p>
 <p><strong>第一階段：驗證能力。</strong> 先拿 Firefox 舊版本中已知的 CVE，讓 Claude 看能不能重現。這步很關鍵——如果連已知漏洞都找不到，就沒必要往下走了。</p>
 <p><strong>第二階段：掃描未知漏洞。</strong> 從 JavaScript 引擎開始（這是瀏覽器最複雜、攻擊面最大的部分），逐步擴展到其他元件。兩週內掃了將近 6,000 個 C++ 檔案。</p>
 <p>第一個漏洞在探索開始 20 分鐘後就被發現了——一個 JavaScript 引擎裡的 <strong>Use After Free</strong> 記憶體漏洞。這類漏洞允許攻擊者用惡意內容覆寫已釋放的記憶體區塊，嚴重的話可以執行任意程式碼。</p>
 <p>一個研究員獨立驗證，另外兩個人再次確認，Claude 還生成了修補建議。</p>
-<h2 id="112-份報告，22-個真的"><a href="#112-份報告，22-個真的" class="headerlink" title="112 份報告，22 個真的"></a>112 份報告，22 個真的</h2><p>112 份報告裡只有 22 個被確認，代表誤報率大約 80%。這個數字看起來不太好看，但換個角度想：</p>
+<h2 id="112-份報告，22-個真的">112 份報告，22 個真的</h2>
+<p>112 份報告裡只有 22 個被確認，代表誤報率大約 80%。這個數字看起來不太好看，但換個角度想：</p>
 <ul>
 <li>人類安全研究員的工具（fuzzer、靜態分析器）誤報率通常也在 70-90%</li>
 <li>重點是那 22 個真的漏洞的品質——14 個高嚴重性</li>
@@ -269,7 +277,8 @@
 <li>候選修補程式</li>
 </ol>
 <p>Claude 都做到了。不只是說「這裡有問題」，而是「這裡有問題，這樣可以重現，這是我建議的修法」。</p>
-<h2 id="找漏洞很行，寫-Exploit-不行"><a href="#找漏洞很行，寫-Exploit-不行" class="headerlink" title="找漏洞很行，寫 Exploit 不行"></a>找漏洞很行，寫 Exploit 不行</h2><p>這是整篇報告最有趣的部分。</p>
+<h2 id="找漏洞很行，寫-Exploit-不行">找漏洞很行，寫 Exploit 不行</h2>
+<p>這是整篇報告最有趣的部分。</p>
 <p>Anthropic 花了大約 4,000 美元的 API 費用，跑了幾百次迭代，試圖讓 Claude 把找到的漏洞寫成可運作的 exploit。</p>
 <p>結果？<strong>只有 2 個成功</strong>，而且只在刻意移除現代瀏覽器安全功能（例如 sandbox）的測試環境裡才能用。</p>
 <p>Anthropic 的結論是：</p>
@@ -278,7 +287,8 @@
 </blockquote>
 <p>翻成白話：Claude 是天生的防守方。它能高效率地找出問題，但要把問題武器化？目前的能力遠遠不夠。</p>
 <p>這對安全生態來說其實是好消息。防守方用 AI 找漏洞的效益，遠大於攻擊方用 AI 寫 exploit 的效益。至少目前是這樣。</p>
-<h2 id="Task-Verifier：讓-AI-能深入探索的關鍵"><a href="#Task-Verifier：讓-AI-能深入探索的關鍵" class="headerlink" title="Task Verifier：讓 AI 能深入探索的關鍵"></a>Task Verifier：讓 AI 能深入探索的關鍵</h2><p>報告裡提到一個技術細節我覺得特別值得注意：<strong>task verifier</strong>。</p>
+<h2 id="Task-Verifier：讓-AI-能深入探索的關鍵">Task Verifier：讓 AI 能深入探索的關鍵</h2>
+<p>報告裡提到一個技術細節我覺得特別值得注意：<strong>task verifier</strong>。</p>
 <p>Anthropic 建了一套驗證工具，在 Claude 探索 codebase 的過程中提供即時回饋。這讓 Claude 可以持續迭代，直到它確認：</p>
 <ol>
 <li>漏洞真的存在（不是誤判）</li>
@@ -286,7 +296,8 @@
 </ol>
 <p>沒有這套 verifier，Claude 只是在猜。有了它，Claude 能進入「深度探索」模式——不斷嘗試、驗證、修正，直到找到真正的問題。</p>
 <p>這個模式其實跟人類安全研究員的工作流程很像：先有假設，驗證，失敗了就調整假設，再驗證。差別是 Claude 跑一輪的速度是分鐘級，人類是小時級。</p>
-<h2 id="對開發者的實際意義"><a href="#對開發者的實際意義" class="headerlink" title="對開發者的實際意義"></a>對開發者的實際意義</h2><p>如果你在維護一個中大型專案，這件事值得關注：</p>
+<h2 id="對開發者的實際意義">對開發者的實際意義</h2>
+<p>如果你在維護一個中大型專案，這件事值得關注：</p>
 <p><strong>短期（現在就能做）：</strong></p>
 <ul>
 <li>AI 輔助的安全審計已經不是概念驗證了，Mozilla 和 Anthropic 已經證明它能在生產級 codebase 上運作</li>
@@ -304,14 +315,16 @@
 <li>安全研究員的角色會從「找漏洞的人」轉變為「驗證和排序 AI 報告的人」</li>
 <li>誰先用 AI 掃，誰就先修。攻擊者也能用同樣的技術找漏洞，但前面說了，exploit 化的難度高得多</li>
 </ul>
-<h2 id="數字整理"><a href="#數字整理" class="headerlink" title="數字整理"></a>數字整理</h2><table>
+<h2 id="數字整理">數字整理</h2>
+<table>
 <thead>
 <tr>
 <th>項目</th>
 <th>數據</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>掃描時間</td>
 <td>2 週（2026 年 2 月）</td>
 </tr>
@@ -355,14 +368,16 @@
 <td>修補版本</td>
 <td>Firefox 148.0</td>
 </tr>
-</tbody></table>
-<h2 id="我的看法"><a href="#我的看法" class="headerlink" title="我的看法"></a>我的看法</h2><p>這次合作最重要的不是「AI 找到了 22 個漏洞」這個標題，而是背後的不對稱性：</p>
+</tbody>
+</table>
+<h2 id="我的看法">我的看法</h2>
+<p>這次合作最重要的不是「AI 找到了 22 個漏洞」這個標題，而是背後的不對稱性：</p>
 <p>防守方的成本在降低，攻擊方的成本沒有等比例降低。</p>
 <p>Claude 找一個漏洞可能花幾十美元的 API 費用，但要把同一個漏洞變成可用的攻擊，花了數千美元還只成功兩次。這個差距在未來只會更大，因為找漏洞是模式匹配問題（LLM 擅長的），而寫 exploit 需要對底層系統有精確理解和創造性繞過（LLM 目前的弱項）。</p>
 <p>Mozilla 在這件事上的態度也值得學習。他們不是被動等 Anthropic 送報告，而是主動參與，幫助定義什麼算有效的 bug report，確保流程能在真實的開發節奏中運作。</p>
 <p>如果你的公司有預算做安全審計，現在可能是把 AI 輔助掃描加入清單的時候了。不用取代人類安全專家，但讓 AI 先跑一輪，把低垂的果實摘掉，讓人類專家專注在更複雜的邏輯漏洞上。</p>
 <hr>
-<p><em>參考來源：<a target="_blank" rel="noopener" href="https://www.anthropic.com/news/mozilla-firefox-security">Anthropic Blog - Partnering with Mozilla to improve Firefox&#39;s security</a>、<a target="_blank" rel="noopener" href="https://techcrunch.com/2026/03/06/anthropics-claude-found-22-vulnerabilities-in-firefox-over-two-weeks/">TechCrunch 報導</a>、<a target="_blank" rel="noopener" href="https://blog.mozilla.org/en/firefox/hardening-firefox-anthropic-red-team/">Mozilla Blog</a></em></p>
+<p><em>參考來源：<a target="_blank" rel="noopener" href="https://www.anthropic.com/news/mozilla-firefox-security">Anthropic Blog - Partnering with Mozilla to improve Firefox’s security</a>、<a target="_blank" rel="noopener" href="https://techcrunch.com/2026/03/06/anthropics-claude-found-22-vulnerabilities-in-firefox-over-two-weeks/">TechCrunch 報導</a>、<a target="_blank" rel="noopener" href="https://blog.mozilla.org/en/firefox/hardening-firefox-anthropic-red-team/">Mozilla Blog</a></em></p>
 
     </div>
 
@@ -422,13 +437,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">388k</span>
+    <span title="總字數">433k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">5:53</span>
+    <span title="所需總閱讀時間">6:33</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

@@ -142,16 +142,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">133</span>
+          <span class="site-state-item-count">147</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">72</span>
+        <span class="site-state-item-count">83</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">217</span>
+        <span class="site-state-item-count">261</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -256,10 +256,12 @@
     
     <div class="post-body" itemprop="articleBody"><p>3 月 5 日，OpenAI 丟出 GPT-5.4。兩週前，Google 才發了 Gemini 3.1 Pro。Anthropic 的 Claude Opus 4.6 也在持續迭代。三家模型同時站在擂台上，跑分互有勝負，開發者選擇困難症大爆發。</p>
 <p>我花了幾天把三家的 benchmark 數據、定價和實際使用場景整理了一遍。結論先說：沒有全能冠軍，但各有各的殺手鐧。</p>
-<h2 id="GPT-5-4：第一個真正會用電腦的-AI"><a href="#GPT-5-4：第一個真正會用電腦的-AI" class="headerlink" title="GPT-5.4：第一個真正會用電腦的 AI"></a>GPT-5.4：第一個真正會用電腦的 AI</h2><p>OpenAI 這次最大的賣點不是跑分——是 Computer Use。</p>
+<h2 id="GPT-5-4：第一個真正會用電腦的-AI">GPT-5.4：第一個真正會用電腦的 AI</h2>
+<p>OpenAI 這次最大的賣點不是跑分——是 Computer Use。</p>
 <p>GPT-5.4 能直接操作桌面應用程式：看螢幕截圖、移動滑鼠、敲鍵盤。在 OSWorld 測試中，它拿到 75% 的成功率，超越人類的 72.4%。這不是小數字的進步，GPT-5.2 在同一個測試只有 47.3%。</p>
 <p>另一個重點是「統合模型」架構。OpenAI 把之前分散在不同模型的能力——Codex 的寫程式、推理模型的思考鏈、Agent 的自主操作——塞進同一個模型裡。不用再煩惱「這個任務該叫哪個模型」。</p>
-<h3 id="硬指標"><a href="#硬指標" class="headerlink" title="硬指標"></a>硬指標</h3><table>
+<h3 id="硬指標">硬指標</h3>
+<table>
 <thead>
 <tr>
 <th>項目</th>
@@ -267,7 +269,8 @@
 <th>跟 GPT-5.2 相比</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>GDPval（知識工作）</td>
 <td>83%</td>
 <td>70.9% → 83%</td>
@@ -292,22 +295,30 @@
 <td>1M tokens</td>
 <td>API 可用</td>
 </tr>
-</tbody></table>
-<h3 id="我的觀察"><a href="#我的觀察" class="headerlink" title="我的觀察"></a>我的觀察</h3><p>Computer Use 聽起來酷，但實際落地場景還很窄。你真的要讓 AI 操作你的電腦嗎？企業 IT 部門光想到這件事就冒冷汗。不過，如果你在做 RPA（機器人流程自動化）相關的產品，GPT-5.4 的這個能力值得認真評估。</p>
+</tbody>
+</table>
+<h3 id="我的觀察">我的觀察</h3>
+<p>Computer Use 聽起來酷，但實際落地場景還很窄。你真的要讓 AI 操作你的電腦嗎？企業 IT 部門光想到這件事就冒冷汗。不過，如果你在做 RPA（機器人流程自動化）相關的產品，GPT-5.4 的這個能力值得認真評估。</p>
 <p>統合模型的方向我認為是對的。過去一年，OpenAI 的模型矩陣讓人頭暈——o1、o3、GPT-5、GPT-5.2、Codex⋯⋯現在收斂成一個就好。</p>
-<h2 id="Gemini-3-1-Pro：跑分之王，價格殺手"><a href="#Gemini-3-1-Pro：跑分之王，價格殺手" class="headerlink" title="Gemini 3.1 Pro：跑分之王，價格殺手"></a>Gemini 3.1 Pro：跑分之王，價格殺手</h2><p>Google 這次在 benchmark 上打了漂亮的一仗。</p>
+<h2 id="Gemini-3-1-Pro：跑分之王，價格殺手">Gemini 3.1 Pro：跑分之王，價格殺手</h2>
+<p>Google 這次在 benchmark 上打了漂亮的一仗。</p>
 <p>在 19 項主要測試中，Gemini 3.1 Pro 贏了 12 項。抽象推理（ARC-AGI-2）拿到 77.1%，科學知識（GPQA Diamond）94.3%，都是三家最高。</p>
 <p>但 Gemini 3.1 Pro 真正的殺招是定價：1M context 只要 $2/百萬 input tokens。對比 GPT-5.4 的 $2.50，便宜 20%。對比 Claude Opus 4.6⋯⋯那就更不用說了。</p>
-<h3 id="Gemini-的隱藏優勢"><a href="#Gemini-的隱藏優勢" class="headerlink" title="Gemini 的隱藏優勢"></a>Gemini 的隱藏優勢</h3><p>Google 同時推出了 Gemini 3.1 Flash-Lite，輸出速度 363 tokens/s，定價只要 $0.25/$1.50（input/output per 1M tokens）。如果你的應用對延遲敏感、要大量呼叫 API，Flash-Lite 是目前市場上性價比最高的選擇。</p>
-<h3 id="但-Google-沒告訴你的事"><a href="#但-Google-沒告訴你的事" class="headerlink" title="但 Google 沒告訴你的事"></a>但 Google 沒告訴你的事</h3><p>SmartScope 的分析點出一個問題：Google 宣傳「16 項 benchmark 贏 13 項」，但刻意挑了有利的 benchmark。在寫程式（SWE-Bench）和長文本理解這兩個開發者最在意的場景，Gemini 並沒有明顯優勢。</p>
+<h3 id="Gemini-的隱藏優勢">Gemini 的隱藏優勢</h3>
+<p>Google 同時推出了 Gemini 3.1 Flash-Lite，輸出速度 363 tokens/s，定價只要 $0.25/$1.50（input/output per 1M tokens）。如果你的應用對延遲敏感、要大量呼叫 API，Flash-Lite 是目前市場上性價比最高的選擇。</p>
+<h3 id="但-Google-沒告訴你的事">但 Google 沒告訴你的事</h3>
+<p>SmartScope 的分析點出一個問題：Google 宣傳「16 項 benchmark 贏 13 項」，但刻意挑了有利的 benchmark。在寫程式（SWE-Bench）和長文本理解這兩個開發者最在意的場景，Gemini 並沒有明顯優勢。</p>
 <p>跑分贏不代表實際體驗贏。這是 AI 產業的老問題了。</p>
-<h2 id="Claude-Opus-4-6：寫程式還是它最穩"><a href="#Claude-Opus-4-6：寫程式還是它最穩" class="headerlink" title="Claude Opus 4.6：寫程式還是它最穩"></a>Claude Opus 4.6：寫程式還是它最穩</h2><p>Anthropic 沒有大張旗鼓發新模型，但 Claude Opus 4.6 在一個關鍵指標上維持領先——SWE-Bench Verified 拿到 80.8%。</p>
+<h2 id="Claude-Opus-4-6：寫程式還是它最穩">Claude Opus 4.6：寫程式還是它最穩</h2>
+<p>Anthropic 沒有大張旗鼓發新模型，但 Claude Opus 4.6 在一個關鍵指標上維持領先——SWE-Bench Verified 拿到 80.8%。</p>
 <p>SWE-Bench 測的是什麼？給模型一個真實的 GitHub issue，讓它自己讀 codebase、找到問題、寫 patch 修好。這不是玩具 benchmark，是最接近「AI 能不能替你寫 production code」的測試。</p>
 <p>80.8% vs Gemini 的 80.6% vs GPT-5.2 的 80.0%。差距不大，但 Claude 一直穩定在第一。</p>
-<h3 id="開發者為什麼偏好-Claude"><a href="#開發者為什麼偏好-Claude" class="headerlink" title="開發者為什麼偏好 Claude"></a>開發者為什麼偏好 Claude</h3><p>我在幾個開發者社群觀察到的現象：用 Claude 寫程式的人，黏著度最高。原因不只是跑分。</p>
+<h3 id="開發者為什麼偏好-Claude">開發者為什麼偏好 Claude</h3>
+<p>我在幾個開發者社群觀察到的現象：用 Claude 寫程式的人，黏著度最高。原因不只是跑分。</p>
 <p>Claude 的輸出風格比較「工程師友好」——它不會過度解釋、不會加一堆你沒問的東西。回覆結構清晰，程式碼品質穩定。用過一陣子之後，你會發現自己越來越少需要修改它的產出。</p>
 <p>Anthropic 的劣勢在 context 長度和價格。目前 Opus 4.6 的定價在三家中最高，這對 token 消耗量大的應用場景是個問題。</p>
-<h2 id="三家模型該怎麼選"><a href="#三家模型該怎麼選" class="headerlink" title="三家模型該怎麼選"></a>三家模型該怎麼選</h2><p>我整理了一個簡單的決策框架：</p>
+<h2 id="三家模型該怎麼選">三家模型該怎麼選</h2>
+<p>我整理了一個簡單的決策框架：</p>
 <table>
 <thead>
 <tr>
@@ -316,7 +327,8 @@
 <th>原因</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>寫程式、修 bug、code review</td>
 <td>Claude Opus 4.6</td>
 <td>SWE-Bench 最高，開發者體驗最好</td>
@@ -346,12 +358,15 @@
 <td>Gemini 3.1 Pro 或 GPT-5.4</td>
 <td>都支援 1M context</td>
 </tr>
-</tbody></table>
-<h2 id="真正的趨勢：模型不重要，路由才重要"><a href="#真正的趨勢：模型不重要，路由才重要" class="headerlink" title="真正的趨勢：模型不重要，路由才重要"></a>真正的趨勢：模型不重要，路由才重要</h2><p>三月的 AI 格局讓一件事變得很明確：沒有人需要只用一個模型。</p>
+</tbody>
+</table>
+<h2 id="真正的趨勢：模型不重要，路由才重要">真正的趨勢：模型不重要，路由才重要</h2>
+<p>三月的 AI 格局讓一件事變得很明確：沒有人需要只用一個模型。</p>
 <p>Perplexity 推出了「模型議會」功能，讓多個模型同時回答同一個問題，再整合最佳結果。這不是噱頭——當每個模型都有強項和弱項，智慧路由（smart routing）才是真正的基礎設施。</p>
 <p>我認為 2026 下半年會看到更多這類產品：前端是統一的介面，後端根據任務類型自動選模型。寫程式走 Claude，推理走 Gemini，操作電腦走 GPT-5.4。使用者不需要知道背後是誰在跑。</p>
 <p>這對開發者的啟示是：不要把你的產品綁死在單一模型上。設計好抽象層，讓模型切換的成本趨近於零。</p>
-<h2 id="我的判斷"><a href="#我的判斷" class="headerlink" title="我的判斷"></a>我的判斷</h2><p>GPT-5.4 的 Computer Use 是這一輪最有想像空間的功能，但離大規模落地還有一段路。Gemini 3.1 Pro 的性價比會吸引大量中小企業和新創團隊。Claude Opus 4.6 會繼續是工程師的首選寫程式助手。</p>
+<h2 id="我的判斷">我的判斷</h2>
+<p>GPT-5.4 的 Computer Use 是這一輪最有想像空間的功能，但離大規模落地還有一段路。Gemini 3.1 Pro 的性價比會吸引大量中小企業和新創團隊。Claude Opus 4.6 會繼續是工程師的首選寫程式助手。</p>
 <p>三家都沒有拉開絕對差距。對使用者來說，這是好事——競爭越激烈，價格越便宜，功能迭代越快。</p>
 <p>對開發者來說，現在最該投資的不是選哪個模型，而是建好你的模型抽象層和 prompt 管理系統。因為三個月後，這張比較表又會完全不一樣。</p>
 
@@ -413,13 +428,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">388k</span>
+    <span title="總字數">433k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">5:53</span>
+    <span title="所需總閱讀時間">6:33</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

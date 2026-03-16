@@ -29,9 +29,9 @@
 <meta property="article:published_time" content="2026-03-08T19:00:00.000Z">
 <meta property="article:modified_time" content="2026-03-09T01:32:50.590Z">
 <meta property="article:author" content="kyosora">
-<meta property="article:tag" content="Apple">
-<meta property="article:tag" content="Claude Code">
 <meta property="article:tag" content="AI Agent">
+<meta property="article:tag" content="Claude Code">
+<meta property="article:tag" content="Apple">
 <meta property="article:tag" content="Xcode">
 <meta property="article:tag" content="Agentic Coding">
 <meta name="twitter:card" content="summary">
@@ -142,16 +142,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">133</span>
+          <span class="site-state-item-count">147</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">72</span>
+        <span class="site-state-item-count">83</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">217</span>
+        <span class="site-state-item-count">261</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -252,24 +252,28 @@
 <p>因為從這個版本開始，你可以在 Xcode 裡直接使用 AI coding agent。不是那種「自動補完下一行」的小聰明，而是整個 agent 接管你的專案：理解架構、搜文件、改多個檔案、跑 build、看 Preview、發現 UI 有問題還會自己修。</p>
 <p>有人用它兩分鐘內做出一個完整的 Pomodoro 計時器 App——有設定頁面、提醒功能、能跑的 UI。</p>
 <p>兩分鐘。</p>
-<h2 id="這不是-Copilot-的升級版"><a href="#這不是-Copilot-的升級版" class="headerlink" title="這不是 Copilot 的升級版"></a>這不是 Copilot 的升級版</h2><p>先說清楚 agentic coding 跟傳統 AI 輔助寫 code 的差別。</p>
+<h2 id="這不是-Copilot-的升級版">這不是 Copilot 的升級版</h2>
+<p>先說清楚 agentic coding 跟傳統 AI 輔助寫 code 的差別。</p>
 <p>GitHub Copilot 和早期的 AI 工具做的事情是「你寫一行，它猜下一行」。你是主角，AI 是配角。你的游標在哪裡，它就在那裡幫你。</p>
 <p>Agentic coding 完全不同。你給 agent 一個目標——「幫我做一個 Pomodoro 計時器」——然後它自己拆解任務、決定要改哪些檔案、寫 code、跑 build、看結果、修 bug，一路做到完成或做到需要你決策的地方才停下來。</p>
 <p>你從寫 code 的人，變成審 code 的人。</p>
 <p>Xcode 26.3 支援的 agent 有兩個：Anthropic 的 Claude Agent 和 OpenAI 的 Codex。安裝過程簡單到令人起疑——在 Xcode 的 Intelligence 設定裡點一下就好。</p>
-<h2 id="Claude-Agent-SDK：背後的技術架構"><a href="#Claude-Agent-SDK：背後的技術架構" class="headerlink" title="Claude Agent SDK：背後的技術架構"></a>Claude Agent SDK：背後的技術架構</h2><p>Apple 選擇整合的不是隨便哪個 API，而是 Claude Agent SDK——跟 Claude Code 背後同一套引擎。</p>
+<h2 id="Claude-Agent-SDK：背後的技術架構">Claude Agent SDK：背後的技術架構</h2>
+<p>Apple 選擇整合的不是隨便哪個 API，而是 Claude Agent SDK——跟 Claude Code 背後同一套引擎。</p>
 <p>這代表開發者在 Xcode 裡拿到的 agent，跟命令列裡用 Claude Code 的能力是同等級的：</p>
 <p><strong>全專案理解能力。</strong> Claude 不只看你打開的那個檔案。它能掃描整個專案結構，理解 SwiftUI、UIKit、Swift Data 之間的關係，然後決定改動需要發生在哪裡。寫過大型 iOS 專案的人都知道，光是「知道該改哪個檔案」這件事，有時候就要花半小時。</p>
 <p><strong>視覺驗證。</strong> 這是我認為最關鍵的功能。Claude 能截取 Xcode Previews 的畫面，用眼睛（好吧，用模型）看 UI 長什麼樣子，發現問題後自己修。這不是讀 code 猜 UI，是真的看到渲染結果。對 SwiftUI 開發來說，這解決了一個長期問題——AI 寫出的 code 語法正確但畫面歪掉。</p>
 <p><strong>文件搜索。</strong> Agent 遇到不熟的 framework API，會自己去查 Apple 官方文件。不是亂猜一個 function name，是真的去查。</p>
 <p><strong>MCP 協議開放。</strong> Xcode 26.3 透過 Model Context Protocol（MCP）開放了它的能力。什麼意思？就算你不用 Xcode 內建的 agent 介面，用 Claude Code 命令列也能存取 Xcode Previews 和其他功能。Apple 罕見地選擇了開放標準，而不是鎖死在自家生態裡。</p>
-<h2 id="實際體驗：很快，但不完美"><a href="#實際體驗：很快，但不完美" class="headerlink" title="實際體驗：很快，但不完美"></a>實際體驗：很快，但不完美</h2><p>AppleInsider 的實測報告給了一個很真實的評價：astoundingly fast, smart, and too convenient。</p>
+<h2 id="實際體驗：很快，但不完美">實際體驗：很快，但不完美</h2>
+<p>AppleInsider 的實測報告給了一個很真實的評價：astoundingly fast, smart, and too convenient。</p>
 <p>快是真的快。兩分鐘蓋出一個有模有樣的 App，這在以前要花一個下午。對初學者來說，這幾乎消除了「會不會寫 code」的門檻——你只要會描述你想要什麼。</p>
 <p>但問題也很明顯：</p>
 <p><strong>邏輯迴圈。</strong> Agent 偶爾會陷入重複犯同一個錯誤的循環。它改了一個 bug，引入另一個 bug，修那個 bug 又回到第一個。需要人介入打斷，給它新的方向。</p>
 <p><strong>成品偏簡單。</strong> 兩分鐘做出來的 App 能跑，但離「上架品質」還有距離。把它當快速原型工具比較合理，期待它一步到位會失望。</p>
 <p><strong>App Store 品質隱憂。</strong> 這是整個產業要面對的問題。當做一個 App 的門檻降到兩分鐘，App Store 會不會被大量品質參差不齊的產品淹沒？Apple 的 App Review 團隊可能要加班了。</p>
-<h2 id="2026-年的-AI-寫-code-現況"><a href="#2026-年的-AI-寫-code-現況" class="headerlink" title="2026 年的 AI 寫 code 現況"></a>2026 年的 AI 寫 code 現況</h2><p>把 Xcode 26.3 放在更大的脈絡裡看，整個產業正在經歷一個質變。</p>
+<h2 id="2026-年的-AI-寫-code-現況">2026 年的 AI 寫 code 現況</h2>
+<p>把 Xcode 26.3 放在更大的脈絡裡看，整個產業正在經歷一個質變。</p>
 <p>根據最新數據，85% 的開發者日常使用 AI 工具寫 code。46% 的程式碼由 AI 產生。每天有 2,000 萬開發者使用 AI coding assistant。Anthropic 的 Claude 4.5 Sonnet 能連續自主寫 code 超過 30 小時不嚴重退化。</p>
 <p>主要玩家的定位也越來越清晰：</p>
 <table>
@@ -280,7 +284,8 @@
 <th>適合誰</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><strong>Cursor</strong></td>
 <td>日常開發的速度和流暢度</td>
 <td>重視開發體驗的工程師</td>
@@ -305,18 +310,22 @@
 <td>模型選擇彈性</td>
 <td>在意成本和隱私的開發者</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>開發者選工具的標準也在轉變。一年前大家比的是「哪個 AI 寫 code 最準」，現在比的是 token 效率、隱私保護、專案理解深度。能力夠用之後，成本和體驗才是決勝點。</p>
-<h2 id="Apple-的策略轉向"><a href="#Apple-的策略轉向" class="headerlink" title="Apple 的策略轉向"></a>Apple 的策略轉向</h2><p>值得注意的是 Apple 在這件事上的態度轉變。</p>
+<h2 id="Apple-的策略轉向">Apple 的策略轉向</h2>
+<p>值得注意的是 Apple 在這件事上的態度轉變。</p>
 <p>過去 Apple 對 AI 的態度是「我們自己來」。Siri 用自家模型，開發者工具也是封閉生態。但 Xcode 26.3 同時支援 Anthropic 和 OpenAI 的 agent，還用了開放的 MCP 協議。</p>
 <p>這跟上個月 Siri 接入 Google Gemini 的策略一致。Apple 似乎已經接受一個現實：AI 模型不是自己的強項，但平台整合和使用者體驗才是。與其硬拚模型能力，不如讓最好的模型在自己的平台上發揮。</p>
 <p>對開發者來說，這是好消息。你不會被鎖在某一個 AI 供應商上，MCP 協議保證了未來可以換用其他 agent。</p>
-<h2 id="對台灣-iOS-開發者的實際影響"><a href="#對台灣-iOS-開發者的實際影響" class="headerlink" title="對台灣 iOS 開發者的實際影響"></a>對台灣 iOS 開發者的實際影響</h2><p>說點實際的。</p>
+<h2 id="對台灣-iOS-開發者的實際影響">對台灣 iOS 開發者的實際影響</h2>
+<p>說點實際的。</p>
 <p><strong>學習曲線要重新定義。</strong> 如果你是剛入行的 iOS 開發者，學 SwiftUI 的方式可能要改了。不是「先學語法再學框架」，而是「先用 agent 做出東西，再理解它為什麼這樣寫」。top-down 取代 bottom-up。</p>
 <p><strong>原型開發速度飛升。</strong> 接案的朋友，客戶說「你先做個 demo 看看」的時候，你可以當場花五分鐘生一個能跑的原型。這改變了報價和溝通的方式。</p>
 <p><strong>Code review 變得更重要。</strong> 當 AI 寫了大部分 code，人的價值在於判斷這些 code 的品質、安全性、可維護性。Review 能力比 coding 能力更值錢。</p>
 <p><strong>不要恐慌，但要適應。</strong> AI agent 不會取代 iOS 開發者，但會取代「只會照著 Stack Overflow 複製貼上」的開發者。理解架構、做設計決策、處理邊界情況——這些 agent 目前還不擅長的事，就是你的護城河。</p>
-<h2 id="我的判斷"><a href="#我的判斷" class="headerlink" title="我的判斷"></a>我的判斷</h2><p>Xcode 26.3 的 agentic coding 功能目前像是 80 分的產品。快速原型和學習用途已經很好用，但要在生產環境中完全依賴它還太早。</p>
+<h2 id="我的判斷">我的判斷</h2>
+<p>Xcode 26.3 的 agentic coding 功能目前像是 80 分的產品。快速原型和學習用途已經很好用，但要在生產環境中完全依賴它還太早。</p>
 <p>我認為合理的使用方式是：讓 agent 處理 boilerplate 和初始架構，人來做設計決策和品質把關。這不是「AI 取代人」的故事，是「人的工作內容改變」的故事。</p>
 <p>下一步值得關注的是：Apple 會不會在 WWDC 2026 上正式主推 agentic coding？如果是，SwiftUI 的 API 設計可能會開始針對 AI agent 做最佳化——更一致的命名、更可預測的行為模式。到那時候，整個 iOS 開發生態會再變一次。</p>
 <p>Xcode 26.3 已經可以在 Apple Developer Program 下載了。我的建議：現在就裝起來試試。不管你最後用不用 agent 寫 code，至少要知道它能做到什麼程度。</p>
@@ -330,9 +339,9 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Apple/" rel="tag"># Apple</a>
-              <a href="/tags/Claude-Code/" rel="tag"># Claude Code</a>
               <a href="/tags/AI-Agent/" rel="tag"># AI Agent</a>
+              <a href="/tags/Claude-Code/" rel="tag"># Claude Code</a>
+              <a href="/tags/Apple/" rel="tag"># Apple</a>
               <a href="/tags/Xcode/" rel="tag"># Xcode</a>
               <a href="/tags/Agentic-Coding/" rel="tag"># Agentic Coding</a>
           </div>
@@ -380,13 +389,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">388k</span>
+    <span title="總字數">433k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">5:53</span>
+    <span title="所需總閱讀時間">6:33</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

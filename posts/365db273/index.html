@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="老闆走過來說：「我看到競爭對手在用 AI Agent 自動處理客服了，我們也來做一個。」  你心裡的 OS 大概是：用哪個框架？LangChain？AutoGen？還是最近爆紅的 OpenClaw？明天 NVIDIA GTC 又要發布 NemoClaw，這局面到底怎麼選？  我花了一整晚研究目前的 AI Agent 框架生態，把我的觀察整理成這篇。不賣焦慮，只講開發者真正需要思考的問題。  數字先">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI Agent 框架大亂鬥：NemoClaw、OpenClaw 和開發者的真實選擇">
+<meta property="og:url" content="https://kyosora.github.io/posts/365db273/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="老闆走過來說：「我看到競爭對手在用 AI Agent 自動處理客服了，我們也來做一個。」  你心裡的 OS 大概是：用哪個框架？LangChain？AutoGen？還是最近爆紅的 OpenClaw？明天 NVIDIA GTC 又要發布 NemoClaw，這局面到底怎麼選？  我花了一整晚研究目前的 AI Agent 框架生態，把我的觀察整理成這篇。不賣焦慮，只講開發者真正需要思考的問題。  數字先">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2026-03-14T19:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-14T19:03:18.849Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="AI Agent">
+<meta property="article:tag" content="NemoClaw">
+<meta property="article:tag" content="OpenClaw">
+<meta property="article:tag" content="GTC 2026">
+<meta property="article:tag" content="框架選型">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/365db273/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/365db273/","path":"posts/365db273/","title":"AI Agent 框架大亂鬥：NemoClaw、OpenClaw 和開發者的真實選擇"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>AI Agent 框架大亂鬥：NemoClaw、OpenClaw 和開發者的真實選擇 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B8%E5%AD%97%E5%85%88%E7%9C%8B%EF%BC%9A%E9%80%99%E4%B8%8D%E6%98%AF-hype%EF%BC%8C%E4%BD%86%E4%B9%9F%E4%B8%8D%E5%85%A8%E6%98%AF%E7%9C%9F%E7%9A%84"><span class="nav-number">1.</span> <span class="nav-text">數字先看：這不是 hype，但也不全是真的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E5%A4%A7%E5%8B%A2%E5%8A%9B%EF%BC%9A%E4%BD%A0%E5%BE%97%E7%9F%A5%E9%81%93%E7%9A%84%E6%A1%86%E6%9E%B6%E6%A0%BC%E5%B1%80"><span class="nav-number">2.</span> <span class="nav-text">三大勢力：你得知道的框架格局</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenClaw%EF%BC%9A%E7%A4%BE%E7%BE%A4%E7%88%86%E7%99%BC%E5%8A%9B"><span class="nav-number">2.1.</span> <span class="nav-text">OpenClaw：社群爆發力</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NemoClaw%EF%BC%9ANVIDIA-%E7%9A%84%E4%BC%81%E6%A5%AD%E7%89%8C"><span class="nav-number">2.2.</span> <span class="nav-text">NemoClaw：NVIDIA 的企業牌</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LangChain-AutoGen-CrewAI%EF%BC%9A%E8%80%81%E5%85%B5%E9%82%84%E5%9C%A8"><span class="nav-number">2.3.</span> <span class="nav-text">LangChain &#x2F; AutoGen &#x2F; CrewAI：老兵還在</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%81%B8%E5%9E%8B%E6%B1%BA%E7%AD%96%E6%A8%B9%EF%BC%9A%E7%9B%B4%E6%8E%A5%E6%8B%BF%E5%8E%BB%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">選型決策樹：直接拿去用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A5%E7%8A%AF%E7%9A%84%E4%B8%89%E5%80%8B%E9%8C%AF"><span class="nav-number">4.</span> <span class="nav-text">別犯的三個錯</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%94%A8-Agent-%E8%A7%A3%E6%B1%BA%E4%B8%8D%E9%9C%80%E8%A6%81-Agent-%E7%9A%84%E5%95%8F%E9%A1%8C"><span class="nav-number">4.1.</span> <span class="nav-text">1. 用 Agent 解決不需要 Agent 的問題</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%BF%BD%E7%95%A5%E5%8F%AF%E8%A7%80%E6%B8%AC%E6%80%A7"><span class="nav-number">4.2.</span> <span class="nav-text">2. 忽略可觀測性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%8A%8A-Agent-%E7%95%B6%E9%BB%91%E7%9B%92%E5%AD%90%E9%83%A8%E7%BD%B2"><span class="nav-number">4.3.</span> <span class="nav-text">3. 把 Agent 當黑盒子部署</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%A6%E4%B8%8D%E5%90%8C%E8%A7%92%E8%89%B2%E7%9A%84%E5%BB%BA%E8%AD%B0"><span class="nav-number">5.</span> <span class="nav-text">給不同角色的建議</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GTC-%E4%B9%8B%E5%BE%8C%E5%86%8D%E8%81%8A"><span class="nav-number">6.</span> <span class="nav-text">GTC 之後再聊</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">147</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">261</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/365db273/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="AI Agent 框架大亂鬥：NemoClaw、OpenClaw 和開發者的真實選擇 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AI Agent 框架大亂鬥：NemoClaw、OpenClaw 和開發者的真實選擇
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2026-03-15 03:00:00 / 修改時間：03:03:18" itemprop="dateCreated datePublished" datetime="2026-03-15T03:00:00+08:00">2026-03-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/%E9%96%8B%E7%99%BC%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">開發工具</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>3.3k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>3 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>老闆走過來說：「我看到競爭對手在用 AI Agent 自動處理客服了，我們也來做一個。」</p>
+<p>你心裡的 OS 大概是：用哪個框架？LangChain？AutoGen？還是最近爆紅的 OpenClaw？明天 NVIDIA GTC 又要發布 NemoClaw，這局面到底怎麼選？</p>
+<p>我花了一整晚研究目前的 AI Agent 框架生態，把我的觀察整理成這篇。不賣焦慮，只講開發者真正需要思考的問題。</p>
+<h2 id="數字先看：這不是-hype，但也不全是真的">數字先看：這不是 hype，但也不全是真的</h2>
+<p>Gartner 和 Forrester 都把 2026 年標記為「多代理系統的突破年」。幾個關鍵數據：</p>
+<ul>
+<li><strong>57%</strong> 的企業已經有 AI Agent 在生產環境跑了（G2 調查）</li>
+<li><strong>40%</strong> 的企業應用預計會嵌入特定任務的 AI Agent</li>
+<li><strong>80%</strong> 的受訪者表示 AI Agent 已經產生可衡量的經濟影響</li>
+<li>全球 Agentic AI 市場規模從 2026 年的 91.4 億美元，預計 2034 年達到 1,390 億美元</li>
+</ul>
+<p>但 Gartner 同時預測：<strong>超過 40% 的 Agent 專案會在 2027 年前失敗。</strong></p>
+<p>這個數字組合很有意思。多數企業在做，多數企業說有效，但接近一半會失敗。問題出在哪？</p>
+<p><strong>整合。</strong> 46% 的受訪者把「與現有系統整合」列為最大挑戰。不是模型不夠聰明，不是框架不夠好，是你公司那套 2018 年的 ERP 和 Agent 講不上話。</p>
+<h2 id="三大勢力：你得知道的框架格局">三大勢力：你得知道的框架格局</h2>
+<h3 id="OpenClaw：社群爆發力">OpenClaw：社群爆發力</h3>
+<p>60 天內從零到 188,000 GitHub Stars。這是 GitHub 史上最快的成長速度。</p>
+<p>OpenClaw 做的事很直白：一個開源的個人 AI 助手，跑在你自己的硬體上，接 WhatsApp、Telegram、Slack、Discord、Signal、iMessage、Teams 七個平台。它的 agent protocol 開放，任何人都能寫插件。</p>
+<p>吸引力在哪？<strong>你擁有自己的資料。</strong> 不用把對話紀錄送到別人的伺服器。對個人開發者和小團隊來說，這是殺手級賣點。</p>
+<p>但 OpenClaw 的定位偏個人助手。你要拿它做企業級的客服系統或工單自動化，就得自己搭建很多基礎設施：權限管理、audit log、合規、多租戶隔離。這些東西不性感，但企業少不了。</p>
+<h3 id="NemoClaw：NVIDIA-的企業牌">NemoClaw：NVIDIA 的企業牌</h3>
+<p>明天（3/16）Jensen Huang 在 GTC 主題演講上會正式發布 NemoClaw。根據目前洩漏的資訊：</p>
+<ul>
+<li>開源，但深度整合 NVIDIA NeMo 和 NIM 生態</li>
+<li>內建安全和隱私層，直接解決「rogue AI agent」的企業疑慮</li>
+<li>硬體無關——不限 NVIDIA GPU（至少他們這麼說）</li>
+<li>已經在跟 Salesforce、Cisco、Google、Adobe、CrowdStrike 談合作</li>
+</ul>
+<p>NVIDIA 的策略很清楚：用 NemoClaw 卡住企業 AI Agent 的標準層。你用開源的 NemoClaw 不用錢，但當你需要推理加速、需要大規模部署時，NVIDIA 的 GPU 和 NIM 推理引擎就在那裡等你。</p>
+<p>跟 OpenClaw 的差異在目標客群。OpenClaw 給 hacker 用，NemoClaw 給 CTO 用。</p>
+<h3 id="LangChain-AutoGen-CrewAI：老兵還在">LangChain / AutoGen / CrewAI：老兵還在</h3>
+<p>這些框架沒有消失，但定位在改變。</p>
+<p>LangChain 從「什麼都做」收斂到 LangGraph（有向圖工作流），變得更像是 Agent 的編排層。AutoGen 走多 Agent 對話的路線，CrewAI 強調角色化 Agent 協作。</p>
+<p>對開發者來說，這些框架的優勢是<strong>成熟度</strong>。文件完整、社群活躍、Stack Overflow 上問得到答案。NemoClaw 明天才發布，你今天就要交付的專案，選 LangGraph 風險低很多。</p>
+<h2 id="選型決策樹：直接拿去用">選型決策樹：直接拿去用</h2>
+<p>我整理了一個決策流程，不用想太多：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">你的場景是什麼？</span><br><span class="line">│</span><br><span class="line">├─ 個人專案 / Side Project</span><br><span class="line">│  → OpenClaw</span><br><span class="line">│  → 理由：部署簡單、社群大、插件多、資料在自己手上</span><br><span class="line">│</span><br><span class="line">├─ 企業內部工具（&lt;100 使用者）</span><br><span class="line">│  → LangGraph + 你熟悉的 LLM API</span><br><span class="line">│  → 理由：成熟穩定、文件完整、可控性高</span><br><span class="line">│</span><br><span class="line">├─ 企業產品功能（面向客戶）</span><br><span class="line">│  → 等 NemoClaw 正式版出來再評估</span><br><span class="line">│  → 短期用 LangGraph 或 AutoGen 先做 MVP</span><br><span class="line">│  → 理由：企業客戶在意安全、合規、SLA，NemoClaw 直接內建</span><br><span class="line">│</span><br><span class="line">├─ 多 Agent 協作（研究性質）</span><br><span class="line">│  → AutoGen 或 CrewAI</span><br><span class="line">│  → 理由：多 Agent 對話的 API 設計最成熟</span><br><span class="line">│</span><br><span class="line">└─ 不確定</span><br><span class="line">   → 先用 LangGraph 做 PoC</span><br><span class="line">   → 不要在框架選型上花超過一天</span><br></pre></td></tr></table></figure>
+<h2 id="別犯的三個錯">別犯的三個錯</h2>
+<h3 id="1-用-Agent-解決不需要-Agent-的問題">1. 用 Agent 解決不需要 Agent 的問題</h3>
+<p>Agent 的核心價值是「自主決策 + 多步驟執行」。如果你的任務是「讀一段文字然後分類」，一個 API call 就夠了。不需要 Agent。</p>
+<p>我看到太多團隊把簡單的 prompt engineering 問題包裝成 Agent 專案，然後花三個月搞框架整合。最後發現一個寫得好的 system prompt 加一個 API call 就解決了。</p>
+<p>判斷標準很簡單：<strong>你的任務需要 Agent 自己決定下一步做什麼嗎？</strong> 需要 → 用 Agent。不需要 → 用 API call。</p>
+<h3 id="2-忽略可觀測性">2. 忽略可觀測性</h3>
+<p>Agent 跟傳統 API 最大的差異是不確定性。同樣的輸入，Agent 可能走完全不同的執行路徑。</p>
+<p>你必須從 Day 1 就建立：</p>
+<ul>
+<li>每一步決策的 trace log</li>
+<li>token 用量追蹤（帳單會嚇死你）</li>
+<li>失敗路徑的告警</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 不要這樣</span></span><br><span class="line">result = agent.run(user_input)</span><br><span class="line"><span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"><span class="comment"># 要這樣</span></span><br><span class="line"><span class="keyword">with</span> trace_span(<span class="string">&quot;agent_execution&quot;</span>, user_id=user.<span class="built_in">id</span>) <span class="keyword">as</span> span:</span><br><span class="line">    result = agent.run(user_input)</span><br><span class="line">    span.set_attribute(<span class="string">&quot;steps_taken&quot;</span>, result.step_count)</span><br><span class="line">    span.set_attribute(<span class="string">&quot;tokens_used&quot;</span>, result.total_tokens)</span><br><span class="line">    span.set_attribute(<span class="string">&quot;tools_called&quot;</span>, result.tool_names)</span><br><span class="line">    <span class="keyword">if</span> result.fallback_triggered:</span><br><span class="line">        alert(<span class="string">&quot;agent_fallback&quot;</span>, context=span.trace_id)</span><br><span class="line">    <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure>
+<h3 id="3-把-Agent-當黑盒子部署">3. 把 Agent 當黑盒子部署</h3>
+<p>「反正 AI 會自己想辦法」——這句話在 demo 可以說，在生產環境是災難。</p>
+<p>每個 Agent 都需要：</p>
+<ul>
+<li><strong>明確的行動邊界</strong>：它能做什麼、不能做什麼</li>
+<li><strong>人類介入點</strong>：什麼情況下停下來問人</li>
+<li><strong>回滾機制</strong>：做錯了怎麼復原</li>
+</ul>
+<p>OpenClaw 在這方面做得不錯，每個動作都有明確的權限控制。NemoClaw 號稱內建安全層，但實際效果要等正式發布才知道。</p>
+<h2 id="給不同角色的建議">給不同角色的建議</h2>
+<p><strong>後端工程師</strong>：先把 LangGraph 的 StateGraph 概念搞懂。不管最後選哪個框架，有向圖 + 狀態管理的思維模式是共通的。花一個下午做個 todo list agent 的 demo，感受一下 Agent 的執行流程。</p>
+<p><strong>前端工程師</strong>：Agent 的 UI 跟傳統 CRUD 完全不同。你需要處理串流回應、多步驟進度展示、中斷與恢復。看看 Vercel 的 AI SDK 怎麼處理這些問題，那是目前最好的參考。</p>
+<p><strong>技術主管</strong>：不要讓團隊花超過兩週在框架選型上。選一個夠用的（LangGraph 是安全牌），做出 MVP，拿真實使用者回饋。框架可以換，使用者洞察換不了。</p>
+<p><strong>獨立開發者</strong>：直接用 OpenClaw。裝好就能用，社群活躍到你發 issue 十分鐘內有人回。等你真的需要企業功能時，再考慮遷移。</p>
+<h2 id="GTC-之後再聊">GTC 之後再聊</h2>
+<p>明天 Jensen 的主題演講會揭曉 NemoClaw 的完整面貌。除了 Agent 平台，Rubin 架構的 GPU（288 GB HBM4、22 TB/s 頻寬、推理吞吐量是 Blackwell 的 5 倍）和 Groq 推理晶片也值得關注——這些硬體直接決定 Agent 的推理成本能降到多低。</p>
+<p>但對多數開發者來說，硬體是後面的事。現在最重要的是：<strong>搞清楚你的問題是不是真的需要 Agent 來解決。</strong> 如果答案是 yes，選一個框架，開始做。選錯了可以換，不開始做才是最大的風險。</p>
+<p>我會在 GTC 主題演講後寫一篇 NemoClaw 的實際技術分析。到時候見。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI-Agent/" rel="tag"># AI Agent</a>
+              <a href="/tags/NemoClaw/" rel="tag"># NemoClaw</a>
+              <a href="/tags/OpenClaw/" rel="tag"># OpenClaw</a>
+              <a href="/tags/GTC-2026/" rel="tag"># GTC 2026</a>
+              <a href="/tags/%E6%A1%86%E6%9E%B6%E9%81%B8%E5%9E%8B/" rel="tag"># 框架選型</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/7e720bb2/" rel="prev" title="GTC 2026 前夕：Vera Rubin 架構與 NemoClaw 將如何改變 AI 開發者的日常">
+                  <i class="fa fa-angle-left"></i> GTC 2026 前夕：Vera Rubin 架構與 NemoClaw 將如何改變 AI 開發者的日常
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/e8a58ea9/" rel="next" title="你的 AI 模型不需要永遠在思考：Phi-4-reasoning-vision 的思考開關機制拆解">
+                  你的 AI 模型不需要永遠在思考：Phi-4-reasoning-vision 的思考開關機制拆解 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">433k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">6:33</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>
