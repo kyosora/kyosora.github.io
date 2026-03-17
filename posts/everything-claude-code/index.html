@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
   <link rel="mask-icon" href="/images/logo.svg" color="#222">
-  <meta name="google-site-verification" content="AZSujvHIBvMeKz5Az3OKYWkcLKd3aai7LmqIOnVq8bo">
+  <meta name="google-site-verification" content="GOinl_lrNWB9APjfgt6dbVdgki38olFzWmFDv3Yh1y8">
 
 <link rel="stylesheet" href="/css/main.css">
 
@@ -250,15 +250,12 @@
     
     
     <div class="post-body" itemprop="articleBody"><p>每次開一個新專案，你是不是都得跟 Claude Code 說一遍一樣的事：</p>
-<p>「我們用 TypeScript，記得寫型別。」<br>
-「代碼審查要檢查 SQL Injection。」<br>
-「commit 訊息要用 conventional commits 格式。」</p>
+<p>「我們用 TypeScript，記得寫型別。」<br>「代碼審查要檢查 SQL Injection。」<br>「commit 訊息要用 conventional commits 格式。」</p>
 <p>說完這次，下次還得再說一遍。</p>
 <p><a target="_blank" rel="noopener" href="https://github.com/affaan-m/everything-claude-code">everything-claude-code</a> 要解決的就是這件事——讓 Claude Code 一次就記住你的整套開發規範，不用每個專案都重頭來過。</p>
 <p>這個 repo 有 <strong>51k Stars、6.4k Forks</strong>，是一個 Anthropic Hackathon 冠軍用<strong>超過 10 個月</strong>的實際開發產品經驗打磨出來的配置集合。不是某人週末隨手整理的筆記，是真的拿去建產品跑過的。</p>
 <hr>
-<h2 id="這到底是什麼？">這到底是什麼？</h2>
-<p>簡單講：<strong>一個完整的 Claude Code 腦袋移植包</strong>。</p>
+<h2 id="這到底是什麼？"><a href="#這到底是什麼？" class="headerlink" title="這到底是什麼？"></a>這到底是什麼？</h2><p>簡單講：<strong>一個完整的 Claude Code 腦袋移植包</strong>。</p>
 <p>它包含：</p>
 <ul>
 <li><strong>13 個專業 subagent</strong>，各自負責不同工作（規劃、TDD、代碼審查、安全掃描……）</li>
@@ -269,13 +266,10 @@
 </ul>
 <p>裝完之後，你不再是在「用 Claude Code」，比較像是招募了一整個具備規範意識的開發小組。</p>
 <hr>
-<h2 id="為什麼會有這個東西？">為什麼會有這個東西？</h2>
-<p>作者 <a target="_blank" rel="noopener" href="https://github.com/affaan-m">Affaan</a> 在 2025 年 9 月的 Anthropic x Forum Ventures Hackathon 拿了冠軍，整個 <a target="_blank" rel="noopener" href="https://zenith.chat">zenith.chat</a> 就是用 Claude Code 建起來的。</p>
+<h2 id="為什麼會有這個東西？"><a href="#為什麼會有這個東西？" class="headerlink" title="為什麼會有這個東西？"></a>為什麼會有這個東西？</h2><p>作者 <a target="_blank" rel="noopener" href="https://github.com/affaan-m">Affaan</a> 在 2025 年 9 月的 Anthropic x Forum Ventures Hackathon 拿了冠軍，整個 <a target="_blank" rel="noopener" href="https://zenith.chat/">zenith.chat</a> 就是用 Claude Code 建起來的。</p>
 <p>10 個月裡，他把每次踩過的坑、每個反復用到的流程、每套有效的規範，全部整理進這個 repo。你現在裝下來用的，是他交完學費之後剩下的精華。</p>
 <hr>
-<h2 id="三層架構：Agents、Skills、Rules">三層架構：Agents、Skills、Rules</h2>
-<h3 id="Agents：讓對的-AI-做對的事">Agents：讓對的 AI 做對的事</h3>
-<p>當你要規劃功能，<code>/plan</code> 會呼叫 <strong>planner agent</strong>，它的工作就是識別依賴、拆解風險、列出分階段步驟——專注在規劃這件事上，不會一邊規劃一邊開始寫代碼。</p>
+<h2 id="三層架構：Agents、Skills、Rules"><a href="#三層架構：Agents、Skills、Rules" class="headerlink" title="三層架構：Agents、Skills、Rules"></a>三層架構：Agents、Skills、Rules</h2><h3 id="Agents：讓對的-AI-做對的事"><a href="#Agents：讓對的-AI-做對的事" class="headerlink" title="Agents：讓對的 AI 做對的事"></a>Agents：讓對的 AI 做對的事</h3><p>當你要規劃功能，<code>/plan</code> 會呼叫 <strong>planner agent</strong>，它的工作就是識別依賴、拆解風險、列出分階段步驟——專注在規劃這件事上，不會一邊規劃一邊開始寫代碼。</p>
 <p>當你要做代碼審查，<code>/code-review</code> 呼叫 <strong>code-reviewer agent</strong>，它知道要看什麼、怎麼評分、哪些問題是 critical、哪些是 medium。</p>
 <table>
 <thead>
@@ -284,8 +278,7 @@
 <th>負責什麼</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>planner</td>
 <td>功能規劃與依賴分析</td>
 </tr>
@@ -317,11 +310,9 @@
 <td>python-reviewer</td>
 <td>Python 代碼專項審查</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>這些 agent 不是在搶同一個任務做，是分工的。多個 agent 可以並行跑，後端 API、前端組件、測試代碼同時進行。</p>
-<h3 id="Skills：把最佳實踐打包成可複用的指令">Skills：把最佳實踐打包成可複用的指令</h3>
-<p>Skills 是 workflow 的定義文件。你跑 <code>/tdd</code>，它執行的是一套完整的紅綠燈循環：先寫失敗的測試，再寫讓測試過的代碼，再重構。</p>
+<h3 id="Skills：把最佳實踐打包成可複用的指令"><a href="#Skills：把最佳實踐打包成可複用的指令" class="headerlink" title="Skills：把最佳實踐打包成可複用的指令"></a>Skills：把最佳實踐打包成可複用的指令</h3><p>Skills 是 workflow 的定義文件。你跑 <code>/tdd</code>，它執行的是一套完整的紅綠燈循環：先寫失敗的測試，再寫讓測試過的代碼，再重構。</p>
 <p>語言覆蓋範圍很廣，你用哪個就裝哪個：</p>
 <ul>
 <li><strong>Python</strong>：<code>python-patterns</code>、<code>django-patterns</code>、<code>python-testing</code></li>
@@ -330,56 +321,57 @@
 <li><strong>資料庫</strong>：<code>postgres-patterns</code>、<code>clickhouse-io</code></li>
 <li><strong>後端 API</strong>：<code>backend-patterns</code>、<code>springboot-patterns</code></li>
 </ul>
-<h3 id="Rules：跨-Session-的記憶">Rules：跨 Session 的記憶</h3>
-<p>這是最關鍵的部分，也是大多數人沒在用的部分。</p>
+<h3 id="Rules：跨-Session-的記憶"><a href="#Rules：跨-Session-的記憶" class="headerlink" title="Rules：跨 Session 的記憶"></a>Rules：跨 Session 的記憶</h3><p>這是最關鍵的部分，也是大多數人沒在用的部分。</p>
 <p><code>~/.claude/rules/</code> 目錄下的規則文件，每次啟動 Claude Code 都會載入。你只要寫一次，它就一直記著：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">rules/</span><br><span class="line">├── common/</span><br><span class="line">│   ├── coding-style.md   # 不可變資料結構、函式大小限制</span><br><span class="line">│   ├── git-workflow.md   # commit 格式、PR 流程</span><br><span class="line">│   ├── testing.md        # 80% 覆蓋率、TDD 強制流程</span><br><span class="line">│   └── security.md       # 安全清單、secrets 管理</span><br><span class="line">├── typescript/</span><br><span class="line">│   ├── coding-style.md   # Zod 驗證、async/await 模式</span><br><span class="line">│   └── patterns.md       # Repository pattern、API 回應格式</span><br><span class="line">└── python/</span><br><span class="line">    ├── coding-style.md   # PEP 8、type hints</span><br><span class="line">    └── testing.md        # pytest 結構、fixture 使用</span><br></pre></td></tr></table></figure>
+
 <p>注意：Rules 不能透過 plugin 自動安裝，得手動複製到 <code>~/.claude/rules/</code>。麻煩一次，之後所有專案都受益。</p>
 <hr>
-<h2 id="最讓我覺得值得的功能">最讓我覺得值得的功能</h2>
-<h3 id="Token-花費直接少-60">Token 花費直接少 60%</h3>
-<p>預設設定做了幾件事：</p>
+<h2 id="最讓我覺得值得的功能"><a href="#最讓我覺得值得的功能" class="headerlink" title="最讓我覺得值得的功能"></a>最讓我覺得值得的功能</h2><h3 id="Token-花費直接少-60"><a href="#Token-花費直接少-60" class="headerlink" title="Token 花費直接少 60%"></a>Token 花費直接少 60%</h3><p>預設設定做了幾件事：</p>
 <ul>
 <li>模型預設用 Sonnet（夠用而且便宜）</li>
 <li>思考 token 上限設 10,000（而不是讓它無限跑）</li>
 <li>達到邏輯節點才壓縮 context（不是等到 95% 才動作）</li>
 </ul>
 <p>這些加起來，費用大概少掉 60%。你不是在犧牲能力，是在避免浪費。</p>
-<h3 id="AgentShield：配置本身的安全審計">AgentShield：配置本身的安全審計</h3>
-<p>這個是 Hackathon 上另外建出來的工具。</p>
+<h3 id="AgentShield：配置本身的安全審計"><a href="#AgentShield：配置本身的安全審計" class="headerlink" title="AgentShield：配置本身的安全審計"></a>AgentShield：配置本身的安全審計</h3><p>這個是 Hackathon 上另外建出來的工具。</p>
 <p>你可能不知道，Claude Code 的配置文件本身也有安全問題——不小心在 skill 或 hook 裡暴露了 API key，或者 agent 定義有權限過大的問題。</p>
 <p>AgentShield 用 <strong>912 個測試、98% 覆蓋率、102 條靜態分析規則</strong>掃描你的整套配置，幫你找出這些問題。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 啟動三 agent 紅隊分析（最嚴格模式）</span></span><br><span class="line">agentshield --opus</span><br></pre></td></tr></table></figure>
-<h3 id="Continuous-Learning-v2：讓-AI-學你的習慣">Continuous Learning v2：讓 AI 學你的習慣</h3>
-<p>這個功能的設計邏輯很有意思。</p>
+
+<h3 id="Continuous-Learning-v2：讓-AI-學你的習慣"><a href="#Continuous-Learning-v2：讓-AI-學你的習慣" class="headerlink" title="Continuous Learning v2：讓 AI 學你的習慣"></a>Continuous Learning v2：讓 AI 學你的習慣</h3><p>這個功能的設計邏輯很有意思。</p>
 <p>每次工作 Session，系統會把你反復用到的模式提取出來，存成「instinct」——帶信心分數的學習記錄。用越多，它對你的工作習慣就越了解。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/instinct-status    <span class="comment"># 看目前有哪些已學習的模式</span></span><br><span class="line">/evolve             <span class="comment"># 把累積的 instinct 升級成正式 skill</span></span><br><span class="line">/instinct-export    <span class="comment"># 匯出給隊友用</span></span><br></pre></td></tr></table></figure>
+
 <p>這意味著你用得越久，它對你越有用。不是靜態的配置包，而是會跟著你長大的系統。</p>
 <hr>
-<h2 id="一個典型的工作流">一個典型的工作流</h2>
-<p>剛需求進來，要加一個認證功能：</p>
+<h2 id="一個典型的工作流"><a href="#一個典型的工作流" class="headerlink" title="一個典型的工作流"></a>一個典型的工作流</h2><p>剛需求進來，要加一個認證功能：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/plan <span class="string">&quot;Add JWT authentication to the API&quot;</span></span><br></pre></td></tr></table></figure>
+
 <p>Planner agent 輸出：依賴項目、風險點、分三個 phase 的實作計畫。你確認計畫合理，然後：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/tdd</span><br></pre></td></tr></table></figure>
+
 <p>TDD guide 強制你先寫測試。測試寫好，開始實作。實作完：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/code-review</span><br></pre></td></tr></table></figure>
+
 <p>Code reviewer 給出評分，列出 critical 問題（不解決不能過）和 medium 問題（建議修）。修完：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/security-scan</span><br><span class="line">/e2e</span><br><span class="line">/test-coverage</span><br></pre></td></tr></table></figure>
+
 <p>安全掃描、E2E 跑過、覆蓋率確認超過 80%。然後才是 commit。</p>
 <p>這套流程不是你每次要記得執行，是配置好之後它會提醒你、強制你、自動幫你做。</p>
 <hr>
-<h2 id="安裝方式">安裝方式</h2>
-<p><strong>Plugin 方式（推薦）：</strong></p>
+<h2 id="安裝方式"><a href="#安裝方式" class="headerlink" title="安裝方式"></a>安裝方式</h2><p><strong>Plugin 方式（推薦）：</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/plugin marketplace add affaan-m/everything-claude-code</span><br><span class="line">/plugin install everything-claude-code@everything-claude-code</span><br></pre></td></tr></table></figure>
+
 <p><strong>Rules 還是要手動複製：</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/affaan-m/everything-claude-code</span><br><span class="line"><span class="built_in">cp</span> -r everything-claude-code/rules ~/.claude/rules</span><br></pre></td></tr></table></figure>
+
 <p>需要 Claude Code CLI v2.1.0 以上。</p>
 <hr>
-<h2 id="跟-awesome-claude-code-的差別">跟 awesome-claude-code 的差別</h2>
-<p>這兩個很容易搞混，但定位完全不同：</p>
+<h2 id="跟-awesome-claude-code-的差別"><a href="#跟-awesome-claude-code-的差別" class="headerlink" title="跟 awesome-claude-code 的差別"></a>跟 awesome-claude-code 的差別</h2><p>這兩個很容易搞混，但定位完全不同：</p>
 <ul>
-<li><strong><a target="_blank" rel="noopener" href="https://github.com/hesreallyhim/awesome-claude-code">awesome-claude-code</a></strong>：社群維護的工具清單，收錄各種第三方工具、範本、資源</li>
-<li><strong><a target="_blank" rel="noopener" href="https://github.com/affaan-m/everything-claude-code">everything-claude-code</a></strong>：一個人打磨 10 個月的完整配置包，裝進去直接用</li>
+<li>**<a target="_blank" rel="noopener" href="https://github.com/hesreallyhim/awesome-claude-code">awesome-claude-code</a>**：社群維護的工具清單，收錄各種第三方工具、範本、資源</li>
+<li>**<a target="_blank" rel="noopener" href="https://github.com/affaan-m/everything-claude-code">everything-claude-code</a>**：一個人打磨 10 個月的完整配置包，裝進去直接用</li>
 </ul>
 <p>前者是圖書館，後者是已經整理好的書架。</p>
 <hr>
@@ -461,7 +453,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">6:35</span>
+    <span title="所需總閱讀時間">6:36</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

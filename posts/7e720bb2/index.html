@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
   <link rel="mask-icon" href="/images/logo.svg" color="#222">
-  <meta name="google-site-verification" content="AZSujvHIBvMeKz5Az3OKYWkcLKd3aai7LmqIOnVq8bo">
+  <meta name="google-site-verification" content="GOinl_lrNWB9APjfgt6dbVdgki38olFzWmFDv3Yh1y8">
 
 <link rel="stylesheet" href="/css/main.css">
 
@@ -257,22 +257,19 @@
     
     <div class="post-body" itemprop="articleBody"><p>明天（3/16）Jensen Huang 會站上 SAP Center 的舞台，開始一場兩小時的主題演講。GTC 2026 不只是 NVIDIA 的年度大拜拜——今年的發布內容，可能會直接改變我們未來兩年寫程式的方式。</p>
 <p>我花了幾天研究公開資料，整理出三個對開發者最有感的方向。</p>
-<h2 id="Vera-Rubin：不只是「更快的-GPU」">Vera Rubin：不只是「更快的 GPU」</h2>
-<p>先說數字。Vera Rubin 架構的 GPU 擁有 3,360 億個電晶體，用台積電 3nm 製程，搭配 HBM4 記憶體。推理效能 50 PFLOPS（NVFP4），訓練 35 PFLOPS——分別是 Blackwell 的 5 倍和 3.5 倍。</p>
+<h2 id="Vera-Rubin：不只是「更快的-GPU」"><a href="#Vera-Rubin：不只是「更快的-GPU」" class="headerlink" title="Vera Rubin：不只是「更快的 GPU」"></a>Vera Rubin：不只是「更快的 GPU」</h2><p>先說數字。Vera Rubin 架構的 GPU 擁有 3,360 億個電晶體，用台積電 3nm 製程，搭配 HBM4 記憶體。推理效能 50 PFLOPS（NVFP4），訓練 35 PFLOPS——分別是 Blackwell 的 5 倍和 3.5 倍。</p>
 <p>但真正讓我注意的不是單顆 GPU 的數字，而是 NVL72 機架的規格：72 顆 Rubin GPU + 36 顆 Vera CPU，透過 NVLink 6 連接，每顆 GPU 有 3.6 TB/s 的雙向頻寬，整個機架的 scale-up 頻寬達到 260 TB/s。</p>
 <p>這意味著什麼？</p>
 <p>以前跑大型模型需要跨節點通訊，頻寬瓶頸讓 pipeline parallelism 變成必修課。260 TB/s 的 scale-up 頻寬把 72 顆 GPU 變成一台邏輯上的超級 GPU。對開發者來說，模型並行的複雜度會大幅下降。你不再需要花三週調 tensor parallelism 的切分策略——硬體會幫你把這件事變得透明。</p>
 <p>Vera CPU 也值得一提。88 顆 ARM 核心、1.2 TB/s 的 LPDDR5X 記憶體頻寬。這不是給你跑 web server 的 CPU，而是專門設計來處理 AI 工作負載中 CPU-bound 的部分：資料預處理、tokenization、後處理。以前這些步驟常常變成 GPU pipeline 的瓶頸，Vera CPU 直接整合進機架，等於把 data pipeline 的最後一段短板補上了。</p>
-<h2 id="NemoClaw：NVIDIA-下場做-AI-Agent-平台">NemoClaw：NVIDIA 下場做 AI Agent 平台</h2>
-<p>這是我認為 GTC 2026 對一般開發者影響最大的發布。</p>
+<h2 id="NemoClaw：NVIDIA-下場做-AI-Agent-平台"><a href="#NemoClaw：NVIDIA-下場做-AI-Agent-平台" class="headerlink" title="NemoClaw：NVIDIA 下場做 AI Agent 平台"></a>NemoClaw：NVIDIA 下場做 AI Agent 平台</h2><p>這是我認為 GTC 2026 對一般開發者影響最大的發布。</p>
 <p>NemoClaw 是 NVIDIA 即將推出的開源 AI agent 平台，定位企業級。根據 CNBC 和 The New Stack 的報導，NVIDIA 已經在向 Salesforce、Cisco、Google、Adobe、CrowdStrike 推銷合作。</p>
 <p>幾個關鍵設計決策：</p>
 <p><strong>開源。</strong> 不是 NVIDIA 常見的「開源但只跑在我們硬體上」策略——NemoClaw 是 hardware-agnostic 的。你可以在 A100、H100、甚至非 NVIDIA 的硬體上跑。這很反常，但商業邏輯清楚：NVIDIA 想拿 AI agent 的軟體生態，不只是賣 GPU。</p>
 <p><strong>企業級安全。</strong> 內建權限管理、audit trail、資料隔離。這是目前 LangChain、CrewAI 等社群框架最弱的地方。大企業不會讓一個 pip install 的套件直接存取內部系統——NemoClaw 把合規性做進框架層。</p>
 <p><strong>與 OpenClaw 的互補。</strong> OpenClaw 60 天內從 9,000 顆星衝到 188,000 顆，成為 GitHub 史上成長最快的 repo。它主打個人級 AI 助手，跑在你自己的硬體上。NemoClaw 則是企業版本。兩者的 agent protocol 相容，意味著你在 OpenClaw 上開發的 agent 技能，理論上可以直接移植到企業環境。</p>
 <p>對開發者的實際影響：如果你現在在用 LangChain 或 AutoGen 做 agent 開發，NemoClaw 可能會成為新的重力中心。不是因為它技術上一定更好，而是因為 NVIDIA 的生態位——它同時控制硬體層（GPU）、推理層（TensorRT-LLM）、和現在的 agent 層。垂直整合的力量不容忽視。</p>
-<h2 id="電力危機：AI-的物理天花板">電力危機：AI 的物理天花板</h2>
-<p>Morgan Stanley 上週發了一份報告，標題很聳動：「AI 突破即將到來，大多數人沒準備好。」</p>
+<h2 id="電力危機：AI-的物理天花板"><a href="#電力危機：AI-的物理天花板" class="headerlink" title="電力危機：AI 的物理天花板"></a>電力危機：AI 的物理天花板</h2><p>Morgan Stanley 上週發了一份報告，標題很聳動：「AI 突破即將到來，大多數人沒準備好。」</p>
 <p>聳動歸聳動，裡面的數字很硬。他們的「Intelligence Factory」模型預測，美國到 2028 年會有 9 到 18 GW 的電力缺口——這是目前 AI 基礎設施需求的 12% 到 25%。</p>
 <p>Jensen 自己也有個「五層蛋糕」理論：能源、晶片、基礎設施、模型、應用。五層必須同步成長，任何一層成為瓶頸，整個生態就卡住。目前的瓶頸正在從「晶片不夠」轉向「電力不夠」。</p>
 <p>業界的應對方式很野蠻：把比特幣礦場改成 AI 算力中心、部署天然氣渦輪機、用燃料電池補缺口。有個新的行業術語叫「15-15-15」：15 年的資料中心租約、15% 的收益率、每瓦 $15 的淨價值。</p>
@@ -280,8 +277,7 @@
 <p><strong>推理效率變成核心競爭力。</strong> 當電力成本佔 AI 服務成本的比例越來越高，能用更少的 compute 做同樣的事就是直接省錢。模型量化、推測解碼（speculative decoding）、KV cache 優化——這些以前被視為「進階優化」的技術，會變成每個 AI 工程師的必修課。</p>
 <p><strong>端側推理會加速。</strong> Qwen 3.5 Small 系列（0.8B-9B 參數）已經能在手機和筆電上跑，9B 版本打贏 13 倍大的模型。當雲端算力受限於電力供給，把推理搬到端側就不只是「nice to have」，而是商業必需。Apple Intelligence、高通的 AI PC——這些「行銷口號」背後有很實際的電力經濟學在推動。</p>
 <p><strong>edge-cloud 混合架構會成為主流。</strong> 輕量推理在端側做，複雜推理丟回雲端。這不是新概念，但電力危機會加速採用時程。做後端的工程師，準備好設計 inference routing 的邏輯——根據模型大小、延遲需求、成本，動態決定在哪裡跑推理。</p>
-<h2 id="GTC-明天開幕，然後呢？">GTC 明天開幕，然後呢？</h2>
-<p>三件我會盯的事：</p>
+<h2 id="GTC-明天開幕，然後呢？"><a href="#GTC-明天開幕，然後呢？" class="headerlink" title="GTC 明天開幕，然後呢？"></a>GTC 明天開幕，然後呢？</h2><p>三件我會盯的事：</p>
 <p><strong>Vera Rubin 量產時程。</strong> CES 說 Q3 2026，但實際供貨量才是關鍵。如果產能受限，GPU 荒可能再來一輪。</p>
 <p><strong>NemoClaw 的 SDK 和文件品質。</strong> 開源不等於好用。NVIDIA 的軟體一向兩極——CUDA 很強，但 Triton Inference Server 的文件讓人想砸螢幕。NemoClaw 如果文件做得好，社群會快速起飛；做不好，就會變成另一個只存在於簡報裡的 demo。</p>
 <p><strong>Jensen 對 AI agent 安全性的態度。</strong> Anthropic 剛因為拒絕讓 AI 做武器被五角大廈列入黑名單。NemoClaw 作為企業 AI agent 平台，NVIDIA 怎麼處理「agent 做了不該做的事」這個問題？GTC 上有一場 Jensen 主持的 panel（3/18），嘉賓包括 Cursor CEO 和 Mira Murati（Thinking Machines Lab），主題是「開源 vs 閉源 AI」——AI agent 的治理問題大概率會被提到。</p>
@@ -362,7 +358,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">6:35</span>
+    <span title="所需總閱讀時間">6:36</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

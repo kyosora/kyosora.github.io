@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
   <link rel="mask-icon" href="/images/logo.svg" color="#222">
-  <meta name="google-site-verification" content="AZSujvHIBvMeKz5Az3OKYWkcLKd3aai7LmqIOnVq8bo">
+  <meta name="google-site-verification" content="GOinl_lrNWB9APjfgt6dbVdgki38olFzWmFDv3Yh1y8">
 
 <link rel="stylesheet" href="/css/main.css">
 
@@ -252,36 +252,30 @@
     <div class="post-body" itemprop="articleBody"><p>3 月 16 日晚上，兩件事同時發生。</p>
 <p>Jensen Huang 在 GTC 主題演講上揭曉 Groq 3 LPU，宣稱每瓦 tokens 效能提升 35 倍。幾個小時後，Sam Altman 在 X 上發文：GPT-5.2 到 5.4，三個月內效率提升 32 倍，每個任務成本降到 37 美分。</p>
 <p>兩家公司，一硬一軟，同一天給出幾乎相同的數字。這不是巧合。</p>
-<h2 id="硬體端：Groq-3-LPU-到底是什麼">硬體端：Groq 3 LPU 到底是什麼</h2>
-<p>NVIDIA 在 2025 年底花 200 億美元買下 Groq 的核心團隊和技術。GTC 上第一次展示成果：Groq 3 LPU（Language Processing Unit），專門為推理設計的晶片。</p>
+<h2 id="硬體端：Groq-3-LPU-到底是什麼"><a href="#硬體端：Groq-3-LPU-到底是什麼" class="headerlink" title="硬體端：Groq 3 LPU 到底是什麼"></a>硬體端：Groq 3 LPU 到底是什麼</h2><p>NVIDIA 在 2025 年底花 200 億美元買下 Groq 的核心團隊和技術。GTC 上第一次展示成果：Groq 3 LPU（Language Processing Unit），專門為推理設計的晶片。</p>
 <p>跟 GPU 最大的差異在架構。GPU 用 HBM（高頻寬記憶體）做訓練和推理都行，但推理階段的記憶體存取模式跟訓練完全不同。LPU 用 SRAM 直接塞在晶片上，消除了記憶體瓶頸。結果就是：推理延遲極低，每瓦輸出的 tokens 數量暴增。</p>
 <p>NVIDIA 的做法很聰明。LPX 機架裝 256 顆 LPU，設計成放在 Vera Rubin GPU 機架旁邊一起用。訓練用 GPU，推理用 LPU。不是取代，是分工。</p>
 <p>35 倍的效能差距是什麼概念？如果你現在跑一個推理服務的電費是每月 10 萬美元，理論上可以降到 3,000 美元以下。當然實際部署沒這麼簡單，但方向已經很清楚了。</p>
-<h2 id="軟體端：OpenAI-的推理成本曲線">軟體端：OpenAI 的推理成本曲線</h2>
-<p>Sam Altman 那則推文值得仔細看。他轉推了一張圖表，顯示 GPT-5.2 到 GPT-5.4 的效率提升——三個月，32 倍。</p>
+<h2 id="軟體端：OpenAI-的推理成本曲線"><a href="#軟體端：OpenAI-的推理成本曲線" class="headerlink" title="軟體端：OpenAI 的推理成本曲線"></a>軟體端：OpenAI 的推理成本曲線</h2><p>Sam Altman 那則推文值得仔細看。他轉推了一張圖表，顯示 GPT-5.2 到 GPT-5.4 的效率提升——三個月，32 倍。</p>
 <p>這是什麼意思？同樣完成一個程式碼任務，GPT-5.2 可能要花 12 美元的運算資源。GPT-5.4 只要 37 美分。模型架構優化、推理 pipeline 改進、量化技術進步，全部加在一起。</p>
 <p>回頭看 OpenAI 的定價策略就懂了。GPT-5.4 的 API 價格是 $3/$15 per million tokens（輸入/輸出）。放在兩年前，這個效能等級的模型定價會高出一個數量級。</p>
 <p>Altman 自己也說了：「I generally agree with this, and really feel it myself on the 5.3 → 5.4 upgrade.」不只是數字上的改進，體感也不一樣。</p>
-<h2 id="兩條曲線正在交會">兩條曲線正在交會</h2>
-<p>硬體端（Groq 3 LPU）和軟體端（GPT-5.4 效率）正在做同一件事：把 AI 推理的邊際成本推向零。</p>
+<h2 id="兩條曲線正在交會"><a href="#兩條曲線正在交會" class="headerlink" title="兩條曲線正在交會"></a>兩條曲線正在交會</h2><p>硬體端（Groq 3 LPU）和軟體端（GPT-5.4 效率）正在做同一件事：把 AI 推理的邊際成本推向零。</p>
 <p>但兩者的機制不同：</p>
 <p><strong>硬體改進是一次性跳躍。</strong> Groq 3 部署後，跑在上面的所有模型都受益。不需要改程式碼，不需要重新訓練。</p>
 <p><strong>軟體改進是持續迭代。</strong> 每個新模型版本都能在相同硬體上做更多事。而且迭代速度越來越快——三個月 32 倍，不是三年。</p>
 <p>當這兩條曲線疊加，推理成本的下降不是線性的，是指數的。</p>
-<h2 id="對開發者來說意味什麼">對開發者來說意味什麼</h2>
-<p>如果你正在建構 AI 應用，這裡有幾件值得重新考慮的事：</p>
+<h2 id="對開發者來說意味什麼"><a href="#對開發者來說意味什麼" class="headerlink" title="對開發者來說意味什麼"></a>對開發者來說意味什麼</h2><p>如果你正在建構 AI 應用，這裡有幾件值得重新考慮的事：</p>
 <p><strong>你的成本估算模型可能已經過時。</strong> 去年底做的財務規劃，假設了某個 token 單價。那個數字在三個月內可能已經偏差 10 倍以上。如果你的商業模式是建立在「AI 推理很貴」的前提上——比如做推理成本的中間層優化——這個護城河正在消失。</p>
 <p><strong>之前因為成本放棄的功能，現在值得重新評估。</strong> 即時語音翻譯、逐行程式碼審查、每次 commit 自動跑安全掃描——這些在推理成本 $30/百萬 tokens 時不划算的功能，在 $3 時完全可行。在 $0.3 時，你可以把它做成預設開啟。</p>
 <p><strong>本地推理正在變得更實際。</strong> DGX Spark + NemoClaw 的定位就是讓企業在自己的機房跑 agent。如果推理效率繼續以這個速度提升，兩年後在消費級硬體上跑現在的 frontier 模型效能不是不可能。</p>
 <p><strong>批次推理和即時推理的成本差距在縮小。</strong> 過去做 AI 功能得小心翼翼安排 batch job。35 倍效率之後，很多原本要排隊等的推理任務可以直接即時跑。</p>
-<h2 id="一個不太舒服的推論">一個不太舒服的推論</h2>
-<p>推理成本指數下降，但人力成本沒有。</p>
+<h2 id="一個不太舒服的推論"><a href="#一個不太舒服的推論" class="headerlink" title="一個不太舒服的推論"></a>一個不太舒服的推論</h2><p>推理成本指數下降，但人力成本沒有。</p>
 <p>如果一個 AI agent 完成一個任務的成本從 12 美元降到 37 美分，再降到幾美分——那「要不要讓 AI 做這件事」這個問題的答案，會越來越頻繁地變成「為什麼不？」</p>
 <p>這不是未來的預測。Sam Altman 已經在 GPT-5.4 上感受到了。Jensen Huang 已經把硬體路線圖排到 2028 年的 Feynman。兩邊都在告訴你同一件事：推理的邊際成本正在趨近於零。</p>
 <p>至於這對工程師的工作內容意味什麼——我認為答案不是「被取代」，而是「你要處理的問題層級會往上移」。從「寫程式碼」移動到「設計系統」，從「實作功能」移動到「定義需求」。推理便宜了，判斷力沒有。</p>
 <p>但這也代表，一個能善用推理能力的工程師，跟一個還在手動做推理能自動完成的事的工程師之間的生產力差距，會越拉越大。</p>
-<h2 id="數字總結">數字總結</h2>
-<table>
+<h2 id="數字總結"><a href="#數字總結" class="headerlink" title="數字總結"></a>數字總結</h2><table>
 <thead>
 <tr>
 <th>指標</th>
@@ -289,8 +283,7 @@
 <th>來源</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>Groq 3 LPU 每瓦效能提升</td>
 <td>35x</td>
 <td>NVIDIA GTC 3/16</td>
@@ -320,8 +313,7 @@
 <td>2028</td>
 <td>NVIDIA GTC</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>三月十六日這天，硬體和軟體同時給出了 30 倍以上的效率跳躍。如果你在做跟 AI 推理相關的任何事情——建構、部署、定價、規劃——這些數字值得你今天就打開試算表重新算一遍。</p>
 
     </div>
@@ -385,7 +377,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">6:35</span>
+    <span title="所需總閱讀時間">6:36</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

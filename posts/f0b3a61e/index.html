@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
   <link rel="mask-icon" href="/images/logo.svg" color="#222">
-  <meta name="google-site-verification" content="AZSujvHIBvMeKz5Az3OKYWkcLKd3aai7LmqIOnVq8bo">
+  <meta name="google-site-verification" content="GOinl_lrNWB9APjfgt6dbVdgki38olFzWmFDv3Yh1y8">
 
 <link rel="stylesheet" href="/css/main.css">
 
@@ -258,8 +258,7 @@
     <div class="post-body" itemprop="articleBody"><p>3 月 5 日，OpenAI 發布 GPT-5.4。大多數人的注意力被 1M token context window 和 Tool Search 搶走了，但我認為真正該被討論的是另一件事：Computer Use。</p>
 <p>GPT-5.4 在 OSWorld 基準測試拿到 75.0% 的成功率。人類專家是 72.4%。</p>
 <p>AI 操作電腦的成功率，正式超過人類了。</p>
-<h2 id="OSWorld-75-，這個數字為什麼重要">OSWorld 75%，這個數字為什麼重要</h2>
-<p>先說清楚 OSWorld 在測什麼。它不是問 AI「怎麼操作試算表」然後看回答正不正確。它是真的把 AI 丟到一台有作業系統的電腦前面，給它任務，看它能不能完成。</p>
+<h2 id="OSWorld-75-，這個數字為什麼重要"><a href="#OSWorld-75-，這個數字為什麼重要" class="headerlink" title="OSWorld 75%，這個數字為什麼重要"></a>OSWorld 75%，這個數字為什麼重要</h2><p>先說清楚 OSWorld 在測什麼。它不是問 AI「怎麼操作試算表」然後看回答正不正確。它是真的把 AI 丟到一台有作業系統的電腦前面，給它任務，看它能不能完成。</p>
 <p>任務長這樣：</p>
 <ul>
 <li>「找到最近修改過的試算表並打開它」</li>
@@ -275,8 +274,7 @@
 <th>與人類（72.4%）比較</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td><strong>GPT-5.4</strong></td>
 <td><strong>75.0%</strong></td>
 <td><strong>+2.6%</strong></td>
@@ -291,11 +289,9 @@
 <td>~60%</td>
 <td>-12.4%</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>從 47.3% 到 75.0%，單代跳了 27.7 個百分點。GPT-5.2 連及格都沒有，GPT-5.4 直接超越人類。這不是漸進改善，是質變。</p>
-<h2 id="Computer-Use-怎麼運作">Computer Use 怎麼運作</h2>
-<p>技術上，Computer Use 的運作迴圈分五步：</p>
+<h2 id="Computer-Use-怎麼運作"><a href="#Computer-Use-怎麼運作" class="headerlink" title="Computer Use 怎麼運作"></a>Computer Use 怎麼運作</h2><p>技術上，Computer Use 的運作迴圈分五步：</p>
 <ol>
 <li><strong>你描述目標</strong> — 「打開瀏覽器，到 GitHub 建一個新 repo」</li>
 <li><strong>模型截圖</strong> — 對當前畫面拍截圖，理解螢幕上有什麼</li>
@@ -307,22 +303,22 @@
 <p>Claude 的 Computer Use 從 2024 年 10 月就有了，但走的是 tool-based 路線，透過外部工具鏈銜接。GPT-5.4 把這個能力直接嵌進模型權重裡，少了一層抽象，操作更流暢。</p>
 <p>用 API 呼叫 Computer Use 很直接：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI</span><br><span class="line">client = OpenAI()</span><br><span class="line"></span><br><span class="line">response = client.chat.completions.create(</span><br><span class="line">    model=<span class="string">&quot;gpt-5.4&quot;</span>,</span><br><span class="line">    tools=[&#123;<span class="string">&quot;type&quot;</span>: <span class="string">&quot;computer_use&quot;</span>&#125;],</span><br><span class="line">    messages=[</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>,</span><br><span class="line">            <span class="string">&quot;content&quot;</span>: <span class="string">&quot;Open the browser, go to github.com, &quot;</span></span><br><span class="line">                       <span class="string">&quot;and create a new repository called &#x27;my-project&#x27;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
 <p>三行核心程式碼。跟一般 Chat Completions 呼叫的差別只有 <code>tools=[&#123;&quot;type&quot;: &quot;computer_use&quot;&#125;]</code>。</p>
-<h2 id="開發者該注意的三件事">開發者該注意的三件事</h2>
-<h3 id="1-延遲是真實存在的痛">1. 延遲是真實存在的痛</h3>
-<p>每個操作循環：截圖 → 推理 → 執行 → 截圖驗證。一個簡單的「打開瀏覽器填表單」可能跑 8-10 個循環。每個循環都有模型推理延遲。</p>
+<h2 id="開發者該注意的三件事"><a href="#開發者該注意的三件事" class="headerlink" title="開發者該注意的三件事"></a>開發者該注意的三件事</h2><h3 id="1-延遲是真實存在的痛"><a href="#1-延遲是真實存在的痛" class="headerlink" title="1. 延遲是真實存在的痛"></a>1. 延遲是真實存在的痛</h3><p>每個操作循環：截圖 → 推理 → 執行 → 截圖驗證。一個簡單的「打開瀏覽器填表單」可能跑 8-10 個循環。每個循環都有模型推理延遲。</p>
 <p>我估算一個 10 步驟的任務，端到端延遲大概 30-60 秒。對於批次自動化來說可以接受，但你不會想把它放在用戶等待的即時路徑上。</p>
 <p>正確的用法是<strong>非同步 + 背景執行</strong>。把 Computer Use 當成一個排程任務，不是一個即時 API：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">from</span> openai <span class="keyword">import</span> AsyncOpenAI</span><br><span class="line"></span><br><span class="line">client = AsyncOpenAI()</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">automate_form_filling</span>(<span class="params">form_data: <span class="built_in">dict</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;背景執行的表單自動化 — 不要放在 request handler 裡&quot;&quot;&quot;</span></span><br><span class="line">    response = <span class="keyword">await</span> client.chat.completions.create(</span><br><span class="line">        model=<span class="string">&quot;gpt-5.4&quot;</span>,</span><br><span class="line">        tools=[&#123;<span class="string">&quot;type&quot;</span>: <span class="string">&quot;computer_use&quot;</span>&#125;],</span><br><span class="line">        messages=[</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="string">&quot;role&quot;</span>: <span class="string">&quot;system&quot;</span>,</span><br><span class="line">                <span class="string">&quot;content&quot;</span>: <span class="string">&quot;Fill out forms precisely. &quot;</span></span><br><span class="line">                           <span class="string">&quot;Verify each field after input.&quot;</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>,</span><br><span class="line">                <span class="string">&quot;content&quot;</span>: <span class="string">f&quot;Fill the vendor registration form &quot;</span></span><br><span class="line">                           <span class="string">f&quot;with: <span class="subst">&#123;form_data&#125;</span>&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> response</span><br><span class="line"></span><br><span class="line"><span class="comment"># 排進任務佇列，不阻塞主執行緒</span></span><br><span class="line">asyncio.create_task(automate_form_filling(vendor_info))</span><br></pre></td></tr></table></figure>
-<h3 id="2-你需要虛擬顯示環境">2. 你需要虛擬顯示環境</h3>
-<p>Computer Use 需要一個可以截圖的畫面。本機開發沒問題，但部署到伺服器時，你需要跑虛擬顯示。</p>
+
+<h3 id="2-你需要虛擬顯示環境"><a href="#2-你需要虛擬顯示環境" class="headerlink" title="2. 你需要虛擬顯示環境"></a>2. 你需要虛擬顯示環境</h3><p>Computer Use 需要一個可以截圖的畫面。本機開發沒問題，但部署到伺服器時，你需要跑虛擬顯示。</p>
 <p>Linux 上用 Xvfb：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 啟動虛擬 framebuffer</span></span><br><span class="line">Xvfb :99 -screen 0 1920x1080x24 &amp;</span><br><span class="line"><span class="built_in">export</span> DISPLAY=:99</span><br><span class="line"></span><br><span class="line"><span class="comment"># 跑你的 Python agent</span></span><br><span class="line">python computer_use_agent.py</span><br></pre></td></tr></table></figure>
+
 <p>Docker 部署的話：</p>
 <figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.12</span>-slim</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt-get update &amp;&amp; apt-get install -y \</span></span><br><span class="line"><span class="language-bash">    xvfb chromium-browser \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/lib/apt/lists/*</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> DISPLAY=:<span class="number">99</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> Xvfb :99 -screen 0 1920x1080x24 &amp; \</span></span><br><span class="line"><span class="language-bash">    python agent.py</span></span><br></pre></td></tr></table></figure>
+
 <p>這不是什麼高深技術，但很多人第一次用會卡在「為什麼伺服器上跑不起來」。因為沒有顯示環境，截圖這一步就直接掛掉了。</p>
-<h3 id="3-不要在高風險操作上放手不管">3. 不要在高風險操作上放手不管</h3>
-<p>75% 的成功率聽起來很高，但反過來說，每 4 次操作有 1 次會失敗。失敗的方式可能是：</p>
+<h3 id="3-不要在高風險操作上放手不管"><a href="#3-不要在高風險操作上放手不管" class="headerlink" title="3. 不要在高風險操作上放手不管"></a>3. 不要在高風險操作上放手不管</h3><p>75% 的成功率聽起來很高，但反過來說，每 4 次操作有 1 次會失敗。失敗的方式可能是：</p>
 <ul>
 <li>點錯按鈕</li>
 <li>誤判 UI 元素（把「取消」看成「確認」）</li>
@@ -331,13 +327,11 @@
 </ul>
 <p>所以用 Computer Use 有一個鐵律：<strong>凡是不能 undo 的操作，都要加人工確認</strong>。</p>
 <p>刪除檔案、發送郵件、金融交易、簽合約——這些操作前面必須卡一個 checkpoint。把它想成你給實習生的權限管理：能做的事很多，但按下「發送」之前要先讓你看過。</p>
-<h2 id="對開發者工作流程的影響">對開發者工作流程的影響</h2>
-<p>Computer Use 最直接的衝擊是 <strong>UI 測試自動化</strong>。</p>
+<h2 id="對開發者工作流程的影響"><a href="#對開發者工作流程的影響" class="headerlink" title="對開發者工作流程的影響"></a>對開發者工作流程的影響</h2><p>Computer Use 最直接的衝擊是 <strong>UI 測試自動化</strong>。</p>
 <p>傳統 E2E 測試用 Playwright 或 Selenium，你要手動定義選擇器、撰寫操作步驟。當 UI 改版，選擇器全部壞掉。Computer Use 用視覺理解畫面，不依賴 DOM 結構，UI 改版對它的影響小得多。</p>
 <p>另一個場景是<strong>跨系統資料搬運</strong>。很多企業內部系統沒有 API，只有 Web UI。以前只能手動複製貼上，現在可以用 Computer Use 自動化：從 CRM 抓資料 → 填進 ERP → 截圖存證。</p>
 <p>第三個場景是<strong>軟體設定自動化</strong>。新員工入職要設定十幾個工具的帳號和偏好設定。Computer Use 可以按照 checklist 逐一執行，比寫 shell script 靈活（因為很多設定只有 GUI，沒有 CLI）。</p>
-<h2 id="GPT-5-4-vs-Claude：兩條不同的路">GPT-5.4 vs Claude：兩條不同的路</h2>
-<p>現在能做 Computer Use 的有兩家：OpenAI 和 Anthropic。但它們走的路線根本不同。</p>
+<h2 id="GPT-5-4-vs-Claude：兩條不同的路"><a href="#GPT-5-4-vs-Claude：兩條不同的路" class="headerlink" title="GPT-5.4 vs Claude：兩條不同的路"></a>GPT-5.4 vs Claude：兩條不同的路</h2><p>現在能做 Computer Use 的有兩家：OpenAI 和 Anthropic。但它們走的路線根本不同。</p>
 <table>
 <thead>
 <tr>
@@ -346,8 +340,7 @@
 <th>Claude Opus 4.6</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td><strong>架構</strong></td>
 <td>原生內建</td>
 <td>Tool-based 外掛</td>
@@ -372,12 +365,10 @@
 <td>API + Codex</td>
 <td>API + 合作夥伴</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>GPT-5.4 的優勢是<strong>通用性</strong>——一個模型搞定 coding、reasoning、computer use。Claude 的優勢是<strong>深度</strong>——Agent Teams 多 agent 協作、程式碼品質在複雜專案裡更穩定。</p>
 <p>我的看法：如果你要做的是「讓 AI 操作一個現有的桌面應用」，GPT-5.4 Computer Use 目前是最好的選擇。如果你要做的是「讓 AI 幫你寫一個複雜系統」，Claude 的程式碼能力和 agent 協作機制更成熟。</p>
-<h2 id="這不只是工具升級">這不只是工具升級</h2>
-<p>從 47.3% 到 75.0%，從「不及格」到「超越人類」，GPT-5.4 的 Computer Use 代表的不只是一個模型版本的進步。它改變了 AI agent 能做什麼事的邊界。</p>
+<h2 id="這不只是工具升級"><a href="#這不只是工具升級" class="headerlink" title="這不只是工具升級"></a>這不只是工具升級</h2><p>從 47.3% 到 75.0%，從「不及格」到「超越人類」，GPT-5.4 的 Computer Use 代表的不只是一個模型版本的進步。它改變了 AI agent 能做什麼事的邊界。</p>
 <p>之前的 AI agent 只能操作有 API 的系統。沒有 API？抱歉，做不到。Computer Use 把這個限制拿掉了。任何有畫面的軟體，AI 都能操作。</p>
 <p>這意味著 AI agent 的應用場景，從「有 API 的系統」擴大到「所有有 UI 的系統」。Enterprise 環境裡有大量 legacy 系統只有 Web UI 沒有 API，Computer Use 讓這些系統第一次有了被自動化的可能。</p>
 <p>75% 的成功率還不夠好到完全取代人類操作員。但從工程角度看，跟一年前的 47.3% 比，改善速度是驚人的。如果明年再跳一代到 85-90%，很多純重複性的電腦操作工作就真的可以全面自動化了。</p>
@@ -448,7 +439,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">6:35</span>
+    <span title="所需總閱讀時間">6:36</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

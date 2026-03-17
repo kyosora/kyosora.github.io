@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
   <link rel="mask-icon" href="/images/logo.svg" color="#222">
-  <meta name="google-site-verification" content="AZSujvHIBvMeKz5Az3OKYWkcLKd3aai7LmqIOnVq8bo">
+  <meta name="google-site-verification" content="GOinl_lrNWB9APjfgt6dbVdgki38olFzWmFDv3Yh1y8">
 
 <link rel="stylesheet" href="/css/main.css">
 
@@ -259,34 +259,30 @@
 <p>更慘的是，每次都要手動檢查、手動下指令、再手動確認。一個簡單的「把所有測試跑通」任務，你可能要來回操作 10 次以上。</p>
 <p>如果我告訴你，有個技術能讓 Claude Code 自己迭代、自己修 bug、自己跑測試，直到真的完成為止——甚至有人用它讓 AI 自主開發了整整 3 個月，做出一個完整的程式語言編譯器，你信嗎？</p>
 <p>這就是 <strong>Ralph Wiggum</strong>。</p>
-<h2 id="問題：AI-的「一次性思維」困境">問題：AI 的「一次性思維」困境</h2>
-<h3 id="症狀-1：虛假的「完成」">症狀 1：虛假的「完成」</h3>
-<p>Claude Code 很聰明，但它有個致命問題：<strong>它以為自己做完了，但其實沒有</strong>。</p>
+<h2 id="問題：AI-的「一次性思維」困境"><a href="#問題：AI-的「一次性思維」困境" class="headerlink" title="問題：AI 的「一次性思維」困境"></a>問題：AI 的「一次性思維」困境</h2><h3 id="症狀-1：虛假的「完成」"><a href="#症狀-1：虛假的「完成」" class="headerlink" title="症狀 1：虛假的「完成」"></a>症狀 1：虛假的「完成」</h3><p>Claude Code 很聰明，但它有個致命問題：<strong>它以為自己做完了，但其實沒有</strong>。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">你：「幫我把這個 API 的測試覆蓋率提升到 80%」</span><br><span class="line">Claude：「好的，我已經新增了 5 個測試檔案」</span><br><span class="line">你：npm <span class="built_in">test</span></span><br><span class="line">結果：❌ 12 tests failed, coverage: 45%</span><br></pre></td></tr></table></figure>
+
 <p>問題在哪？Claude 寫完測試就認為任務結束，但它沒有<strong>真正驗證</strong>結果。</p>
-<h3 id="症狀-2：迭代開發的高成本">症狀 2：迭代開發的高成本</h3>
-<p>真實的開發場景通常是：</p>
+<h3 id="症狀-2：迭代開發的高成本"><a href="#症狀-2：迭代開發的高成本" class="headerlink" title="症狀 2：迭代開發的高成本"></a>症狀 2：迭代開發的高成本</h3><p>真實的開發場景通常是：</p>
 <ol>
 <li>寫代碼</li>
 <li>跑測試 → 失敗</li>
 <li>看錯誤訊息</li>
 <li>修 bug</li>
 <li>再跑測試 → 又失敗</li>
-<li>重複 10 次…</li>
+<li>重複 10 次...</li>
 </ol>
 <p>如果每一步都要你手動介入，AI 輔助開發的效率優勢就消失了。</p>
-<h3 id="症狀-3：複雜任務的放棄機制">症狀 3：複雜任務的放棄機制</h3>
-<p>當任務需要多次嘗試，Claude 很容易在第一次失敗後就「建議你手動處理」。但實際上，80% 的問題只要多試幾次、看看錯誤訊息，AI 自己就能解決。</p>
-<h2 id="解決方案：Ralph-Wiggum-的自主迴圈">解決方案：Ralph Wiggum 的自主迴圈</h2>
-<h3 id="核心概念：讓-AI-自己重試到成功">核心概念：讓 AI 自己重試到成功</h3>
-<p>Ralph Wiggum 的原理極其簡單，簡單到你可能會懷疑「就這樣？」</p>
+<h3 id="症狀-3：複雜任務的放棄機制"><a href="#症狀-3：複雜任務的放棄機制" class="headerlink" title="症狀 3：複雜任務的放棄機制"></a>症狀 3：複雜任務的放棄機制</h3><p>當任務需要多次嘗試，Claude 很容易在第一次失敗後就「建議你手動處理」。但實際上，80% 的問題只要多試幾次、看看錯誤訊息，AI 自己就能解決。</p>
+<h2 id="解決方案：Ralph-Wiggum-的自主迴圈"><a href="#解決方案：Ralph-Wiggum-的自主迴圈" class="headerlink" title="解決方案：Ralph Wiggum 的自主迴圈"></a>解決方案：Ralph Wiggum 的自主迴圈</h2><h3 id="核心概念：讓-AI-自己重試到成功"><a href="#核心概念：讓-AI-自己重試到成功" class="headerlink" title="核心概念：讓 AI 自己重試到成功"></a>核心概念：讓 AI 自己重試到成功</h3><p>Ralph Wiggum 的原理極其簡單，簡單到你可能會懷疑「就這樣？」</p>
 <p>最早的實作就是一行 Bash：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> :; <span class="keyword">do</span> <span class="built_in">cat</span> PROMPT.md | claude ; <span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
 <p>沒錯，就是<strong>無限迴圈</strong>。</p>
 <p>每次 Claude 說「我做完了」想退出，Ralph 就把它攔下來，塞回同一個指令：「繼續做，直到真的完成。」</p>
-<h3 id="官方插件：更聰明的自主迴圈">官方插件：更聰明的自主迴圈</h3>
-<p>2025 年夏天，Anthropic 把這個「民間土砲」正式化為官方插件。現在你可以直接在 Claude Code 裡用：</p>
+<h3 id="官方插件：更聰明的自主迴圈"><a href="#官方插件：更聰明的自主迴圈" class="headerlink" title="官方插件：更聰明的自主迴圈"></a>官方插件：更聰明的自主迴圈</h3><p>2025 年夏天，Anthropic 把這個「民間土砲」正式化為官方插件。現在你可以直接在 Claude Code 裡用：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/ralph-loop <span class="string">&quot;修復所有測試失敗，確保覆蓋率達 80%&quot;</span> \</span><br><span class="line">  --max-iterations 30 \</span><br><span class="line">  --completion-promise <span class="string">&quot;ALL_TESTS_PASSED&quot;</span></span><br></pre></td></tr></table></figure>
+
 <p><strong>這背後發生了什麼？</strong></p>
 <ol>
 <li>Claude 開始執行任務</li>
@@ -295,20 +291,17 @@
 <li><strong>Stop Hook 攔截</strong>：「等等，測試還沒過，繼續！」</li>
 <li>Claude 看到自己的錯誤訊息、修改代碼</li>
 <li>再跑測試 → 還是失敗</li>
-<li>重複步驟 4-6…</li>
+<li>重複步驟 4-6...</li>
 <li>直到測試全過，或達到 <code>--max-iterations</code> 上限</li>
 </ol>
-<h3 id="為什麼這麼有效？關鍵是「上下文累積」">為什麼這麼有效？關鍵是「上下文累積」</h3>
-<p>每次迭代，Claude 都能看到：</p>
+<h3 id="為什麼這麼有效？關鍵是「上下文累積」"><a href="#為什麼這麼有效？關鍵是「上下文累積」" class="headerlink" title="為什麼這麼有效？關鍵是「上下文累積」"></a>為什麼這麼有效？關鍵是「上下文累積」</h3><p>每次迭代，Claude 都能看到：</p>
 <ul>
 <li><strong>上次修改的檔案</strong>（Git 記錄了變更）</li>
 <li><strong>上次的錯誤訊息</strong>（stdout/stderr 保留在終端）</li>
 <li><strong>上次的測試結果</strong>（哪些測試通過、哪些失敗）</li>
 </ul>
 <p>這就像你在 debug，每次失敗都是新的線索。差別在於，Ralph 讓 Claude <strong>自己收集線索、自己修正</strong>，你完全不用插手。</p>
-<h2 id="實戰範例：從理論到實踐">實戰範例：從理論到實踐</h2>
-<h3 id="範例-1：測試覆蓋率提升（最常見場景）">範例 1：測試覆蓋率提升（最常見場景）</h3>
-<p><strong>任務</strong>：把一個舊專案的測試覆蓋率從 30% 提升到 80%</p>
+<h2 id="實戰範例：從理論到實踐"><a href="#實戰範例：從理論到實踐" class="headerlink" title="實戰範例：從理論到實踐"></a>實戰範例：從理論到實踐</h2><h3 id="範例-1：測試覆蓋率提升（最常見場景）"><a href="#範例-1：測試覆蓋率提升（最常見場景）" class="headerlink" title="範例 1：測試覆蓋率提升（最常見場景）"></a>範例 1：測試覆蓋率提升（最常見場景）</h3><p><strong>任務</strong>：把一個舊專案的測試覆蓋率從 30% 提升到 80%</p>
 <p><strong>傳統做法</strong>：</p>
 <ol>
 <li>看 coverage report → 找出沒測試的檔案</li>
@@ -319,26 +312,24 @@
 </ol>
 <p><strong>Ralph 做法</strong>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">/ralph-loop <span class="string">&quot;</span></span><br><span class="line"><span class="string">任務：提升測試覆蓋率到 80%</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">步驟：</span></span><br><span class="line"><span class="string">1. 跑 npm run test:coverage，檢查當前覆蓋率</span></span><br><span class="line"><span class="string">2. 找出覆蓋率最低的檔案</span></span><br><span class="line"><span class="string">3. 為這些檔案寫單元測試</span></span><br><span class="line"><span class="string">4. 跑測試，確保全過</span></span><br><span class="line"><span class="string">5. 如果有測試失敗，分析錯誤並修正</span></span><br><span class="line"><span class="string">6. 重複直到覆蓋率達 80%</span></span><br><span class="line"><span class="string">7. 輸出 &lt;promise&gt;COVERAGE_COMPLETE&lt;/promise&gt;</span></span><br><span class="line"><span class="string">&quot;</span> --max-iterations 40 --completion-promise <span class="string">&quot;COVERAGE_COMPLETE&quot;</span></span><br></pre></td></tr></table></figure>
+
 <p><strong>結果</strong>：去泡杯咖啡回來，測試覆蓋率已經從 30% → 82%，總共迭代了 23 次。</p>
-<h3 id="範例-2：框架遷移（複雜場景）">範例 2：框架遷移（複雜場景）</h3>
-<p><strong>任務</strong>：把一個 React Class Component 專案遷移到 Hooks</p>
+<h3 id="範例-2：框架遷移（複雜場景）"><a href="#範例-2：框架遷移（複雜場景）" class="headerlink" title="範例 2：框架遷移（複雜場景）"></a>範例 2：框架遷移（複雜場景）</h3><p><strong>任務</strong>：把一個 React Class Component 專案遷移到 Hooks</p>
 <p><strong>Ralph 做法</strong>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">/ralph-loop <span class="string">&quot;</span></span><br><span class="line"><span class="string">遷移 src/components 下所有 Class Component 到 Hooks</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">規則：</span></span><br><span class="line"><span class="string">- 保持功能完全一致</span></span><br><span class="line"><span class="string">- 每遷移一個檔案就跑測試</span></span><br><span class="line"><span class="string">- 測試失敗就修正，不要跳過</span></span><br><span class="line"><span class="string">- 完成後執行 npm run build 確保沒有 TypeScript 錯誤</span></span><br><span class="line"><span class="string">- 全部完成後輸出 &lt;promise&gt;MIGRATION_DONE&lt;/promise&gt;</span></span><br><span class="line"><span class="string">&quot;</span> --max-iterations 50 --completion-promise <span class="string">&quot;MIGRATION_DONE&quot;</span></span><br></pre></td></tr></table></figure>
+
 <p><strong>真實案例</strong>：某團隊在 YC Hackathon 用這個方法，<strong>一晚生成了 6 個 repositories</strong>，全都能跑。</p>
-<h3 id="範例-3：Bug-修復（迭代型任務）">範例 3：Bug 修復（迭代型任務）</h3>
-<p><strong>任務</strong>：修復一個會導致 API 500 錯誤的 bug</p>
+<h3 id="範例-3：Bug-修復（迭代型任務）"><a href="#範例-3：Bug-修復（迭代型任務）" class="headerlink" title="範例 3：Bug 修復（迭代型任務）"></a>範例 3：Bug 修復（迭代型任務）</h3><p><strong>任務</strong>：修復一個會導致 API 500 錯誤的 bug</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/ralph-loop <span class="string">&quot;</span></span><br><span class="line"><span class="string">修復 /api/users 端點的 500 錯誤</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">調試步驟：</span></span><br><span class="line"><span class="string">1. 查看錯誤日誌，找出錯誤堆疊</span></span><br><span class="line"><span class="string">2. 定位問題代碼</span></span><br><span class="line"><span class="string">3. 修正問題</span></span><br><span class="line"><span class="string">4. 跑整合測試</span></span><br><span class="line"><span class="string">5. 如果測試失敗，繼續 debug</span></span><br><span class="line"><span class="string">6. 測試通過後輸出 &lt;promise&gt;BUG_FIXED&lt;/promise&gt;</span></span><br><span class="line"><span class="string">&quot;</span> --max-iterations 20 --completion-promise <span class="string">&quot;BUG_FIXED&quot;</span></span><br></pre></td></tr></table></figure>
-<h2 id="常見陷阱與避坑指南">常見陷阱與避坑指南</h2>
-<h3 id="陷阱-1：-completion-promise-不可靠">陷阱 1：<code>--completion-promise</code> 不可靠</h3>
-<p>官方文檔明確警告：<strong>這個功能用的是字串完全匹配</strong>。</p>
+
+<h2 id="常見陷阱與避坑指南"><a href="#常見陷阱與避坑指南" class="headerlink" title="常見陷阱與避坑指南"></a>常見陷阱與避坑指南</h2><h3 id="陷阱-1：-completion-promise-不可靠"><a href="#陷阱-1：-completion-promise-不可靠" class="headerlink" title="陷阱 1：--completion-promise 不可靠"></a>陷阱 1：<code>--completion-promise</code> 不可靠</h3><p>官方文檔明確警告：<strong>這個功能用的是字串完全匹配</strong>。</p>
 <p>如果 Claude 輸出 <code>COMPLETE</code> 但你設的是 <code>COMPLETION</code>，迴圈不會停。</p>
 <p><strong>避坑方法</strong>：</p>
 <ul>
 <li>✅ <strong>永遠設定 <code>--max-iterations</code></strong> 作為安全網</li>
 <li>⚠️ 把 <code>--completion-promise</code> 當輔助，不要完全依賴</li>
 </ul>
-<h3 id="陷阱-2：Token-消耗爆表">陷阱 2：Token 消耗爆表</h3>
-<p>Ralph 的成本不是免費的。</p>
+<h3 id="陷阱-2：Token-消耗爆表"><a href="#陷阱-2：Token-消耗爆表" class="headerlink" title="陷阱 2：Token 消耗爆表"></a>陷阱 2：Token 消耗爆表</h3><p>Ralph 的成本不是免費的。</p>
 <p><strong>真實數據</strong>：</p>
 <ul>
 <li>一次簡單任務（10 次迭代）：約 $5-10</li>
@@ -351,14 +342,14 @@
 <li>監控 API 用量儀表板</li>
 <li>複雜任務分階段執行，不要一次跑到底</li>
 </ul>
-<h3 id="陷阱-3：模糊的成功標準">陷阱 3：模糊的成功標準</h3>
-<p><strong>❌ 不好的 Prompt</strong>：</p>
+<h3 id="陷阱-3：模糊的成功標準"><a href="#陷阱-3：模糊的成功標準" class="headerlink" title="陷阱 3：模糊的成功標準"></a>陷阱 3：模糊的成功標準</h3><p><strong>❌ 不好的 Prompt</strong>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/ralph-loop <span class="string">&quot;讓這個專案變好&quot;</span> --max-iterations 50</span><br></pre></td></tr></table></figure>
+
 <p>Claude 不知道「好」的定義，會瞎忙 50 次然後放棄。</p>
 <p><strong>✅ 好的 Prompt</strong>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">/ralph-loop <span class="string">&quot;</span></span><br><span class="line"><span class="string">確保以下條件全部達成：</span></span><br><span class="line"><span class="string">- npm test 全過（0 failures）</span></span><br><span class="line"><span class="string">- npm run build 成功</span></span><br><span class="line"><span class="string">- eslint 零警告</span></span><br><span class="line"><span class="string">- 所有 TODO 註解已移除</span></span><br><span class="line"><span class="string">完成後輸出 &lt;promise&gt;DONE&lt;/promise&gt;</span></span><br><span class="line"><span class="string">&quot;</span> --max-iterations 30</span><br></pre></td></tr></table></figure>
-<h3 id="陷阱-4：安全敏感代碼別自動化">陷阱 4：安全敏感代碼別自動化</h3>
-<p><strong>絕對不要用 Ralph 做這些事</strong>：</p>
+
+<h3 id="陷阱-4：安全敏感代碼別自動化"><a href="#陷阱-4：安全敏感代碼別自動化" class="headerlink" title="陷阱 4：安全敏感代碼別自動化"></a>陷阱 4：安全敏感代碼別自動化</h3><p><strong>絕對不要用 Ralph 做這些事</strong>：</p>
 <ul>
 <li>❌ 身份驗證邏輯</li>
 <li>❌ 支付系統整合</li>
@@ -374,21 +365,16 @@
 <li>✅ 文檔生成</li>
 <li>✅ Refactoring（有測試保護的前提下）</li>
 </ul>
-<h2 id="震撼案例：真實世界的成果">震撼案例：真實世界的成果</h2>
-<h3 id="案例-1：-297-完成-50K-的外包案">案例 1：$297 完成 $50K 的外包案</h3>
-<p>某開發者接了一個大型重構案，傳統報價 $50K。他用 Ralph 跑了整整一週，最終 API 成本：<strong>$297</strong>。</p>
-<h3 id="案例-2：3-個月做出程式語言編譯器">案例 2：3 個月做出程式語言編譯器</h3>
-<p>Geoffrey Huntley（Ralph 技術的創始人）讓 Claude 持續迭代 <strong>3 個月</strong>，產出了：</p>
+<h2 id="震撼案例：真實世界的成果"><a href="#震撼案例：真實世界的成果" class="headerlink" title="震撼案例：真實世界的成果"></a>震撼案例：真實世界的成果</h2><h3 id="案例-1：-297-完成-50K-的外包案"><a href="#案例-1：-297-完成-50K-的外包案" class="headerlink" title="案例 1：$297 完成 $50K 的外包案"></a>案例 1：$297 完成 $50K 的外包案</h3><p>某開發者接了一個大型重構案，傳統報價 $50K。他用 Ralph 跑了整整一週，最終 API 成本：**$297**。</p>
+<h3 id="案例-2：3-個月做出程式語言編譯器"><a href="#案例-2：3-個月做出程式語言編譯器" class="headerlink" title="案例 2：3 個月做出程式語言編譯器"></a>案例 2：3 個月做出程式語言編譯器</h3><p>Geoffrey Huntley（Ralph 技術的創始人）讓 Claude 持續迭代 <strong>3 個月</strong>，產出了：</p>
 <ul>
 <li>完整的程式語言（Cursed）</li>
 <li>LLVM 後端支援</li>
 <li>標準函式庫</li>
 <li>編譯器工具鏈</li>
 </ul>
-<h3 id="案例-3：Hackathon-一晚-6-個-Repo">案例 3：Hackathon 一晚 6 個 Repo</h3>
-<p>YC 加速器團隊在測試中，<strong>一晚之間</strong>用 Ralph 生成了 6 個可運行的專案。</p>
-<h2 id="總結：何時該用-Ralph？">總結：何時該用 Ralph？</h2>
-<p><strong>核心判斷標準</strong>：</p>
+<h3 id="案例-3：Hackathon-一晚-6-個-Repo"><a href="#案例-3：Hackathon-一晚-6-個-Repo" class="headerlink" title="案例 3：Hackathon 一晚 6 個 Repo"></a>案例 3：Hackathon 一晚 6 個 Repo</h3><p>YC 加速器團隊在測試中，<strong>一晚之間</strong>用 Ralph 生成了 6 個可運行的專案。</p>
+<h2 id="總結：何時該用-Ralph？"><a href="#總結：何時該用-Ralph？" class="headerlink" title="總結：何時該用 Ralph？"></a>總結：何時該用 Ralph？</h2><p><strong>核心判斷標準</strong>：</p>
 <ul>
 <li>✅ <strong>任務有明確的成功標準</strong>（測試通過、build 成功、覆蓋率達標）</li>
 <li>✅ <strong>需要多次迭代才能完成</strong>（一次做不完的事）</li>
@@ -479,7 +465,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">6:35</span>
+    <span title="所需總閱讀時間">6:36</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
