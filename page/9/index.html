@@ -9,6 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
   <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="AZSujvHIBvMeKz5Az3OKYWkcLKd3aai7LmqIOnVq8bo">
 
 <link rel="stylesheet" href="/css/main.css">
 
@@ -135,16 +136,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">147</span>
+          <span class="site-state-item-count">148</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-count">84</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">261</span>
+        <span class="site-state-item-count">262</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -161,6 +162,136 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/8688d8e/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/8688d8e/" class="post-title-link" itemprop="url">資料庫連線池爆掉救火秘笈！如何優雅地處理 SQL Server 連線危機</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2024-10-27 14:30:00" itemprop="dateCreated datePublished" datetime="2024-10-27T14:30:00+08:00">2024-10-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/" itemprop="url" rel="index"><span itemprop="name">後端開發</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/%E8%B3%87%E6%96%99%E5%BA%AB%E5%84%AA%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">資料庫優化</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.6k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          前言
+身為後端工程師，你是否遇過這樣的情況：
+
+ * 系統突然變得超級慢
+ * 網頁一直轉圈圈
+ * 收到「已超過連線逾時的設定」錯誤訊息
+
+如果有，恭喜你！你可能遇到了資料庫連線池爆掉的問題。今天就來分享一個真實案例，看看如何從診斷到解決這個棘手的問題。
+
+問題診斷
+當你遇到以下錯誤訊息時，很可能是連線池出問題了：
+
+1
+
+
+System.InvalidOperationException: '已超過連線逾時的設定。在取得集區連線之前超過逾時等待的時間，可能的原因為所有的共用連線已在使用中，並已達共用集區大小的最大值。'
+
+
+快速診斷方法
+首先，我們可以使用以下 SQL 指令來查看目前的連線
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/8688d8e/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1278,120 +1409,6 @@ CASE
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/bc99d051/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="kyosora">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kyosora 筆記">
-      <meta itemprop="description" content="個人技術筆記和學習心得分享">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | kyosora 筆記">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/posts/bc99d051/" class="post-title-link" itemprop="url">Redis詳細介紹、使用場景及與SQL Server的結合</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">發表於</span>
-
-      <time title="創建時間：2024-09-18 16:34:11" itemprop="dateCreated datePublished" datetime="2024-09-18T16:34:11+08:00">2024-09-18</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分類於</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="文章字數">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">文章字數：</span>
-      <span>1.9k</span>
-    </span>
-    <span class="post-meta-item" title="所需閱讀時間">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>2 分鐘</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          Redis詳細介紹、使用場景及與SQL Server的結合
-什麼是Redis?
-Redis(Remote Dictionary Server)是一個開源的、高性能的、基於記憶體的鍵值對數據庫。它由Salvatore Sanfilippo開發,並於2009年首次發布。Redis不僅僅是一個簡單的鍵值存儲,它還支持多種數據結構,如字符串、哈希、列表、集合、有序集合等。
-
-Redis的主要特點
- 1. 高性能: Redis將所有數據存儲在記憶體中,因此可以實現極快的讀寫速度。
- 2. 持久化: 儘管是記憶體數據庫,Redis也提供了數據持久化的選項。
- 3. 多種數據結構: 支持字符串、哈希、列表、
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/bc99d051/#more" rel="contents">
-                閱讀全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <a class="extend prev" rel="prev" title="上一頁" aria-label="上一頁" href="/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" title="下一頁" aria-label="下一頁" href="/page/10/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -1415,13 +1432,13 @@ Redis的主要特點
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">433k</span>
+    <span title="總字數">435k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">6:33</span>
+    <span title="所需總閱讀時間">6:35</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

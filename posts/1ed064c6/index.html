@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="AZSujvHIBvMeKz5Az3OKYWkcLKd3aai7LmqIOnVq8bo">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="3 月 16 日晚上，兩件事同時發生。  Jensen Huang 在 GTC 主題演講上揭曉 Groq 3 LPU，宣稱每瓦 tokens 效能提升 35 倍。幾個小時後，Sam Altman 在 X 上發文：GPT-5.2 到 5.4，三個月內效率提升 32 倍，每個任務成本降到 37 美分。  兩家公司，一硬一軟，同一天給出幾乎相同的數字。這不是巧合。  硬體端：Groq 3 LPU 到底是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="你的 AI 帳單即將縮水 30 倍：一天之內 NVIDIA 和 OpenAI 同時給出的訊號">
+<meta property="og:url" content="https://kyosora.github.io/posts/1ed064c6/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="3 月 16 日晚上，兩件事同時發生。  Jensen Huang 在 GTC 主題演講上揭曉 Groq 3 LPU，宣稱每瓦 tokens 效能提升 35 倍。幾個小時後，Sam Altman 在 X 上發文：GPT-5.2 到 5.4，三個月內效率提升 32 倍，每個任務成本降到 37 美分。  兩家公司，一硬一軟，同一天給出幾乎相同的數字。這不是巧合。  硬體端：Groq 3 LPU 到底是">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2026-03-16T18:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-17T04:59:59.321Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="OpenAI">
+<meta property="article:tag" content="NVIDIA">
+<meta property="article:tag" content="GTC">
+<meta property="article:tag" content="AI推理">
+<meta property="article:tag" content="成本優化">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/1ed064c6/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/1ed064c6/","path":"posts/1ed064c6/","title":"你的 AI 帳單即將縮水 30 倍：一天之內 NVIDIA 和 OpenAI 同時給出的訊號"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>你的 AI 帳單即將縮水 30 倍：一天之內 NVIDIA 和 OpenAI 同時給出的訊號 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A1%AC%E9%AB%94%E7%AB%AF%EF%BC%9AGroq-3-LPU-%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E9%BA%BC"><span class="nav-number">1.</span> <span class="nav-text">硬體端：Groq 3 LPU 到底是什麼</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BB%9F%E9%AB%94%E7%AB%AF%EF%BC%9AOpenAI-%E7%9A%84%E6%8E%A8%E7%90%86%E6%88%90%E6%9C%AC%E6%9B%B2%E7%B7%9A"><span class="nav-number">2.</span> <span class="nav-text">軟體端：OpenAI 的推理成本曲線</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A9%E6%A2%9D%E6%9B%B2%E7%B7%9A%E6%AD%A3%E5%9C%A8%E4%BA%A4%E6%9C%83"><span class="nav-number">3.</span> <span class="nav-text">兩條曲線正在交會</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8D%E9%96%8B%E7%99%BC%E8%80%85%E4%BE%86%E8%AA%AA%E6%84%8F%E5%91%B3%E4%BB%80%E9%BA%BC"><span class="nav-number">4.</span> <span class="nav-text">對開發者來說意味什麼</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E5%80%8B%E4%B8%8D%E5%A4%AA%E8%88%92%E6%9C%8D%E7%9A%84%E6%8E%A8%E8%AB%96"><span class="nav-number">5.</span> <span class="nav-text">一個不太舒服的推論</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B8%E5%AD%97%E7%B8%BD%E7%B5%90"><span class="nav-number">6.</span> <span class="nav-text">數字總結</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">148</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">262</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/1ed064c6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="你的 AI 帳單即將縮水 30 倍：一天之內 NVIDIA 和 OpenAI 同時給出的訊號 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          你的 AI 帳單即將縮水 30 倍：一天之內 NVIDIA 和 OpenAI 同時給出的訊號
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2026-03-17 02:00:00 / 修改時間：12:59:59" itemprop="dateCreated datePublished" datetime="2026-03-17T02:00:00+08:00">2026-03-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/%E5%9F%BA%E7%A4%8E%E8%A8%AD%E6%96%BD/" itemprop="url" rel="index"><span itemprop="name">基礎設施</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.1k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>3 月 16 日晚上，兩件事同時發生。</p>
+<p>Jensen Huang 在 GTC 主題演講上揭曉 Groq 3 LPU，宣稱每瓦 tokens 效能提升 35 倍。幾個小時後，Sam Altman 在 X 上發文：GPT-5.2 到 5.4，三個月內效率提升 32 倍，每個任務成本降到 37 美分。</p>
+<p>兩家公司，一硬一軟，同一天給出幾乎相同的數字。這不是巧合。</p>
+<h2 id="硬體端：Groq-3-LPU-到底是什麼">硬體端：Groq 3 LPU 到底是什麼</h2>
+<p>NVIDIA 在 2025 年底花 200 億美元買下 Groq 的核心團隊和技術。GTC 上第一次展示成果：Groq 3 LPU（Language Processing Unit），專門為推理設計的晶片。</p>
+<p>跟 GPU 最大的差異在架構。GPU 用 HBM（高頻寬記憶體）做訓練和推理都行，但推理階段的記憶體存取模式跟訓練完全不同。LPU 用 SRAM 直接塞在晶片上，消除了記憶體瓶頸。結果就是：推理延遲極低，每瓦輸出的 tokens 數量暴增。</p>
+<p>NVIDIA 的做法很聰明。LPX 機架裝 256 顆 LPU，設計成放在 Vera Rubin GPU 機架旁邊一起用。訓練用 GPU，推理用 LPU。不是取代，是分工。</p>
+<p>35 倍的效能差距是什麼概念？如果你現在跑一個推理服務的電費是每月 10 萬美元，理論上可以降到 3,000 美元以下。當然實際部署沒這麼簡單，但方向已經很清楚了。</p>
+<h2 id="軟體端：OpenAI-的推理成本曲線">軟體端：OpenAI 的推理成本曲線</h2>
+<p>Sam Altman 那則推文值得仔細看。他轉推了一張圖表，顯示 GPT-5.2 到 GPT-5.4 的效率提升——三個月，32 倍。</p>
+<p>這是什麼意思？同樣完成一個程式碼任務，GPT-5.2 可能要花 12 美元的運算資源。GPT-5.4 只要 37 美分。模型架構優化、推理 pipeline 改進、量化技術進步，全部加在一起。</p>
+<p>回頭看 OpenAI 的定價策略就懂了。GPT-5.4 的 API 價格是 $3/$15 per million tokens（輸入/輸出）。放在兩年前，這個效能等級的模型定價會高出一個數量級。</p>
+<p>Altman 自己也說了：「I generally agree with this, and really feel it myself on the 5.3 → 5.4 upgrade.」不只是數字上的改進，體感也不一樣。</p>
+<h2 id="兩條曲線正在交會">兩條曲線正在交會</h2>
+<p>硬體端（Groq 3 LPU）和軟體端（GPT-5.4 效率）正在做同一件事：把 AI 推理的邊際成本推向零。</p>
+<p>但兩者的機制不同：</p>
+<p><strong>硬體改進是一次性跳躍。</strong> Groq 3 部署後，跑在上面的所有模型都受益。不需要改程式碼，不需要重新訓練。</p>
+<p><strong>軟體改進是持續迭代。</strong> 每個新模型版本都能在相同硬體上做更多事。而且迭代速度越來越快——三個月 32 倍，不是三年。</p>
+<p>當這兩條曲線疊加，推理成本的下降不是線性的，是指數的。</p>
+<h2 id="對開發者來說意味什麼">對開發者來說意味什麼</h2>
+<p>如果你正在建構 AI 應用，這裡有幾件值得重新考慮的事：</p>
+<p><strong>你的成本估算模型可能已經過時。</strong> 去年底做的財務規劃，假設了某個 token 單價。那個數字在三個月內可能已經偏差 10 倍以上。如果你的商業模式是建立在「AI 推理很貴」的前提上——比如做推理成本的中間層優化——這個護城河正在消失。</p>
+<p><strong>之前因為成本放棄的功能，現在值得重新評估。</strong> 即時語音翻譯、逐行程式碼審查、每次 commit 自動跑安全掃描——這些在推理成本 $30/百萬 tokens 時不划算的功能，在 $3 時完全可行。在 $0.3 時，你可以把它做成預設開啟。</p>
+<p><strong>本地推理正在變得更實際。</strong> DGX Spark + NemoClaw 的定位就是讓企業在自己的機房跑 agent。如果推理效率繼續以這個速度提升，兩年後在消費級硬體上跑現在的 frontier 模型效能不是不可能。</p>
+<p><strong>批次推理和即時推理的成本差距在縮小。</strong> 過去做 AI 功能得小心翼翼安排 batch job。35 倍效率之後，很多原本要排隊等的推理任務可以直接即時跑。</p>
+<h2 id="一個不太舒服的推論">一個不太舒服的推論</h2>
+<p>推理成本指數下降，但人力成本沒有。</p>
+<p>如果一個 AI agent 完成一個任務的成本從 12 美元降到 37 美分，再降到幾美分——那「要不要讓 AI 做這件事」這個問題的答案，會越來越頻繁地變成「為什麼不？」</p>
+<p>這不是未來的預測。Sam Altman 已經在 GPT-5.4 上感受到了。Jensen Huang 已經把硬體路線圖排到 2028 年的 Feynman。兩邊都在告訴你同一件事：推理的邊際成本正在趨近於零。</p>
+<p>至於這對工程師的工作內容意味什麼——我認為答案不是「被取代」，而是「你要處理的問題層級會往上移」。從「寫程式碼」移動到「設計系統」，從「實作功能」移動到「定義需求」。推理便宜了，判斷力沒有。</p>
+<p>但這也代表，一個能善用推理能力的工程師，跟一個還在手動做推理能自動完成的事的工程師之間的生產力差距，會越拉越大。</p>
+<h2 id="數字總結">數字總結</h2>
+<table>
+<thead>
+<tr>
+<th>指標</th>
+<th>數值</th>
+<th>來源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Groq 3 LPU 每瓦效能提升</td>
+<td>35x</td>
+<td>NVIDIA GTC 3/16</td>
+</tr>
+<tr>
+<td>GPT-5.2 → 5.4 效率提升</td>
+<td>32x（3 個月）</td>
+<td>Sam Altman 3/16</td>
+</tr>
+<tr>
+<td>GPT-5.4 每任務成本</td>
+<td>$0.37</td>
+<td>Sam Altman RT 3/16</td>
+</tr>
+<tr>
+<td>Vera Rubin tokens/sec</td>
+<td>700M（vs 競爭對手 2M）</td>
+<td>NVIDIA GTC</td>
+</tr>
+<tr>
+<td>NVIDIA 訂單展望</td>
+<td>$1T through 2027</td>
+<td>Jensen Huang GTC</td>
+</tr>
+<tr>
+<td>Feynman 路線圖</td>
+<td>2028</td>
+<td>NVIDIA GTC</td>
+</tr>
+</tbody>
+</table>
+<p>三月十六日這天，硬體和軟體同時給出了 30 倍以上的效率跳躍。如果你在做跟 AI 推理相關的任何事情——建構、部署、定價、規劃——這些數字值得你今天就打開試算表重新算一遍。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/OpenAI/" rel="tag"># OpenAI</a>
+              <a href="/tags/NVIDIA/" rel="tag"># NVIDIA</a>
+              <a href="/tags/GTC/" rel="tag"># GTC</a>
+              <a href="/tags/AI%E6%8E%A8%E7%90%86/" rel="tag"># AI推理</a>
+              <a href="/tags/%E6%88%90%E6%9C%AC%E5%84%AA%E5%8C%96/" rel="tag"># 成本優化</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/fefd29b9/" rel="prev" title="從 10 萬到 9700 萬下載：MCP 如何在 14 個月內變成 AI 工具連接的 USB">
+                  <i class="fa fa-angle-left"></i> 從 10 萬到 9700 萬下載：MCP 如何在 14 個月內變成 AI 工具連接的 USB
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">435k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">6:35</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>
