@@ -126,7 +126,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JS%E9%98%B2%E6%8A%96%E8%88%87%E7%AF%80%E6%B5%81%E6%95%99%E5%AD%B8"><span class="nav-number">1.</span> <span class="nav-text">JS防抖與節流教學</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B2%E6%8A%96-Debouncing"><span class="nav-number">1.1.</span> <span class="nav-text">防抖 (Debouncing)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%99%82%E6%A9%9F"><span class="nav-number">1.1.1.</span> <span class="nav-text">使用時機</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AF%80%E6%B5%81-Throttling"><span class="nav-number">1.2.</span> <span class="nav-text">節流 (Throttling)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%99%82%E6%A9%9F-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">使用時機</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.3.</span> <span class="nav-text">結論</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">JS防抖與節流教學</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B2%E6%8A%96-Debouncing"><span class="nav-number">1.1.</span> <span class="nav-text">防抖 (Debouncing)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%99%82%E6%A9%9F"><span class="nav-number">1.1.1.</span> <span class="nav-text">使用時機</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AF%80%E6%B5%81-Throttling"><span class="nav-number">1.2.</span> <span class="nav-text">節流 (Throttling)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%99%82%E6%A9%9F-2"><span class="nav-number">1.2.1.</span> <span class="nav-text">使用時機</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.3.</span> <span class="nav-text">結論</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -139,16 +139,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">150</span>
+          <span class="site-state-item-count">153</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">85</span>
+        <span class="site-state-item-count">87</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">266</span>
+        <span class="site-state-item-count">274</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -247,17 +247,26 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="JS防抖與節流教學"><a href="#JS防抖與節流教學" class="headerlink" title="JS防抖與節流教學"></a>JS防抖與節流教學</h1><p>在Javascript開發過程中，我們經常需要處理一些高頻事件，比如滾動、窗口縮放、鍵盤輸入等。如果這些事件的處理函數直接綁定到事件上，可能會導致瀏覽器的性能問題。為了優化性能和用戶體驗，我們通常會使用兩種技術：防抖（Debouncing）和節流（Throttling）。接下來，我們將深入了解它們的差異、使用時機和實現方法。</p>
-<h2 id="防抖-Debouncing"><a href="#防抖-Debouncing" class="headerlink" title="防抖 (Debouncing)"></a>防抖 (Debouncing)</h2><p>防抖技術指的是觸發事件後，在指定時間內只執行一次事件處理函數。如果在指定時間內再次觸發了事件，則重新計算等待時間。這樣可以確保事件處理函數在一系列快速的事件觸發中只被執行一次。</p>
-<h3 id="使用時機"><a href="#使用時機" class="headerlink" title="使用時機"></a>使用時機</h3><p>防抖技術適用於那些觸發頻率高，但不需要立即響應每次觸發的場景。例如：</p>
-<p>搜索框輸入（用戶停止輸入後再進行搜索）<br>窗口大小調整（調整結束後再計算布局）</p>
+    <div class="post-body" itemprop="articleBody"><h1>JS防抖與節流教學</h1>
+<p>在Javascript開發過程中，我們經常需要處理一些高頻事件，比如滾動、窗口縮放、鍵盤輸入等。如果這些事件的處理函數直接綁定到事件上，可能會導致瀏覽器的性能問題。為了優化性能和用戶體驗，我們通常會使用兩種技術：防抖（Debouncing）和節流（Throttling）。接下來，我們將深入了解它們的差異、使用時機和實現方法。</p>
+<h2 id="防抖-Debouncing">防抖 (Debouncing)</h2>
+<p>防抖技術指的是觸發事件後，在指定時間內只執行一次事件處理函數。如果在指定時間內再次觸發了事件，則重新計算等待時間。這樣可以確保事件處理函數在一系列快速的事件觸發中只被執行一次。</p>
+<h3 id="使用時機">使用時機</h3>
+<p>防抖技術適用於那些觸發頻率高，但不需要立即響應每次觸發的場景。例如：</p>
+<p>搜索框輸入（用戶停止輸入後再進行搜索）<br>
+窗口大小調整（調整結束後再計算布局）</p>
 <p>範例</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">debounce</span>(<span class="params">func, wait</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> timeout;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">function</span>(<span class="params">...args</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> context = <span class="variable language_">this</span>;</span><br><span class="line">        <span class="built_in">clearTimeout</span>(timeout);</span><br><span class="line">        timeout = <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> func.<span class="title function_">apply</span>(context, args), wait);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用防抖</span></span><br><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;resize&#x27;</span>, <span class="title function_">debounce</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;窗口大小調整完成&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">500</span>));</span><br></pre></td></tr></table></figure>
-<h2 id="節流-Throttling"><a href="#節流-Throttling" class="headerlink" title="節流 (Throttling)"></a>節流 (Throttling)</h2><p>節流技術指的是在指定時間內最多只執行一次事件處理函數，即使在這段時間內觸發了多次事件，事件處理函數也只會被執行一次。</p>
-<h3 id="使用時機-1"><a href="#使用時機-1" class="headerlink" title="使用時機"></a>使用時機</h3><p>節流技術適用於那些需要實時控制事件處理頻率的場景。例如：</p>
-<p>滾動事件處理（比如無限滾動的加載更多）<br>游戲中的按鍵響應<br>範例</p>
+<h2 id="節流-Throttling">節流 (Throttling)</h2>
+<p>節流技術指的是在指定時間內最多只執行一次事件處理函數，即使在這段時間內觸發了多次事件，事件處理函數也只會被執行一次。</p>
+<h3 id="使用時機-2">使用時機</h3>
+<p>節流技術適用於那些需要實時控制事件處理頻率的場景。例如：</p>
+<p>滾動事件處理（比如無限滾動的加載更多）<br>
+游戲中的按鍵響應<br>
+範例</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">throttle</span>(<span class="params">func, wait</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> lastTime = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">function</span>(<span class="params">...args</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> now = <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getTime</span>();</span><br><span class="line">        <span class="keyword">if</span> (now - lastTime &gt; wait) &#123;</span><br><span class="line">            lastTime = now;</span><br><span class="line">            func.<span class="title function_">apply</span>(<span class="variable language_">this</span>, args);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用節流</span></span><br><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;scroll&#x27;</span>, <span class="title function_">throttle</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;滾動事件被觸發&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">1000</span>));</span><br></pre></td></tr></table></figure>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>防抖和節流都是優化Javascript性能的重要手段，選擇適合的策略可以大大提高應用程序的響應性和性能。總的來說，當你需要限制函數在短時間內被頻繁調用時，應該考慮使用這兩種技術。防抖適用於那些對響應時機要求不高的情況，而節流則適用於需要穩定控制調用頻率的場景。</p>
+<h2 id="結論">結論</h2>
+<p>防抖和節流都是優化Javascript性能的重要手段，選擇適合的策略可以大大提高應用程序的響應性和性能。總的來說，當你需要限制函數在短時間內被頻繁調用時，應該考慮使用這兩種技術。防抖適用於那些對響應時機要求不高的情況，而節流則適用於需要穩定控制調用頻率的場景。</p>
 
     </div>
 
@@ -313,13 +322,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">439k</span>
+    <span title="總字數">449k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">6:39</span>
+    <span title="所需總閱讀時間">6:48</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

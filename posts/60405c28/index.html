@@ -143,16 +143,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">150</span>
+          <span class="site-state-item-count">153</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">85</span>
+        <span class="site-state-item-count">87</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">266</span>
+        <span class="site-state-item-count">274</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -252,7 +252,8 @@
     <div class="post-body" itemprop="articleBody"><p>等了快十年，Siri 終於要從「智障助理」畢業了。</p>
 <p>Apple 在 iOS 26.4 中重新打造了 Siri，背後用的是 Google 的 Gemini 模型。這不是小改版——是整個架構砍掉重練。22 億台 Apple 裝置將在三月底收到更新，這是史上最大規模的 AI 助理部署。</p>
 <p>身為開發者，我最關心的不是行銷話術，而是三個問題：架構怎麼設計的？隱私怎麼處理？對我們的 App 有什麼影響？</p>
-<h2 id="三層處理架構：該在哪算就在哪算"><a href="#三層處理架構：該在哪算就在哪算" class="headerlink" title="三層處理架構：該在哪算就在哪算"></a>三層處理架構：該在哪算就在哪算</h2><p>新 Siri 的核心設計是一個三層漸進式架構。不是所有請求都丟給雲端，而是根據任務複雜度，動態決定在哪一層處理。</p>
+<h2 id="三層處理架構：該在哪算就在哪算">三層處理架構：該在哪算就在哪算</h2>
+<p>新 Siri 的核心設計是一個三層漸進式架構。不是所有請求都丟給雲端，而是根據任務複雜度，動態決定在哪一層處理。</p>
 <p><strong>第一層：裝置端處理（On-Device）</strong></p>
 <p>簡單任務直接在手機上跑。設鬧鐘、開 App、查天氣——這些不需要網路請求，回應速度在毫秒等級。Apple 在 A17/M 系列晶片上跑的本地模型處理這些綽綽有餘。</p>
 <p>隱私上最安全，因為資料根本不離開裝置。</p>
@@ -269,30 +270,35 @@
 <p>真正需要深度推理的任務才會到這層。多步驟規劃（「幫我規劃下週的東京行程，考慮天氣和預算」）、即時網路資訊整合、複雜分析——這些需要 Gemini 的完整推理能力。</p>
 <p>Apple 在使用者和 Google 之間扮演「隱私代理人」的角色。送到 Gemini 的請求會經過匿名化處理：Google 看不到使用者的身份、裝置資訊、或原始個人資料。Apple 確保 Gemini 只拿到完成任務所需的最少資訊。</p>
 <p>Tim Cook 在一月的聲明講得很直白：「我們不會改變隱私規則。即使與 Google 合作，底層技術仍掌握在 Apple 手中，不在 Google 手中。」</p>
-<h2 id="開發者該知道的事"><a href="#開發者該知道的事" class="headerlink" title="開發者該知道的事"></a>開發者該知道的事</h2><p>如果你的 App 有 SiriKit 整合，iOS 26.4 帶來了一個值得注意的變化：<code>processingTier</code> callback。</p>
+<h2 id="開發者該知道的事">開發者該知道的事</h2>
+<p>如果你的 App 有 SiriKit 整合，iOS 26.4 帶來了一個值得注意的變化：<code>processingTier</code> callback。</p>
 <p>你的 intent handler 現在會收到一個回調，告訴你使用者的請求是在哪一層被處理的。這代表什麼？</p>
 <p>你可以根據處理層級調整 App 的行為。如果是本地處理，回應可以更即時。如果走到了 Gemini 層，你知道使用者的請求更複雜，可以提供更豐富的回應選項。</p>
 <p>更實際的影響是 Siri 的「螢幕感知」（On-Screen Awareness）能力。新 Siri 能讀取當前畫面的內容。使用者在 Safari 看到一家餐廳，可以直接叫 Siri 訂位——不需要複製名稱或地址。收到一封機票確認信，Siri 能自動加到日曆並設定出發提醒。</p>
 <p>對 App 開發者來說，這代表使用者與你的 App 互動的方式可能改變。過去使用者需要主動開啟你的 App、找到功能、手動操作。現在 Siri 可以從任何畫面觸發你的 App 功能，前提是你有實作對應的 intent。</p>
 <p>如果你還沒認真看過 App Intents framework，現在該看了。</p>
-<h2 id="十億美元的合作：為什麼是-Google？"><a href="#十億美元的合作：為什麼是-Google？" class="headerlink" title="十億美元的合作：為什麼是 Google？"></a>十億美元的合作：為什麼是 Google？</h2><p>Apple 沒有選 OpenAI，沒有自己從頭練模型，而是選了 Google。</p>
+<h2 id="十億美元的合作：為什麼是-Google？">十億美元的合作：為什麼是 Google？</h2>
+<p>Apple 沒有選 OpenAI，沒有自己從頭練模型，而是選了 Google。</p>
 <p>原因很現實。Google 的 Gemini 在多模態理解上有優勢——它能同時處理文字、圖片、程式碼、語音。Apple 需要的不只是聊天機器人能力，而是一個能理解「螢幕上有什麼」的模型。</p>
 <p>據報導，這筆合作金額超過 10 億美元。但對 Google 來說，這筆錢買到的是 22 億台裝置的推理流量——即使匿名化處理，這些請求的分佈模式本身就有巨大的數據價值。</p>
 <p>對 Apple 來說，這解決了一個根本問題：他們在大型語言模型的訓練上落後了。與其花三年追趕，不如用架構設計來化解差距。本地處理 + 隱私代理的設計，讓 Apple 在用別人的模型的同時，仍然控制了使用者體驗和資料流。</p>
 <p>這個架構決策很有意思。Apple 把 AI 能力當作「水電」——需要的時候接上就好，重點是自己控制管線和閥門。</p>
-<h2 id="AI-助理市場的重新洗牌"><a href="#AI-助理市場的重新洗牌" class="headerlink" title="AI 助理市場的重新洗牌"></a>AI 助理市場的重新洗牌</h2><p>放在 2026 年三月的時間點來看，AI 助理市場正在經歷劇烈重組。</p>
+<h2 id="AI-助理市場的重新洗牌">AI 助理市場的重新洗牌</h2>
+<p>放在 2026 年三月的時間點來看，AI 助理市場正在經歷劇烈重組。</p>
 <p>根據最新數據，ChatGPT 在美國的日活佔比從去年八月的 57% 降到今年二月的 42%。Gemini 從 13% 翻倍到 25%。Claude 因為五角大廈事件衝上 App Store 第一名。</p>
 <p>現在加上 Siri 的 22 億裝置部署，市場格局會再次改變。</p>
 <p>我認為最大的影響不在「誰的模型比較強」，而在「AI 助理在哪裡」。</p>
 <p>ChatGPT 和 Claude 需要使用者主動開啟 App 或網頁。Siri 嵌在作業系統裡，使用者只要喊一聲或長按按鈕就能觸發。Gemini 透過 Android 有類似的系統級整合。</p>
 <p>對一般使用者來說，最方便的 AI 助理會贏。不是最聰明的，是隨手可得的。</p>
 <p>這對我們開發者的啟示是什麼？別再把 AI 功能當作獨立的 feature 來做。把它當作介面的一部分——使用者不需要「去用 AI」，AI 應該在使用者需要的時候自然出現。</p>
-<h2 id="隱私-vs-能力的平衡"><a href="#隱私-vs-能力的平衡" class="headerlink" title="隱私 vs 能力的平衡"></a>隱私 vs 能力的平衡</h2><p>Apple 的三層架構是一個務實的妥協。</p>
+<h2 id="隱私-vs-能力的平衡">隱私 vs 能力的平衡</h2>
+<p>Apple 的三層架構是一個務實的妥協。</p>
 <p>純粹的隱私派會說：「為什麼要把任何資料送出裝置？」純粹的能力派會說：「為什麼不全部用最強的模型？」</p>
 <p>Apple 的答案是：看情況。</p>
 <p>能在本地做的就在本地做。需要更多能力的，用自己可控的雲端。真正需要頂級推理的，用合作夥伴的模型，但把隱私防護做在中間。</p>
 <p>這個「漸進式信任」的設計，我覺得會成為 AI 應用架構的參考模式。不是所有場景都需要最強的模型，也不是所有場景都能接受資料外流。根據實際需求，動態選擇處理層級——這比「全上雲」或「全在本地」都更實際。</p>
-<h2 id="我的觀察"><a href="#我的觀察" class="headerlink" title="我的觀察"></a>我的觀察</h2><p>iOS 26.4 的 Siri 更新不只是 Apple 的產品升級。它反映了 AI 產業正在從「誰的模型最大」轉向「怎麼把 AI 塞進使用者的日常」。</p>
+<h2 id="我的觀察">我的觀察</h2>
+<p>iOS 26.4 的 Siri 更新不只是 Apple 的產品升級。它反映了 AI 產業正在從「誰的模型最大」轉向「怎麼把 AI 塞進使用者的日常」。</p>
 <p>幾個值得持續關注的點：</p>
 <p><strong>螢幕感知的邊界在哪？</strong> Siri 能讀取螢幕內容，這對隱私敏感的場景（例如銀行 App、醫療資訊）怎麼處理？Apple 目前的做法是讓開發者標記哪些畫面不允許 Siri 讀取。但執行面會不會出問題？</p>
 <p><strong>Gemini 的服務等級協議？</strong> 當 22 億裝置同時上線，Google 端的推理延遲和可用性會不會成為瓶頸？如果 Gemini 當機，Siri 的體驗會降級到什麼程度？</p>
@@ -359,13 +365,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">439k</span>
+    <span title="總字數">449k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">6:39</span>
+    <span title="所需總閱讀時間">6:48</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

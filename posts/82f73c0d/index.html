@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="GOinl_lrNWB9APjfgt6dbVdgki38olFzWmFDv3Yh1y8">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="Bloomberg 今天丟出一篇標題很直白的文章：「AI 泡沫要破了嗎？」三年過去，華爾街自己都搞不定這個問題——有人說投資人低估了 AI，有人說砸進去的錢已經變成一顆定時炸彈。  我不是金融分析師，但身為一個每天跟 AI 工具打交道的開發者，我想從技術端的角度聊聊：錢到底去了哪裡，哪些地方看得到回報，哪些地方還在燒。  錢去了三個地方 第一塊：算力基礎設施。 Jensen Huang 在 GTC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI 投資三年了，錢到底花到哪去了？從 Bloomberg 的靈魂拷問看開發者該知道的事">
+<meta property="og:url" content="https://kyosora.github.io/posts/82f73c0d/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="Bloomberg 今天丟出一篇標題很直白的文章：「AI 泡沫要破了嗎？」三年過去，華爾街自己都搞不定這個問題——有人說投資人低估了 AI，有人說砸進去的錢已經變成一顆定時炸彈。  我不是金融分析師，但身為一個每天跟 AI 工具打交道的開發者，我想從技術端的角度聊聊：錢到底去了哪裡，哪些地方看得到回報，哪些地方還在燒。  錢去了三個地方 第一塊：算力基礎設施。 Jensen Huang 在 GTC">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2026-03-18T17:30:00.000Z">
+<meta property="article:modified_time" content="2026-03-18T17:07:54.674Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="投資">
+<meta property="article:tag" content="產業分析">
+<meta property="article:tag" content="開發者生態">
+<meta property="article:tag" content="NVIDIA">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/82f73c0d/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/82f73c0d/","path":"posts/82f73c0d/","title":"AI 投資三年了，錢到底花到哪去了？從 Bloomberg 的靈魂拷問看開發者該知道的事"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>AI 投資三年了，錢到底花到哪去了？從 Bloomberg 的靈魂拷問看開發者該知道的事 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%8C%A2%E5%8E%BB%E4%BA%86%E4%B8%89%E5%80%8B%E5%9C%B0%E6%96%B9"><span class="nav-number">1.</span> <span class="nav-text">錢去了三個地方</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A9%E7%A8%AE%E6%88%AA%E7%84%B6%E7%9B%B8%E5%8F%8D%E7%9A%84%E8%A7%80%E9%BB%9E"><span class="nav-number">2.</span> <span class="nav-text">兩種截然相反的觀點</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8D%E9%96%8B%E7%99%BC%E8%80%85%E4%BE%86%E8%AA%AA%EF%BC%8C%E7%9C%9F%E6%AD%A3%E9%87%8D%E8%A6%81%E7%9A%84%E4%BF%A1%E8%99%9F"><span class="nav-number">3.</span> <span class="nav-text">對開發者來說，真正重要的信號</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9E%E5%88%B0%E6%9C%80%E5%88%9D%E7%9A%84%E5%95%8F%E9%A1%8C"><span class="nav-number">4.</span> <span class="nav-text">回到最初的問題</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">87</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">274</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/82f73c0d/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="AI 投資三年了，錢到底花到哪去了？從 Bloomberg 的靈魂拷問看開發者該知道的事 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AI 投資三年了，錢到底花到哪去了？從 Bloomberg 的靈魂拷問看開發者該知道的事
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2026-03-19 01:30:00 / 修改時間：01:07:54" itemprop="dateCreated datePublished" datetime="2026-03-19T01:30:00+08:00">2026-03-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/" itemprop="url" rel="index"><span itemprop="name">產業觀察</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1.8k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>Bloomberg 今天丟出一篇標題很直白的文章：「AI 泡沫要破了嗎？」三年過去，華爾街自己都搞不定這個問題——有人說投資人低估了 AI，有人說砸進去的錢已經變成一顆定時炸彈。</p>
+<p>我不是金融分析師，但身為一個每天跟 AI 工具打交道的開發者，我想從技術端的角度聊聊：錢到底去了哪裡，哪些地方看得到回報，哪些地方還在燒。</p>
+<h2 id="錢去了三個地方">錢去了三個地方</h2>
+<p><strong>第一塊：算力基礎設施。</strong> Jensen Huang 在 GTC 2026 說 Blackwell 加 Vera Rubin 的訂單量預計到 2027 年達到一兆美元。雲端合作夥伴的 GPU 總量突破 100 萬顆。這些錢是實打實花出去的——資料中心、電力、散熱、光纖。你用 Claude、GPT 或任何一個 AI 服務，背後都是這些硬體在撐。</p>
+<p><strong>第二塊：模型研發。</strong> OpenAI、Anthropic、Google、xAI、DeepSeek——每家都在瘋狂燒錢訓練下一代模型。GPT-5.4 三個月內把推理效率提升 32 倍，Groq 3 LPU 的推理速度是 GPU 的 35 倍。這些進步是真的，但訓練一個前沿模型的成本也是真的——動輒數億美元。</p>
+<p><strong>第三塊：應用層。</strong> 這是最有爭議的部分。AI 能寫程式碼、起草合約、做行銷企劃，但多數企業還在「試水溫」階段。UniCredit 預估 AI 五年內能省下 €4-5 億的營運成本。Xbow 用 AI 做自動化資安測試，剛拿到 $1.2 億的 C 輪，估值破十億。這些是看得到回報的案例，但它們是例外還是常態？</p>
+<h2 id="兩種截然相反的觀點">兩種截然相反的觀點</h2>
+<p><strong>看多派：橡樹資本的 Howard Marks。</strong> 他說投資人「低估了 AI」。他的邏輯是：AI 讓世界變得前所未有地不可預測，而不可預測性恰恰是超額回報的來源。他看的不是個別公司，是整個生產力曲線的位移。</p>
+<p><strong>看空派：Bloomberg 的核心質疑。</strong> 三年砸下去的錢已經「膨脹成懸在金融市場頭上的巨大負債」，但回報模式還不清楚。AI 確實能做更多事了，問題是這些事的商業價值能不能撐住投入的成本。</p>
+<p>我自己的觀察是：<strong>基礎設施層的錢花得值，應用層的錢花得還不確定。</strong></p>
+<p>GPU 不會白買——只要有人需要跑推理、訓練模型，這些硬體就有用。但應用層的故事不一樣。很多公司買了 AI 工具，用了三個月發現它只能處理 60% 的案例，剩下 40% 還是得靠人。這個落差就是泡沫的溫床。</p>
+<h2 id="對開發者來說，真正重要的信號">對開發者來說，真正重要的信號</h2>
+<p><strong>推理成本在自由落體。</strong> GPT-5.4 比 5.2 便宜 32 倍，每個任務只要 $0.37。這不是擠牙膏式的進步，是數量級的變化。推理成本降到夠低的那一刻，很多原本「算不過來」的應用場景會突然變得可行。</p>
+<p><strong>Agent 正在取代 Chatbot。</strong> Jensen Huang 在 GTC 上說 OpenClaw 是「下一個 ChatGPT」。xAI 的 Grok 4.20 一次跑 16 個 Agent 協同工作。Google DeepMind 花 $200K 辦 hackathon 來設計 AGI 評測基準。整個產業的注意力正在從「聊天機器人」轉向「能完成任務的 Agent」。</p>
+<p><strong>安全變成硬需求。</strong> Xbow 拿到獨角獸估值不是偶然。AI 越強大，用 AI 來攻擊和防禦就越重要。Oege de Moor（GitHub Copilot 和 Advanced Security 的創造者）選擇創立一家 AI 資安公司，這個選擇本身就是一個信號。</p>
+<p><strong>政治風險是新變數。</strong> Anthropic 被五角大廈列為「國安風險」，因為拒絕讓 Claude 用於自主武器。AI 公司和政府的關係正在分化——OpenAI 透過 AWS 賣 AI 給軍方，Anthropic 拒絕然後被告。這個分裂會影響開發者的工具選擇和平台策略。</p>
+<h2 id="回到最初的問題">回到最初的問題</h2>
+<p>AI 泡沫會不會破？我認為更精確的問法是：<strong>哪一層會破，哪一層不會？</strong></p>
+<p>算力層不太會破。全世界對推理的需求只會增加，不會減少。模型層會洗牌——不是每家公司都能持續燒幾十億訓練前沿模型，但存活下來的會非常強。應用層會破一波——那些「把 ChatGPT 包一層皮就收費」的產品會被淘汰，但真正解決特定問題的應用（像 Xbow 做資安、Cursor 做程式碼）會活下來。</p>
+<p>對開發者來說，現在是個好時機。工具越來越便宜，能力越來越強，唯一的問題是：<strong>你用它來解決的問題，值不值得被解決？</strong></p>
+<p>如果你的 AI 應用只是「讓已經會做的事變快一點」，那可能撐不久。但如果它能讓人做到「原本根本做不到的事」——比如一個人管理 100 個資安測試、或用 16 個 Agent 同時做市場研究——那你踩在的不是泡沫，是地基。</p>
+<p>三年後回頭看，我猜最大的驚喜不會是「AI 能做什麼」，而是「成本降到多低」。當推理成本降到接近零的時候，所有關於泡沫的討論都會變得多餘。問題只剩下：那時候你準備好了沒有。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/%E6%8A%95%E8%B3%87/" rel="tag"># 投資</a>
+              <a href="/tags/%E7%94%A2%E6%A5%AD%E5%88%86%E6%9E%90/" rel="tag"># 產業分析</a>
+              <a href="/tags/%E9%96%8B%E7%99%BC%E8%80%85%E7%94%9F%E6%85%8B/" rel="tag"># 開發者生態</a>
+              <a href="/tags/NVIDIA/" rel="tag"># NVIDIA</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/6a9da963/" rel="prev" title="Chrome DevTools MCP vs Claude in Chrome：兩種 AI 瀏覽器自動化方案，你該選哪個？">
+                  <i class="fa fa-angle-left"></i> Chrome DevTools MCP vs Claude in Chrome：兩種 AI 瀏覽器自動化方案，你該選哪個？
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/624d1bf8/" rel="next" title="AI Agent 不寫程式了——2026 年 Agent 生態從寫 Code 走向裝 Skill">
+                  AI Agent 不寫程式了——2026 年 Agent 生態從寫 Code 走向裝 Skill <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">449k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">6:48</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

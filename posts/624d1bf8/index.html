@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="GOinl_lrNWB9APjfgt6dbVdgki38olFzWmFDv3Yh1y8">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="上個月我盯 GitHub Trending 的時候，發現一個微妙的轉變：排行榜上最火的 AI 專案，不再是「更好的模型」或「更快的推理引擎」。而是一堆教 Agent 怎麼裝外掛、怎麼組合技能的框架。  OpenClaw 60 天內從 9,000 顆星飆到 250,000 顆。Obra&#x2F;superpowers 緊隨其後，定位自己是「Agent 的 App Store」。ByteDance 的 Dee">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI Agent 不寫程式了——2026 年 Agent 生態從寫 Code 走向裝 Skill">
+<meta property="og:url" content="https://kyosora.github.io/posts/624d1bf8/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="上個月我盯 GitHub Trending 的時候，發現一個微妙的轉變：排行榜上最火的 AI 專案，不再是「更好的模型」或「更快的推理引擎」。而是一堆教 Agent 怎麼裝外掛、怎麼組合技能的框架。  OpenClaw 60 天內從 9,000 顆星飆到 250,000 顆。Obra&#x2F;superpowers 緊隨其後，定位自己是「Agent 的 App Store」。ByteDance 的 Dee">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2026-03-18T19:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-18T19:07:16.129Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="AI Agent">
+<meta property="article:tag" content="開發者工具">
+<meta property="article:tag" content="OpenClaw">
+<meta property="article:tag" content="GitHub Trending">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/624d1bf8/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/624d1bf8/","path":"posts/624d1bf8/","title":"AI Agent 不寫程式了——2026 年 Agent 生態從寫 Code 走向裝 Skill"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>AI Agent 不寫程式了——2026 年 Agent 生態從寫 Code 走向裝 Skill | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%9E%E3%80%8C%E4%BB%80%E9%BA%BC%E9%83%BD%E8%87%AA%E5%B7%B1%E5%B9%B9%E3%80%8D%E5%88%B0%E3%80%8C%E6%9C%83%E8%A3%9D%E5%A4%96%E6%8E%9B%E5%B0%B1%E5%A5%BD%E3%80%8D"><span class="nav-number">1.</span> <span class="nav-text">從「什麼都自己幹」到「會裝外掛就好」</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E5%80%8B%E5%80%BC%E5%BE%97%E6%B3%A8%E6%84%8F%E7%9A%84%E8%B6%A8%E5%8B%A2"><span class="nav-number">2.</span> <span class="nav-text">三個值得注意的趨勢</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%B9%B3%E5%8F%B0-%E5%A4%96%E6%8E%9B%E5%B8%82%E5%A0%B4%E7%9A%84%E5%88%86%E5%B1%A4%E6%AD%A3%E5%9C%A8%E6%88%90%E5%BD%A2"><span class="nav-number">2.1.</span> <span class="nav-text">1. 平台 + 外掛市場的分層正在成形</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E3%80%8CAutoresearch%E3%80%8D%E6%A8%A1%E5%BC%8F%E8%AE%93-Agent-%E5%BE%9E%E5%9F%B7%E8%A1%8C%E8%80%85%E8%AE%8A%E6%88%90%E7%A0%94%E7%A9%B6%E8%80%85"><span class="nav-number">2.2.</span> <span class="nav-text">2. 「Autoresearch」模式讓 Agent 從執行者變成研究者</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-ByteDance-%E5%92%8C%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%E5%90%8C%E6%99%82%E6%8A%BC%E6%B3%A8-Agent-%E5%9F%BA%E7%A4%8E%E8%A8%AD%E6%96%BD"><span class="nav-number">2.3.</span> <span class="nav-text">3. ByteDance 和阿里巴巴同時押注 Agent 基礎設施</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8D%E9%96%8B%E7%99%BC%E8%80%85%E6%84%8F%E5%91%B3%E8%91%97%E4%BB%80%E9%BA%BC"><span class="nav-number">3.</span> <span class="nav-text">對開發者意味著什麼</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E5%80%8B%E5%80%BC%E5%BE%97%E8%AD%A6%E6%83%95%E7%9A%84%E5%95%8F%E9%A1%8C"><span class="nav-number">4.</span> <span class="nav-text">一個值得警惕的問題</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9E%E5%88%B0-GitHub-Trending"><span class="nav-number">5.</span> <span class="nav-text">回到 GitHub Trending</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">87</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">274</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/624d1bf8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="AI Agent 不寫程式了——2026 年 Agent 生態從寫 Code 走向裝 Skill | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AI Agent 不寫程式了——2026 年 Agent 生態從寫 Code 走向裝 Skill
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2026-03-19 03:00:00 / 修改時間：03:07:16" itemprop="dateCreated datePublished" datetime="2026-03-19T03:00:00+08:00">2026-03-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/%E9%96%8B%E7%99%BC%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">開發工具</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>3.2k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>3 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>上個月我盯 GitHub Trending 的時候，發現一個微妙的轉變：排行榜上最火的 AI 專案，不再是「更好的模型」或「更快的推理引擎」。而是一堆教 Agent 怎麼裝外掛、怎麼組合技能的框架。</p>
+<p>OpenClaw 60 天內從 9,000 顆星飆到 250,000 顆。Obra/superpowers 緊隨其後，定位自己是「Agent 的 App Store」。ByteDance 的 DeerFlow v2 上線當天就衝上 Trending 第一。Karpathy 的 autoresearch 三天拿了 23,000 顆星。</p>
+<p>這幾個專案各做各的，但拼在一起看，指向同一件事：Agent 的核心能力正從「寫程式碼」轉移到「組合技能」。</p>
+<h2 id="從「什麼都自己幹」到「會裝外掛就好」">從「什麼都自己幹」到「會裝外掛就好」</h2>
+<p>2024 年的 AI Agent 長這樣：給它一個任務，它會嘗試用程式碼從零搭出解決方案。寫 API 呼叫、處理 JSON、做錯誤處理——全部即時生成。</p>
+<p>問題很明顯。每次執行同樣的任務，Agent 可能生出完全不同的程式碼。有時候能跑，有時候炸掉。更糟的是，它不會從上一次的錯誤中學到教訓，因為那些程式碼是用完即棄的。</p>
+<p>2026 年的 Agent 不一樣了。OpenClaw 的做法是：Agent 本身只負責理解任務和決定策略。實際執行靠的是預先封裝好的 Skill。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 2024 年的 Agent：每次都重新發明輪子</span><br><span class="line">Agent: &quot;我需要搜尋 Twitter...&quot;</span><br><span class="line">→ 即時生成 Twitter API 呼叫</span><br><span class="line">→ 手動處理 OAuth</span><br><span class="line">→ 解析 JSON 回應</span><br><span class="line">→ 可能少處理了分頁</span><br><span class="line">→ 下次再做一遍，可能換一種寫法</span><br><span class="line"></span><br><span class="line"># 2026 年的 Agent：裝好 Skill，專注決策</span><br><span class="line">Agent: &quot;我需要搜尋 Twitter...&quot;</span><br><span class="line">→ 呼叫已安裝的 xreach skill</span><br><span class="line">→ Skill 處理認證、分頁、錯誤重試</span><br><span class="line">→ Agent 拿到乾淨的結果，做判斷</span><br><span class="line">→ 每次行為一致</span><br></pre></td></tr></table></figure>
+<p>這不是什麼革命性的架構概念。軟體工程從組合語言到高階語言、從寫 socket 到用 HTTP 框架，一直在做同樣的事：把重複的底層工作封裝起來，讓上層專注在業務邏輯。Agent 生態只是終於走到這一步了。</p>
+<h2 id="三個值得注意的趨勢">三個值得注意的趨勢</h2>
+<h3 id="1-平台-外掛市場的分層正在成形">1. 平台 + 外掛市場的分層正在成形</h3>
+<p>OpenClaw 是執行平台，Obra/superpowers 是技能市場。兩者的關係像是 iPhone 和 App Store——平台本身的價值取決於上面有多少高品質的外掛。</p>
+<p>目前 superpowers 上已經有超過 200 個技能包，涵蓋文件處理、瀏覽器自動化、資料分析、程式碼審查。每個技能包都有標準化的介面：接收什麼參數、回傳什麼格式、在什麼條件下觸發。</p>
+<p>這帶來一個有趣的副作用：Agent 的能力不再跟底層模型綁死。同一個技能包，不管底層是 Claude、GPT-5.4 還是 Qwen，都能正常運作。模型負責理解和規劃，技能包負責執行。</p>
+<h3 id="2-「Autoresearch」模式讓-Agent-從執行者變成研究者">2. 「Autoresearch」模式讓 Agent 從執行者變成研究者</h3>
+<p>Karpathy 的 autoresearch 專案為什麼能三天拿 23,000 顆星？因為它示範了 Agent 的另一個進化方向：不只是按指令做事，而是自己決定要研究什麼、怎麼研究。</p>
+<p>autoresearch 的工作流程：</p>
+<ol>
+<li>設定一個研究領域</li>
+<li>Agent 自動搜尋最新論文和程式碼</li>
+<li>嘗試復現實驗</li>
+<li>把結果整理成筆記</li>
+</ol>
+<p>Karpathy 自己在 X 上說了一句很有意思的話：「My autoresearch labs got wiped out in the oauth outage. Have to think through failovers. Intelligence brownouts will be interesting — the planet losing IQ points when frontier AI stutters.」</p>
+<p>他在描述的不是工具故障——是「智慧中斷」。當 AI 服務掛掉的時候，那些依賴 Agent 做研究的流程會集體停擺。這已經不是「有沒有 Agent」的問題，而是「Agent 掛了怎麼辦」的問題。</p>
+<h3 id="3-ByteDance-和阿里巴巴同時押注-Agent-基礎設施">3. ByteDance 和阿里巴巴同時押注 Agent 基礎設施</h3>
+<p>ByteDance 的 DeerFlow 是開源 superagent 框架，強調多 Agent 協作和任務分解。阿里巴巴在 3/16 宣布成立 Alibaba Token Hub（ATH），由 CEO 吳泳銘親自掛帥，把通義實驗室、Qwen、MaaS、釘釘全部整合到一個事業群底下。</p>
+<p>ATH 的使命宣言：「Create tokens, deliver tokens, and apply tokens.」</p>
+<p>翻譯成白話：阿里把 AI 的核心指標定義為「token 的生產和消費」。模型訓練產出 token（推理能力），雲端平台遞送 token（API 服務），終端應用消費 token（使用者互動）。整條鏈路打通，用 token 計價。</p>
+<p>中國的大廠在做的事情，和 OpenClaw 生態在做的事情，方向一致但路徑不同。OpenClaw 走開源社群 + 外掛市場；阿里走企業內部整合 + 雲端服務。兩種模式最終都指向同一個結論：Agent 的價值不在模型本身，在生態系統。</p>
+<h2 id="對開發者意味著什麼">對開發者意味著什麼</h2>
+<p>如果你是寫 Agent 應用的開發者，三件事值得現在就開始做：</p>
+<p><strong>把可複用的操作封裝成 Skill。</strong> 你現在寫的那些「呼叫某個 API、處理回應、做錯誤重試」的程式碼，每次都在重寫。花一天時間把它們標準化——定義清楚輸入輸出格式、錯誤處理策略、重試邏輯。不管你用不用 OpenClaw，這個習慣都能省下大量重複工作。</p>
+<p><strong>讓 Agent 宣告能力，而不是硬編碼行為。</strong> 目前大多數 Agent 的邏輯是「如果使用者說 X，就做 Y」。更好的做法是讓 Agent 持有一份「我會什麼」的清單，根據任務動態選擇用哪個技能。這跟微服務的服務發現是同一回事。</p>
+<p><strong>監控 Agent 的行為一致性。</strong> 當 Agent 的能力從即時生成程式碼轉向呼叫預封裝的 Skill，可預測性會大幅提升。但「大幅提升」不等於「百分之百」。你還是需要 logging、需要 assertion、需要定期檢查 Agent 是不是在用正確的 Skill 做正確的事。</p>
+<h2 id="一個值得警惕的問題">一個值得警惕的問題</h2>
+<p>Agent 生態越成熟，對 LLM 服務的依賴就越重。Karpathy 的 autoresearch 因為 OAuth 當機全滅，這不是個案——任何重度依賴 frontier AI API 的自動化流程都有同樣的脆弱性。</p>
+<p>目前還沒有標準化的 Agent 容錯機制。大多數框架的做法是重試三次然後放棄。這在批次處理的場景可以接受，但如果 Agent 正在做即時決策——幫你管理投資組合、監控系統異常、跟客戶對話——「重試三次然後放棄」就不夠了。</p>
+<p>我認為 2026 下半年會開始出現「Agent 可靠性工程」這個領域。有點像 SRE 之於微服務——當系統複雜到一定程度，你需要專門有人負責確保它不會在關鍵時刻掛掉。</p>
+<h2 id="回到-GitHub-Trending">回到 GitHub Trending</h2>
+<p>再看一次那份排行榜：OpenClaw（Agent 平台）、Obra（技能市場）、DeerFlow（多 Agent 協作）、autoresearch（自主研究）、Ollama（本地推理）。</p>
+<p>五個專案，五個層次，拼出一張完整的圖：</p>
+<p>本地推理 → Agent 平台 → 技能組合 → 多 Agent 協作 → 自主研究</p>
+<p>每一層都在解決上一層留下的問題。Ollama 讓你不用依賴雲端 API。OpenClaw 讓你不用自己寫 Agent 框架。Obra 讓你不用自己寫每個功能。DeerFlow 讓多個 Agent 能協作。autoresearch 讓 Agent 不需要你告訴它該研究什麼。</p>
+<p>2024 年我們在問「AI 能幫我寫程式嗎？」。2026 年的問題變成了「我的 Agent 該裝哪些 Skill？」</p>
+<p>這個轉變比模型本身的進步更值得關注。因為模型的提升是漸進的——每一代快一點、準一點。但生態系統的成熟是指數級的——一旦標準化的介面和市場成形，技能數量和品質的成長速度會遠超過任何單一模型的改進。</p>
+<p>你的 Agent 現在會幾招？</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/LLM/" rel="tag"># LLM</a>
+              <a href="/tags/AI-Agent/" rel="tag"># AI Agent</a>
+              <a href="/tags/%E9%96%8B%E7%99%BC%E8%80%85%E5%B7%A5%E5%85%B7/" rel="tag"># 開發者工具</a>
+              <a href="/tags/OpenClaw/" rel="tag"># OpenClaw</a>
+              <a href="/tags/GitHub-Trending/" rel="tag"># GitHub Trending</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/82f73c0d/" rel="prev" title="AI 投資三年了，錢到底花到哪去了？從 Bloomberg 的靈魂拷問看開發者該知道的事">
+                  <i class="fa fa-angle-left"></i> AI 投資三年了，錢到底花到哪去了？從 Bloomberg 的靈魂拷問看開發者該知道的事
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/100dadfe/" rel="next" title="Prompt Injection 不只是學術問題：OpenAI 收購 Promptfoo 背後的 Agent 安全困局">
+                  Prompt Injection 不只是學術問題：OpenAI 收購 Promptfoo 背後的 Agent 安全困局 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">449k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">6:48</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>
