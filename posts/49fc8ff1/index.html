@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="GOinl_lrNWB9APjfgt6dbVdgki38olFzWmFDv3Yh1y8">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="2026 年 3 月 24 日上午 10:52 UTC，有人把一個藏了後門的 litellm 1.82.8 推上了 PyPI。六分鐘後，一位工程師的筆電因為 11,000 個 Python 程序同時爆開而當機。  他原本以為是 Cursor 更新搞的鬼。結果是一場精心設計的供應鏈攻擊——而且他是全世界第一個發現的人。  事件怎麼發生的 litellm 是 AI 開發圈的常客。做 LLM 應用的人幾">
+<meta property="og:type" content="article">
+<meta property="og:title" content="你的 AI 開發工具鏈被下毒了嗎？LiteLLM 供應鏈攻擊事件完整解析">
+<meta property="og:url" content="https://kyosora.github.io/posts/49fc8ff1/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="2026 年 3 月 24 日上午 10:52 UTC，有人把一個藏了後門的 litellm 1.82.8 推上了 PyPI。六分鐘後，一位工程師的筆電因為 11,000 個 Python 程序同時爆開而當機。  他原本以為是 Cursor 更新搞的鬼。結果是一場精心設計的供應鏈攻擊——而且他是全世界第一個發現的人。  事件怎麼發生的 litellm 是 AI 開發圈的常客。做 LLM 應用的人幾">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2026-03-27T14:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-27T13:58:01.368Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Claude Code">
+<meta property="article:tag" content="LiteLLM">
+<meta property="article:tag" content="供應鏈攻擊">
+<meta property="article:tag" content="PyPI">
+<meta property="article:tag" content="AI開發安全">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/49fc8ff1/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/49fc8ff1/","path":"posts/49fc8ff1/","title":"你的 AI 開發工具鏈被下毒了嗎？LiteLLM 供應鏈攻擊事件完整解析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>你的 AI 開發工具鏈被下毒了嗎？LiteLLM 供應鏈攻擊事件完整解析 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E6%80%8E%E9%BA%BC%E7%99%BC%E7%94%9F%E7%9A%84"><span class="nav-number">1.</span> <span class="nav-text">事件怎麼發生的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E9%9A%8E%E6%AE%B5%E6%94%BB%E6%93%8A%E9%8F%88"><span class="nav-number">2.</span> <span class="nav-text">三階段攻擊鏈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%99%BC%E7%8F%BE%E9%81%8E%E7%A8%8B%EF%BC%9A%E4%B8%80%E5%A0%B4%E5%8D%B3%E6%99%82%E5%81%B5%E6%8E%A2%E5%8A%87"><span class="nav-number">3.</span> <span class="nav-text">發現過程：一場即時偵探劇</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8D%E9%96%8B%E7%99%BC%E8%80%85%E7%9A%84%E5%95%9F%E7%A4%BA"><span class="nav-number">4.</span> <span class="nav-text">對開發者的啟示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%A0%E7%8F%BE%E5%9C%A8%E8%A9%B2%E6%AA%A2%E6%9F%A5%E4%BB%80%E9%BA%BC"><span class="nav-number">5.</span> <span class="nav-text">你現在該檢查什麼</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%A0%B9%E6%9C%AC%E7%9A%84%E5%95%8F%E9%A1%8C"><span class="nav-number">6.</span> <span class="nav-text">更根本的問題</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">297</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/49fc8ff1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="你的 AI 開發工具鏈被下毒了嗎？LiteLLM 供應鏈攻擊事件完整解析 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          你的 AI 開發工具鏈被下毒了嗎？LiteLLM 供應鏈攻擊事件完整解析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2026-03-27 22:00:00 / 修改時間：21:58:01" itemprop="dateCreated datePublished" datetime="2026-03-27T22:00:00+08:00">2026-03-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/%E8%B3%87%E5%AE%89/" itemprop="url" rel="index"><span itemprop="name">資安</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.6k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>2026 年 3 月 24 日上午 10:52 UTC，有人把一個藏了後門的 litellm 1.82.8 推上了 PyPI。六分鐘後，一位工程師的筆電因為 11,000 個 Python 程序同時爆開而當機。</p>
+<p>他原本以為是 Cursor 更新搞的鬼。結果是一場精心設計的供應鏈攻擊——而且他是全世界第一個發現的人。</p>
+<h2 id="事件怎麼發生的">事件怎麼發生的</h2>
+<p>litellm 是 AI 開發圈的常客。做 LLM 應用的人幾乎都用過它——統一呼叫 OpenAI、Anthropic、Gemini 等不同模型 API 的 proxy 層。PyPI 上的週下載量是百萬級別。</p>
+<p>攻擊者拿到了 litellm 的 PyPI 發布權限（很可能是維護者帳號被盜），直接推了一個 1.82.8 版本上去。GitHub 上完全沒有對應的 tag 或 release——繞過了正常的發布流程。</p>
+<p>惡意程式碼藏在一個叫 <code>litellm_init.pth</code> 的檔案裡。<code>.pth</code> 是 Python 的一個古老機制：放在 site-packages 目錄下的 <code>.pth</code> 檔案，會在<strong>每次 Python 啟動時自動執行</strong>。不需要 <code>import</code>，不需要呼叫，Python 直譯器一啟動就跑。</p>
+<h2 id="三階段攻擊鏈">三階段攻擊鏈</h2>
+<p>這個惡意程式的設計相當完整：</p>
+<p><strong>第一階段：收割憑證。</strong> 掃描本機上所有敏感檔案——SSH 私鑰、<code>.env</code>、AWS/GCP/Azure 的 credential、Kubernetes config、資料庫密碼、加密貨幣錢包、shell history。能偷的全偷。</p>
+<p><strong>第二階段：加密外傳。</strong> 用寫死的 4096-bit RSA 公鑰加密竊取的資料，打包成 tar，POST 到 <code>models.litellm.cloud</code>。這個 domain 不屬於合法的 litellm 基礎設施。</p>
+<p><strong>第三階段：橫向擴散。</strong> 如果偵測到 Kubernetes 環境，讀取所有 namespace 的 secret，在每個 node 上建立 privileged pod（用 <code>alpine:latest</code>），掛載宿主機檔案系統，安裝 systemd 持久化後門。本機也會在 <code>~/.config/sysmon/sysmon.py</code> 裝一個。</p>
+<p>攻擊者唯一的失誤：<code>.pth</code> 檔在每次 Python 啟動時都會觸發，而惡意程式碼用 <code>subprocess.Popen</code> 開新的 Python 子程序——子程序啟動時又觸發 <code>.pth</code>，無限遞迴，造成 fork bomb。<strong>惡意程式自己把自己搞當機了。</strong></p>
+<h2 id="發現過程：一場即時偵探劇">發現過程：一場即時偵探劇</h2>
+<p>FutureSearch 的工程師 Callum McMahon 公開了完整的 Claude Code 對話逐字稿。這段紀錄本身就值得一讀，因為它展示了一個不是資安專家的開發者，如何用 AI 工具在一小時內從「筆電怎麼這麼慢」追查到「這是供應鏈攻擊」。</p>
+<p>時間軸：</p>
+<table>
+<thead>
+<tr>
+<th>時間 (UTC)</th>
+<th>事件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10:52</td>
+<td>攻擊者將惡意版本推上 PyPI</td>
+</tr>
+<tr>
+<td>10:58</td>
+<td>Cursor 的 MCP plugin 自動下載了這個版本</td>
+</tr>
+<tr>
+<td>11:07</td>
+<td>惡意程式嘗試安裝持久化後門</td>
+</tr>
+<tr>
+<td>11:09</td>
+<td>工程師強制關機（後門檔案 0 bytes，寫入被中斷）</td>
+</tr>
+<tr>
+<td>11:13</td>
+<td>開始用 Claude Code 調查</td>
+</tr>
+<tr>
+<td>11:40</td>
+<td>確認是惡意程式</td>
+</tr>
+<tr>
+<td>11:58</td>
+<td>在 Docker 容器中驗證 PyPI 上仍有惡意套件</td>
+</tr>
+<tr>
+<td>11:58</td>
+<td>回報 PyPI security + litellm 維護者</td>
+</tr>
+<tr>
+<td>12:02</td>
+<td>發布揭露文章</td>
+</tr>
+</tbody>
+</table>
+<p>從攻擊發生到公開揭露，不到兩小時。有意思的是，Claude 一開始還在「安慰」工程師說這是正常的 Claude Code 行為——直到工程師堅持繼續挖，AI 才轉向認真分析。</p>
+<h2 id="對開發者的啟示">對開發者的啟示</h2>
+<p>這件事有幾個值得深思的點。</p>
+<p><strong>你的 AI 工具鏈比你想像的更長。</strong> Cursor 啟動一個 MCP plugin，plugin 依賴 litellm，litellm 從 PyPI 拉了 77 個套件。你以為你只是開了個編輯器，實際上你觸發了一條很長的依賴鏈。任何一環被攻破，你的 SSH 私鑰就可能在你不知情的情況下被打包寄出去。</p>
+<p><strong>版本 pin 救了一命。</strong> FutureSearch 的正式專案環境把 litellm 鎖在 <code>&lt;1.77.3</code>。被感染的是 Cursor 的 MCP plugin 環境，因為它用 <code>uvx</code> 動態拉取最新版。正式環境安全，開發工具環境中招。</p>
+<p><strong><code>.pth</code> 是一個被低估的攻擊面。</strong> 大多數 Python 開發者不知道 <code>.pth</code> 檔案的存在，更不知道它會在每次 Python 啟動時自動執行。這不是新東西，但用在供應鏈攻擊裡，殺傷力巨大。</p>
+<p><strong>AI 是雙面刃。</strong> 攻擊者可能用 AI 寫惡意程式，但發現者也是用 AI（Claude Code）在一小時內完成了完整的惡意程式分析和事件回應。這個效率在以前是不可能的。</p>
+<h2 id="你現在該檢查什麼">你現在該檢查什麼</h2>
+<p>如果你最近有用到 litellm，跑一下這些：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 檢查安裝的版本</span></span><br><span class="line">pip show litellm</span><br><span class="line"></span><br><span class="line"><span class="comment"># 搜尋 uv 快取中的惡意檔案</span></span><br><span class="line">find ~/.cache/uv -name <span class="string">&quot;litellm_init.pth&quot;</span> 2&gt;/dev/null</span><br><span class="line"></span><br><span class="line"><span class="comment"># 檢查持久化後門</span></span><br><span class="line"><span class="built_in">ls</span> -la ~/.config/sysmon/ 2&gt;/dev/null</span><br><span class="line"><span class="built_in">ls</span> -la ~/.config/systemd/user/sysmon.service 2&gt;/dev/null</span><br><span class="line"></span><br><span class="line"><span class="comment"># K8s 環境檢查可疑 pod</span></span><br><span class="line">kubectl get pods -n kube-system | grep <span class="string">&quot;node-setup&quot;</span> 2&gt;/dev/null</span><br></pre></td></tr></table></figure>
+<p>如果找到任何東西，假設你機器上的所有憑證都已經洩漏。全部輪換，沒有例外。</p>
+<h2 id="更根本的問題">更根本的問題</h2>
+<p>我們整個 AI 開發生態系正在建立越來越深的依賴鏈。一個 LLM proxy library 的 PyPI 帳號被盜，影響的不只是直接使用者——是整個通過 MCP plugin、IDE extension、CI/CD pipeline 間接依賴它的生態系。</p>
+<p>litellm 的惡意版本在 PyPI 上存活了數小時。在這段時間裡，每一個 <code>pip install litellm</code>、每一個 <code>uvx</code> 動態拉取、每一個 CI/CD pipeline 的 <code>pip install -r requirements.txt</code>，都可能中招。</p>
+<p>FutureSearch 後續分析估計有 47,000 次下載受影響。</p>
+<p>這不是第一次，也不會是最後一次。但這次的教訓特別清楚：<strong>你的開發環境和你的生產環境一樣需要安全防護</strong>。鎖定版本、審計依賴、監控異常程序。尤其是在 AI 工具讓依賴鏈變得越來越長、越來越不透明的今天。</p>
+<hr>
+<p><em>事件相關連結：<a target="_blank" rel="noopener" href="https://futuresearch.ai/blog/litellm-pypi-supply-chain-attack">FutureSearch 揭露文章</a>、<a target="_blank" rel="noopener" href="https://futuresearch.ai/blog/litellm-attack-transcript/">Claude Code 完整對話逐字稿</a>、<a target="_blank" rel="noopener" href="https://github.com/pypa/advisory-database/blob/main/vulns/litellm/PYSEC-2026-2.yaml">CVE: PYSEC-2026-2</a></em></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Claude-Code/" rel="tag"># Claude Code</a>
+              <a href="/tags/LiteLLM/" rel="tag"># LiteLLM</a>
+              <a href="/tags/%E4%BE%9B%E6%87%89%E9%8F%88%E6%94%BB%E6%93%8A/" rel="tag"># 供應鏈攻擊</a>
+              <a href="/tags/PyPI/" rel="tag"># PyPI</a>
+              <a href="/tags/AI%E9%96%8B%E7%99%BC%E5%AE%89%E5%85%A8/" rel="tag"># AI開發安全</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/3e49e530/" rel="prev" title="Sora 之死不是敗給誰——是 OpenAI 在 IPO 前算了一筆帳">
+                  <i class="fa fa-angle-left"></i> Sora 之死不是敗給誰——是 OpenAI 在 IPO 前算了一筆帳
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/6115ba58/" rel="next" title="一張 $500 的顯卡跑贏 Claude Sonnet？ATLAS 專案的 benchmark 數字背後">
+                  一張 $500 的顯卡跑贏 Claude Sonnet？ATLAS 專案的 benchmark 數字背後 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">467k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">7:04</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

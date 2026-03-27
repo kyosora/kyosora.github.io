@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="GOinl_lrNWB9APjfgt6dbVdgki38olFzWmFDv3Yh1y8">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="Reco（一家 SaaS 安全公司）用 AI 在七小時內把 JSONata 從 JavaScript 重寫成 Go，產出 13,000 行程式碼，通過 1,778 個測試案例。token 花費 $400。上線後每月省 $25,000 compute 費用，加上後續的 pipeline 優化，年省 $500K。  這個故事在 Hacker News 上拿了 207 分和 186 則討論。數字很吸睛，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一天、$400 的 token、年省 $500K：Reco 用 AI 重寫 JSONata 的真實帳本">
+<meta property="og:url" content="https://kyosora.github.io/posts/6986445c/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="Reco（一家 SaaS 安全公司）用 AI 在七小時內把 JSONata 從 JavaScript 重寫成 Go，產出 13,000 行程式碼，通過 1,778 個測試案例。token 花費 $400。上線後每月省 $25,000 compute 費用，加上後續的 pipeline 優化，年省 $500K。  這個故事在 Hacker News 上拿了 207 分和 186 則討論。數字很吸睛，">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2026-03-27T15:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-27T14:00:54.794Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="AI輔助開發">
+<meta property="article:tag" content="JSONata">
+<meta property="article:tag" content="重寫遺留系統">
+<meta property="article:tag" content="成本優化">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/6986445c/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/6986445c/","path":"posts/6986445c/","title":"一天、$400 的 token、年省 $500K：Reco 用 AI 重寫 JSONata 的真實帳本"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>一天、$400 的 token、年省 $500K：Reco 用 AI 重寫 JSONata 的真實帳本 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%95%8F%E9%A1%8C%EF%BC%9A%E4%B8%80%E6%A2%9D%E6%98%82%E8%B2%B4%E7%9A%84%E8%AA%9E%E8%A8%80%E9%82%8A%E7%95%8C"><span class="nav-number">1.</span> <span class="nav-text">問題：一條昂貴的語言邊界</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%EF%BC%9ACloudflare-%E5%95%9F%E7%99%BC%E7%9A%84-AI-%E9%87%8D%E5%AF%AB%E7%AD%96%E7%95%A5"><span class="nav-number">2.</span> <span class="nav-text">方法：Cloudflare 啟發的 AI 重寫策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%B6%E6%A7%8B%EF%BC%9A%E4%B8%8D%E5%8F%AA%E6%98%AF%E7%BF%BB%E8%AD%AF%EF%BC%8C%E9%82%84%E9%87%8D%E6%96%B0%E8%A8%AD%E8%A8%88%E4%BA%86-fast-path"><span class="nav-number">3.</span> <span class="nav-text">架構：不只是翻譯，還重新設計了 fast path</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E7%B7%9A%EF%BC%9A%E4%B8%83%E5%A4%A9%E7%9A%84-shadow-mode-%E6%89%8D%E6%98%AF%E9%97%9C%E9%8D%B5"><span class="nav-number">4.</span> <span class="nav-text">上線：七天的 shadow mode 才是關鍵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%8C%E7%BA%8C%E7%9A%84-200K"><span class="nav-number">5.</span> <span class="nav-text">後續的 $200K</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HN-%E7%A4%BE%E7%BE%A4%E7%9A%84%E8%B3%AA%E7%96%91%E5%92%8C%E5%9B%9E%E6%87%89"><span class="nav-number">6.</span> <span class="nav-text">HN 社群的質疑和回應</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8D%E4%BD%A0%E7%9A%84%E5%9C%98%E9%9A%8A%E6%84%8F%E5%91%B3%E8%91%97%E4%BB%80%E9%BA%BC"><span class="nav-number">7.</span> <span class="nav-text">對你的團隊意味著什麼</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">297</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/6986445c/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="一天、$400 的 token、年省 $500K：Reco 用 AI 重寫 JSONata 的真實帳本 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          一天、$400 的 token、年省 $500K：Reco 用 AI 重寫 JSONata 的真實帳本
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2026-03-27 23:00:00 / 修改時間：22:00:54" itemprop="dateCreated datePublished" datetime="2026-03-27T23:00:00+08:00">2026-03-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/%E5%BE%8C%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">後端</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.7k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>Reco（一家 SaaS 安全公司）用 AI 在七小時內把 JSONata 從 JavaScript 重寫成 Go，產出 13,000 行程式碼，通過 1,778 個測試案例。token 花費 $400。上線後每月省 $25,000 compute 費用，加上後續的 pipeline 優化，年省 $500K。</p>
+<p>這個故事在 Hacker News 上拿了 207 分和 186 則討論。數字很吸睛，但真正值得學的不是數字——是他們怎麼確保 AI 生成的 13,000 行程式碼不會在生產環境炸掉。</p>
+<h2 id="問題：一條昂貴的語言邊界">問題：一條昂貴的語言邊界</h2>
+<p>Reco 有一個 policy engine，用 JSONata（一種 JSON 查詢和轉換語言，類似 jq 但有 lambda）對資料管線中的每條事件做規則比對。幾十億條事件，上千條規則。</p>
+<p>JSONata 的參考實作是 JavaScript。Reco 的 pipeline 是 Go。所以他們多年來一直在 Kubernetes 上跑一整組 Node.js pod——Go 服務透過 RPC 呼叫 Node.js 來做 JSONata 運算。</p>
+<p>每次呼叫的代價：序列化 → 網路傳輸 → 執行 → 序列化結果 → 傳回。一次 RPC round-trip 就是 ~150 微秒的開銷，而很多簡單查詢（像 <code>user.email = &quot;admin@co.com&quot;</code>）本身只需要奈秒。</p>
+<p>他們最大的叢集光是 JSONata 就跑了超過 200 個 replica，月費 $25K，而且還在隨客戶數成長。甚至因為 pod 太多，撞到了 Kubernetes 的 IP 分配上限。</p>
+<p>過去幾年他們試過幾種方案——優化表達式、結果快取、把 V8 嵌進 Go 裡（省掉網路跳轉）。都是微調，根本問題沒解決。</p>
+<h2 id="方法：Cloudflare-啟發的-AI-重寫策略">方法：Cloudflare 啟發的 AI 重寫策略</h2>
+<p>靈感來自 Cloudflare 公開的「一週用 AI 重寫 Next.js」文章。方法論一模一樣：</p>
+<ol>
+<li>把官方 jsonata-js 的測試套件搬到 Go</li>
+<li>讓 AI 實作 evaluator，直到所有測試通過</li>
+<li>不用 AI 猜怎麼寫——用測試套件當 spec</li>
+</ol>
+<p>作者花了一個週末用 AI 做計畫，把工作分成「waves」。隔天開始跑，用 Cursor，七小時後出了 13,000 行 Go 程式碼，1,778 個測試全過。</p>
+<p>成品叫 <a target="_blank" rel="noopener" href="https://github.com/RecoLabs/gnata">gnata</a>，已經開源。</p>
+<h2 id="架構：不只是翻譯，還重新設計了-fast-path">架構：不只是翻譯，還重新設計了 fast path</h2>
+<p>gnata 不是盲目的 1:1 翻譯。它有一個雙層求值架構：</p>
+<p><strong>Fast path：</strong> 簡單表達式（欄位查詢、比較、21 個內建函數）直接在原始 JSON bytes 上求值，不解析整份文件。像 <code>account.status = &quot;active&quot;</code> 這種查詢，零堆積分配（0 heap allocations）。</p>
+<p><strong>Full path：</strong> 複雜表達式走完整的 parser + evaluator，但只解析實際需要的子樹。</p>
+<p>上面還有一個 StreamEvaluator 批次層：N 個編譯好的表達式對每個事件做求值，所有欄位路徑合併成一次掃描。事件的結構相似時，求值計畫只算一次然後快取。hot path 無鎖。</p>
+<p>效能數字：</p>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>加速倍數</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>簡單查詢</td>
+<td>~1,000x</td>
+<td>消除 RPC + 直接 byte 操作</td>
+</tr>
+<tr>
+<td>複雜表達式</td>
+<td>25-90x</td>
+<td>仍有 JSON parsing，但省了序列化和網路</td>
+</tr>
+</tbody>
+</table>
+<h2 id="上線：七天的-shadow-mode-才是關鍵">上線：七天的 shadow mode 才是關鍵</h2>
+<p><strong>Day 1：</strong> gnata 建好，開 PR。</p>
+<p><strong>Day 2-6：</strong> Code review、QA、部署到 preprod 的 shadow mode。gnata 處理每一條事件，但實際使用的仍是 jsonata-js 的結果。兩邊結果不一致時觸發告警。</p>
+<p><strong>Day 7：</strong> 連續三天零 mismatch，gnata 升為 primary。</p>
+<p>在升級之前，gnata 已經處理了數十億條事件，結果與 jsonata-js 完全一致。他們甚至發現了 jsonata-js 本身的 bug——參考實作沒遵守自己的 spec。</p>
+<p>這個 shadow mode 基礎設施不是臨時搭的——他們幾個月前就為另一個 local evaluator 建好了 feature flag、shadow evaluation、comparison logging。接 gnata 進去只是接線的事。</p>
+<p><strong>這是整個故事裡最關鍵的一點：AI 幫你寫完 13,000 行程式碼，但你能不能上線，取決於你有沒有基礎設施來驗證這些程式碼。</strong></p>
+<h2 id="後續的-200K">後續的 $200K</h2>
+<p>消除 RPC 省了 $300K/年。但 JSONata 的單次求值限制一直在影響 pipeline 設計——他們得開上萬個 goroutine 來最大化並行，記憶體和 CPU 都很吃。</p>
+<p>gnata 沒有這個限制，所以他們重構了 rule engine：just-in-time batching、短期快取、分組 enrichment 查詢。pipeline 簡化了，throughput 大幅提升，又省了 $200K。</p>
+<h2 id="HN-社群的質疑和回應">HN 社群的質疑和回應</h2>
+<p>186 則討論裡最常見的質疑：</p>
+<p><strong>「七小時寫 13,000 行？那維護怎麼辦？」</strong> 合理的擔心。但 gnata 有 1,778 + 2,107 個測試案例，coverage 很高。而且他們提到了一個有趣的副作用：AI agent review AI-generated code 時，會同時標記真正的並行問題和無關緊要的 cosmetic 問題。團隊得教 AI review agent 分辨輕重——這個經驗反過來改善了他們整體的 AI code review 流程。</p>
+<p><strong>「$400 token 費不包含工程師時間。」</strong> 對。作者花了一個週末做計畫，七小時盯著跑。但對比原本的選項——手動重寫 JSONata 2.x 全 spec 的 Go 版本——那是數個月的工程。</p>
+<p><strong>「換個公司能複製嗎？」</strong> 能複製的前提是你得有：(1) 完整的測試套件當 spec；(2) shadow mode 基礎設施做驗證；(3) 工程師有能力判斷 AI 產出的品質。缺任何一項都不行。</p>
+<h2 id="對你的團隊意味著什麼">對你的團隊意味著什麼</h2>
+<p>這個案例提供了一個清晰的 AI 輔助重寫 playbook：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. 確認你有完整的測試套件（這是 spec，不是可選項）</span><br><span class="line">2. 用 AI 規劃 waves，分階段重寫</span><br><span class="line">3. 讓 AI 寫程式碼，用測試套件驗收</span><br><span class="line">4. 在 shadow mode 下用生產流量驗證</span><br><span class="line">5. 連續 N 天零 mismatch 後切換</span><br></pre></td></tr></table></figure>
+<p>適合這個方法的場景：</p>
+<ul>
+<li>跨語言重寫（JS→Go、Python→Rust）</li>
+<li>有明確 spec 和測試套件的 library</li>
+<li>效能瓶頸在語言邊界或序列化開銷</li>
+</ul>
+<p>不適合的場景：</p>
+<ul>
+<li>沒有測試套件的遺留系統（先補測試，再談重寫）</li>
+<li>業務邏輯複雜且 spec 模糊的核心系統</li>
+<li>「重寫」的動機是技術潮流而不是真實的效能或成本問題</li>
+</ul>
+<p>Reco 的成功不是因為 AI 很厲害。是因為他們有完整的測試基礎設施、成熟的 shadow mode 流程、和一個真實且量化的問題（$300K/年的 compute 費用）。AI 是工具，不是魔法。</p>
+<hr>
+<p><em>延伸閱讀：<a target="_blank" rel="noopener" href="https://www.reco.ai/blog/we-rewrote-jsonata-with-ai">reco.ai 原文</a>、<a target="_blank" rel="noopener" href="https://github.com/RecoLabs/gnata">gnata GitHub</a>、<a target="_blank" rel="noopener" href="https://blog.cloudflare.com/vinext/">Cloudflare vinext 文章</a></em></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+              <a href="/tags/AI%E8%BC%94%E5%8A%A9%E9%96%8B%E7%99%BC/" rel="tag"># AI輔助開發</a>
+              <a href="/tags/JSONata/" rel="tag"># JSONata</a>
+              <a href="/tags/%E9%87%8D%E5%AF%AB%E9%81%BA%E7%95%99%E7%B3%BB%E7%B5%B1/" rel="tag"># 重寫遺留系統</a>
+              <a href="/tags/%E6%88%90%E6%9C%AC%E5%84%AA%E5%8C%96/" rel="tag"># 成本優化</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/6115ba58/" rel="prev" title="一張 $500 的顯卡跑贏 Claude Sonnet？ATLAS 專案的 benchmark 數字背後">
+                  <i class="fa fa-angle-left"></i> 一張 $500 的顯卡跑贏 Claude Sonnet？ATLAS 專案的 benchmark 數字背後
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/4a4e3530/" rel="next" title="Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？">
+                  Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？ <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">467k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">7:04</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

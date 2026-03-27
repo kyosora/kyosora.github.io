@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="GOinl_lrNWB9APjfgt6dbVdgki38olFzWmFDv3Yh1y8">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="一個人寫程式碼容易盲點。所以我們發明了 pair programming——兩個人看同一份程式碼，一個寫、一個審。  現在有人問：如果兩個都換成 AI 呢？  這個概念從哪來 Axel Delafosse 在他的部落格上發了一篇「Agent-to-agent pair programming」，在 HN 拿了 97 分和 34 則討論。核心想法：讓 Claude Code 負責寫程式碼，讓 Ope">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？">
+<meta property="og:url" content="https://kyosora.github.io/posts/4a4e3530/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="一個人寫程式碼容易盲點。所以我們發明了 pair programming——兩個人看同一份程式碼，一個寫、一個審。  現在有人問：如果兩個都換成 AI 呢？  這個概念從哪來 Axel Delafosse 在他的部落格上發了一篇「Agent-to-agent pair programming」，在 HN 拿了 97 分和 34 則討論。核心想法：讓 Claude Code 負責寫程式碼，讓 Ope">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2026-03-27T15:30:00.000Z">
+<meta property="article:modified_time" content="2026-03-27T14:02:22.415Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="AI Agent">
+<meta property="article:tag" content="Claude Code">
+<meta property="article:tag" content="配對程式設計">
+<meta property="article:tag" content="Codex">
+<meta property="article:tag" content="多Agent協作">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/4a4e3530/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/4a4e3530/","path":"posts/4a4e3530/","title":"Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？ | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%99%E5%80%8B%E6%A6%82%E5%BF%B5%E5%BE%9E%E5%93%AA%E4%BE%86"><span class="nav-number">1.</span> <span class="nav-text">這個概念從哪來</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E9%9A%9B%E6%80%8E%E9%BA%BC%E9%81%8B%E4%BD%9C"><span class="nav-number">2.</span> <span class="nav-text">實際怎麼運作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E7%94%A8%E4%B8%8D%E5%90%8C%E7%9A%84-AI"><span class="nav-number">3.</span> <span class="nav-text">為什麼用不同的 AI</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BE%E7%BE%A4%E8%A3%A1%E7%9A%84%E5%88%86%E6%AD%A7"><span class="nav-number">4.</span> <span class="nav-text">社群裡的分歧</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%99%E5%B0%8D%E4%BD%A0%E7%9A%84%E9%96%8B%E7%99%BC%E6%B5%81%E7%A8%8B%E6%9C%89%E4%BB%80%E9%BA%BC%E5%95%9F%E7%99%BC"><span class="nav-number">5.</span> <span class="nav-text">這對你的開發流程有什麼啟發</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%95%E6%9C%9B"><span class="nav-number">6.</span> <span class="nav-text">展望</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">297</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/4a4e3530/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？ | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2026-03-27 23:30:00 / 修改時間：22:02:22" itemprop="dateCreated datePublished" datetime="2026-03-27T23:30:00+08:00">2026-03-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/%E9%96%8B%E7%99%BC%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">開發工具</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.4k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>一個人寫程式碼容易盲點。所以我們發明了 pair programming——兩個人看同一份程式碼，一個寫、一個審。</p>
+<p>現在有人問：如果兩個都換成 AI 呢？</p>
+<h2 id="這個概念從哪來">這個概念從哪來</h2>
+<p>Axel Delafosse 在他的部落格上發了一篇「Agent-to-agent pair programming」，在 HN 拿了 97 分和 34 則討論。核心想法：讓 Claude Code 負責寫程式碼，讓 OpenAI Codex 負責 review，兩個 agent 在同一個 codebase 上來回迭代，直到 review 通過。</p>
+<p>不是人 + AI，是 AI + AI。人類退到 supervisor 的角色——設定目標、審核最終結果，中間過程交給兩個 agent 自己跑。</p>
+<h2 id="實際怎麼運作">實際怎麼運作</h2>
+<p>目前有幾種做法在社群裡流通：</p>
+<p><strong>手動切換派。</strong> 最原始但很多人在用。Claude Code 寫完一個 feature，把 diff 丟給 Codex review。Codex 找到問題，人類把 review 結果貼回 Claude Code。來回幾輪直到通過。HN 上有人提到做了 10-15 輪 fix-and-review 才完成一個大功能。</p>
+<p><strong>共享檔案派。</strong> 兩個 agent 透過 <a target="_blank" rel="noopener" href="http://PLAN.md">PLAN.md</a> 或類似的 markdown 檔案溝通。一個寫計畫，另一個執行；一個寫 code，另一個在同一份檔案上留 review comment。簡單但笨拙——本質上是把 Google Docs 的模式搬到 AI agent 上。</p>
+<p><strong>直接通訊派。</strong> Axel 的做法更進一步——利用 Codex 的 App Server（開源的）和 Claude Code 的 Channels 功能建立直接連線，agent 之間即時通訊，不需要人類當傳話筒。</p>
+<h2 id="為什麼用不同的-AI">為什麼用不同的 AI</h2>
+<p>HN 討論裡有個很實際的觀察：Claude 擅長生成和創造，Codex 擅長「頑固、準確地挑毛病和稽核」。</p>
+<p>這不是偶然。不同模型有不同的訓練偏好和行為傾向。讓同一個模型自己 review 自己的產出，它傾向於確認自己的決策——跟人類的確認偏誤一樣。用另一個模型來審，能打破這個迴圈。</p>
+<p>有人用了另一種組合：Codex 寫、Opus review。也有人用 Claude 同時生成和 self-review（問它「你確定嗎？」），通常它會承認自己遺漏了什麼。但跨模型 review 的效果普遍被認為更好。</p>
+<p>一位 HN 使用者的說法很精準：「Claude 完成一個任務後，讓 Codex review，幾乎每次都能找到問題。每次。」</p>
+<h2 id="社群裡的分歧">社群裡的分歧</h2>
+<p><strong>肯定的聲音：</strong></p>
+<p>有人把這套流程接進了 GitHub Actions——Sentry 偵測到錯誤 → 自動建 issue → Claude Code 修 bug → Codex review → 開 PR。全自動。對重複性的 bug fix 來說，效果不錯。</p>
+<p>有開發者用 self-review（同一個模型，不同的 system prompt 和 temperature）也看到明顯改善。「即使是同一個模型，第一次產出的品質和 review 後的品質差很多。」</p>
+<p><strong>質疑的聲音：</strong></p>
+<p>「需要更多科學。」目前所有 multi-agent 的證據都是 anecdotal。沒有 controlled study 比較 single-agent vs multi-agent 在相同任務上的表現差異。</p>
+<p>「更多改動不一定是好事。」兩個 agent 互相 loop 可能產出超出原始 scope 的修改。對人類開發者來說，scope creep 已經夠頭痛了——現在 AI 也會。</p>
+<p>「生命週期管理是真正的難題。」Agent A 叫 Agent B 做事，B 做到一半 crash 了，A 等到天荒地老。有人花了三週解決 happy path 之外的 lifecycle 問題，最後搞出了一套類似 saga pattern 的 agent 協調協議。</p>
+<p><strong>最犀利的一句話：</strong>「The circle of slop.」（垃圾的循環。）直接了當，但也反映了一部分人對 AI 生成程式碼品質的根本懷疑。</p>
+<h2 id="這對你的開發流程有什麼啟發">這對你的開發流程有什麼啟發</h2>
+<p>我認為 agent-to-agent pair programming 的核心洞見不在於技術實作，而在於一個觀念：<strong>AI 的第一次產出幾乎永遠不是最好的。</strong></p>
+<p>你不需要兩個 agent 的花式架構來獲得這個好處。最簡單的做法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. 讓 AI 寫完程式碼</span><br><span class="line">2. 換一個 context（新的 session、不同的 system prompt）</span><br><span class="line">3. 讓 AI review 自己的產出</span><br><span class="line">4. 根據 review 修改</span><br><span class="line">5. 重複直到 review 沒有重大問題</span><br></pre></td></tr></table></figure>
+<p>這比單次生成的品質好很多，成本只是多幾輪 API 呼叫。</p>
+<p>如果你想更進一步，跨模型 review 確實有價值。不同模型有不同的盲點分布。Claude 可能在某些 edge case 處理上有慣性，Codex 可能在另一些地方有偏見。交叉 review 能覆蓋更大的錯誤空間。</p>
+<p>但要注意幾件事：</p>
+<p><strong>成本會翻倍甚至更多。</strong> 每一輪 review 都是一次完整的 LLM 呼叫。10 輪 fix-and-review 就是 20 次呼叫。對於按量付費的 API，這個成本不能忽略。</p>
+<p><strong>scope creep 需要控制。</strong> 給 review agent 明確的指令：「只檢查正確性和安全性，不要建議重構。」否則兩個 agent 會互相激勵，把一個簡單的 bug fix 變成大規模重寫。</p>
+<p><strong>人類仍然是 supervisor。</strong> 兩個 AI 達成共識不代表結果是對的。它們可能在同一個方向上犯同一個錯——尤其是涉及業務邏輯或架構決策時。最終的 approve 必須是人類。</p>
+<h2 id="展望">展望</h2>
+<p>Agent-to-agent 開發還在非常早期的階段。通訊協議不統一、lifecycle 管理粗糙、缺乏系統性的效果評估。</p>
+<p>但方向是對的。人類 pair programming 的價值早已被證實——兩雙眼睛比一雙好。AI 的版本也遵循同樣的邏輯，只是把「眼睛」換成了不同的模型視角。</p>
+<p>如果你現在就想試，不需要等工具成熟。打開兩個終端機，一個跑 Claude Code，一個跑 Codex CLI。手動把一邊的產出餵給另一邊。笨，但有效。等生態系統成熟了，再考慮自動化。</p>
+<hr>
+<p><em>相關資源：<a target="_blank" rel="noopener" href="https://news.ycombinator.com/item?id=47538190">HN 討論</a>、<a target="_blank" rel="noopener" href="https://swival.dev/pages/reviews.html">Swival self-review</a>、<a target="_blank" rel="noopener" href="https://github.com/AxmeAI/axme">AxmeAI agent lifecycle</a></em></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI-Agent/" rel="tag"># AI Agent</a>
+              <a href="/tags/Claude-Code/" rel="tag"># Claude Code</a>
+              <a href="/tags/%E9%85%8D%E5%B0%8D%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/" rel="tag"># 配對程式設計</a>
+              <a href="/tags/Codex/" rel="tag"># Codex</a>
+              <a href="/tags/%E5%A4%9AAgent%E5%8D%94%E4%BD%9C/" rel="tag"># 多Agent協作</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/6986445c/" rel="prev" title="一天、$400 的 token、年省 $500K：Reco 用 AI 重寫 JSONata 的真實帳本">
+                  <i class="fa fa-angle-left"></i> 一天、$400 的 token、年省 $500K：Reco 用 AI 重寫 JSONata 的真實帳本
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/b8da5d90/" rel="next" title="Meta 的 HyperAgents：AI Agent 開始改進自己的改進方式了">
+                  Meta 的 HyperAgents：AI Agent 開始改進自己的改進方式了 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">467k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">7:04</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>
