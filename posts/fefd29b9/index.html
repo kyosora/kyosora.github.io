@@ -143,16 +143,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-count">91</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">297</span>
+        <span class="site-state-item-count">311</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -252,21 +252,19 @@
     <div class="post-body" itemprop="articleBody"><p>2024 年 11 月，Anthropic 發了一篇不起眼的公告，介紹一個叫 Model Context Protocol 的東西。SDK 月下載量大約 10 萬。</p>
 <p>14 個月後的今天，MCP 月下載量 9,700 萬。970 倍。OpenAI、Google、Microsoft、AWS 全部原生支援。治理權捐給了 Linux Foundation 底下的 Agentic AI Foundation。</p>
 <p>10 萬到 9,700 萬，一年多一點。我想聊聊這件事為什麼值得開發者認真看待。</p>
-<h2 id="問題不是技術，是膠水">問題不是技術，是膠水</h2>
-<p>2024 年底的 AI 開發長這樣：你的 LLM 需要讀 GitHub issue，你寫一個 function call。需要查 Slack 訊息，再寫一個。需要讀資料庫，再來一個。每個整合都是客製化的，每換一個 LLM 供應商就要重寫一遍。</p>
+<h2 id="問題不是技術，是膠水"><a href="#問題不是技術，是膠水" class="headerlink" title="問題不是技術，是膠水"></a>問題不是技術，是膠水</h2><p>2024 年底的 AI 開發長這樣：你的 LLM 需要讀 GitHub issue，你寫一個 function call。需要查 Slack 訊息，再寫一個。需要讀資料庫，再來一個。每個整合都是客製化的，每換一個 LLM 供應商就要重寫一遍。</p>
 <p>這跟 USB 出現之前的電腦周邊一模一樣。印表機用 parallel port，滑鼠用 serial port，鍵盤用 PS/2。每種設備一種接口，每種接口一個驅動程式。</p>
 <p>MCP 做的事情就是定義一個統一接口：LLM（client）透過標準化的 JSON-RPC 協議，連接到任何 MCP server。server 負責跟外部系統溝通，client 不需要知道底層細節。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">LLM Application (Client)</span><br><span class="line">    ↓ JSON-RPC（標準協議）</span><br><span class="line">MCP Server（GitHub）</span><br><span class="line">MCP Server（Slack）</span><br><span class="line">MCP Server（PostgreSQL）</span><br><span class="line">MCP Server（你自己寫的任何東西）</span><br></pre></td></tr></table></figure>
+
 <p>一個 client 連多個 server，一個 server 服務多個 client。寫一次就到處用。</p>
-<h2 id="三個轉折點">三個轉折點</h2>
-<p><strong>第一個轉折：Cursor 一鍵安裝。</strong> 2025 年初，Cursor 和 Windsurf 把 MCP server 的安裝做成一鍵設定。開發者不用搞配置檔，不用手動啟動 server process。這讓 MCP 從「有趣的開源專案」變成「我的 IDE 裡內建的功能」。</p>
+<h2 id="三個轉折點"><a href="#三個轉折點" class="headerlink" title="三個轉折點"></a>三個轉折點</h2><p><strong>第一個轉折：Cursor 一鍵安裝。</strong> 2025 年初，Cursor 和 Windsurf 把 MCP server 的安裝做成一鍵設定。開發者不用搞配置檔，不用手動啟動 server process。這讓 MCP 從「有趣的開源專案」變成「我的 IDE 裡內建的功能」。</p>
 <p>下載量從 10 萬跳到 800 萬。</p>
 <p><strong>第二個轉折：OpenAI 加入。</strong> 2025 年中，OpenAI 宣布 ChatGPT 和 Codex 原生支援 MCP。Google 的 Gemini 跟進。Microsoft Copilot 跟進。</p>
 <p>當你的競爭對手都支援同一個協議，你不支援就是跟整個生態系切割。MCP 從 Anthropic 的專案變成產業共識。</p>
 <p><strong>第三個轉折：捐給 Linux Foundation。</strong> 2026 年初，Anthropic 把 MCP 捐給新成立的 Agentic AI Foundation（AAIF），共同創辦者包括 Anthropic、Block、OpenAI，支持者包括 Google、Microsoft、AWS、Cloudflare、Bloomberg。</p>
 <p>這一步很關鍵。一個由單一公司控制的協議，其他公司會擔心路線圖被對手主導。捐給中立基金會之後，這個顧慮消失了。</p>
-<h2 id="生態系的規模">生態系的規模</h2>
-<p>截至 2026 年 3 月：</p>
+<h2 id="生態系的規模"><a href="#生態系的規模" class="headerlink" title="生態系的規模"></a>生態系的規模</h2><p>截至 2026 年 3 月：</p>
 <ul>
 <li><strong>10,000+ 個公開 MCP server</strong>，涵蓋開發工具、企業系統、資料庫、雲端服務</li>
 <li><strong>SDK 支援 4 種語言</strong>：Python、TypeScript、C#、Java</li>
@@ -274,28 +272,25 @@
 </ul>
 <p>社群 server 更瘋狂：Jira、Linear、Asana、AWS、GCP、Azure、Datadog、Sentry、Docker、Kubernetes⋯⋯你能想到的 SaaS 工具，幾乎都有人寫了 MCP server。</p>
 <p>對開發者來說，這代表什麼？你不用再為每個 AI 應用重新寫整合邏輯了。寫一個 MCP server，Cursor 能用、ChatGPT 能用、Claude 能用、Gemini 能用。</p>
-<h2 id="我寫了一個-MCP-server-之後的感想">我寫了一個 MCP server 之後的感想</h2>
-<p>體驗比我預期的簡單。用 Python 的 FastMCP 框架，核心程式碼不到 50 行就能把一個 REST API 包成 MCP server。</p>
+<h2 id="我寫了一個-MCP-server-之後的感想"><a href="#我寫了一個-MCP-server-之後的感想" class="headerlink" title="我寫了一個 MCP server 之後的感想"></a>我寫了一個 MCP server 之後的感想</h2><p>體驗比我預期的簡單。用 Python 的 FastMCP 框架，核心程式碼不到 50 行就能把一個 REST API 包成 MCP server。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> fastmcp <span class="keyword">import</span> FastMCP</span><br><span class="line"></span><br><span class="line">mcp = FastMCP(<span class="string">&quot;my-api-server&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@mcp.tool()</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">get_user</span>(<span class="params">user_id: <span class="built_in">str</span></span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;根據 ID 取得使用者資料&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 你的 API 呼叫邏輯</span></span><br><span class="line">    response = <span class="keyword">await</span> http_client.get(<span class="string">f&quot;/api/users/<span class="subst">&#123;user_id&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> response.json()</span><br><span class="line"></span><br><span class="line"><span class="meta">@mcp.tool()</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">search_tickets</span>(<span class="params">query: <span class="built_in">str</span>, status: <span class="built_in">str</span> = <span class="string">&quot;open&quot;</span></span>) -&gt; <span class="built_in">list</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;搜尋工單&quot;&quot;&quot;</span></span><br><span class="line">    response = <span class="keyword">await</span> http_client.get(</span><br><span class="line">        <span class="string">&quot;/api/tickets&quot;</span>,</span><br><span class="line">        params=&#123;<span class="string">&quot;q&quot;</span>: query, <span class="string">&quot;status&quot;</span>: status&#125;</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> response.json()</span><br></pre></td></tr></table></figure>
+
 <p>LLM 會自動讀取 tool 的名稱、參數型別和 docstring，決定什麼時候呼叫哪個工具。你不需要寫 prompt engineering 來教 AI 怎麼用你的 API。</p>
 <p>真正花時間的是 <strong>權限控制和錯誤處理</strong>。MCP 協議本身不處理認證——這是設計決策，不是疏忽。每個 server 自己決定怎麼驗證身份、怎麼限制存取範圍。</p>
 <p>我認為這是正確的。一個試圖解決所有問題的協議，最後什麼問題都解決不好。MCP 專注在「標準化 LLM 和工具之間的溝通格式」這一件事，做好它。</p>
-<h2 id="值得注意的風險">值得注意的風險</h2>
-<p>970 倍成長很漂亮，但有幾件事開發者應該留意。</p>
+<h2 id="值得注意的風險"><a href="#值得注意的風險" class="headerlink" title="值得注意的風險"></a>值得注意的風險</h2><p>970 倍成長很漂亮，但有幾件事開發者應該留意。</p>
 <p><strong>安全性還在早期。</strong> MCP server 本質上是讓 AI 操作你的系統。一個寫得不好的 server，可能讓 LLM 在你的資料庫上執行任意 SQL。2025 年底已經出現幾起 prompt injection 透過 MCP server 外洩敏感資料的案例。</p>
 <p>如果你要部署 MCP server 到生產環境，最小權限原則不是建議，是必要條件。每個 tool 只暴露它需要的最少功能，輸入一律做驗證。</p>
 <p><strong>協議演進速度快。</strong> MCP 的規格從 2024-11-05 版到現在已經改了好幾版。如果你在半年前寫的 server，可能需要更新才能跟最新的 client 相容。這是新標準的常態，但部署前記得確認版本。</p>
 <p><strong>vendor lock-in 風險轉移了，不是消失了。</strong> 以前是 lock-in 在特定 LLM 的 function calling 格式。現在 MCP 是通用的，但很多 server 實作綁定了特定的 hosting 方式（比如 Cursor 的本地 stdio 模式 vs. remote HTTP 模式）。</p>
-<h2 id="對開發者的實際影響">對開發者的實際影響</h2>
-<p>如果你在做 AI 相關開發，MCP 值得現在就學。不是因為炒作，是因為它解決了一個真實的問題，而且整個產業已經選邊站了。</p>
+<h2 id="對開發者的實際影響"><a href="#對開發者的實際影響" class="headerlink" title="對開發者的實際影響"></a>對開發者的實際影響</h2><p>如果你在做 AI 相關開發，MCP 值得現在就學。不是因為炒作，是因為它解決了一個真實的問題，而且整個產業已經選邊站了。</p>
 <p>三個可以立刻做的事：</p>
 <ol>
 <li><strong>挑一個你常用的內部 API，寫一個 MCP server。</strong> 50 行左右就夠。體驗一次從零到可用的過程，比讀十篇教學文有用。</li>
 <li><strong>在 Cursor 或 Claude Code 裡啟用幾個社群 server。</strong> GitHub、filesystem、PostgreSQL 是好的起點。感受一下 AI 直接操作你的開發工具是什麼體驗。</li>
-<li><strong>讀一遍 MCP 的安全最佳實踐。</strong> 官方文件在 <a target="_blank" rel="noopener" href="http://modelcontextprotocol.io">modelcontextprotocol.io</a> 上有。在把 MCP 用到生產環境之前，先搞清楚攻擊面在哪裡。</li>
+<li><strong>讀一遍 MCP 的安全最佳實踐。</strong> 官方文件在 modelcontextprotocol.io 上有。在把 MCP 用到生產環境之前，先搞清楚攻擊面在哪裡。</li>
 </ol>
-<h2 id="14-個月，從零到產業標準">14 個月，從零到產業標準</h2>
-<p>USB 花了大約 5 年才真正取代各種舊接口。HTTP 花了更久。MCP 在 14 個月內走到了「每個主要 AI 平台都支援」的位置。</p>
+<h2 id="14-個月，從零到產業標準"><a href="#14-個月，從零到產業標準" class="headerlink" title="14 個月，從零到產業標準"></a>14 個月，從零到產業標準</h2><p>USB 花了大約 5 年才真正取代各種舊接口。HTTP 花了更久。MCP 在 14 個月內走到了「每個主要 AI 平台都支援」的位置。</p>
 <p>這個速度反映的不是 Anthropic 的行銷能力，是 AI 開發者對「統一工具接口」的渴望程度。每個人都在寫重複的膠水程式碼，每個人都受夠了。MCP 出現的時機剛好。</p>
 <p>970 倍成長的數字很誇張。但真正重要的不是下載量——是你下次要把 AI 接上一個新的資料來源時，不用再從頭寫 adapter 了。</p>
 <p>那才是標準化的價值。</p>
@@ -358,13 +353,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">467k</span>
+    <span title="總字數">479k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">7:04</span>
+    <span title="所需總閱讀時間">7:16</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

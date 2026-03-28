@@ -141,16 +141,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-count">91</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">297</span>
+        <span class="site-state-item-count">311</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -249,62 +249,45 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h2 id="為什麼要移動-Ollama-模型？">為什麼要移動 Ollama 模型？</h2>
-<p>Ollama 是一個強大的本地端 AI 模型執行工具，但預設將所有模型檔案都存放在 C 槽，隨著下載的模型越來越多，很容易造成系統碟空間不足。本教學將帶你一步步將模型檔案移動到 D 槽，讓你的 C 槽重獲新生！</p>
-<h2 id="移動前的準備工作">移動前的準備工作</h2>
-<ol>
+    <div class="post-body" itemprop="articleBody"><h2 id="為什麼要移動-Ollama-模型？"><a href="#為什麼要移動-Ollama-模型？" class="headerlink" title="為什麼要移動 Ollama 模型？"></a>為什麼要移動 Ollama 模型？</h2><p>Ollama 是一個強大的本地端 AI 模型執行工具，但預設將所有模型檔案都存放在 C 槽，隨著下載的模型越來越多，很容易造成系統碟空間不足。本教學將帶你一步步將模型檔案移動到 D 槽，讓你的 C 槽重獲新生！</p>
+<h2 id="移動前的準備工作"><a href="#移動前的準備工作" class="headerlink" title="移動前的準備工作"></a>移動前的準備工作</h2><ol>
 <li>確認 D 槽有足夠空間</li>
 <li>先關閉所有正在運行的 Ollama 程序</li>
 <li>備份重要的模型設定（建議）</li>
 </ol>
-<h2 id="詳細移動步驟">詳細移動步驟</h2>
-<h3 id="步驟一：建立新的存放位置">步驟一：建立新的存放位置</h3>
-<ol>
-<li>在 D 槽建立新的資料夾：</li>
+<h2 id="詳細移動步驟"><a href="#詳細移動步驟" class="headerlink" title="詳細移動步驟"></a>詳細移動步驟</h2><h3 id="步驟一：建立新的存放位置"><a href="#步驟一：建立新的存放位置" class="headerlink" title="步驟一：建立新的存放位置"></a>步驟一：建立新的存放位置</h3><ol>
+<li>在 D 槽建立新的資料夾：<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">D:</span></span><br><span class="line"><span class="function"><span class="title">mkdir</span> <span class="title">D</span>:\<span class="title">Ollama</span></span></span><br></pre></td></tr></table></figure></li>
 </ol>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">D:</span></span><br><span class="line"><span class="function"><span class="title">mkdir</span> <span class="title">D</span>:\<span class="title">Ollama</span></span></span><br></pre></td></tr></table></figure>
-<h3 id="步驟二：移動現有模型">步驟二：移動現有模型</h3>
-<ol>
-<li>打開檔案總管，預設模型位置在：</li>
+<h3 id="步驟二：移動現有模型"><a href="#步驟二：移動現有模型" class="headerlink" title="步驟二：移動現有模型"></a>步驟二：移動現有模型</h3><ol>
+<li><p>打開檔案總管，預設模型位置在：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\[使用者名稱]\.ollama</span><br></pre></td></tr></table></figure></li>
+<li><p>將 <code>.ollama</code> 資料夾內的所有檔案複製到 D:\Ollama</p>
+</li>
 </ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\[使用者名稱]\.ollama</span><br></pre></td></tr></table></figure>
-<ol start="2">
-<li>將 <code>.ollama</code> 資料夾內的所有檔案複製到 D:\Ollama</li>
-</ol>
-<h3 id="步驟三：設定環境變數">步驟三：設定環境變數</h3>
-<ol>
+<h3 id="步驟三：設定環境變數"><a href="#步驟三：設定環境變數" class="headerlink" title="步驟三：設定環境變數"></a>步驟三：設定環境變數</h3><ol>
 <li>按下 Windows + R</li>
 <li>輸入 <code>sysdm.cpl</code> 開啟系統內容</li>
 <li>切換到「進階」頁籤</li>
 <li>點選「環境變數」</li>
-<li>在「系統變數」區域中新增：
-<ul>
+<li>在「系統變數」區域中新增：<ul>
 <li>變數名稱：<code>OLLAMA_MODELS</code></li>
 <li>變數值：<code>D:\Ollama</code></li>
 </ul>
 </li>
 </ol>
-<h3 id="步驟四：驗證設定">步驟四：驗證設定</h3>
-<ol>
+<h3 id="步驟四：驗證設定"><a href="#步驟四：驗證設定" class="headerlink" title="步驟四：驗證設定"></a>步驟四：驗證設定</h3><ol>
 <li>重新啟動 Ollama</li>
-<li>執行以下指令確認模型可以正常使用：</li>
+<li>執行以下指令確認模型可以正常使用：<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ollama list</span><br></pre></td></tr></table></figure></li>
 </ol>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ollama list</span><br></pre></td></tr></table></figure>
-<h2 id="常見問題解答">常見問題解答</h2>
-<h3 id="Q1：移動後模型無法使用怎麼辦？">Q1：移動後模型無法使用怎麼辦？</h3>
-<p>確認環境變數是否正確設定，並重新啟動電腦試試看。</p>
-<h3 id="Q2：要如何確認移動成功？">Q2：要如何確認移動成功？</h3>
-<p>檢查 D:\Ollama 資料夾的大小，應該要和原本 C 槽的 .ollama 資料夾大小相近。</p>
-<h3 id="Q3：移動過程中可以取消嗎？">Q3：移動過程中可以取消嗎？</h3>
-<p>建議一次完成所有步驟，中途取消可能會造成模型檔案不完整。</p>
-<h2 id="注意事項">注意事項</h2>
-<ul>
+<h2 id="常見問題解答"><a href="#常見問題解答" class="headerlink" title="常見問題解答"></a>常見問題解答</h2><h3 id="Q1：移動後模型無法使用怎麼辦？"><a href="#Q1：移動後模型無法使用怎麼辦？" class="headerlink" title="Q1：移動後模型無法使用怎麼辦？"></a>Q1：移動後模型無法使用怎麼辦？</h3><p>確認環境變數是否正確設定，並重新啟動電腦試試看。</p>
+<h3 id="Q2：要如何確認移動成功？"><a href="#Q2：要如何確認移動成功？" class="headerlink" title="Q2：要如何確認移動成功？"></a>Q2：要如何確認移動成功？</h3><p>檢查 D:\Ollama 資料夾的大小，應該要和原本 C 槽的 .ollama 資料夾大小相近。</p>
+<h3 id="Q3：移動過程中可以取消嗎？"><a href="#Q3：移動過程中可以取消嗎？" class="headerlink" title="Q3：移動過程中可以取消嗎？"></a>Q3：移動過程中可以取消嗎？</h3><p>建議一次完成所有步驟，中途取消可能會造成模型檔案不完整。</p>
+<h2 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h2><ul>
 <li>移動過程中請勿關機或重新啟動電腦</li>
 <li>確保有足夠的磁碟空間</li>
 <li>建議在移動前先備份重要的模型檔案</li>
 </ul>
-<h2 id="參考資源">參考資源</h2>
-<ul>
+<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
 <li><a target="_blank" rel="noopener" href="https://github.com/ollama/ollama">Ollama 官方文件</a></li>
 <li><a target="_blank" rel="noopener" href="https://github.com/ollama/ollama/blob/main/docs/configuration.md">Ollama 環境變數設定說明</a></li>
 </ul>
@@ -365,13 +348,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">467k</span>
+    <span title="總字數">479k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">7:04</span>
+    <span title="所需總閱讀時間">7:16</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

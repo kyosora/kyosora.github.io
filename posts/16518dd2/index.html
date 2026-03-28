@@ -143,16 +143,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-count">91</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">297</span>
+        <span class="site-state-item-count">311</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -257,8 +257,7 @@
     
     <div class="post-body" itemprop="articleBody"><p>DeepSeek V4 原定三月第一週發布。現在三月過了一半，官方一個字都沒說。</p>
 <p>這不是一般的軟體延遲。這是中國 AI 產業第一次嘗試在非 NVIDIA 硬體上訓練兆級參數模型，而現實比預期殘酷。</p>
-<h2 id="V4-到底是什麼">V4 到底是什麼</h2>
-<p>先說結論：如果 DeepSeek V4 真的發布，它會是目前最大的開源模型。</p>
+<h2 id="V4-到底是什麼"><a href="#V4-到底是什麼" class="headerlink" title="V4 到底是什麼"></a>V4 到底是什麼</h2><p>先說結論：如果 DeepSeek V4 真的發布，它會是目前最大的開源模型。</p>
 <p>兆級參數的 Mixture-of-Experts（MoE）架構，每個 token 只啟用約 320 億參數。Top-16 路由策略——模型裡有上千個「專家」，每次推理只叫醒最相關的 16 個。這意味著你可以用 320 億參數的算力成本，得到兆級參數的知識容量。</p>
 <p>V4 的架構有三個值得注意的設計：</p>
 <p><strong>Manifold-Constrained Hyper-Connections。</strong> 解決 MoE 的老問題：專家之間不夠互通。傳統 MoE 的專家各做各的，資訊共享效率差。這個機制讓跨專家的資訊利用率提升了約 40%，同時不增加計算成本。這不是微調，是結構性改進。</p>
@@ -266,16 +265,14 @@
 <p><strong>DeepSeek Sparse Attention。</strong> 具體細節還沒完全公開，但方向是在注意力機制層面做稀疏化，降低超長序列的計算複雜度。</p>
 <p>規格上：原生多模態（文字、圖片、影片同時處理）、100 萬 token context window、未驗證基準號稱 HumanEval 90%、SWE-bench 80%+。</p>
 <p>聽起來很猛。問題是——它跑在什麼硬體上。</p>
-<h2 id="真正的瓶頸：從-CUDA-搬家到華為">真正的瓶頸：從 CUDA 搬家到華為</h2>
-<p>V4 是第一個從設計階段就針對華為 Ascend 晶片優化的兆級模型。不是「也可以跑在華為上」，是「原生為華為設計」。</p>
+<h2 id="真正的瓶頸：從-CUDA-搬家到華為"><a href="#真正的瓶頸：從-CUDA-搬家到華為" class="headerlink" title="真正的瓶頸：從 CUDA 搬家到華為"></a>真正的瓶頸：從 CUDA 搬家到華為</h2><p>V4 是第一個從設計階段就針對華為 Ascend 晶片優化的兆級模型。不是「也可以跑在華為上」，是「原生為華為設計」。</p>
 <p>DeepSeek 甚至把 NVIDIA 和 AMD 排除在預發布優化之外，把早期存取權給了華為和寒武紀。這是一個明確的戰略宣示：中國 AI 要擺脫對 NVIDIA 的依賴。</p>
 <p>但從 CUDA 搬到 Ascend CANN 框架，遠不只是換個驅動程式。</p>
 <p><strong>算子庫要重寫。</strong> CUDA 生態有二十年的累積。每個常用操作——矩陣乘法、卷積、attention——都有經過無數次優化的原生實作。CANN 的算子庫相對年輕，很多操作的效率還有差距。DeepSeek 的 PyTorch 庫提供 CUDA-to-CUNN 轉換工具，號稱降低 80% 遷移成本。但剩下那 20% 往往是最麻煩的。</p>
 <p><strong>分散式訓練的穩定性。</strong> 訓練一個兆級模型需要數千張晶片同時跑數週。一個節點掛掉，整個訓練任務可能要回滾到上一個 checkpoint。NVIDIA 的 NVLink + InfiniBand 在這方面有多年的工程經驗。Ascend 910C 在穩定性上的表現——業界的共識是「進步很快但還有差距」。</p>
 <p><strong>效能差距。</strong> 根據公開的基準測試，Ascend 910C 大約達到 NVIDIA H100 60% 的效能。這不是個小數字。如果你用 H100 集群訓練要跑 3 個月，換成 Ascend 可能要 5 個月。而兆級模型的訓練每多一天，成本就多一大筆。</p>
 <p>我認為這才是 V4 跳票的根本原因。不是程式碼沒寫完，是硬體基礎設施還在磨合。</p>
-<h2 id="社群裡的「V4-Lite」">社群裡的「V4 Lite」</h2>
-<p>三月九號，有人在中國科技媒體上報告 DeepSeek 的線上模型悄悄更新了。部分使用者稱之為「V4 Lite」。</p>
+<h2 id="社群裡的「V4-Lite」"><a href="#社群裡的「V4-Lite」" class="headerlink" title="社群裡的「V4 Lite」"></a>社群裡的「V4 Lite」</h2><p>三月九號，有人在中國科技媒體上報告 DeepSeek 的線上模型悄悄更新了。部分使用者稱之為「V4 Lite」。</p>
 <p>DeepSeek 官方沒有確認也沒有否認。</p>
 <p>這有幾種可能的解讀：</p>
 <ol>
@@ -284,14 +281,12 @@
 <li><strong>技術困難比預期大。</strong> 兆級 MoE 在 Ascend 上的穩定性問題比想像中嚴重，需要更多時間。</li>
 </ol>
 <p>三種都有可能。以 DeepSeek 過去的風格（V3 發布時也是很低調），我傾向第一種。</p>
-<h2 id="對開發者來說意味著什麼">對開發者來說意味著什麼</h2>
-<p>如果你現在在用 DeepSeek API，幾件事：</p>
+<h2 id="對開發者來說意味著什麼"><a href="#對開發者來說意味著什麼" class="headerlink" title="對開發者來說意味著什麼"></a>對開發者來說意味著什麼</h2><p>如果你現在在用 DeepSeek API，幾件事：</p>
 <p><strong>V3.2 短期內不會消失。</strong> DeepSeek 不太會在 V4 發布後立刻退役 V3.2。OpenAI 退役 GPT-5.1 花了快一個月給使用者過渡。</p>
 <p><strong>MoE 意味著推理成本可能很低。</strong> 320 億活躍參數的推理成本接近 Llama 3 70B 等級，但知識容量是兆級的。如果基準測試的數字是真的（HumanEval 90%），這會是成本效益比最高的模型。</p>
 <p><strong>多模態能力值得關注。</strong> 原生多模態（不是後接一個 vision encoder）在實際使用中通常表現更連貫。如果 V4 真的能做到文字+圖片+影片在同一個推理 pass 裡處理，這會是比參數量更重要的突破。</p>
 <p><strong>中國 AI 自主化的進度指標。</strong> V4 在 Ascend 上的表現，會直接告訴我們：中國 AI 在被切斷 NVIDIA 供應後，到底能走多遠。這影響的不只是 DeepSeek，而是整個中國 AI 產業的天花板。</p>
-<h2 id="更大的圖景">更大的圖景</h2>
-<p>三月已經是 AI 模型的「軍備競賽月」。GPT-5.4 在 3/5 發布，Computer Use 成功率超越人類（OSWorld 75.0% vs 人類 72.4%）。Claude Sonnet 4.6 在 GDPval-AA 拿下 1,633 Elo 分。Google Gemini 3.1 Pro 也在二月發布。</p>
+<h2 id="更大的圖景"><a href="#更大的圖景" class="headerlink" title="更大的圖景"></a>更大的圖景</h2><p>三月已經是 AI 模型的「軍備競賽月」。GPT-5.4 在 3/5 發布，Computer Use 成功率超越人類（OSWorld 75.0% vs 人類 72.4%）。Claude Sonnet 4.6 在 GDPval-AA 拿下 1,633 Elo 分。Google Gemini 3.1 Pro 也在二月發布。</p>
 <p>DeepSeek V4 如果真的如期到來，加上 Kimi K2（同樣是兆級 MoE，訓練成本僅 460 萬美元），中國 AI 在模型能力上跟美國的差距可能比大家想的小。</p>
 <p>但硬體差距是另一回事。</p>
 <p>NVIDIA 的 CUDA 生態有二十年的護城河。華為的 CANN 進步很快——MindSpore 框架、CUDA-to-CUNN 轉換工具、跟 DeepSeek 的深度合作——但要在穩定性和效能上追平，需要的不是幾個月，可能是幾年。</p>
@@ -299,7 +294,7 @@
 <p>如果它在 Ascend 上跑得穩、跑得快，那中國 AI 的「去美化」路線就得到了最有力的驗證。如果它最終還是得靠（透過各種管道取得的）NVIDIA 硬體才能發揮全部實力，那出口管制的效果比外界認為的更顯著。</p>
 <p>不管哪種結果，作為開發者，我們都該密切關注。因為這場硬體戰爭的結果，會直接決定未來三到五年全球 AI 算力的版圖。</p>
 <hr>
-<p><em>本文資料來源：TechNode、Tom’s Hardware、Awesome Agents、NxCode、DeepSeek 社群報告。基準測試數據為未驗證的內部數據，實際表現以正式發布為準。</em></p>
+<p><em>本文資料來源：TechNode、Tom&#39;s Hardware、Awesome Agents、NxCode、DeepSeek 社群報告。基準測試數據為未驗證的內部數據，實際表現以正式發布為準。</em></p>
 
     </div>
 
@@ -359,13 +354,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">467k</span>
+    <span title="總字數">479k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">7:04</span>
+    <span title="所需總閱讀時間">7:16</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

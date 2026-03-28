@@ -126,7 +126,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">setTimeout 和 JavaScript 的 Event Loop 運作原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaScript-%E7%9A%84%E5%96%AE%E5%9F%B7%E8%A1%8C%E7%B7%92%E7%89%B9%E6%80%A7"><span class="nav-number">1.1.</span> <span class="nav-text">JavaScript 的單執行緒特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E5%90%8C%E6%AD%A5%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88%E5%92%8C%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%92%B0"><span class="nav-number">1.2.</span> <span class="nav-text">非同步程式設計和事件循環</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#setTimeout-%E7%9A%84%E9%81%8B%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">1.3.</span> <span class="nav-text">setTimeout 的運作原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AF%84%E4%BE%8B%E7%A8%8B%E5%BC%8F%E7%A2%BC"><span class="nav-number">1.4.</span> <span class="nav-text">範例程式碼</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%92%B0%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7"><span class="nav-number">1.5.</span> <span class="nav-text">事件循環的重要性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.6.</span> <span class="nav-text">結論</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#setTimeout-%E5%92%8C-JavaScript-%E7%9A%84-Event-Loop-%E9%81%8B%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">setTimeout 和 JavaScript 的 Event Loop 運作原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaScript-%E7%9A%84%E5%96%AE%E5%9F%B7%E8%A1%8C%E7%B7%92%E7%89%B9%E6%80%A7"><span class="nav-number">1.1.</span> <span class="nav-text">JavaScript 的單執行緒特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E5%90%8C%E6%AD%A5%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88%E5%92%8C%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%92%B0"><span class="nav-number">1.2.</span> <span class="nav-text">非同步程式設計和事件循環</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#setTimeout-%E7%9A%84%E9%81%8B%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">1.3.</span> <span class="nav-text">setTimeout 的運作原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AF%84%E4%BE%8B%E7%A8%8B%E5%BC%8F%E7%A2%BC"><span class="nav-number">1.4.</span> <span class="nav-text">範例程式碼</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%92%B0%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7"><span class="nav-number">1.5.</span> <span class="nav-text">事件循環的重要性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.6.</span> <span class="nav-text">結論</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -139,16 +139,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-count">91</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">297</span>
+        <span class="site-state-item-count">311</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -247,35 +247,30 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1>setTimeout 和 JavaScript 的 Event Loop 運作原理</h1>
-<p>JavaScript 是一種單執行緒語言，但它能夠執行非同步操作，這要歸功於事件循環（Event Loop）機制。在本文中，我們將深入探討 <code>setTimeout</code> 函式的運作原理，以及它如何與 JavaScript 的事件循環相互作用。</p>
-<h2 id="JavaScript-的單執行緒特性">JavaScript 的單執行緒特性</h2>
-<p>首先，我們需要理解 JavaScript 是單執行緒的。這意味著它一次只能執行一個操作。但是，如果所有操作都是同步的，那麼長時間運行的任務就會阻塞整個程式，導致糟糕的使用者體驗。這就是非同步程式設計發揮作用的地方。</p>
-<h2 id="非同步程式設計和事件循環">非同步程式設計和事件循環</h2>
-<p>JavaScript 使用事件循環來處理非同步操作。事件循環負責執行程式碼、收集和處理事件，以及執行排隊的子任務。以下是事件循環的基本組成部分：</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="setTimeout-和-JavaScript-的-Event-Loop-運作原理"><a href="#setTimeout-和-JavaScript-的-Event-Loop-運作原理" class="headerlink" title="setTimeout 和 JavaScript 的 Event Loop 運作原理"></a>setTimeout 和 JavaScript 的 Event Loop 運作原理</h1><p>JavaScript 是一種單執行緒語言，但它能夠執行非同步操作，這要歸功於事件循環（Event Loop）機制。在本文中，我們將深入探討 <code>setTimeout</code> 函式的運作原理，以及它如何與 JavaScript 的事件循環相互作用。</p>
+<h2 id="JavaScript-的單執行緒特性"><a href="#JavaScript-的單執行緒特性" class="headerlink" title="JavaScript 的單執行緒特性"></a>JavaScript 的單執行緒特性</h2><p>首先，我們需要理解 JavaScript 是單執行緒的。這意味著它一次只能執行一個操作。但是，如果所有操作都是同步的，那麼長時間運行的任務就會阻塞整個程式，導致糟糕的使用者體驗。這就是非同步程式設計發揮作用的地方。</p>
+<h2 id="非同步程式設計和事件循環"><a href="#非同步程式設計和事件循環" class="headerlink" title="非同步程式設計和事件循環"></a>非同步程式設計和事件循環</h2><p>JavaScript 使用事件循環來處理非同步操作。事件循環負責執行程式碼、收集和處理事件，以及執行排隊的子任務。以下是事件循環的基本組成部分：</p>
 <ol>
 <li>呼叫堆疊（Call Stack）</li>
 <li>Web API</li>
 <li>回呼佇列（Callback Queue）</li>
 <li>事件循環（Event Loop）</li>
 </ol>
-<h2 id="setTimeout-的運作原理">setTimeout 的運作原理</h2>
-<p><code>setTimeout</code> 是一個常用的非同步函式，它允許我們延遲執行一段程式碼。讓我們看看它是如何運作的：</p>
+<h2 id="setTimeout-的運作原理"><a href="#setTimeout-的運作原理" class="headerlink" title="setTimeout 的運作原理"></a>setTimeout 的運作原理</h2><p><code>setTimeout</code> 是一個常用的非同步函式，它允許我們延遲執行一段程式碼。讓我們看看它是如何運作的：</p>
 <ol>
 <li>當 <code>setTimeout</code> 被呼叫時，JavaScript 引擎會將它交給 Web API 來處理計時器。</li>
 <li>同時，JavaScript 繼續執行後面的程式碼，不會等待 <code>setTimeout</code> 中的延遲。</li>
 <li>當計時器到期時，Web API 會將回呼函式放入回呼佇列。</li>
 <li>事件循環持續檢查呼叫堆疊是否為空。一旦為空，它就會從回呼佇列中取出第一個任務並將其放入呼叫堆疊中執行。</li>
 </ol>
-<h2 id="範例程式碼">範例程式碼</h2>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;開始&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;setTimeout 回呼&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;結束&#x27;</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="範例程式碼"><a href="#範例程式碼" class="headerlink" title="範例程式碼"></a>範例程式碼</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;開始&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;setTimeout 回呼&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;結束&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
 <p>輸出結果：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">開始</span><br><span class="line">結束</span><br><span class="line">setTimeout 回呼</span><br></pre></td></tr></table></figure>
+
 <p>即使我們將 <code>setTimeout</code> 的延遲設定為 0，回呼函式仍然會在最後執行。這是因為它首先被發送到 Web API，然後被放入回呼佇列，只有在呼叫堆疊清空後才會被執行。</p>
-<h2 id="事件循環的重要性">事件循環的重要性</h2>
-<p>事件循環使 JavaScript 能夠執行非阻塞操作，這對於創建回應式使用者介面和處理大量並行操作至關重要。通過將耗時的任務推遲到未來執行，JavaScript 可以保持對使用者輸入的回應，並有效地管理資源。</p>
-<h2 id="結論">結論</h2>
-<p>理解 <code>setTimeout</code> 和事件循環的運作原理對於掌握 JavaScript 的非同步程式設計至關重要。它不僅幫助我們撰寫更高效的程式碼，還能夠更好地理解和除錯複雜的非同步操作。隨著 JavaScript 在前端和後端開發中的廣泛應用，這些知識將成為每個開發者的寶貴資產。</p>
+<h2 id="事件循環的重要性"><a href="#事件循環的重要性" class="headerlink" title="事件循環的重要性"></a>事件循環的重要性</h2><p>事件循環使 JavaScript 能夠執行非阻塞操作，這對於創建回應式使用者介面和處理大量並行操作至關重要。通過將耗時的任務推遲到未來執行，JavaScript 可以保持對使用者輸入的回應，並有效地管理資源。</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>理解 <code>setTimeout</code> 和事件循環的運作原理對於掌握 JavaScript 的非同步程式設計至關重要。它不僅幫助我們撰寫更高效的程式碼，還能夠更好地理解和除錯複雜的非同步操作。隨著 JavaScript 在前端和後端開發中的廣泛應用，這些知識將成為每個開發者的寶貴資產。</p>
 
     </div>
 
@@ -331,13 +326,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">467k</span>
+    <span title="總字數">479k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">7:04</span>
+    <span title="所需總閱讀時間">7:16</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

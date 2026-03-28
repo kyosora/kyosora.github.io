@@ -143,16 +143,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-count">91</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">297</span>
+        <span class="site-state-item-count">311</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -257,13 +257,11 @@
     
     <div class="post-body" itemprop="articleBody"><p>3 月 9 號，Anthropic 做了一件 AI 產業前所未見的事：同時起訴美國政府、發布新產品、簽下微軟合作。三件事同一天。</p>
 <p>這不是科技八卦。如果你在用 Claude API 寫程式、用 Claude Code 做開發，這件事直接影響你的技術棧穩定性。</p>
-<h2 id="發生了什麼事">發生了什麼事</h2>
-<p>五角大廈要求 Anthropic 開放 Claude 用於「所有合法用途」。Anthropic 設了兩條紅線：不做完全自主武器，不做大規模國內監控。談判在 2 月 27 日破裂。</p>
+<h2 id="發生了什麼事"><a href="#發生了什麼事" class="headerlink" title="發生了什麼事"></a>發生了什麼事</h2><p>五角大廈要求 Anthropic 開放 Claude 用於「所有合法用途」。Anthropic 設了兩條紅線：不做完全自主武器，不做大規模國內監控。談判在 2 月 27 日破裂。</p>
 <p>Trump 政府的回應很硬：下令所有聯邦機構停用 Anthropic 技術。國防部長 Hegseth 把 Anthropic 標記為「供應鏈風險」——這個標籤歷史上只用在華為、卡巴斯基這類外國實體身上。</p>
 <p>Anthropic CFO 說這可能砍掉 2026 年數十億美元營收。</p>
 <p>公司在加州聯邦地院和 DC 巡迴上訴法院同時開戰。</p>
-<h2 id="啟示一：你的-AI-供應商風險模型該更新了">啟示一：你的 AI 供應商風險模型該更新了</h2>
-<p>大部分技術團隊評估 AI 供應商，看的是模型能力、API 穩定性、定價。政治風險？不在 checklist 上。</p>
+<h2 id="啟示一：你的-AI-供應商風險模型該更新了"><a href="#啟示一：你的-AI-供應商風險模型該更新了" class="headerlink" title="啟示一：你的 AI 供應商風險模型該更新了"></a>啟示一：你的 AI 供應商風險模型該更新了</h2><p>大部分技術團隊評估 AI 供應商，看的是模型能力、API 穩定性、定價。政治風險？不在 checklist 上。</p>
 <p>這件事改變了遊戲規則。</p>
 <p>「供應鏈風險」標籤不只影響政府合約。國防承包商必須證明他們沒在五角大廈相關工作中使用 Claude。這個連鎖反應會擴散：你的客戶如果有國防相關業務，你用 Claude 就可能成為他們的合規問題。</p>
 <p>我認為技術團隊現在需要在供應商評估中加入一個新維度：<strong>政策風險</strong>。具體來說：</p>
@@ -274,11 +272,12 @@
 </ul>
 <p>這不是杞人憂天。Anthropic 的 Claude Code 年化營收已經到 25 億美元。用它的開發者數量龐大。如果明天 Claude API 因為某種政策原因不能用了，你的 CI/CD pipeline 裡有多少東西會壞掉？</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 你的 CI/CD 是不是長這樣？</span></span><br><span class="line"><span class="attr">steps:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">AI</span> <span class="string">Code</span> <span class="string">Review</span></span><br><span class="line">    <span class="attr">uses:</span> <span class="string">anthropic/claude-code-review@v3</span></span><br><span class="line">    <span class="comment"># 如果這個 action 明天被下架呢？</span></span><br><span class="line"></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">AI</span> <span class="string">Test</span> <span class="string">Generation</span></span><br><span class="line">    <span class="attr">run:</span> <span class="string">claude</span> <span class="string">code</span> <span class="string">test</span> <span class="string">--auto</span></span><br><span class="line">    <span class="comment"># 如果 API 被政策限制呢？</span></span><br></pre></td></tr></table></figure>
+
 <p>解法不是「不要用 AI」，而是建立抽象層：</p>
 <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ❌ 直接耦合</span></span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Claude</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@anthropic-ai/sdk&#x27;</span></span><br><span class="line"><span class="keyword">const</span> review = <span class="keyword">await</span> claude.<span class="title function_">codeReview</span>(pr)</span><br><span class="line"></span><br><span class="line"><span class="comment">// ✅ 供應商抽象</span></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">AIReviewer</span> &#123;</span><br><span class="line">  <span class="title function_">review</span>(<span class="attr">pr</span>: <span class="title class_">PullRequest</span>): <span class="title class_">Promise</span>&lt;<span class="title class_">ReviewResult</span>&gt;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ClaudeReviewer</span> <span class="keyword">implements</span> <span class="title class_">AIReviewer</span> &#123; <span class="comment">/* ... */</span> &#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">OpenAIReviewer</span> <span class="keyword">implements</span> <span class="title class_">AIReviewer</span> &#123; <span class="comment">/* ... */</span> &#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">LocalModelReviewer</span> <span class="keyword">implements</span> <span class="title class_">AIReviewer</span> &#123; <span class="comment">/* ... */</span> &#125;</span><br></pre></td></tr></table></figure>
+
 <p>如果你已經在用 LangChain 或類似框架，你可能已經有某種程度的抽象。但很多團隊是直接 call Anthropic SDK 的。這件事是個提醒。</p>
-<h2 id="啟示二：競爭對手互挺，因為先例比市佔率危險">啟示二：競爭對手互挺，因為先例比市佔率危險</h2>
-<p>這件事最讓我意外的部分：OpenAI 和 Google DeepMind 的科學家以個人身份提交法庭之友意見書，支持 Anthropic。微軟也提交了。</p>
+<h2 id="啟示二：競爭對手互挺，因為先例比市佔率危險"><a href="#啟示二：競爭對手互挺，因為先例比市佔率危險" class="headerlink" title="啟示二：競爭對手互挺，因為先例比市佔率危險"></a>啟示二：競爭對手互挺，因為先例比市佔率危險</h2><p>這件事最讓我意外的部分：OpenAI 和 Google DeepMind 的科學家以個人身份提交法庭之友意見書，支持 Anthropic。微軟也提交了。</p>
 <p>想像一下，可口可樂出庭幫百事可樂辯護。</p>
 <p>他們不是突然變善良了。他們看到的是：如果「供應鏈風險」標籤可以用在一家美國 AI 公司身上，因為它拒絕讓軍方無限制使用，那任何 AI 公司都可能是下一個。</p>
 <p>這對開發者社群的訊號很清楚：<strong>AI 產業正在形成一個共識底線</strong>。不管你用哪家的模型，這個判例會影響所有人。</p>
@@ -286,17 +285,16 @@
 <p>每家 AI 公司面臨二選一：配合政府所有要求，或被封殺。這意味著 AI 公司會失去對自己模型使用方式的控制權。對開發者來說，這意味著你用的 AI 工具可能被要求內建你不知道的功能，或被要求移除某些安全限制。</p>
 <p>如果 Anthropic 勝訴，確立了 AI 公司可以對軍事應用設紅線的先例。從安全角度，這對整個生態系比較健康。</p>
 <p>不管結果如何，我建議關注這個案子的進展。它會定義 AI 治理的基本框架。</p>
-<h2 id="啟示三：Anthropic-的-Code-Review-發布時機不是巧合">啟示三：Anthropic 的 Code Review 發布時機不是巧合</h2>
-<p>同一天，Anthropic 發布了 Claude Code Review——多 agent 代碼審查系統。每次 PR 會派出多個 AI agent 平行掃描，交叉驗證，過濾誤報，按嚴重度排序。每次審查大約 20 分鐘，收費 15-25 美元。</p>
+<h2 id="啟示三：Anthropic-的-Code-Review-發布時機不是巧合"><a href="#啟示三：Anthropic-的-Code-Review-發布時機不是巧合" class="headerlink" title="啟示三：Anthropic 的 Code Review 發布時機不是巧合"></a>啟示三：Anthropic 的 Code Review 發布時機不是巧合</h2><p>同一天，Anthropic 發布了 Claude Code Review——多 agent 代碼審查系統。每次 PR 會派出多個 AI agent 平行掃描，交叉驗證，過濾誤報，按嚴重度排序。每次審查大約 20 分鐘，收費 15-25 美元。</p>
 <p>在公司被政府打成國安威脅的同一天發布產品，這是刻意的。訊息是：「我們被告了，但我們照常營業。」</p>
 <p>技術上，Code Review 有幾個值得注意的設計決策：</p>
 <p><strong>多 agent 交叉驗證</strong>。不是一個模型跑一次，而是多個 agent 獨立分析同一份 PR，再互相驗證。這個 pattern 在 AI agent 架構中越來越常見——用冗餘換準確度。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">PR 提交</span><br><span class="line">  ├── Agent A: 掃描安全漏洞</span><br><span class="line">  ├── Agent B: 檢查邏輯錯誤</span><br><span class="line">  ├── Agent C: 評估效能問題</span><br><span class="line">  └── 交叉驗證層: 過濾誤報，合併結果</span><br></pre></td></tr></table></figure>
+
 <p><strong>刻意不追求速度</strong>。GitHub Copilot 的 review 幾乎即時，Code Review 要 20 分鐘。Anthropic 把它定位成「保險產品」而不是「生產力工具」。他們內部的數據：大型 PR（1000+ 行）84% 會被找到問題，平均 7.5 個 issue。小 PR（50 行以下）31% 有問題。不到 1% 的 finding 被工程師標記為錯誤。</p>
 <p><strong>不會自動 approve</strong>。最終決定權在人。這個設計反映了 Anthropic 一貫的「人在迴路中」哲學——跟他們拒絕軍方無限制使用是同一套邏輯。</p>
 <p>這個產品值不值 20 美元一次？取決於你的 production incident 成本。一次 rollback 的工程師時間可能就超過一個月的 Code Review 費用。但 Anthropic 目前沒有公開的外部 benchmark，跟 CodeRabbit 或 GitHub Copilot 的直接比較數據也沒有。如果你在評估，等他們出比較數據再做決定。</p>
-<h2 id="開發者該做什麼">開發者該做什麼</h2>
-<p>三件具體的事：</p>
+<h2 id="開發者該做什麼"><a href="#開發者該做什麼" class="headerlink" title="開發者該做什麼"></a>開發者該做什麼</h2><p>三件具體的事：</p>
 <p><strong>1. 盤點你對單一 AI 供應商的依賴。</strong> 列出所有用到 AI API 的地方。如果某個供應商明天不能用了，有沒有 fallback？在關鍵路徑上，至少準備兩個供應商。</p>
 <p><strong>2. 關注這個訴訟。</strong> 不管你是不是 Anthropic 用戶，判決結果會影響整個 AI 產業的治理框架。如果你在做 AI 相關的產品決策，這是必須追蹤的變數。</p>
 <p><strong>3. 重新思考 AI 工具在 CI/CD 中的角色。</strong> AI code review、AI test generation、AI documentation——這些工具越來越多地嵌入開發流程。但它們不是基礎設施，它們是供應商服務。用對待外部 SaaS 的方式對待它們：有 SLA 嗎？有 fallback 嗎？資料怎麼處理？</p>
@@ -363,13 +361,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">467k</span>
+    <span title="總字數">479k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">7:04</span>
+    <span title="所需總閱讀時間">7:16</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

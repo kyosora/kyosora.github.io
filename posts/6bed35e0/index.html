@@ -143,16 +143,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-count">91</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">297</span>
+        <span class="site-state-item-count">311</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -258,19 +258,17 @@
     <div class="post-body" itemprop="articleBody"><p>一個 GitHub 專案，沒有任何可執行程式碼，只有 61 個 Markdown 檔案，7 天內拿到 10,000 顆星。截至 3/14 已經衝到 39,300 星。</p>
 <p>這不是什麼新框架或新語言。<a target="_blank" rel="noopener" href="https://github.com/msitarzewski/agency-agents">agency-agents</a> 做的事情只有一件：<strong>用 Markdown 定義 AI 的專業人格</strong>。</p>
 <p>聽起來荒謬，但它戳中了一個真實的問題。</p>
-<h2 id="你的-AI-助手什麼都會，所以什麼都做不好">你的 AI 助手什麼都會，所以什麼都做不好</h2>
-<p>用過 Claude Code 或 Cursor 的人都有這個經驗：你請 AI 寫一個 REST API，它給你一個「還行」的版本。能跑，但缺少認證考量、沒有速率限制、錯誤處理敷衍、命名風格前後不一。</p>
+<h2 id="你的-AI-助手什麼都會，所以什麼都做不好"><a href="#你的-AI-助手什麼都會，所以什麼都做不好" class="headerlink" title="你的 AI 助手什麼都會，所以什麼都做不好"></a>你的 AI 助手什麼都會，所以什麼都做不好</h2><p>用過 Claude Code 或 Cursor 的人都有這個經驗：你請 AI 寫一個 REST API，它給你一個「還行」的版本。能跑，但缺少認證考量、沒有速率限制、錯誤處理敷衍、命名風格前後不一。</p>
 <p>問題不在模型能力。GPT-5.4、Claude Opus 4.6、Gemini 3.1 Pro——這些模型的知識量早就超過任何單一工程師。問題在於 <strong>context window 裡塞了太多可能性</strong>，模型不知道你要哪一種。</p>
 <p>你問「幫我設計 API」，模型在 REST、GraphQL、gRPC 之間游移。你問「幫我寫測試」，模型不確定你要 unit test 還是 integration test，最後給你一個不痛不癢的折衷。</p>
 <p>agency-agents 的解法直覺到令人意外：<strong>把模型的注意力鎖定在一個角色上</strong>。</p>
-<h2 id="一個-Markdown-檔怎麼定義一個「專家」">一個 Markdown 檔怎麼定義一個「專家」</h2>
-<p>打開 agency-agents 的任何一個 agent 定義檔，結構大概長這樣：</p>
+<h2 id="一個-Markdown-檔怎麼定義一個「專家」"><a href="#一個-Markdown-檔怎麼定義一個「專家」" class="headerlink" title="一個 Markdown 檔怎麼定義一個「專家」"></a>一個 Markdown 檔怎麼定義一個「專家」</h2><p>打開 agency-agents 的任何一個 agent 定義檔，結構大概長這樣：</p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># Backend Architect</span></span><br><span class="line"></span><br><span class="line"><span class="section">## Identity</span></span><br><span class="line">你是一個有 15 年經驗的後端架構師，專精分散式系統和 API 設計。</span><br><span class="line">你對效能有偏執，對過度設計有過敏反應。</span><br><span class="line"></span><br><span class="line"><span class="section">## Core Mission</span></span><br><span class="line">設計可維護、可擴展的後端系統。每個決策都要能回答「為什麼選這個而不是那個」。</span><br><span class="line"></span><br><span class="line"><span class="section">## Critical Rules</span></span><br><span class="line"><span class="bullet">-</span> 每個 endpoint 必須有認證和速率限制</span><br><span class="line"><span class="bullet">-</span> 資料庫操作必須考慮 N+1 問題</span><br><span class="line"><span class="bullet">-</span> 錯誤回傳必須包含 correlation ID</span><br><span class="line"><span class="bullet">-</span> API 版本控制從第一天就要做</span><br><span class="line"></span><br><span class="line"><span class="section">## Success Metrics</span></span><br><span class="line"><span class="bullet">-</span> API 回應時間 p99 &lt; 200ms</span><br><span class="line"><span class="bullet">-</span> 測試覆蓋率 &gt; 80%</span><br><span class="line"><span class="bullet">-</span> 零個未處理的 error case</span><br></pre></td></tr></table></figure>
+
 <p>沒有程式碼。沒有依賴。沒有 npm install。</p>
 <p>但當你把這份檔案載入 Claude Code 作為 agent 定義，模型的行為會出現明顯變化。它不再給你「通用版本」的 API，而是直接帶上認證層、考慮速率限制、主動處理錯誤邊界。</p>
 <p>原理很單純：<strong>system prompt 越具體，模型的輸出品質越高</strong>。這不是什麼新發現。但 agency-agents 把它工程化了。</p>
-<h2 id="9-個部門、112-個角色">9 個部門、112 個角色</h2>
-<p>agency-agents 用企業組織架構的方式分類 agent：</p>
+<h2 id="9-個部門、112-個角色"><a href="#9-個部門、112-個角色" class="headerlink" title="9 個部門、112 個角色"></a>9 個部門、112 個角色</h2><p>agency-agents 用企業組織架構的方式分類 agent：</p>
 <table>
 <thead>
 <tr>
@@ -279,8 +277,7 @@
 <th>範例角色</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>Engineering</td>
 <td>25+</td>
 <td>Frontend Developer、Backend Architect、Security Engineer、SRE</td>
@@ -325,11 +322,9 @@
 <td>6</td>
 <td>Customer Service、Compliance</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>有些角色名稱看起來很搞笑——Whimsy Injector（專門幫產品加入趣味性的 agent）、Reality Checker（專門潑冷水的 agent）。但這恰恰是重點：<strong>每個角色都有明確的職責邊界</strong>，而不是一個什麼都能做的通用 AI。</p>
-<h2 id="跨平台安裝：一份定義，多個-IDE">跨平台安裝：一份定義，多個 IDE</h2>
-<p>技術上最聰明的設計是跨平台相容性。同一份 agent 定義可以用在：</p>
+<h2 id="跨平台安裝：一份定義，多個-IDE"><a href="#跨平台安裝：一份定義，多個-IDE" class="headerlink" title="跨平台安裝：一份定義，多個 IDE"></a>跨平台安裝：一份定義，多個 IDE</h2><p>技術上最聰明的設計是跨平台相容性。同一份 agent 定義可以用在：</p>
 <ul>
 <li><strong>Claude Code</strong>：直接放進 <code>~/.claude/agents/</code> 目錄</li>
 <li><strong>Cursor</strong>：轉換成 <code>.mdc</code> rule 檔案</li>
@@ -337,36 +332,32 @@
 <li><strong>Windsurf、Gemini CLI、OpenCode</strong>：各有對應的安裝腳本</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 自動轉換並安裝到你的 IDE</span></span><br><span class="line">./scripts/convert.sh</span><br><span class="line">./scripts/install.sh</span><br></pre></td></tr></table></figure>
+
 <p>兩行指令。agent 定義是純 Markdown，轉換腳本負責適配各平台的格式差異。這代表團隊可以版本控制這些 agent 定義，像管理程式碼一樣管理 AI 行為。</p>
-<h2 id="多-Agent-協作：同時叫-8-個專家開會">多 Agent 協作：同時叫 8 個專家開會</h2>
-<p>單一 agent 就能提升品質，但真正的殺手功能是 <strong>multi-agent orchestration</strong>。</p>
+<h2 id="多-Agent-協作：同時叫-8-個專家開會"><a href="#多-Agent-協作：同時叫-8-個專家開會" class="headerlink" title="多 Agent 協作：同時叫 8 個專家開會"></a>多 Agent 協作：同時叫 8 個專家開會</h2><p>單一 agent 就能提升品質，但真正的殺手功能是 <strong>multi-agent orchestration</strong>。</p>
 <p>專案文件裡有一個叫「Nexus Spatial Discovery Exercise」的範例：同時啟動 8 個 agent——Backend Architect 負責 API 設計、Security Engineer 做威脅建模、QA Engineer 寫測試計畫、Frontend Developer 做 UI 原型——然後把各自的輸出彙整成一份完整的產品評估報告。</p>
 <p>這跟傳統的 multi-agent framework（AutoGen、CrewAI、LangGraph）有本質差異。那些框架需要你寫 Python 程式碼來定義 agent 之間的通訊協議和工作流程。agency-agents 不需要——<strong>你的 IDE 就是 orchestrator</strong>。</p>
 <p>在 Claude Code 裡，你可以用 Agent tool 同時啟動多個 subagent，每個載入不同的 persona markdown。不需要額外的框架、不需要 API key 管理、不需要佈署基礎設施。</p>
-<h2 id="為什麼純-Markdown-反而是優勢">為什麼純 Markdown 反而是優勢</h2>
-<p>初看之下「只有 Markdown 沒有程式碼」像是缺陷。但仔細想想，這其實是最佳設計決策：</p>
+<h2 id="為什麼純-Markdown-反而是優勢"><a href="#為什麼純-Markdown-反而是優勢" class="headerlink" title="為什麼純 Markdown 反而是優勢"></a>為什麼純 Markdown 反而是優勢</h2><p>初看之下「只有 Markdown 沒有程式碼」像是缺陷。但仔細想想，這其實是最佳設計決策：</p>
 <p><strong>1. 零依賴</strong>——不會因為某個 Python 套件版本衝突而壞掉。不需要 Docker。不需要 GPU。</p>
 <p><strong>2. 人類可讀</strong>——任何人都能打開一個 agent 定義檔，三分鐘內理解它做什麼、不做什麼。新人 onboarding 的成本趨近於零。</p>
 <p><strong>3. 可 diff、可 review</strong>——agent 行為的每一次修改都能在 git diff 裡看到。Code review agent 定義跟 review 程式碼一樣自然。</p>
 <p><strong>4. 可組合</strong>——你可以 fork 一個 agent、調整幾行描述、產生一個完全不同行為的變體。不需要理解任何框架的 API。</p>
 <p><strong>5. 模型無關</strong>——同一份定義可以餵給 Claude、GPT、Gemini、Llama。切換模型不需要改 agent 定義。</p>
 <p>這讓我想到 Linus Torvalds 的觀點：<strong>好的抽象應該讓特殊情況消失</strong>。agency-agents 把「如何讓 AI 寫出更好的程式碼」這個複雜問題，簡化成「寫一份更好的 Markdown」。</p>
-<h2 id="跟-NemoClaw、OpenClaw-形成的生態位">跟 NemoClaw、OpenClaw 形成的生態位</h2>
-<p>同一週，AI agent 生態出現了三個層次：</p>
+<h2 id="跟-NemoClaw、OpenClaw-形成的生態位"><a href="#跟-NemoClaw、OpenClaw-形成的生態位" class="headerlink" title="跟 NemoClaw、OpenClaw 形成的生態位"></a>跟 NemoClaw、OpenClaw 形成的生態位</h2><p>同一週，AI agent 生態出現了三個層次：</p>
 <ul>
 <li><strong>NVIDIA NemoClaw</strong>（3/16 GTC 發布）：企業級 AI agent 平台，需要 GPU 叢集、Kubernetes、完整的 MLOps 管線。目標客戶是大公司。</li>
 <li><strong>OpenClaw</strong>（210K 星）：個人 AI 助手閘道器，連接 50+ 整合（WhatsApp、Telegram、Slack）。目標用戶是個人。</li>
 <li><strong>agency-agents</strong>（39K 星）：開發者工作流 agent，純 Markdown，零基礎設施。目標用戶是寫程式的人。</li>
 </ul>
 <p>三個專案解決三個不同的問題，但指向同一個趨勢：<strong>AI 從「一個大模型回答所有問題」轉向「多個專業化角色各司其職」</strong>。</p>
-<h2 id="實際用起來的限制">實際用起來的限制</h2>
-<p>我認為需要誠實說幾個限制：</p>
+<h2 id="實際用起來的限制"><a href="#實際用起來的限制" class="headerlink" title="實際用起來的限制"></a>實際用起來的限制</h2><p>我認為需要誠實說幾個限制：</p>
 <p><strong>context window 消耗</strong>——每載入一個 agent 定義，就吃掉一段 context。如果同時跑 8 個 agent，主 session 的可用 context 會被壓縮。在 Claude Code 裡，subagent 有獨立的 context window，問題比較小。但在 Cursor 裡，所有 rules 共享同一個 context。</p>
 <p><strong>品質參差不齊</strong>——112 個 agent 不可能每個都是精品。Engineering 類的 agent 定義明顯比 Marketing 類的更成熟，可能因為貢獻者大多是工程師。</p>
 <p><strong>不是萬能藥</strong>——如果你的問題是「模型本身能力不夠」，換一個 persona 不會讓它突然變強。persona 做的是聚焦，不是升級。</p>
 <p><strong>團隊協作成本</strong>——當團隊開始自訂 agent 定義，你需要一套 review 流程來確保品質。這本身就是一項管理工作。</p>
-<h2 id="你可以現在就做的三件事">你可以現在就做的三件事</h2>
-<p><strong>1. 試一個 Engineering agent</strong>——不需要裝整個專案。到 GitHub 上複製 <code>engineering-backend-architect.md</code> 的內容，丟進你的 Claude Code agents 目錄或 Cursor rules，然後用它設計一個 API。跟你平常不帶 persona 的結果比較一下。</p>
+<h2 id="你可以現在就做的三件事"><a href="#你可以現在就做的三件事" class="headerlink" title="你可以現在就做的三件事"></a>你可以現在就做的三件事</h2><p><strong>1. 試一個 Engineering agent</strong>——不需要裝整個專案。到 GitHub 上複製 <code>engineering-backend-architect.md</code> 的內容，丟進你的 Claude Code agents 目錄或 Cursor rules，然後用它設計一個 API。跟你平常不帶 persona 的結果比較一下。</p>
 <p><strong>2. 寫你自己的 agent</strong>——根據你團隊的 coding standards，寫一份 200 行的 Markdown agent 定義。把你們的命名規範、錯誤處理方式、測試策略全部寫進去。這比任何 linter 都有效。</p>
 <p><strong>3. 版本控制 agent 定義</strong>——開一個 <code>agents/</code> 目錄放進你的 repo。讓 agent 定義跟著程式碼一起演進。當有人改了 agent 的行為，PR review 自然會 catch 到。</p>
 <p>Multi-agent 這條路才剛開始。但 agency-agents 證明了一件事：有時候最有效的工具，不是最複雜的框架，而是一份寫得夠好的文件。</p>
@@ -429,13 +420,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">467k</span>
+    <span title="總字數">479k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">7:04</span>
+    <span title="所需總閱讀時間">7:16</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

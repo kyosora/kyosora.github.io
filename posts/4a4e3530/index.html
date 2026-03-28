@@ -28,7 +28,7 @@
 <meta property="og:description" content="一個人寫程式碼容易盲點。所以我們發明了 pair programming——兩個人看同一份程式碼，一個寫、一個審。  現在有人問：如果兩個都換成 AI 呢？  這個概念從哪來 Axel Delafosse 在他的部落格上發了一篇「Agent-to-agent pair programming」，在 HN 拿了 97 分和 34 則討論。核心想法：讓 Claude Code 負責寫程式碼，讓 Ope">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2026-03-27T15:30:00.000Z">
-<meta property="article:modified_time" content="2026-03-27T14:02:22.415Z">
+<meta property="article:modified_time" content="2026-03-27T14:20:49.263Z">
 <meta property="article:author" content="kyosora">
 <meta property="article:tag" content="AI Agent">
 <meta property="article:tag" content="Claude Code">
@@ -143,16 +143,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-count">91</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">297</span>
+        <span class="site-state-item-count">311</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -209,7 +209,7 @@
       <span class="post-meta-item-text">發表於</span>
       
 
-      <time title="創建時間：2026-03-27 23:30:00 / 修改時間：22:02:22" itemprop="dateCreated datePublished" datetime="2026-03-27T23:30:00+08:00">2026-03-27</time>
+      <time title="創建時間：2026-03-27 23:30:00 / 修改時間：22:20:49" itemprop="dateCreated datePublished" datetime="2026-03-27T23:30:00+08:00">2026-03-27</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -251,21 +251,17 @@
     
     <div class="post-body" itemprop="articleBody"><p>一個人寫程式碼容易盲點。所以我們發明了 pair programming——兩個人看同一份程式碼，一個寫、一個審。</p>
 <p>現在有人問：如果兩個都換成 AI 呢？</p>
-<h2 id="這個概念從哪來">這個概念從哪來</h2>
-<p>Axel Delafosse 在他的部落格上發了一篇「Agent-to-agent pair programming」，在 HN 拿了 97 分和 34 則討論。核心想法：讓 Claude Code 負責寫程式碼，讓 OpenAI Codex 負責 review，兩個 agent 在同一個 codebase 上來回迭代，直到 review 通過。</p>
+<h2 id="這個概念從哪來"><a href="#這個概念從哪來" class="headerlink" title="這個概念從哪來"></a>這個概念從哪來</h2><p>Axel Delafosse 在他的部落格上發了一篇「Agent-to-agent pair programming」，在 HN 拿了 97 分和 34 則討論。核心想法：讓 Claude Code 負責寫程式碼，讓 OpenAI Codex 負責 review，兩個 agent 在同一個 codebase 上來回迭代，直到 review 通過。</p>
 <p>不是人 + AI，是 AI + AI。人類退到 supervisor 的角色——設定目標、審核最終結果，中間過程交給兩個 agent 自己跑。</p>
-<h2 id="實際怎麼運作">實際怎麼運作</h2>
-<p>目前有幾種做法在社群裡流通：</p>
+<h2 id="實際怎麼運作"><a href="#實際怎麼運作" class="headerlink" title="實際怎麼運作"></a>實際怎麼運作</h2><p>目前有幾種做法在社群裡流通：</p>
 <p><strong>手動切換派。</strong> 最原始但很多人在用。Claude Code 寫完一個 feature，把 diff 丟給 Codex review。Codex 找到問題，人類把 review 結果貼回 Claude Code。來回幾輪直到通過。HN 上有人提到做了 10-15 輪 fix-and-review 才完成一個大功能。</p>
-<p><strong>共享檔案派。</strong> 兩個 agent 透過 <a target="_blank" rel="noopener" href="http://PLAN.md">PLAN.md</a> 或類似的 markdown 檔案溝通。一個寫計畫，另一個執行；一個寫 code，另一個在同一份檔案上留 review comment。簡單但笨拙——本質上是把 Google Docs 的模式搬到 AI agent 上。</p>
+<p><strong>共享檔案派。</strong> 兩個 agent 透過 PLAN.md 或類似的 markdown 檔案溝通。一個寫計畫，另一個執行；一個寫 code，另一個在同一份檔案上留 review comment。簡單但笨拙——本質上是把 Google Docs 的模式搬到 AI agent 上。</p>
 <p><strong>直接通訊派。</strong> Axel 的做法更進一步——利用 Codex 的 App Server（開源的）和 Claude Code 的 Channels 功能建立直接連線，agent 之間即時通訊，不需要人類當傳話筒。</p>
-<h2 id="為什麼用不同的-AI">為什麼用不同的 AI</h2>
-<p>HN 討論裡有個很實際的觀察：Claude 擅長生成和創造，Codex 擅長「頑固、準確地挑毛病和稽核」。</p>
+<h2 id="為什麼用不同的-AI"><a href="#為什麼用不同的-AI" class="headerlink" title="為什麼用不同的 AI"></a>為什麼用不同的 AI</h2><p>HN 討論裡有個很實際的觀察：Claude 擅長生成和創造，Codex 擅長「頑固、準確地挑毛病和稽核」。</p>
 <p>這不是偶然。不同模型有不同的訓練偏好和行為傾向。讓同一個模型自己 review 自己的產出，它傾向於確認自己的決策——跟人類的確認偏誤一樣。用另一個模型來審，能打破這個迴圈。</p>
 <p>有人用了另一種組合：Codex 寫、Opus review。也有人用 Claude 同時生成和 self-review（問它「你確定嗎？」），通常它會承認自己遺漏了什麼。但跨模型 review 的效果普遍被認為更好。</p>
 <p>一位 HN 使用者的說法很精準：「Claude 完成一個任務後，讓 Codex review，幾乎每次都能找到問題。每次。」</p>
-<h2 id="社群裡的分歧">社群裡的分歧</h2>
-<p><strong>肯定的聲音：</strong></p>
+<h2 id="社群裡的分歧"><a href="#社群裡的分歧" class="headerlink" title="社群裡的分歧"></a>社群裡的分歧</h2><p><strong>肯定的聲音：</strong></p>
 <p>有人把這套流程接進了 GitHub Actions——Sentry 偵測到錯誤 → 自動建 issue → Claude Code 修 bug → Codex review → 開 PR。全自動。對重複性的 bug fix 來說，效果不錯。</p>
 <p>有開發者用 self-review（同一個模型，不同的 system prompt 和 temperature）也看到明顯改善。「即使是同一個模型，第一次產出的品質和 review 後的品質差很多。」</p>
 <p><strong>質疑的聲音：</strong></p>
@@ -273,18 +269,17 @@
 <p>「更多改動不一定是好事。」兩個 agent 互相 loop 可能產出超出原始 scope 的修改。對人類開發者來說，scope creep 已經夠頭痛了——現在 AI 也會。</p>
 <p>「生命週期管理是真正的難題。」Agent A 叫 Agent B 做事，B 做到一半 crash 了，A 等到天荒地老。有人花了三週解決 happy path 之外的 lifecycle 問題，最後搞出了一套類似 saga pattern 的 agent 協調協議。</p>
 <p><strong>最犀利的一句話：</strong>「The circle of slop.」（垃圾的循環。）直接了當，但也反映了一部分人對 AI 生成程式碼品質的根本懷疑。</p>
-<h2 id="這對你的開發流程有什麼啟發">這對你的開發流程有什麼啟發</h2>
-<p>我認為 agent-to-agent pair programming 的核心洞見不在於技術實作，而在於一個觀念：<strong>AI 的第一次產出幾乎永遠不是最好的。</strong></p>
+<h2 id="這對你的開發流程有什麼啟發"><a href="#這對你的開發流程有什麼啟發" class="headerlink" title="這對你的開發流程有什麼啟發"></a>這對你的開發流程有什麼啟發</h2><p>我認為 agent-to-agent pair programming 的核心洞見不在於技術實作，而在於一個觀念：<strong>AI 的第一次產出幾乎永遠不是最好的。</strong></p>
 <p>你不需要兩個 agent 的花式架構來獲得這個好處。最簡單的做法：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. 讓 AI 寫完程式碼</span><br><span class="line">2. 換一個 context（新的 session、不同的 system prompt）</span><br><span class="line">3. 讓 AI review 自己的產出</span><br><span class="line">4. 根據 review 修改</span><br><span class="line">5. 重複直到 review 沒有重大問題</span><br></pre></td></tr></table></figure>
+
 <p>這比單次生成的品質好很多，成本只是多幾輪 API 呼叫。</p>
 <p>如果你想更進一步，跨模型 review 確實有價值。不同模型有不同的盲點分布。Claude 可能在某些 edge case 處理上有慣性，Codex 可能在另一些地方有偏見。交叉 review 能覆蓋更大的錯誤空間。</p>
 <p>但要注意幾件事：</p>
 <p><strong>成本會翻倍甚至更多。</strong> 每一輪 review 都是一次完整的 LLM 呼叫。10 輪 fix-and-review 就是 20 次呼叫。對於按量付費的 API，這個成本不能忽略。</p>
 <p><strong>scope creep 需要控制。</strong> 給 review agent 明確的指令：「只檢查正確性和安全性，不要建議重構。」否則兩個 agent 會互相激勵，把一個簡單的 bug fix 變成大規模重寫。</p>
 <p><strong>人類仍然是 supervisor。</strong> 兩個 AI 達成共識不代表結果是對的。它們可能在同一個方向上犯同一個錯——尤其是涉及業務邏輯或架構決策時。最終的 approve 必須是人類。</p>
-<h2 id="展望">展望</h2>
-<p>Agent-to-agent 開發還在非常早期的階段。通訊協議不統一、lifecycle 管理粗糙、缺乏系統性的效果評估。</p>
+<h2 id="展望"><a href="#展望" class="headerlink" title="展望"></a>展望</h2><p>Agent-to-agent 開發還在非常早期的階段。通訊協議不統一、lifecycle 管理粗糙、缺乏系統性的效果評估。</p>
 <p>但方向是對的。人類 pair programming 的價值早已被證實——兩雙眼睛比一雙好。AI 的版本也遵循同樣的邏輯，只是把「眼睛」換成了不同的模型視角。</p>
 <p>如果你現在就想試，不需要等工具成熟。打開兩個終端機，一個跑 Claude Code，一個跑 Codex CLI。手動把一邊的產出餵給另一邊。笨，但有效。等生態系統成熟了，再考慮自動化。</p>
 <hr>
@@ -348,13 +343,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">467k</span>
+    <span title="總字數">479k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">7:04</span>
+    <span title="所需總閱讀時間">7:16</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

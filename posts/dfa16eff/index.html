@@ -129,7 +129,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">查詢資料表與檢視表的修改時間</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%A9%A2%E8%AA%AA%E6%98%8E"><span class="nav-number">2.1.</span> <span class="nav-text">查詢說明</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">查詢預存程序的修改時間</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%A9%A2%E8%AA%AA%E6%98%8E-2"><span class="nav-number">3.1.</span> <span class="nav-text">查詢說明</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">實際應用範例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">注意事項</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">6.</span> <span class="nav-text">結語</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E8%A9%A2%E8%B3%87%E6%96%99%E8%A1%A8%E8%88%87%E6%AA%A2%E8%A6%96%E8%A1%A8%E7%9A%84%E4%BF%AE%E6%94%B9%E6%99%82%E9%96%93"><span class="nav-number">2.</span> <span class="nav-text">查詢資料表與檢視表的修改時間</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%A9%A2%E8%AA%AA%E6%98%8E"><span class="nav-number">2.1.</span> <span class="nav-text">查詢說明</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E8%A9%A2%E9%A0%90%E5%AD%98%E7%A8%8B%E5%BA%8F%E7%9A%84%E4%BF%AE%E6%94%B9%E6%99%82%E9%96%93"><span class="nav-number">3.</span> <span class="nav-text">查詢預存程序的修改時間</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%A9%A2%E8%AA%AA%E6%98%8E-1"><span class="nav-number">3.1.</span> <span class="nav-text">查詢說明</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%A6%E9%9A%9B%E6%87%89%E7%94%A8%E7%AF%84%E4%BE%8B"><span class="nav-number">4.</span> <span class="nav-text">實際應用範例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85"><span class="nav-number">5.</span> <span class="nav-text">注意事項</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AA%9E"><span class="nav-number">6.</span> <span class="nav-text">結語</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -142,16 +142,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-count">91</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">297</span>
+        <span class="site-state-item-count">311</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -250,101 +250,85 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1>前言</h1>
-<p>在進行資料庫開發與維護時，經常需要知道資料表、檢視表或預存程序最後的修改時間。這些資訊對於：</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在進行資料庫開發與維護時，經常需要知道資料表、檢視表或預存程序最後的修改時間。這些資訊對於：</p>
 <ul>
 <li>追蹤系統變更</li>
 <li>問題排除</li>
 <li>效能調校</li>
-<li>版本控制<br>
-都非常重要。本文將介紹幾個實用的SQL查詢技巧，讓你輕鬆掌握資料庫物件的時間資訊。</li>
+<li>版本控制<br>都非常重要。本文將介紹幾個實用的SQL查詢技巧，讓你輕鬆掌握資料庫物件的時間資訊。</li>
 </ul>
-<h1>查詢資料表與檢視表的修改時間</h1>
-<p>以下是查詢資料表與檢視表修改時間的SQL：</p>
+<h1 id="查詢資料表與檢視表的修改時間"><a href="#查詢資料表與檢視表的修改時間" class="headerlink" title="查詢資料表與檢視表的修改時間"></a>查詢資料表與檢視表的修改時間</h1><p>以下是查詢資料表與檢視表修改時間的SQL：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> [name]           <span class="comment">-- 物件名稱</span></span><br><span class="line">      ,create_date     <span class="comment">-- 建立時間</span></span><br><span class="line">      ,modify_date     <span class="comment">-- 修改時間</span></span><br><span class="line">      ,type_desc       <span class="comment">-- 物件類型</span></span><br><span class="line"><span class="keyword">FROM</span> sys.all_objects </span><br><span class="line"><span class="keyword">WHERE</span> type_desc <span class="operator">=</span> <span class="string">&#x27;USER_TABLE&#x27;</span>    <span class="comment">-- 使用者資料表</span></span><br><span class="line">   <span class="keyword">OR</span> type_desc <span class="operator">=</span> <span class="string">&#x27;VIEW&#x27;</span>          <span class="comment">-- 檢視表</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> modify_date <span class="keyword">DESC</span>         <span class="comment">-- 依修改時間排序</span></span><br></pre></td></tr></table></figure>
-<h2 id="查詢說明">查詢說明</h2>
-<ul>
+
+<h2 id="查詢說明"><a href="#查詢說明" class="headerlink" title="查詢說明"></a>查詢說明</h2><ul>
 <li><code>sys.all_objects</code>: SQL Server的系統檢視表，儲存所有資料庫物件的資訊</li>
-<li><code>type_desc</code>: 物件類型描述
-<ul>
-<li>‘USER_TABLE’: 使用者建立的資料表</li>
-<li>‘VIEW’: 檢視表</li>
+<li><code>type_desc</code>: 物件類型描述<ul>
+<li>&#39;USER_TABLE&#39;: 使用者建立的資料表</li>
+<li>&#39;VIEW&#39;: 檢視表</li>
 </ul>
 </li>
 <li><code>ORDER BY modify_date DESC</code>: 依修改時間降冪排序，最新的排在最前面</li>
 </ul>
-<h1>查詢預存程序的修改時間</h1>
-<p>如果要查詢預存程序的修改時間，可以使用以下查詢：</p>
+<h1 id="查詢預存程序的修改時間"><a href="#查詢預存程序的修改時間" class="headerlink" title="查詢預存程序的修改時間"></a>查詢預存程序的修改時間</h1><p>如果要查詢預存程序的修改時間，可以使用以下查詢：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> [name]           <span class="comment">-- 預存程序名稱</span></span><br><span class="line">      ,create_date     <span class="comment">-- 建立時間</span></span><br><span class="line">      ,modify_date     <span class="comment">-- 修改時間</span></span><br><span class="line"><span class="keyword">FROM</span> sys.all_objects </span><br><span class="line"><span class="keyword">WHERE</span> type_desc <span class="operator">=</span> <span class="string">&#x27;SQL_STORED_PROCEDURE&#x27;</span>    <span class="comment">-- 限定查詢預存程序</span></span><br><span class="line">  <span class="keyword">AND</span> <span class="built_in">SUBSTRING</span>([name], <span class="number">1</span>, <span class="number">3</span>) <span class="keyword">NOT</span> <span class="keyword">IN</span> (<span class="string">&#x27;sp_&#x27;</span>, <span class="string">&#x27;dt_&#x27;</span>, <span class="string">&#x27;xp_&#x27;</span>)  <span class="comment">-- 排除系統預存程序</span></span><br></pre></td></tr></table></figure>
-<h2 id="查詢說明-2">查詢說明</h2>
-<ul>
-<li><code>type_desc = 'SQL_STORED_PROCEDURE'</code>: 只查詢SQL預存程序</li>
-<li><code>SUBSTRING([name], 1, 3) NOT IN ('sp_', 'dt_', 'xp_')</code>:
-<ul>
+
+<h2 id="查詢說明-1"><a href="#查詢說明-1" class="headerlink" title="查詢說明"></a>查詢說明</h2><ul>
+<li><code>type_desc = &#39;SQL_STORED_PROCEDURE&#39;</code>: 只查詢SQL預存程序</li>
+<li><code>SUBSTRING([name], 1, 3) NOT IN (&#39;sp_&#39;, &#39;dt_&#39;, &#39;xp_&#39;)</code>: <ul>
 <li>排除系統內建的預存程序</li>
 <li>這些預存程序通常以sp_、dt_或xp_開頭</li>
 <li>過濾後只顯示使用者建立的預存程序</li>
 </ul>
 </li>
 </ul>
-<h1>實際應用範例</h1>
-<p>這些查詢在以下情況特別有用：</p>
+<h1 id="實際應用範例"><a href="#實際應用範例" class="headerlink" title="實際應用範例"></a>實際應用範例</h1><p>這些查詢在以下情況特別有用：</p>
 <ol>
-<li>
-<p>系統維護</p>
+<li><p>系統維護</p>
 <ul>
 <li>追蹤最近被修改的物件</li>
 <li>確認系統更新是否成功部署</li>
 </ul>
 </li>
-<li>
-<p>問題排查</p>
+<li><p>問題排查</p>
 <ul>
 <li>當系統發生異常時</li>
 <li>可以快速檢查是否有物件被意外修改</li>
 </ul>
 </li>
-<li>
-<p>效能調校</p>
+<li><p>效能調校</p>
 <ul>
 <li>追蹤統計資料更新時間</li>
 <li>檢查索引重建時間</li>
 </ul>
 </li>
-<li>
-<p>版本控制</p>
+<li><p>版本控制</p>
 <ul>
 <li>確認程式碼部署狀態</li>
 <li>驗證物件是否為最新版本</li>
 </ul>
 </li>
 </ol>
-<h1>注意事項</h1>
-<ol>
-<li>
-<p>執行權限</p>
+<h1 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h1><ol>
+<li><p>執行權限</p>
 <ul>
 <li>需要有適當的資料庫權限才能查詢這些系統檢視表</li>
 <li>建議使用具有db_owner或更高權限的帳號</li>
 </ul>
 </li>
-<li>
-<p>效能考量</p>
+<li><p>效能考量</p>
 <ul>
 <li>這些查詢通常執行很快</li>
 <li>但在大型資料庫中，建議加上適當的WHERE條件限制範圍</li>
 </ul>
 </li>
-<li>
-<p>時間準確性</p>
+<li><p>時間準確性</p>
 <ul>
 <li>modify_date會在物件定義變更時更新</li>
 <li>純資料異動不會影響此時間</li>
 </ul>
 </li>
 </ol>
-<h1>結語</h1>
-<p>掌握這些查詢技巧，可以讓你的資料庫管理工作事半功倍。建議將這些查詢儲存為程式碼片段，需要時可以快速使用。</p>
+<h1 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h1><p>掌握這些查詢技巧，可以讓你的資料庫管理工作事半功倍。建議將這些查詢儲存為程式碼片段，需要時可以快速使用。</p>
 
     </div>
 
@@ -403,13 +387,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">467k</span>
+    <span title="總字數">479k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">7:04</span>
+    <span title="所需總閱讀時間">7:16</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

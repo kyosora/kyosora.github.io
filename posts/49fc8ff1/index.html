@@ -28,7 +28,7 @@
 <meta property="og:description" content="2026 年 3 月 24 日上午 10:52 UTC，有人把一個藏了後門的 litellm 1.82.8 推上了 PyPI。六分鐘後，一位工程師的筆電因為 11,000 個 Python 程序同時爆開而當機。  他原本以為是 Cursor 更新搞的鬼。結果是一場精心設計的供應鏈攻擊——而且他是全世界第一個發現的人。  事件怎麼發生的 litellm 是 AI 開發圈的常客。做 LLM 應用的人幾">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2026-03-27T14:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-27T13:58:01.368Z">
+<meta property="article:modified_time" content="2026-03-27T14:20:49.272Z">
 <meta property="article:author" content="kyosora">
 <meta property="article:tag" content="Claude Code">
 <meta property="article:tag" content="LiteLLM">
@@ -143,16 +143,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-count">91</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">297</span>
+        <span class="site-state-item-count">311</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -209,7 +209,7 @@
       <span class="post-meta-item-text">發表於</span>
       
 
-      <time title="創建時間：2026-03-27 22:00:00 / 修改時間：21:58:01" itemprop="dateCreated datePublished" datetime="2026-03-27T22:00:00+08:00">2026-03-27</time>
+      <time title="創建時間：2026-03-27 22:00:00 / 修改時間：22:20:49" itemprop="dateCreated datePublished" datetime="2026-03-27T22:00:00+08:00">2026-03-27</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -251,18 +251,15 @@
     
     <div class="post-body" itemprop="articleBody"><p>2026 年 3 月 24 日上午 10:52 UTC，有人把一個藏了後門的 litellm 1.82.8 推上了 PyPI。六分鐘後，一位工程師的筆電因為 11,000 個 Python 程序同時爆開而當機。</p>
 <p>他原本以為是 Cursor 更新搞的鬼。結果是一場精心設計的供應鏈攻擊——而且他是全世界第一個發現的人。</p>
-<h2 id="事件怎麼發生的">事件怎麼發生的</h2>
-<p>litellm 是 AI 開發圈的常客。做 LLM 應用的人幾乎都用過它——統一呼叫 OpenAI、Anthropic、Gemini 等不同模型 API 的 proxy 層。PyPI 上的週下載量是百萬級別。</p>
+<h2 id="事件怎麼發生的"><a href="#事件怎麼發生的" class="headerlink" title="事件怎麼發生的"></a>事件怎麼發生的</h2><p>litellm 是 AI 開發圈的常客。做 LLM 應用的人幾乎都用過它——統一呼叫 OpenAI、Anthropic、Gemini 等不同模型 API 的 proxy 層。PyPI 上的週下載量是百萬級別。</p>
 <p>攻擊者拿到了 litellm 的 PyPI 發布權限（很可能是維護者帳號被盜），直接推了一個 1.82.8 版本上去。GitHub 上完全沒有對應的 tag 或 release——繞過了正常的發布流程。</p>
 <p>惡意程式碼藏在一個叫 <code>litellm_init.pth</code> 的檔案裡。<code>.pth</code> 是 Python 的一個古老機制：放在 site-packages 目錄下的 <code>.pth</code> 檔案，會在<strong>每次 Python 啟動時自動執行</strong>。不需要 <code>import</code>，不需要呼叫，Python 直譯器一啟動就跑。</p>
-<h2 id="三階段攻擊鏈">三階段攻擊鏈</h2>
-<p>這個惡意程式的設計相當完整：</p>
+<h2 id="三階段攻擊鏈"><a href="#三階段攻擊鏈" class="headerlink" title="三階段攻擊鏈"></a>三階段攻擊鏈</h2><p>這個惡意程式的設計相當完整：</p>
 <p><strong>第一階段：收割憑證。</strong> 掃描本機上所有敏感檔案——SSH 私鑰、<code>.env</code>、AWS/GCP/Azure 的 credential、Kubernetes config、資料庫密碼、加密貨幣錢包、shell history。能偷的全偷。</p>
 <p><strong>第二階段：加密外傳。</strong> 用寫死的 4096-bit RSA 公鑰加密竊取的資料，打包成 tar，POST 到 <code>models.litellm.cloud</code>。這個 domain 不屬於合法的 litellm 基礎設施。</p>
 <p><strong>第三階段：橫向擴散。</strong> 如果偵測到 Kubernetes 環境，讀取所有 namespace 的 secret，在每個 node 上建立 privileged pod（用 <code>alpine:latest</code>），掛載宿主機檔案系統，安裝 systemd 持久化後門。本機也會在 <code>~/.config/sysmon/sysmon.py</code> 裝一個。</p>
 <p>攻擊者唯一的失誤：<code>.pth</code> 檔在每次 Python 啟動時都會觸發，而惡意程式碼用 <code>subprocess.Popen</code> 開新的 Python 子程序——子程序啟動時又觸發 <code>.pth</code>，無限遞迴，造成 fork bomb。<strong>惡意程式自己把自己搞當機了。</strong></p>
-<h2 id="發現過程：一場即時偵探劇">發現過程：一場即時偵探劇</h2>
-<p>FutureSearch 的工程師 Callum McMahon 公開了完整的 Claude Code 對話逐字稿。這段紀錄本身就值得一讀，因為它展示了一個不是資安專家的開發者，如何用 AI 工具在一小時內從「筆電怎麼這麼慢」追查到「這是供應鏈攻擊」。</p>
+<h2 id="發現過程：一場即時偵探劇"><a href="#發現過程：一場即時偵探劇" class="headerlink" title="發現過程：一場即時偵探劇"></a>發現過程：一場即時偵探劇</h2><p>FutureSearch 的工程師 Callum McMahon 公開了完整的 Claude Code 對話逐字稿。這段紀錄本身就值得一讀，因為它展示了一個不是資安專家的開發者，如何用 AI 工具在一小時內從「筆電怎麼這麼慢」追查到「這是供應鏈攻擊」。</p>
 <p>時間軸：</p>
 <table>
 <thead>
@@ -271,8 +268,7 @@
 <th>事件</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>10:52</td>
 <td>攻擊者將惡意版本推上 PyPI</td>
 </tr>
@@ -308,21 +304,18 @@
 <td>12:02</td>
 <td>發布揭露文章</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>從攻擊發生到公開揭露，不到兩小時。有意思的是，Claude 一開始還在「安慰」工程師說這是正常的 Claude Code 行為——直到工程師堅持繼續挖，AI 才轉向認真分析。</p>
-<h2 id="對開發者的啟示">對開發者的啟示</h2>
-<p>這件事有幾個值得深思的點。</p>
+<h2 id="對開發者的啟示"><a href="#對開發者的啟示" class="headerlink" title="對開發者的啟示"></a>對開發者的啟示</h2><p>這件事有幾個值得深思的點。</p>
 <p><strong>你的 AI 工具鏈比你想像的更長。</strong> Cursor 啟動一個 MCP plugin，plugin 依賴 litellm，litellm 從 PyPI 拉了 77 個套件。你以為你只是開了個編輯器，實際上你觸發了一條很長的依賴鏈。任何一環被攻破，你的 SSH 私鑰就可能在你不知情的情況下被打包寄出去。</p>
 <p><strong>版本 pin 救了一命。</strong> FutureSearch 的正式專案環境把 litellm 鎖在 <code>&lt;1.77.3</code>。被感染的是 Cursor 的 MCP plugin 環境，因為它用 <code>uvx</code> 動態拉取最新版。正式環境安全，開發工具環境中招。</p>
 <p><strong><code>.pth</code> 是一個被低估的攻擊面。</strong> 大多數 Python 開發者不知道 <code>.pth</code> 檔案的存在，更不知道它會在每次 Python 啟動時自動執行。這不是新東西，但用在供應鏈攻擊裡，殺傷力巨大。</p>
 <p><strong>AI 是雙面刃。</strong> 攻擊者可能用 AI 寫惡意程式，但發現者也是用 AI（Claude Code）在一小時內完成了完整的惡意程式分析和事件回應。這個效率在以前是不可能的。</p>
-<h2 id="你現在該檢查什麼">你現在該檢查什麼</h2>
-<p>如果你最近有用到 litellm，跑一下這些：</p>
+<h2 id="你現在該檢查什麼"><a href="#你現在該檢查什麼" class="headerlink" title="你現在該檢查什麼"></a>你現在該檢查什麼</h2><p>如果你最近有用到 litellm，跑一下這些：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 檢查安裝的版本</span></span><br><span class="line">pip show litellm</span><br><span class="line"></span><br><span class="line"><span class="comment"># 搜尋 uv 快取中的惡意檔案</span></span><br><span class="line">find ~/.cache/uv -name <span class="string">&quot;litellm_init.pth&quot;</span> 2&gt;/dev/null</span><br><span class="line"></span><br><span class="line"><span class="comment"># 檢查持久化後門</span></span><br><span class="line"><span class="built_in">ls</span> -la ~/.config/sysmon/ 2&gt;/dev/null</span><br><span class="line"><span class="built_in">ls</span> -la ~/.config/systemd/user/sysmon.service 2&gt;/dev/null</span><br><span class="line"></span><br><span class="line"><span class="comment"># K8s 環境檢查可疑 pod</span></span><br><span class="line">kubectl get pods -n kube-system | grep <span class="string">&quot;node-setup&quot;</span> 2&gt;/dev/null</span><br></pre></td></tr></table></figure>
+
 <p>如果找到任何東西，假設你機器上的所有憑證都已經洩漏。全部輪換，沒有例外。</p>
-<h2 id="更根本的問題">更根本的問題</h2>
-<p>我們整個 AI 開發生態系正在建立越來越深的依賴鏈。一個 LLM proxy library 的 PyPI 帳號被盜，影響的不只是直接使用者——是整個通過 MCP plugin、IDE extension、CI/CD pipeline 間接依賴它的生態系。</p>
+<h2 id="更根本的問題"><a href="#更根本的問題" class="headerlink" title="更根本的問題"></a>更根本的問題</h2><p>我們整個 AI 開發生態系正在建立越來越深的依賴鏈。一個 LLM proxy library 的 PyPI 帳號被盜，影響的不只是直接使用者——是整個通過 MCP plugin、IDE extension、CI/CD pipeline 間接依賴它的生態系。</p>
 <p>litellm 的惡意版本在 PyPI 上存活了數小時。在這段時間裡，每一個 <code>pip install litellm</code>、每一個 <code>uvx</code> 動態拉取、每一個 CI/CD pipeline 的 <code>pip install -r requirements.txt</code>，都可能中招。</p>
 <p>FutureSearch 後續分析估計有 47,000 次下載受影響。</p>
 <p>這不是第一次，也不會是最後一次。但這次的教訓特別清楚：<strong>你的開發環境和你的生產環境一樣需要安全防護</strong>。鎖定版本、審計依賴、監控異常程序。尤其是在 AI 工具讓依賴鏈變得越來越長、越來越不透明的今天。</p>
@@ -387,13 +380,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">467k</span>
+    <span title="總字數">479k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">7:04</span>
+    <span title="所需總閱讀時間">7:16</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

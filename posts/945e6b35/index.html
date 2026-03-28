@@ -143,16 +143,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-count">91</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">297</span>
+        <span class="site-state-item-count">311</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -257,10 +257,10 @@
     
     <div class="post-body" itemprop="articleBody"><p>你有沒有這種經驗：每次想用 Claude Code 搭配 Chrome 瀏覽器時，都要輸入一長串指令？</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">claude <span class="literal">--chrome</span> <span class="literal">--dangerously-skip-permissions</span></span><br></pre></td></tr></table></figure>
+
 <p>手指敲到懷疑人生，而且一旦打錯一個字，又要重來一次。</p>
 <p>今天教你一招，把這串指令變成<strong>兩個字母</strong>：<code>cc</code></p>
-<h2 id="問題：為什麼需要關心這個？">問題：為什麼需要關心這個？</h2>
-<p>如果你常用 Claude Code 的瀏覽器整合功能，你會發現：</p>
+<h2 id="問題：為什麼需要關心這個？"><a href="#問題：為什麼需要關心這個？" class="headerlink" title="問題：為什麼需要關心這個？"></a>問題：為什麼需要關心這個？</h2><p>如果你常用 Claude Code 的瀏覽器整合功能，你會發現：</p>
 <ol>
 <li><strong>參數太長</strong>：<code>--chrome --dangerously-skip-permissions</code> 根本記不住</li>
 <li><strong>容易打錯</strong>：<code>dangerously</code> 這種長單字很容易拼錯</li>
@@ -268,42 +268,48 @@
 </ol>
 <p>更慘的是，如果你還要傳其他參數（比如指定模型或專案路徑），指令會變得更長：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">claude <span class="literal">--chrome</span> <span class="literal">--dangerously-skip-permissions</span> <span class="literal">--model</span> opus some<span class="literal">-argument</span></span><br></pre></td></tr></table></figure>
+
 <p>這根本是在折磨自己。</p>
-<h2 id="解決方案：用-PowerShell-Function-封裝指令">解決方案：用 PowerShell Function 封裝指令</h2>
-<p>PowerShell 的 Function 功能可以讓你把常用指令包裝成自訂指令，而且還能傳參數。</p>
-<h3 id="步驟-1：建立-PowerShell-Profile">步驟 1：建立 PowerShell Profile</h3>
-<p>首先，找到你的 PowerShell 設定檔位置：</p>
+<h2 id="解決方案：用-PowerShell-Function-封裝指令"><a href="#解決方案：用-PowerShell-Function-封裝指令" class="headerlink" title="解決方案：用 PowerShell Function 封裝指令"></a>解決方案：用 PowerShell Function 封裝指令</h2><p>PowerShell 的 Function 功能可以讓你把常用指令包裝成自訂指令，而且還能傳參數。</p>
+<h3 id="步驟-1：建立-PowerShell-Profile"><a href="#步驟-1：建立-PowerShell-Profile" class="headerlink" title="步驟 1：建立 PowerShell Profile"></a>步驟 1：建立 PowerShell Profile</h3><p>首先，找到你的 PowerShell 設定檔位置：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看 Profile 路徑</span></span><br><span class="line"><span class="variable">$PROFILE</span></span><br></pre></td></tr></table></figure>
+
 <p>你會看到類似這樣的路徑：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\你的使用者名稱\Documents\PowerShell\Microsoft.PowerShell_profile.ps1</span><br></pre></td></tr></table></figure>
+
 <p><strong>如果檔案不存在</strong>，執行以下指令建立：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 建立 Profile 檔案（如果不存在）</span></span><br><span class="line"><span class="built_in">New-Item</span> <span class="literal">-Path</span> <span class="variable">$PROFILE</span> <span class="literal">-Type</span> File <span class="literal">-Force</span></span><br></pre></td></tr></table></figure>
-<h3 id="步驟-2：加入自訂-Function">步驟 2：加入自訂 Function</h3>
-<p>用你喜歡的編輯器（VSCode、Notepad++ 或內建記事本都可以）開啟 Profile 檔案：</p>
+
+<h3 id="步驟-2：加入自訂-Function"><a href="#步驟-2：加入自訂-Function" class="headerlink" title="步驟 2：加入自訂 Function"></a>步驟 2：加入自訂 Function</h3><p>用你喜歡的編輯器（VSCode、Notepad++ 或內建記事本都可以）開啟 Profile 檔案：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 用 VSCode 開啟</span></span><br><span class="line">code <span class="variable">$PROFILE</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 或用記事本開啟</span></span><br><span class="line">notepad <span class="variable">$PROFILE</span></span><br></pre></td></tr></table></figure>
+
 <p>在檔案中加入以下內容：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Claude Code 快捷指令</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">cc</span></span> &#123;</span><br><span class="line">    claude <span class="literal">--chrome</span> <span class="literal">--dangerously-skip-permissions</span> <span class="variable">$args</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><strong>這段 Function 做了什麼？</strong></p>
 <ul>
 <li><code>function cc</code>：定義一個名為 <code>cc</code> 的新指令</li>
 <li><code>claude --chrome --dangerously-skip-permissions</code>：固定參數</li>
 <li><code>$args</code>：把你傳給 <code>cc</code> 的所有額外參數都轉發給 <code>claude</code></li>
 </ul>
-<h3 id="步驟-3：重新載入-Profile">步驟 3：重新載入 Profile</h3>
-<p>存檔後，執行以下指令讓設定生效：</p>
+<h3 id="步驟-3：重新載入-Profile"><a href="#步驟-3：重新載入-Profile" class="headerlink" title="步驟 3：重新載入 Profile"></a>步驟 3：重新載入 Profile</h3><p>存檔後，執行以下指令讓設定生效：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 重新載入 Profile</span></span><br><span class="line">. <span class="variable">$PROFILE</span></span><br></pre></td></tr></table></figure>
+
 <p>或者直接關閉 PowerShell 重開也可以。</p>
-<h3 id="步驟-4：享受極簡指令">步驟 4：享受極簡指令</h3>
-<p>現在你只需要輸入：</p>
+<h3 id="步驟-4：享受極簡指令"><a href="#步驟-4：享受極簡指令" class="headerlink" title="步驟 4：享受極簡指令"></a>步驟 4：享受極簡指令</h3><p>現在你只需要輸入：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cc</span><br></pre></td></tr></table></figure>
+
 <p>就會自動執行：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">claude <span class="literal">--chrome</span> <span class="literal">--dangerously-skip-permissions</span></span><br></pre></td></tr></table></figure>
+
 <p><strong>如果要傳其他參數</strong>，直接加在後面：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 指定模型</span></span><br><span class="line">cc <span class="literal">--model</span> opus</span><br><span class="line"></span><br><span class="line"><span class="comment"># 等同於</span></span><br><span class="line">claude <span class="literal">--chrome</span> <span class="literal">--dangerously-skip-permissions</span> <span class="literal">--model</span> opus</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 傳多個參數</span></span><br><span class="line">cc <span class="literal">--model</span> haiku <span class="literal">--verbose</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 等同於</span></span><br><span class="line">claude <span class="literal">--chrome</span> <span class="literal">--dangerously-skip-permissions</span> <span class="literal">--model</span> haiku <span class="literal">--verbose</span></span><br></pre></td></tr></table></figure>
-<h2 id="進階技巧：建立多個快捷指令">進階技巧：建立多個快捷指令</h2>
-<p>你可以根據不同使用場景，建立多個快捷指令：</p>
+
+<h2 id="進階技巧：建立多個快捷指令"><a href="#進階技巧：建立多個快捷指令" class="headerlink" title="進階技巧：建立多個快捷指令"></a>進階技巧：建立多個快捷指令</h2><p>你可以根據不同使用場景，建立多個快捷指令：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 標準版：Chrome + 跳過權限</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">cc</span></span> &#123;</span><br><span class="line">    claude <span class="literal">--chrome</span> <span class="literal">--dangerously-skip-permissions</span> <span class="variable">$args</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># Opus 版：直接用 Opus 模型</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">cco</span></span> &#123;</span><br><span class="line">    claude <span class="literal">--chrome</span> <span class="literal">--dangerously-skip-permissions</span> <span class="literal">--model</span> opus <span class="variable">$args</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># Haiku 版：快速測試用的輕量版</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">cch</span></span> &#123;</span><br><span class="line">    claude <span class="literal">--chrome</span> <span class="literal">--dangerously-skip-permissions</span> <span class="literal">--model</span> haiku <span class="variable">$args</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 純 CLI 版：不開瀏覽器</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ccli</span></span> &#123;</span><br><span class="line">    claude <span class="variable">$args</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>這樣你就有四種快捷指令：</p>
 <ul>
 <li><code>cc</code>：標準版（Chrome + Sonnet）</li>
@@ -311,25 +317,25 @@
 <li><code>cch</code>：Haiku 版（快速但較弱）</li>
 <li><code>ccli</code>：純命令列版</li>
 </ul>
-<h2 id="常見陷阱">常見陷阱</h2>
-<h3 id="陷阱-1：執行政策限制">陷阱 1：執行政策限制</h3>
-<p>如果你執行 <code>. $PROFILE</code> 時出現以下錯誤：</p>
+<h2 id="常見陷阱"><a href="#常見陷阱" class="headerlink" title="常見陷阱"></a>常見陷阱</h2><h3 id="陷阱-1：執行政策限制"><a href="#陷阱-1：執行政策限制" class="headerlink" title="陷阱 1：執行政策限制"></a>陷阱 1：執行政策限制</h3><p>如果你執行 <code>. $PROFILE</code> 時出現以下錯誤：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">無法載入檔案，因為這個系統上已停用指令碼執行...</span><br></pre></td></tr></table></figure>
+
 <p><strong>解決方法</strong>：開啟「以系統管理員身分執行」的 PowerShell，執行：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Set-ExecutionPolicy</span> RemoteSigned <span class="literal">-Scope</span> CurrentUser</span><br></pre></td></tr></table></figure>
+
 <p>這會允許你執行本機建立的腳本。</p>
-<h3 id="陷阱-2：參數順序問題">陷阱 2：參數順序問題</h3>
-<p>如果你的 Function 寫成這樣：</p>
+<h3 id="陷阱-2：參數順序問題"><a href="#陷阱-2：參數順序問題" class="headerlink" title="陷阱 2：參數順序問題"></a>陷阱 2：參數順序問題</h3><p>如果你的 Function 寫成這樣：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ❌ 錯誤寫法</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">cc</span></span> &#123;</span><br><span class="line">    claude <span class="variable">$args</span> <span class="literal">--chrome</span> <span class="literal">--dangerously-skip-permissions</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>當你執行 <code>cc --model opus</code> 時，實際指令會變成：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">claude <span class="literal">--model</span> opus <span class="literal">--chrome</span> <span class="literal">--dangerously-skip-permissions</span></span><br></pre></td></tr></table></figure>
+
 <p>某些 CLI 工具對參數順序敏感，可能會導致錯誤。<strong>固定參數永遠放前面，<code>$args</code> 放最後</strong>。</p>
-<h3 id="陷阱-3：忘記重新載入-Profile">陷阱 3：忘記重新載入 Profile</h3>
-<p>修改 Profile 後，<strong>必須重新載入</strong>才會生效：</p>
+<h3 id="陷阱-3：忘記重新載入-Profile"><a href="#陷阱-3：忘記重新載入-Profile" class="headerlink" title="陷阱 3：忘記重新載入 Profile"></a>陷阱 3：忘記重新載入 Profile</h3><p>修改 Profile 後，<strong>必須重新載入</strong>才會生效：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">. <span class="variable">$PROFILE</span></span><br></pre></td></tr></table></figure>
+
 <p>或直接關閉 PowerShell 重開。</p>
-<h2 id="為什麼要用-dangerously-skip-permissions？">為什麼要用 <code>--dangerously-skip-permissions</code>？</h2>
-<p>你可能會好奇，這個參數名稱看起來很危險，為什麼還要用？</p>
+<h2 id="為什麼要用-dangerously-skip-permissions？"><a href="#為什麼要用-dangerously-skip-permissions？" class="headerlink" title="為什麼要用 --dangerously-skip-permissions？"></a>為什麼要用 <code>--dangerously-skip-permissions</code>？</h2><p>你可能會好奇，這個參數名稱看起來很危險，為什麼還要用？</p>
 <p><strong>原因</strong>：</p>
 <ul>
 <li>Claude Code 預設會在執行某些操作時詢問你的同意（比如寫檔案、執行指令）</li>
@@ -343,8 +349,8 @@
 <li>你可以建立兩個 Function，一個有這個參數（<code>cc</code>），一個沒有（<code>ccs</code> = safe）</li>
 </ul>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 快速版（跳過權限）</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">cc</span></span> &#123;</span><br><span class="line">    claude <span class="literal">--chrome</span> <span class="literal">--dangerously-skip-permissions</span> <span class="variable">$args</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安全版（保留權限提示）</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ccs</span></span> &#123;</span><br><span class="line">    claude <span class="literal">--chrome</span> <span class="variable">$args</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="總結">總結</h2>
-<p>核心要點：</p>
+
+<h2 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h2><p>核心要點：</p>
 <ul>
 <li>PowerShell Function 可以把長指令封裝成短指令</li>
 <li><code>$args</code> 會自動轉發所有額外參數</li>
@@ -359,8 +365,7 @@
 </ol>
 <p>如果你有其他常用的 Claude Code 參數組合，也可以用同樣方法建立更多快捷指令。</p>
 <p>把時間花在思考和創造上，而不是敲重複的指令。</p>
-<h2 id="延伸閱讀">延伸閱讀</h2>
-<ul>
+<h2 id="延伸閱讀"><a href="#延伸閱讀" class="headerlink" title="延伸閱讀"></a>延伸閱讀</h2><ul>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-tw/powershell/module/microsoft.powershell.core/about/about_profiles">PowerShell Profile 官方文檔</a></li>
 <li><a target="_blank" rel="noopener" href="https://github.com/anthropics/claude-code">Claude Code 官方文檔</a></li>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-tw/powershell/scripting/learn/ps101/09-functions">PowerShell Function 進階用法</a></li>
@@ -424,13 +429,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">467k</span>
+    <span title="總字數">479k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">7:04</span>
+    <span title="所需總閱讀時間">7:16</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

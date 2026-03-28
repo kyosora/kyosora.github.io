@@ -143,16 +143,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-count">91</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">297</span>
+        <span class="site-state-item-count">311</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -253,34 +253,31 @@
 <p>這不是自然演化。這是 AI 在背後推了一把。</p>
 <p>GitHub 的開發者倡導者 Andrea Griffiths 替這個現象取了一個名字：<strong>便利迴圈</strong>（Convenience Loop）。當 AI 讓某個技術用起來特別順手，開發者就會湧向它。湧入的開發者產出更多程式碼，這些程式碼成為 AI 的訓練資料，AI 對這個技術變得更強，吸引更多開發者。</p>
 <p>迴圈就這樣轉起來了。而且停不下來。</p>
-<h2 id="TypeScript-為什麼是最大贏家">TypeScript 為什麼是最大贏家</h2>
-<p>一個數字就能說明問題：2025 年一項學術研究發現，LLM 產出的編譯錯誤中，<strong>94% 是型別檢查失敗</strong>。</p>
+<h2 id="TypeScript-為什麼是最大贏家"><a href="#TypeScript-為什麼是最大贏家" class="headerlink" title="TypeScript 為什麼是最大贏家"></a>TypeScript 為什麼是最大贏家</h2><p>一個數字就能說明問題：2025 年一項學術研究發現，LLM 產出的編譯錯誤中，<strong>94% 是型別檢查失敗</strong>。</p>
 <p>想想這代表什麼。AI 寫的程式碼，十次編譯錯誤有九次以上是型別搞錯了。TypeScript 的型別系統就像一張安全網——你宣告了 <code>x: string</code>，AI 立刻知道該排除所有不適用於字串的操作。Python 的動態型別沒有這道防線，錯誤要到 runtime 才會爆開。</p>
 <p>對 AI 來說，靜態型別不是束縛，是導航系統。</p>
 <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// TypeScript 給 AI 明確的邊界</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">processOrder</span>(<span class="params"><span class="attr">order</span>: <span class="title class_">Order</span></span>): <span class="title class_">ProcessedResult</span> &#123;</span><br><span class="line">  <span class="comment">// AI 知道 order 有哪些欄位、每個欄位的型別</span></span><br><span class="line">  <span class="comment">// 不會把 order.total（number）當成字串處理</span></span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="attr">id</span>: order.<span class="property">id</span>,</span><br><span class="line">    <span class="attr">total</span>: order.<span class="property">total</span> * <span class="number">1.05</span>, <span class="comment">// AI 知道這是數字運算</span></span><br><span class="line">    <span class="attr">status</span>: <span class="string">&#x27;processed&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Python 的動態型別讓 AI 猜測</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">process_order</span>(<span class="params">order</span>):</span><br><span class="line">    <span class="comment"># order 是什麼？有哪些欄位？total 是 int 還是 str？</span></span><br><span class="line">    <span class="comment"># AI 只能從上下文推斷，猜錯的機率高</span></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="string">&#x27;id&#x27;</span>: order[<span class="string">&#x27;id&#x27;</span>],</span><br><span class="line">        <span class="string">&#x27;total&#x27;</span>: order[<span class="string">&#x27;total&#x27;</span>] * <span class="number">1.05</span>,  <span class="comment"># 如果 total 是字串呢？</span></span><br><span class="line">        <span class="string">&#x27;status&#x27;</span>: <span class="string">&#x27;processed&#x27;</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
 <p>這不是說 Python 不好。在 AI 研究領域，Python 仍然是王者——2025 年 GitHub 上近半數新 AI 專案用 Python 寫的。但在應用層，TypeScript 正在吃掉市場。GitHub 把這個趨勢稱為「AI 驅動的混合堆疊」：Python 負責資料管線，TypeScript 負責應用和 API。</p>
-<h2 id="80-的新手第一週就用-Copilot">80% 的新手第一週就用 Copilot</h2>
-<p>這個數字讓我停下來想了很久。</p>
+<h2 id="80-的新手第一週就用-Copilot"><a href="#80-的新手第一週就用-Copilot" class="headerlink" title="80% 的新手第一週就用 Copilot"></a>80% 的新手第一週就用 Copilot</h2><p>這個數字讓我停下來想了很久。</p>
 <p>GitHub 上 80% 的新開發者，在加入的第一週就開始使用 Copilot。他們從學寫程式的第一天起，「容易」的定義就被 AI 重新設定了。</p>
 <p>如果 Copilot 在 TypeScript 上表現很好，新手就會覺得 TypeScript 很簡單。如果 Copilot 對某個小眾語言支援很差，新手就會覺得那個語言很難用。問題是——那個語言本身可能不難，只是 AI 不會寫而已。</p>
 <p>我認為這改變了一個根本性的東西：開發者選擇語言的方式。</p>
 <p>十年前，你選語言看的是社群大小、套件生態、效能特性。現在多了一個隱性指標：<strong>AI 寫這個語言寫得好不好</strong>。沒有人會在決策文件裡寫這一條，但它實際上影響著每個「用起來順不順手」的直覺判斷。</p>
-<h2 id="新語言的死亡螺旋">新語言的死亡螺旋</h2>
-<p>便利迴圈最殘酷的面向，是它對新語言做的事。</p>
+<h2 id="新語言的死亡螺旋"><a href="#新語言的死亡螺旋" class="headerlink" title="新語言的死亡螺旋"></a>新語言的死亡螺旋</h2><p>便利迴圈最殘酷的面向，是它對新語言做的事。</p>
 <p>一個新程式語言剛出來，GitHub 上的程式碼量很少。Copilot 的訓練資料不夠，所以它在這個語言上的表現很差。開發者試用後覺得「AI 不支援，太麻煩了」，轉頭去用 TypeScript 或 Python。語言的使用者沒有成長，程式碼量沒有增加，AI 永遠學不會。</p>
 <p>這是一個死亡螺旋。贏家通吃，新進者幾乎不可能突圍。</p>
 <p>Steve Klabnik（Rust 核心貢獻者之一）在 2026 年初寫了一篇文章談他的新語言專案 Rue。他明確提到：AI 工具的缺乏支援是新語言推廣最大的障礙之一。不是語言設計不好，不是缺少特性，是 Copilot 不會寫你的語言，所以沒人想用。</p>
 <p>Rust 本身算是少數突圍成功的案例——靠著 Mozilla 的推動和系統程式設計的不可替代性，累積了足夠多的程式碼讓 AI 學會。但下一個 Rust 呢？在便利迴圈的世界裡，門檻高了十倍。</p>
-<h2 id="你的技術決策正在被-AI-左右">你的技術決策正在被 AI 左右</h2>
-<p>Microsoft CEO 說 AI 產出公司 30% 的程式碼。Google CEO 說超過 25%。這不是實驗階段的玩具，這是生產環境裡真實在跑的東西。</p>
+<h2 id="你的技術決策正在被-AI-左右"><a href="#你的技術決策正在被-AI-左右" class="headerlink" title="你的技術決策正在被 AI 左右"></a>你的技術決策正在被 AI 左右</h2><p>Microsoft CEO 說 AI 產出公司 30% 的程式碼。Google CEO 說超過 25%。這不是實驗階段的玩具，這是生產環境裡真實在跑的東西。</p>
 <p>當 AI 參與這麼大比例的程式碼產出，它對技術棧的「偏好」就不再是可以忽略的噪音。它變成一股重力場——把整個產業往特定方向拉。</p>
 <p>我觀察到幾個正在發生的事：</p>
 <p><strong>前端框架全面預設 TypeScript。</strong> Next.js、Nuxt、SvelteKit，新專案的腳手架工具現在預設就是 TypeScript。不是因為開發者投票選的，而是因為 AI 在 TypeScript 上的表現明顯更好，框架維護者自然會往這個方向靠。</p>
 <p><strong>MCP（Model Context Protocol）一年內從 10 萬下載量衝到 9,700 萬。</strong> 970 倍。Anthropic、OpenAI、Google、Microsoft、Amazon 全部原生支援。這個協議把 AI 和工具的連接標準化了，而它的 SDK 只有 Python 和 TypeScript 版本。如果你用其他語言，你就在 AI 工具生態的邊緣。</p>
 <p><strong>AI 編輯器三國鼎立。</strong> Cursor（36 萬付費用戶）、Windsurf、Claude Code，三個工具的設計哲學完全不同，但都往同一個方向走：更深的 AI 整合、更自動化的程式碼產出。你的 IDE 選擇決定了你跟 AI 協作的方式，而 AI 的能力反過來決定了你用什麼語言最順手。</p>
-<h2 id="這代表什麼">這代表什麼</h2>
-<p>我不覺得便利迴圈是壞事。TypeScript 的型別系統確實讓程式碼更可靠，AI 放大了這個優勢，這本身沒有問題。</p>
+<h2 id="這代表什麼"><a href="#這代表什麼" class="headerlink" title="這代表什麼"></a>這代表什麼</h2><p>我不覺得便利迴圈是壞事。TypeScript 的型別系統確實讓程式碼更可靠，AI 放大了這個優勢，這本身沒有問題。</p>
 <p>但我在意的是另一件事：<strong>我們是否意識到自己的選擇正在被 AI 的訓練資料分佈所左右</strong>。</p>
 <p>當你說「TypeScript 比較好用」，有多少是語言本身的優勢，有多少是 Copilot 在 TypeScript 上表現更好帶來的錯覺？這條界線正在變得模糊。</p>
 <p>幾個值得思考的方向：</p>
@@ -358,13 +355,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">467k</span>
+    <span title="總字數">479k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">7:04</span>
+    <span title="所需總閱讀時間">7:16</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

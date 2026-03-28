@@ -143,16 +143,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-count">91</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">297</span>
+        <span class="site-state-item-count">311</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -252,8 +252,7 @@
     <div class="post-body" itemprop="articleBody"><p>我在追蹤 NVIDIA GTC 2026 的預告資訊時，撞上一個讓我停下來想了很久的數字：<strong>2 公尺</strong>。</p>
 <p>在 1.6 Tb/s 的傳輸速度下，銅線的訊號完整性和散熱問題，讓它連 2 公尺都撐不住。這不是理論推導，是工程實測。NVIDIA 在 3 月 2 日宣布砸 40 億美元投資 Lumentum 和 Coherent 兩家光子學公司，接著在 GTC 發表 Spectrum-X 和 Quantum-X 矽光子網路交換器。</p>
 <p>銅線時代正在結束。如果你在管 AI 叢集，或者你的工作跟 GPU 運算基礎設施沾上邊，這件事值得花十分鐘搞懂。</p>
-<h2 id="問題出在哪：銅線碰上了物理牆">問題出在哪：銅線碰上了物理牆</h2>
-<p>GPU 跑得再快，資料傳不過去就是白搭。</p>
+<h2 id="問題出在哪：銅線碰上了物理牆"><a href="#問題出在哪：銅線碰上了物理牆" class="headerlink" title="問題出在哪：銅線碰上了物理牆"></a>問題出在哪：銅線碰上了物理牆</h2><p>GPU 跑得再快，資料傳不過去就是白搭。</p>
 <p>現代 AI 訓練和推理的瓶頸早就不只在運算力。一個 NVL72 機架裡塞了 72 張 Rubin GPU，它們之間的資料交換量是天文數字。第六代 NVLink 的頻寬達到 260 TB/s，但這些資料要在 GPU 之間、機架之間、甚至跨資料中心移動。</p>
 <p>銅線在低速時代不是問題。但當每個埠口要跑 1.6 Tb/s，物理定律就開始反咬：</p>
 <ul>
@@ -262,50 +261,39 @@
 <li><strong>串擾</strong>：密集佈線時，相鄰銅線之間的電磁干擾會降低訊號品質</li>
 </ul>
 <p>這三個問題在 400 Gb/s 時代還能靠更好的銅合金和更粗的線材硬撐。到了 1.6 Tb/s，撐不住了。</p>
-<h2 id="NVIDIA-的解法：用光取代銅">NVIDIA 的解法：用光取代銅</h2>
-<p>光子學不是新概念。長途電信骨幹網路用光纖已經幾十年了。NVIDIA 要做的，是把光子技術推進到 GPU 機架內部——這個距離原本是銅線的地盤。</p>
-<h3 id="Co-Packaged-Optics（CPO）">Co-Packaged Optics（CPO）</h3>
-<p>核心技術叫 co-packaged optics（共封裝光學）。把光電轉換元件直接封裝在交換器晶片旁邊，而不是用外接的光學收發模組。</p>
+<h2 id="NVIDIA-的解法：用光取代銅"><a href="#NVIDIA-的解法：用光取代銅" class="headerlink" title="NVIDIA 的解法：用光取代銅"></a>NVIDIA 的解法：用光取代銅</h2><p>光子學不是新概念。長途電信骨幹網路用光纖已經幾十年了。NVIDIA 要做的，是把光子技術推進到 GPU 機架內部——這個距離原本是銅線的地盤。</p>
+<h3 id="Co-Packaged-Optics（CPO）"><a href="#Co-Packaged-Optics（CPO）" class="headerlink" title="Co-Packaged Optics（CPO）"></a>Co-Packaged Optics（CPO）</h3><p>核心技術叫 co-packaged optics（共封裝光學）。把光電轉換元件直接封裝在交換器晶片旁邊，而不是用外接的光學收發模組。</p>
 <p>好處很直接：</p>
 <ul>
 <li><strong>距離不再是限制</strong>：光纖在 1.6 Tb/s 下跑幾百公尺沒有訊號衰減問題</li>
 <li><strong>功耗降低</strong>：CPO 消除了晶片到收發模組之間那段銅線的耗電</li>
 <li><strong>密度提高</strong>：光纖比銅線細得多，同樣空間能塞更多連接</li>
 </ul>
-<h3 id="Spectrum-X-Photonics">Spectrum-X Photonics</h3>
-<p>NVIDIA 在 GTC 發表的 Spectrum-X 矽光子交換器，就是第一個大規模商用的 CPO 產品。規格：</p>
+<h3 id="Spectrum-X-Photonics"><a href="#Spectrum-X-Photonics" class="headerlink" title="Spectrum-X Photonics"></a>Spectrum-X Photonics</h3><p>NVIDIA 在 GTC 發表的 Spectrum-X 矽光子交換器，就是第一個大規模商用的 CPO 產品。規格：</p>
 <ul>
 <li>每埠 1.6 Tb/s</li>
 <li>支援連接「數百萬」張 GPU 跨站點運作</li>
 <li>與 TSMC、Coherent、Corning、Foxconn、Lumentum、SENKO 共同開發</li>
 </ul>
 <p>注意那個「數百萬張 GPU」。目前最大的 AI 叢集大概在十萬張等級。NVIDIA 在為百萬張 GPU 的世界做準備，而銅線在那個規模根本行不通。</p>
-<h2 id="40-億美元的佈局">40 億美元的佈局</h2>
-<p>NVIDIA 的投資分配很有意思：</p>
+<h2 id="40-億美元的佈局"><a href="#40-億美元的佈局" class="headerlink" title="40 億美元的佈局"></a>40 億美元的佈局</h2><p>NVIDIA 的投資分配很有意思：</p>
 <ul>
 <li><strong>Lumentum</strong>：20 億美元。他們做雷射光源，提供 Spectrum-X 產品的雷射元件</li>
 <li><strong>Coherent</strong>：20 億美元。他們做矽光子整合，負責光電轉換的核心技術</li>
 </ul>
 <p>這不是風險投資式的撒錢。這是把光子學供應鏈的兩個關鍵環節鎖死：光源和光電轉換。其他競爭者要做 CPO，也得跟這兩家買東西。</p>
 <p>NVIDIA 已經在 GPU 市場做過一次這種事——先把 CUDA 生態建起來，讓所有 AI 框架都綁在 NVIDIA 的平台上。現在他們要在網路層做同樣的事。</p>
-<h2 id="對開發者和基礎設施工程師的影響">對開發者和基礎設施工程師的影響</h2>
-<p>如果你在管理 AI 叢集，或者在選購雲端運算資源，幾件事值得注意：</p>
-<h3 id="1-機架設計的遊戲規則在改變">1. 機架設計的遊戲規則在改變</h3>
-<p>過去的資料中心佈線思維是「銅線近距離、光纖遠距離」。CPO 把這個分界線推到了近乎零。未來的 AI 機架從一開始就是全光學設計。</p>
+<h2 id="對開發者和基礎設施工程師的影響"><a href="#對開發者和基礎設施工程師的影響" class="headerlink" title="對開發者和基礎設施工程師的影響"></a>對開發者和基礎設施工程師的影響</h2><p>如果你在管理 AI 叢集，或者在選購雲端運算資源，幾件事值得注意：</p>
+<h3 id="1-機架設計的遊戲規則在改變"><a href="#1-機架設計的遊戲規則在改變" class="headerlink" title="1. 機架設計的遊戲規則在改變"></a>1. 機架設計的遊戲規則在改變</h3><p>過去的資料中心佈線思維是「銅線近距離、光纖遠距離」。CPO 把這個分界線推到了近乎零。未來的 AI 機架從一開始就是全光學設計。</p>
 <p>這意味著如果你的資料中心還在用傳統的 Top-of-Rack 銅線交換器架構，升級路徑可能比想像中陡。</p>
-<h3 id="2-雲端服務商的差距會拉大">2. 雲端服務商的差距會拉大</h3>
-<p>Microsoft Azure 已經是全球第一個完成 Vera Rubin NVL72 驗證的雲端供應商。AWS 和 GCP 要到 2026 下半年才能部署。這代表光子學技術的早期採用者會在 AI 推理成本上取得明顯優勢。</p>
+<h3 id="2-雲端服務商的差距會拉大"><a href="#2-雲端服務商的差距會拉大" class="headerlink" title="2. 雲端服務商的差距會拉大"></a>2. 雲端服務商的差距會拉大</h3><p>Microsoft Azure 已經是全球第一個完成 Vera Rubin NVL72 驗證的雲端供應商。AWS 和 GCP 要到 2026 下半年才能部署。這代表光子學技術的早期採用者會在 AI 推理成本上取得明顯優勢。</p>
 <p>如果你在選雲端平台跑大規模 AI 推理，供應商的光學網路能力會成為新的比較指標。</p>
-<h3 id="3-推理成本的下降曲線">3. 推理成本的下降曲線</h3>
-<p>NVIDIA 說 NVL72 的推理成本比上一代 Blackwell 降低 10 倍。光學網路是達成這個數字的關鍵因素之一——更低的網路延遲和更高的 GPU 利用率，直接轉化為每 token 成本的下降。</p>
+<h3 id="3-推理成本的下降曲線"><a href="#3-推理成本的下降曲線" class="headerlink" title="3. 推理成本的下降曲線"></a>3. 推理成本的下降曲線</h3><p>NVIDIA 說 NVL72 的推理成本比上一代 Blackwell 降低 10 倍。光學網路是達成這個數字的關鍵因素之一——更低的網路延遲和更高的 GPU 利用率，直接轉化為每 token 成本的下降。</p>
 <p>對於正在用 API 呼叫大型模型的開發者來說，這意味著 2026 下半年開始，推理價格可能會有一波明顯的降幅。</p>
-<h3 id="4-分散式訓練的架構可能性">4. 分散式訓練的架構可能性</h3>
-<p>當跨機架甚至跨資料中心的延遲大幅降低，分散式訓練的架構選擇就多了。以前因為網路延遲太高而不實際的訓練並行策略，在全光學網路下可能變得可行。</p>
-<h2 id="這不只是-NVIDIA-的事">這不只是 NVIDIA 的事</h2>
-<p>Corning（康寧，對，就是那個做手機玻璃的）也是這個生態的關鍵玩家。他們提供光纖和光學元件。從手機螢幕玻璃到 AI 資料中心光纖——這個轉型路徑說出來有點荒謬，但 Corning 在光學材料上的技術積累確實讓他們佔了好位置。</p>
+<h3 id="4-分散式訓練的架構可能性"><a href="#4-分散式訓練的架構可能性" class="headerlink" title="4. 分散式訓練的架構可能性"></a>4. 分散式訓練的架構可能性</h3><p>當跨機架甚至跨資料中心的延遲大幅降低，分散式訓練的架構選擇就多了。以前因為網路延遲太高而不實際的訓練並行策略，在全光學網路下可能變得可行。</p>
+<h2 id="這不只是-NVIDIA-的事"><a href="#這不只是-NVIDIA-的事" class="headerlink" title="這不只是 NVIDIA 的事"></a>這不只是 NVIDIA 的事</h2><p>Corning（康寧，對，就是那個做手機玻璃的）也是這個生態的關鍵玩家。他們提供光纖和光學元件。從手機螢幕玻璃到 AI 資料中心光纖——這個轉型路徑說出來有點荒謬，但 Corning 在光學材料上的技術積累確實讓他們佔了好位置。</p>
 <p>整個光子學供應鏈在 2026 年會有一波快速擴張。對硬體工程師來說，這可能是未來五年最重要的技術轉型之一。</p>
-<h2 id="實話說">實話說</h2>
-<p>我不確定「數百萬張 GPU」的願景能多快實現。這需要的不只是網路技術突破——電力供應、冷卻系統、晶片製造產能都是瓶頸。Microsoft 的 Wisconsin 和 Atlanta 超級工廠是專門為極端功率密度和液冷設計的，這種等級的基礎設施投資不是每家公司都玩得起。</p>
+<h2 id="實話說"><a href="#實話說" class="headerlink" title="實話說"></a>實話說</h2><p>我不確定「數百萬張 GPU」的願景能多快實現。這需要的不只是網路技術突破——電力供應、冷卻系統、晶片製造產能都是瓶頸。Microsoft 的 Wisconsin 和 Atlanta 超級工廠是專門為極端功率密度和液冷設計的，這種等級的基礎設施投資不是每家公司都玩得起。</p>
 <p>但 2 公尺的物理極限是真的。只要 AI 模型繼續變大、推理需求繼續成長，銅線到光纖的轉換就是必然。問題不是要不要換，是什麼時候換、換的過程中誰能搶到先機。</p>
 <p>NVIDIA 用 40 億美元押了光子學。考慮到他們過去在 CUDA 生態上的判斷力，我傾向認為這個押注的方向是對的。</p>
 <hr>
@@ -375,13 +363,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">467k</span>
+    <span title="總字數">479k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">7:04</span>
+    <span title="所需總閱讀時間">7:16</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動

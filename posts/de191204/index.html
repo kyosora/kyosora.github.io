@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="GOinl_lrNWB9APjfgt6dbVdgki38olFzWmFDv3Yh1y8">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="3 月 24 日，Shopify 把 560 萬家商店的商品直接塞進了 ChatGPT、Google AI Mode、Microsoft Copilot 和 Gemini 的對話裡。不需要商家安裝任何 app，不需要額外設定，預設就開。  這不是「未來的電商趨勢」。這是上週發生的事。  發生了什麼事 一個消費者在 ChatGPT 裡問「推薦一款適合冬天跑步的防風外套」，ChatGPT 直接列出商品">
+<meta property="og:type" content="article">
+<meta property="og:title" content="你的商品開始在 ChatGPT 裡被賣了：Shopify Agentic Storefronts 技術拆解">
+<meta property="og:url" content="https://kyosora.github.io/posts/de191204/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="3 月 24 日，Shopify 把 560 萬家商店的商品直接塞進了 ChatGPT、Google AI Mode、Microsoft Copilot 和 Gemini 的對話裡。不需要商家安裝任何 app，不需要額外設定，預設就開。  這不是「未來的電商趨勢」。這是上週發生的事。  發生了什麼事 一個消費者在 ChatGPT 裡問「推薦一款適合冬天跑步的防風外套」，ChatGPT 直接列出商品">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2026-03-28T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-28T15:56:28.866Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="AI Agent">
+<meta property="article:tag" content="MCP">
+<meta property="article:tag" content="Shopify">
+<meta property="article:tag" content="Agentic Commerce">
+<meta property="article:tag" content="電商">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/de191204/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/de191204/","path":"posts/de191204/","title":"你的商品開始在 ChatGPT 裡被賣了：Shopify Agentic Storefronts 技術拆解"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>你的商品開始在 ChatGPT 裡被賣了：Shopify Agentic Storefronts 技術拆解 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%99%BC%E7%94%9F%E4%BA%86%E4%BB%80%E9%BA%BC%E4%BA%8B"><span class="nav-number">1.</span> <span class="nav-text">發生了什麼事</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E8%A1%93%E6%9E%B6%E6%A7%8B%EF%BC%9A%E4%B8%89%E5%B1%A4%E5%A0%86%E7%96%8A"><span class="nav-number">2.</span> <span class="nav-text">技術架構：三層堆疊</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E5%B1%A4%EF%BC%9AShopify-Catalog"><span class="nav-number">2.1.</span> <span class="nav-text">第一層：Shopify Catalog</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E5%B1%A4%EF%BC%9AUniversal-Commerce-Protocol%EF%BC%88UCP%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">第二層：Universal Commerce Protocol（UCP）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E5%B1%A4%EF%BC%9A%E7%B5%90%E5%B8%B3%E6%B5%81%E7%A8%8B"><span class="nav-number">2.3.</span> <span class="nav-text">第三層：結帳流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8D%E9%96%8B%E7%99%BC%E8%80%85%E7%9A%84%E5%BD%B1%E9%9F%BF"><span class="nav-number">3.</span> <span class="nav-text">對開發者的影響</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SEO-%E7%9A%84%E9%81%8A%E6%88%B2%E8%A6%8F%E5%89%87%E6%AD%A3%E5%9C%A8%E6%94%B9%E8%AE%8A"><span class="nav-number">3.1.</span> <span class="nav-text">SEO 的遊戲規則正在改變</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Shopify-%E7%9A%84%E9%96%8B%E7%99%BC%E8%80%85%E5%B7%A5%E5%85%B7"><span class="nav-number">3.2.</span> <span class="nav-text">Shopify 的開發者工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E5%8F%AA%E6%98%AF-Shopify-%E5%95%86%E5%AE%B6%E7%9A%84%E4%BA%8B"><span class="nav-number">3.3.</span> <span class="nav-text">不只是 Shopify 商家的事</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E8%AA%8D%E7%82%BA%E5%80%BC%E5%BE%97%E9%97%9C%E6%B3%A8%E7%9A%84%E4%B8%89%E4%BB%B6%E4%BA%8B"><span class="nav-number">4.</span> <span class="nav-text">我認為值得關注的三件事</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8F%BE%E5%9C%A8%E8%A9%B2%E5%81%9A%E4%BB%80%E9%BA%BC"><span class="nav-number">5.</span> <span class="nav-text">現在該做什麼</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">164</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">91</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">311</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/de191204/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="你的商品開始在 ChatGPT 裡被賣了：Shopify Agentic Storefronts 技術拆解 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          你的商品開始在 ChatGPT 裡被賣了：Shopify Agentic Storefronts 技術拆解
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2026-03-28 10:00:00 / 修改時間：23:56:28" itemprop="dateCreated datePublished" datetime="2026-03-28T10:00:00+08:00">2026-03-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/%E9%9B%BB%E5%95%86%E6%8A%80%E8%A1%93/" itemprop="url" rel="index"><span itemprop="name">電商技術</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2.6k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>2 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>3 月 24 日，Shopify 把 560 萬家商店的商品直接塞進了 ChatGPT、Google AI Mode、Microsoft Copilot 和 Gemini 的對話裡。不需要商家安裝任何 app，不需要額外設定，預設就開。</p>
+<p>這不是「未來的電商趨勢」。這是上週發生的事。</p>
+<h2 id="發生了什麼事"><a href="#發生了什麼事" class="headerlink" title="發生了什麼事"></a>發生了什麼事</h2><p>一個消費者在 ChatGPT 裡問「推薦一款適合冬天跑步的防風外套」，ChatGPT 直接列出商品、價格、評價，點擊後跳轉到商家網站完成購買。整個流程中，消費者不需要打開 Google、不需要逛電商平台、不需要比價網站。</p>
+<p>數字說話：AI 導流量比 2025 年 1 月成長 7 倍，AI 歸因訂單成長 11 倍。Shopify 一口氣讓 560 萬商家對接 ChatGPT 的 8.8 億月活用戶。</p>
+<h2 id="技術架構：三層堆疊"><a href="#技術架構：三層堆疊" class="headerlink" title="技術架構：三層堆疊"></a>技術架構：三層堆疊</h2><p>Shopify 不是簡單地把商品目錄丟給 ChatGPT。背後是一套完整的 agentic commerce 架構。</p>
+<h3 id="第一層：Shopify-Catalog"><a href="#第一層：Shopify-Catalog" class="headerlink" title="第一層：Shopify Catalog"></a>第一層：Shopify Catalog</h3><p>Shopify 用自家的 LLM 自動分類和標註商品資料。關鍵在於——AI agent 不讀 HTML 描述。如果你的商品規格只寫在商品描述的文字裡，AI 根本看不懂。</p>
+<p>商品資料必須結構化地存在 metafields 裡，agent 才能正確解析。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ✅ AI agent 能讀懂的結構化資料</span></span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;metafields&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;material&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Gore-Tex 防水透氣&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;weight&quot;</span><span class="punctuation">:</span> <span class="string">&quot;380g&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;temperature_range&quot;</span><span class="punctuation">:</span> <span class="string">&quot;-10°C ~ 5°C&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;waterproof_rating&quot;</span><span class="punctuation">:</span> <span class="string">&quot;20,000mm&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ❌ 只寫在 HTML 描述裡，AI 看不到</span></span><br><span class="line"><span class="comment">// &lt;p&gt;本產品採用 Gore-Tex 面料，重量僅 380g...&lt;/p&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="第二層：Universal-Commerce-Protocol（UCP）"><a href="#第二層：Universal-Commerce-Protocol（UCP）" class="headerlink" title="第二層：Universal Commerce Protocol（UCP）"></a>第二層：Universal Commerce Protocol（UCP）</h3><p>這是 Shopify 和 Google 共同開發的開放協議，讓任何 AI agent 都能跟任何商家完成交易。UCP 不綁定特定的通訊方式，支援三種綁定：</p>
+<ul>
+<li><strong>REST API</strong>：傳統的 HTTPS+JSON，最穩定</li>
+<li><strong>MCP 綁定</strong>：讓 LLM agent 直接呼叫 UCP 工具，不需要額外的 API 封裝</li>
+<li><strong>Agent-to-Agent（A2A）</strong>：agent 之間直接通訊，跳過 HTTP request/response 的開銷</li>
+</ul>
+<p>商家端的能力透過 <code>/.well-known/ucp</code> 發布，agent 發請求時帶上自己的 profile URL，商家計算雙方能力的交集，回傳協商結果。這個設計讓不同能力的 agent 和不同規模的商家都能運作。</p>
+<h3 id="第三層：結帳流程"><a href="#第三層：結帳流程" class="headerlink" title="第三層：結帳流程"></a>第三層：結帳流程</h3><p>Shopify 提供三組 MCP 工具實作 UCP 的核心能力：</p>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Discovery</strong></td>
+<td>跨商家搜尋商品</td>
+</tr>
+<tr>
+<td><strong>Checkout</strong></td>
+<td>建立結帳 session、收集買家資訊、綁定付款、完成交易</td>
+</tr>
+<tr>
+<td><strong>Orders</strong></td>
+<td>追蹤訂單、物流事件、售後調整</td>
+</tr>
+</tbody></table>
+<p>結帳流程不在聊天介面裡完成。手機上是 in-app browser，桌面上是新分頁跳轉到商家網站。Shopify 明確選擇不在 AI 對話裡做結帳——這是信任問題，消費者還沒準備好在聊天視窗裡輸入信用卡號。</p>
+<p>付款安全靠 Agent Payments Protocol（AP2）的 Mandates 擴展，agent 呈遞一個加密簽章的授權證明，商家端可以做密碼學驗證，確保使用者確實同意了這筆交易。</p>
+<h2 id="對開發者的影響"><a href="#對開發者的影響" class="headerlink" title="對開發者的影響"></a>對開發者的影響</h2><h3 id="SEO-的遊戲規則正在改變"><a href="#SEO-的遊戲規則正在改變" class="headerlink" title="SEO 的遊戲規則正在改變"></a>SEO 的遊戲規則正在改變</h3><p>傳統 SEO 優化的是 Google 搜尋排名。但當消費者開始在 ChatGPT 裡找商品，你需要優化的是 AI agent 對你商品的理解程度。</p>
+<p>具體來說：</p>
+<ol>
+<li><strong>結構化資料變成硬需求</strong>：metafields 不再是「有就加分」，而是「沒有就隱形」</li>
+<li><strong>Knowledge Base App</strong>：商家可以把退換貨政策、FAQ、品牌調性寫進知識庫，agent 回答消費者問題時會引用</li>
+<li><strong>產品分類要精確</strong>：Shopify Catalog 的 LLM 會自動分類，但如果你的分類本身就亂，AI 也救不了你</li>
+</ol>
+<h3 id="Shopify-的開發者工具"><a href="#Shopify-的開發者工具" class="headerlink" title="Shopify 的開發者工具"></a>Shopify 的開發者工具</h3><p>Shopify 推出了 Dev MCP Server，開發者可以在 Cursor、Claude Code 或 shopify.dev 的 dev assistant 裡直接用。AI agent 可以處理完整開發流程：搭鷹架、執行 GraphQL 操作、產生驗證過的程式碼。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 用 Shopify MCP 在 Claude Code 裡建立 agentic storefront app</span></span><br><span class="line">shopify app create --template=agentic-storefront</span><br></pre></td></tr></table></figure>
+
+<h3 id="不只是-Shopify-商家的事"><a href="#不只是-Shopify-商家的事" class="headerlink" title="不只是 Shopify 商家的事"></a>不只是 Shopify 商家的事</h3><p>Shopify 推出了 Agentic Plan，讓沒有用 Shopify 做電商的品牌也能把商品加進 Shopify Catalog，透過同樣的 AI 管道觸及消費者。這意味著 UCP 正在變成一個跨平台的標準，而不只是 Shopify 的內部工具。</p>
+<h2 id="我認為值得關注的三件事"><a href="#我認為值得關注的三件事" class="headerlink" title="我認為值得關注的三件事"></a>我認為值得關注的三件事</h2><p><strong>第一，「被發現」的方式正在根本性地改變。</strong> 過去十年，電商的核心競爭力是在 Google 搜尋結果的第一頁。接下來，核心競爭力可能是讓 AI agent 在對話中推薦你的商品。這兩種「被發現」需要完全不同的優化策略。</p>
+<p><strong>第二，UCP 的開放性值得觀察。</strong> Shopify 和 Google 聯手制定開放協議，已經有 20 多家零售商和平台背書。如果 UCP 真的成為標準，它會改變整個電商基礎設施的樣貌。但歷史告訴我們，「開放標準」最後往往變成制定者的競爭優勢。</p>
+<p><strong>第三，結帳不在對話裡完成，這個決定很聰明。</strong> 在消費者建立起對 AI 對話購物的信任之前，跳轉到商家網站是正確的過渡方案。但長期來看，如果 AP2 的加密授權機制成熟了，in-chat checkout 一定會回來。</p>
+<h2 id="現在該做什麼"><a href="#現在該做什麼" class="headerlink" title="現在該做什麼"></a>現在該做什麼</h2><p>如果你做電商相關的開發：</p>
+<ul>
+<li>確認商品資料是否已經結構化到 metafields，而不是只塞在 HTML 描述裡</li>
+<li>研究 UCP 的 <code>/.well-known/ucp</code> 機制，看看你的系統是否能接入</li>
+<li>關注 Shopify 的 Dev MCP Server，它可能改變你建立電商應用的方式</li>
+</ul>
+<p>如果你做前端：消費者的購物起點正在從瀏覽器搜尋欄移動到 AI 對話框。這對購物頁面的設計、轉換流程的優化，都會產生連鎖反應。</p>
+<hr>
+<p><em>AI 不只是在幫你寫程式碼。它開始幫消費者花錢了。</em></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI-Agent/" rel="tag"># AI Agent</a>
+              <a href="/tags/MCP/" rel="tag"># MCP</a>
+              <a href="/tags/Shopify/" rel="tag"># Shopify</a>
+              <a href="/tags/Agentic-Commerce/" rel="tag"># Agentic Commerce</a>
+              <a href="/tags/%E9%9B%BB%E5%95%86/" rel="tag"># 電商</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/b8da5d90/" rel="prev" title="Meta 的 HyperAgents：AI Agent 開始改進自己的改進方式了">
+                  <i class="fa fa-angle-left"></i> Meta 的 HyperAgents：AI Agent 開始改進自己的改進方式了
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/3253bf10/" rel="next" title="一台 Mac mini 變成 24 小時 AI 員工：Perplexity Personal Computer 的架構野心">
+                  一台 Mac mini 變成 24 小時 AI 員工：Perplexity Personal Computer 的架構野心 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">479k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">7:16</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

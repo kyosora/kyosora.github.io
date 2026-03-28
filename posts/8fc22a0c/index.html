@@ -143,16 +143,16 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">89</span>
+        <span class="site-state-item-count">91</span>
         <span class="site-state-item-name">分類</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">297</span>
+        <span class="site-state-item-count">311</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
@@ -257,30 +257,24 @@
     
     <div class="post-body" itemprop="articleBody"><p>上週 CNBC 報導 NVIDIA 正在打造一個叫 NemoClaw 的開源 AI agent 平台，目標是企業市場。三天後，GTC 2026 就要開幕了。Jensen Huang 的主題演講排在 3/16 上午 11 點（太平洋時間），市場預期他會在那裡正式發布這東西。</p>
 <p>我花了一些時間把目前流出的資訊整理了一遍，想搞清楚這個平台跟現有的 AI agent 方案（OpenClaw、Dify、LangChain）到底有什麼不同，以及對我們這些寫程式的人來說，真正值得關注的是什麼。</p>
-<h2 id="NemoClaw-是什麼">NemoClaw 是什麼</h2>
-<p>一句話：NVIDIA 把自家的 NeMo 框架、Nemotron 模型系列和 NIM 推理微服務打包成一個企業級 AI agent 平台，然後開源。</p>
+<h2 id="NemoClaw-是什麼"><a href="#NemoClaw-是什麼" class="headerlink" title="NemoClaw 是什麼"></a>NemoClaw 是什麼</h2><p>一句話：NVIDIA 把自家的 NeMo 框架、Nemotron 模型系列和 NIM 推理微服務打包成一個企業級 AI agent 平台，然後開源。</p>
 <p>聽起來很普通，但有幾個細節值得注意。</p>
 <p><strong>硬體不綁定。</strong> NemoClaw 可以跑在 NVIDIA GPU 上，也可以跑在 AMD、Intel 和其他處理器上。一家以賣 GPU 為主要商業模式的公司，做了一個不強制要求用自家硬體的平台——這個決定背後的戰略考量很有意思。</p>
 <p><strong>企業安全優先。</strong> 跟 OpenClaw 這類個人向的 agent 平台不同，NemoClaw 從設計之初就把安全性、隱私保護和合規性當作核心需求。這不是後來加上去的功能，而是架構層面的決定。</p>
 <p><strong>已經在找合作夥伴了。</strong> NVIDIA 已經開始跟 Salesforce、Cisco、Google、Adobe、CrowdStrike 談合作。這些不是小公司，而是各自領域的龍頭。早期合作夥伴用開源授權免費使用，交換條件是貢獻程式碼。</p>
-<h2 id="技術架構的三層解讀">技術架構的三層解讀</h2>
-<p>根據目前公開的資訊，NemoClaw 的架構可以拆成三層來看。</p>
-<h3 id="第一層：推理基礎設施">第一層：推理基礎設施</h3>
-<p>NVIDIA 的 NIM（NVIDIA Inference Microservices）是 NemoClaw 的底層。NIM 把模型推理封裝成標準化的 API 容器，可以在任何支援 OCI 的環境跑。</p>
+<h2 id="技術架構的三層解讀"><a href="#技術架構的三層解讀" class="headerlink" title="技術架構的三層解讀"></a>技術架構的三層解讀</h2><p>根據目前公開的資訊，NemoClaw 的架構可以拆成三層來看。</p>
+<h3 id="第一層：推理基礎設施"><a href="#第一層：推理基礎設施" class="headerlink" title="第一層：推理基礎設施"></a>第一層：推理基礎設施</h3><p>NVIDIA 的 NIM（NVIDIA Inference Microservices）是 NemoClaw 的底層。NIM 把模型推理封裝成標準化的 API 容器，可以在任何支援 OCI 的環境跑。</p>
 <p>對開發者來說，這代表一件事：你不用自己搞模型部署。不用管 vLLM 的設定、不用調 GPU 記憶體分配、不用處理 batch size 優化。NIM 都幫你包好了。</p>
 <p>但代價是什麼？你把推理層的控制權交給了 NVIDIA 的抽象層。如果你需要微調推理行為（比如自定義 KV cache 策略或量化參數），NIM 的封裝可能反而成為限制。</p>
-<h3 id="第二層：Agent-編排">第二層：Agent 編排</h3>
-<p>NemoClaw 的 agent 編排層讓你做三件事：命名一個 agent、定義它的人格和行為模式、授權它存取的工具集。</p>
+<h3 id="第二層：Agent-編排"><a href="#第二層：Agent-編排" class="headerlink" title="第二層：Agent 編排"></a>第二層：Agent 編排</h3><p>NemoClaw 的 agent 編排層讓你做三件事：命名一個 agent、定義它的人格和行為模式、授權它存取的工具集。</p>
 <p>這個模式跟 OpenClaw 的 ClawHub skill registry 很像，但定位完全不同。OpenClaw 的 skill 是社群驅動的（5,700+ 社群 skills），面向個人用戶；NemoClaw 的 agent 定義是企業管理員配置的，面向組織內部部署。</p>
 <p>實際差異：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">OpenClaw 模式：</span><br><span class="line">用戶 → 選 skill → agent 自主判斷如何組合 → 執行</span><br><span class="line"></span><br><span class="line">NemoClaw 模式（推測）：</span><br><span class="line">管理員 → 定義 agent 角色 + 工具白名單 → 用戶觸發 → 受限範圍內執行</span><br></pre></td></tr></table></figure>
+
 <p>後者的好處是可控性和審計能力。你知道這個 agent 不會跑去呼叫你沒授權的 API。壞處是靈活性降低。企業環境裡，這是對的取捨。</p>
-<h3 id="第三層：模型供應">第三層：模型供應</h3>
-<p>NemoClaw 內建的是 NVIDIA 自家的 Nemotron 模型系列。但因為用了 NIM 的標準化容器，理論上你可以換成任何模型——Llama、Mistral、甚至 Claude 的 API。</p>
+<h3 id="第三層：模型供應"><a href="#第三層：模型供應" class="headerlink" title="第三層：模型供應"></a>第三層：模型供應</h3><p>NemoClaw 內建的是 NVIDIA 自家的 Nemotron 模型系列。但因為用了 NIM 的標準化容器，理論上你可以換成任何模型——Llama、Mistral、甚至 Claude 的 API。</p>
 <p>這是一個聰明的設計。NVIDIA 知道沒有任何單一模型能滿足所有企業需求。與其鎖定模型，不如鎖定推理基礎設施。你用什麼模型都行，只要你的推理跑在 NVIDIA 的基礎設施上（或至少用他們的 NIM 容器）。</p>
-<h2 id="開發者該注意的三件事">開發者該注意的三件事</h2>
-<h3 id="1-Agent-安全性正在從加分項變成入場券">1. Agent 安全性正在從加分項變成入場券</h3>
-<p>兩週前 OpenAI 收購了 Promptfoo（LLM 紅隊測試平台），現在 NVIDIA 把安全性寫進 NemoClaw 的架構基因裡。趨勢很明顯：AI agent 要進企業，安全性不再是事後想到的東西。</p>
+<h2 id="開發者該注意的三件事"><a href="#開發者該注意的三件事" class="headerlink" title="開發者該注意的三件事"></a>開發者該注意的三件事</h2><h3 id="1-Agent-安全性正在從加分項變成入場券"><a href="#1-Agent-安全性正在從加分項變成入場券" class="headerlink" title="1. Agent 安全性正在從加分項變成入場券"></a>1. Agent 安全性正在從加分項變成入場券</h3><p>兩週前 OpenAI 收購了 Promptfoo（LLM 紅隊測試平台），現在 NVIDIA 把安全性寫進 NemoClaw 的架構基因裡。趨勢很明顯：AI agent 要進企業，安全性不再是事後想到的東西。</p>
 <p>如果你正在開發 agent 系統，現在就應該開始考慮：</p>
 <ul>
 <li>agent 的工具呼叫有白名單嗎？</li>
@@ -288,23 +282,20 @@
 <li>你的 agent 會不會被 prompt injection 騙去做不該做的事？</li>
 </ul>
 <p>這些問題在個人專案裡可以忽略，但在企業部署裡會決定你的方案能不能過安全審查。</p>
-<h3 id="2-開源策略的真正意圖">2. 開源策略的真正意圖</h3>
-<p>NemoClaw 開源，不代表 NVIDIA 在做慈善。這是一個經典的「開源核心 + 商業基礎設施」策略。</p>
+<h3 id="2-開源策略的真正意圖"><a href="#2-開源策略的真正意圖" class="headerlink" title="2. 開源策略的真正意圖"></a>2. 開源策略的真正意圖</h3><p>NemoClaw 開源，不代表 NVIDIA 在做慈善。這是一個經典的「開源核心 + 商業基礎設施」策略。</p>
 <p>平台本身免費 → 企業採用門檻降低 → 部署規模擴大 → 推理量增加 → GPU 需求增加。</p>
 <p>對開發者來說，這意味著 NemoClaw 的社群生態有可能快速成長（NVIDIA 有資源推）。但也要注意開源授權的細節——有些「開源」在商業使用場景有額外限制。GTC 上應該會公布具體的授權條款，這值得仔細看。</p>
-<h3 id="3-AI-Agent-平台正在分化">3. AI Agent 平台正在分化</h3>
-<p>目前的 AI agent 平台生態正在形成兩個明確的陣營：</p>
+<h3 id="3-AI-Agent-平台正在分化"><a href="#3-AI-Agent-平台正在分化" class="headerlink" title="3. AI Agent 平台正在分化"></a>3. AI Agent 平台正在分化</h3><p>目前的 AI agent 平台生態正在形成兩個明確的陣營：</p>
 <p><strong>個人 / 開發者向：</strong> OpenClaw（210K stars）、Dify（130K stars）——強調靈活性、社群生態、快速上手。</p>
 <p><strong>企業向：</strong> NemoClaw、Salesforce Einstein Agent（未開源）、Microsoft Copilot Studio——強調安全性、合規性、可管理性。</p>
 <p>如果你在做 side project 或小團隊產品，OpenClaw + Dify 那條線可能更適合。如果你的目標是說服企業客戶採用你的 agent 方案，NemoClaw 可能是更好的基礎。</p>
 <p>兩條路不衝突，但技術選型的方向不一樣。</p>
-<h2 id="我的判斷">我的判斷</h2>
-<p>NemoClaw 填補了一個真實的市場缺口：企業想用 AI agent，但現有的開源方案在安全性和合規性上不夠格，而商業方案又太貴或太封閉。</p>
+<h2 id="我的判斷"><a href="#我的判斷" class="headerlink" title="我的判斷"></a>我的判斷</h2><p>NemoClaw 填補了一個真實的市場缺口：企業想用 AI agent，但現有的開源方案在安全性和合規性上不夠格，而商業方案又太貴或太封閉。</p>
 <p>但我對幾件事持保留態度：</p>
 <p><strong>Nemotron 模型的競爭力。</strong> NVIDIA 做模型的歷史不算長，Nemotron 在公開基準上不算頂尖。如果企業最終都換成 Claude 或 GPT，那 NemoClaw 就只是一個推理容器的包裝——這個價值主張沒那麼吸引人。</p>
 <p><strong>開源社群的活躍度。</strong> NVIDIA 有資源，但企業工具的開源社群一直很難經營。OpenClaw 靠的是個人開發者的熱情，NemoClaw 要靠企業開發者的時間——後者通常被其他事情佔滿。</p>
 <p><strong>時間點。</strong> GTC 發布不代表能立即使用。從發布到 GA（一般可用）可能還有幾個月。在這段時間裡，競爭對手不會閒著。</p>
-<p>下週一的 Jensen 主題演講會有更多細節。如果你在做 agent 相關的開發，GTC 的線上直播值得看——免費的，<a target="_blank" rel="noopener" href="http://nvidia.com">nvidia.com</a> 就能看。</p>
+<p>下週一的 Jensen 主題演講會有更多細節。如果你在做 agent 相關的開發，GTC 的線上直播值得看——免費的，nvidia.com 就能看。</p>
 <p>不管 NemoClaw 最終做成什麼樣，它代表的方向是確定的：AI agent 正在從「個人玩具」進化成「企業基礎設施」。這對我們寫程式的人來說，既是機會也是責任。安全性、可審計性、可管理性——這些「不酷但重要」的事情，現在是時候認真對待了。</p>
 
     </div>
@@ -365,13 +356,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="總字數">467k</span>
+    <span title="總字數">479k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">7:04</span>
+    <span title="所需總閱讀時間">7:16</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
