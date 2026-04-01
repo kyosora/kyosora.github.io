@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="GOinl_lrNWB9APjfgt6dbVdgki38olFzWmFDv3Yh1y8">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="2026 年 3 月 31 日 UTC 凌晨 4 點，Anthropic 把 Claude Code v2.1.88 推上 npm。23 分鐘後，一位累積 190 萬美元漏洞賞金的安全研究員在 X 上發了一則貼文，引爆了 AI 開發工具史上最大的原始碼洩漏事件。  512,000 行 TypeScript。1,900 個檔案。44 個未開放的 Feature Flags。全部見光。  而最諷刺的是">
+<meta property="og:type" content="article">
+<meta property="og:title" content=".npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析">
+<meta property="og:url" content="https://kyosora.github.io/posts/15a54ef4/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="2026 年 3 月 31 日 UTC 凌晨 4 點，Anthropic 把 Claude Code v2.1.88 推上 npm。23 分鐘後，一位累積 190 萬美元漏洞賞金的安全研究員在 X 上發了一則貼文，引爆了 AI 開發工具史上最大的原始碼洩漏事件。  512,000 行 TypeScript。1,900 個檔案。44 個未開放的 Feature Flags。全部見光。  而最諷刺的是">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2026-04-02T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-04-01T09:08:03.193Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Claude Code">
+<meta property="article:tag" content="Anthropic">
+<meta property="article:tag" content="Codex">
+<meta property="article:tag" content="source code leak">
+<meta property="article:tag" content="AI開發工具">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kyosora.github.io/posts/15a54ef4/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/15a54ef4/","path":"posts/15a54ef4/","title":".npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>.npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析 | kyosora 筆記</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kyosora 筆記</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E5%80%8B-npmignore-%E7%9A%84%E9%81%BA%E6%BC%8F%E5%A6%82%E4%BD%95%E9%87%80%E6%88%90%E7%81%BD%E9%9B%A3"><span class="nav-number">1.</span> <span class="nav-text">一個 .npmignore 的遺漏如何釀成災難</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%99%82%E9%96%93%E7%B7%9A"><span class="nav-number">1.1.</span> <span class="nav-text">時間線</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E5%A7%8B%E7%A2%BC%E8%A3%A1-Anthropic-%E6%9C%80%E4%B8%8D%E6%83%B3%E8%AE%93%E4%BD%A0%E7%9C%8B%E5%88%B0%E7%9A%84%E6%9D%B1%E8%A5%BF"><span class="nav-number">2.</span> <span class="nav-text">原始碼裡 Anthropic 最不想讓你看到的東西</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Undercover-Mode%EF%BC%9A%E7%95%B6%E4%BD%A0%E7%9A%84-AI-%E5%8A%A9%E6%89%8B%E5%9C%A8%E4%B8%BB%E5%8B%95%E6%93%A6%E9%99%A4%E8%87%AA%E5%B7%B1%E7%9A%84%E7%97%95%E8%B7%A1"><span class="nav-number">2.1.</span> <span class="nav-text">Undercover Mode：當你的 AI 助手在主動擦除自己的痕跡</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Anti-Distillation%EF%BC%9A%E5%BE%80-API-%E8%A3%A1%E6%B3%A8%E5%85%A5%E5%81%87%E5%B7%A5%E5%85%B7"><span class="nav-number">2.2.</span> <span class="nav-text">Anti-Distillation：往 API 裡注入假工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Frustration-Regex%EF%BC%9A%E7%94%A8%E6%AD%A3%E5%89%87%E8%A1%A8%E9%81%94%E5%BC%8F%E5%81%B5%E6%B8%AC%E4%BD%A0%E5%9C%A8%E7%94%9F%E6%B0%A3"><span class="nav-number">2.3.</span> <span class="nav-text">Frustration Regex：用正則表達式偵測你在生氣</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#44-%E5%80%8B-Feature-Flags-%E5%92%8C-KAIROS-%E7%9A%84%E9%87%8E%E5%BF%83"><span class="nav-number">2.4.</span> <span class="nav-text">44 個 Feature Flags 和 KAIROS 的野心</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BE%E7%BE%A4%E7%9A%84%E5%8F%8D%E6%87%89%E9%80%9F%E5%BA%A6%E6%AF%94-Anthropic-%E7%9A%84%E4%BF%AE%E5%BE%A9%E9%80%9F%E5%BA%A6%E5%BF%AB%E5%BE%97%E5%A4%9A"><span class="nav-number">3.</span> <span class="nav-text">社群的反應速度比 Anthropic 的修復速度快得多</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#claw-code%EF%BC%9AGitHub-%E5%8F%B2%E4%B8%8A%E6%9C%80%E5%BF%AB%E7%A0%B4-50K-stars-%E7%9A%84%E5%B0%88%E6%A1%88"><span class="nav-number">3.1.</span> <span class="nav-text">claw-code：GitHub 史上最快破 50K stars 的專案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E7%94%9F%E6%85%8B%E7%88%86%E7%99%BC"><span class="nav-number">3.2.</span> <span class="nav-text">分析生態爆發</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%95%E5%BE%8B%E7%81%B0%E8%89%B2%E5%9C%B0%E5%B8%B6"><span class="nav-number">3.3.</span> <span class="nav-text">法律灰色地帶</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Codex-%E9%96%8B%E6%BA%90%E4%BA%86%E4%B8%80%E5%B9%B4%EF%BC%8C%E5%B9%BE%E4%B9%8E%E6%B2%92%E4%BA%BA%E5%81%9A%E9%81%8E%E5%90%8C%E7%AD%89%E6%B7%B1%E5%BA%A6%E7%9A%84%E5%88%86%E6%9E%90"><span class="nav-number">4.</span> <span class="nav-text">Codex 開源了一年，幾乎沒人做過同等深度的分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%99%E4%BB%B6%E4%BA%8B%E5%B0%8D%E4%BD%A0%E6%84%8F%E5%91%B3%E8%91%97%E4%BB%80%E9%BA%BC"><span class="nav-number">5.</span> <span class="nav-text">這件事對你意味著什麼</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kyosora</p>
+  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">165</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">91</span>
+        <span class="site-state-item-name">分類</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">313</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/15a54ef4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kyosora">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kyosora 筆記">
+      <meta itemprop="description" content="個人技術筆記和學習心得分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=".npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析 | kyosora 筆記">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          .npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2026-04-02 10:00:00" itemprop="dateCreated datePublished" datetime="2026-04-02T10:00:00+08:00">2026-04-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2026-04-01 17:08:03" itemprop="dateModified" datetime="2026-04-01T17:08:03+08:00">2026-04-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/%E9%96%8B%E7%99%BC%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">開發工具</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>5.2k</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>5 分鐘</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>2026 年 3 月 31 日 UTC 凌晨 4 點，Anthropic 把 Claude Code v2.1.88 推上 npm。23 分鐘後，一位<a target="_blank" rel="noopener" href="https://iq.wiki/wiki/chaofan-shou">累積 190 萬美元漏洞賞金</a>的<a target="_blank" rel="noopener" href="https://x.com/shoucccc">安全研究員在 X 上發了一則貼文</a>，引爆了 AI 開發工具史上最大的原始碼洩漏事件。</p>
+<p>512,000 行 TypeScript。1,900 個檔案。44 個未開放的 Feature Flags。全部見光。</p>
+<p>而最諷刺的是，這家公司的品牌定位是「安全至上」。</p>
+<h2 id="一個-npmignore-的遺漏如何釀成災難"><a href="#一個-npmignore-的遺漏如何釀成災難" class="headerlink" title="一個 .npmignore 的遺漏如何釀成災難"></a>一個 .npmignore 的遺漏如何釀成災難</h2><p>事情的根因簡單到令人難以置信。</p>
+<p>Claude Code 用 <a target="_blank" rel="noopener" href="https://bun.sh/">Bun</a> 做 bundler。Bun 預設會產生 source map 檔案——一個 59.8 MB 的 <code>cli.js.map</code>，用來把打包後的程式碼對應回原始 TypeScript。這個檔案指向 Anthropic 的 Cloudflare R2 儲存桶上一個 zip 壓縮檔，裡面裝著完整的未混淆原始碼。</p>
+<p>正常流程下，<code>.npmignore</code> 應該排除這個檔案。但不知道是哪個環節出了問題，它被一起推上了公開的 npm registry。</p>
+<p>更慘的是，Bun 在 3 月 11 日就被<a target="_blank" rel="noopener" href="https://github.com/oven-sh/bun/issues/28001">回報了一個 bug（oven-sh/bun#28001）</a>：production mode 下 source map 仍然會被產出。這個 issue 到洩漏發生時還是 open 的。Anthropic 自己選的工具鏈裡有一個已知 bug，然後這個 bug 炸了他們自己的產品。</p>
+<p>這裡值得追問一個更根本的問題：<strong>為什麼 CI/CD pipeline 沒有攔截一個 59.8 MB 的異常檔案？</strong> 一個正常的 npm publish 流程應該有 package size check。Claude Code 的正常 bundle 大小遠小於這個數字，任何基本的 size gate 都該觸發警報。這不只是 <code>.npmignore</code> 的問題，是整個發佈流程缺少基本的 sanity check。</p>
+<h3 id="時間線"><a href="#時間線" class="headerlink" title="時間線"></a>時間線</h3><table>
+<thead>
+<tr>
+<th>時間（UTC）</th>
+<th>事件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>04:00</td>
+<td>v2.1.88 推上 npm，夾帶 59.8 MB source map</td>
+</tr>
+<tr>
+<td>04:23</td>
+<td><a target="_blank" rel="noopener" href="https://x.com/shoucccc">Chaofan Shou</a>（UC Berkeley 博士生、<a target="_blank" rel="noopener" href="https://fuzz.land/">FuzzLand</a> 共同創辦人、Solayer Labs 研究員）在 X 公開揭露</td>
+</tr>
+<tr>
+<td>數小時內</td>
+<td>原始碼被映射到 GitHub，<a target="_blank" rel="noopener" href="https://news.ycombinator.com/item?id=47584540">Hacker News 登上首頁</a></td>
+</tr>
+<tr>
+<td>同日</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/instructkr/claw-code">claw-code</a> repo 2 小時突破 50K stars</td>
+</tr>
+<tr>
+<td>事後</td>
+<td>Anthropic 移除 source map，unpublish 受影響版本</td>
+</tr>
+</tbody></table>
+<p>Anthropic 的<a target="_blank" rel="noopener" href="https://venturebeat.com/technology/claude-codes-source-code-appears-to-have-leaked-heres-what-we-know">官方回應</a>很標準：</p>
+<blockquote>
+<p>「今天稍早，一次 Claude Code 發佈包含了部分內部原始碼。沒有敏感客戶資料或憑證被涉及或暴露。這是一個由人為錯誤造成的發佈打包問題，而非安全漏洞。我們正在推出措施防止此類事件再次發生。」</p>
+</blockquote>
+<p>但這段聲明忽略了一個關鍵事實：<strong>這不是第一次了。</strong> <a target="_blank" rel="noopener" href="https://www.business-standard.com/technology/tech-news/anthropic-leaks-source-code-claude-code-again-what-happened-explained-126040100384_1.html">2025 年早期版本（v0.2.8、v0.2.28）就發生過類似的 source map 洩漏</a>，當時 Anthropic 已經從 npm 撤回並移除了相關 source map。更巧的是，<a target="_blank" rel="noopener" href="https://fortune.com/2026/03/31/anthropic-source-code-claude-code-data-leak-second-security-lapse-days-after-accidentally-revealing-mythos/">幾天前 Anthropic 才剛洩漏了 Mythos 模型的規格文件</a>。一家把安全寫進 DNA 的公司，同樣的錯犯了不只兩次。</p>
+<h2 id="原始碼裡-Anthropic-最不想讓你看到的東西"><a href="#原始碼裡-Anthropic-最不想讓你看到的東西" class="headerlink" title="原始碼裡 Anthropic 最不想讓你看到的東西"></a>原始碼裡 Anthropic 最不想讓你看到的東西</h2><p>512K 行程式碼裡有很多正經的技術發現——六層架構設計、Query Engine 的 11 步迴圈、三層壓縮系統（Microcompact → Autocompact → Session Memory）。這些設計展現了 CC 作為一個大型終端應用的工程水準：用自訂的 Ink fork 做 React-based 終端 UI、Zustand-like 的 closure store 管理 80+ 個狀態欄位、ripgrep 驅動的搜尋後端。</p>
+<p>但真正讓社群炸鍋的，是那些 Anthropic 顯然不打算讓任何人看到的設計。</p>
+<h3 id="Undercover-Mode：當你的-AI-助手在主動擦除自己的痕跡"><a href="#Undercover-Mode：當你的-AI-助手在主動擦除自己的痕跡" class="headerlink" title="Undercover Mode：當你的 AI 助手在主動擦除自己的痕跡"></a>Undercover Mode：當你的 AI 助手在主動擦除自己的痕跡</h3><p><code>undercover.ts</code>，大約 90 行。功能本身有合理的商業用途——當 Anthropic 員工在外部客戶的 repo 裡使用 CC 時，自動清除內部 metadata，避免洩漏公司資訊。在 B2B 場景中這完全說得通。</p>
+<p>但實作方式讓人不太舒服。系統 prompt 裡直接寫著：</p>
+<blockquote>
+<p>&quot;You are operating UNDERCOVER... Your commit messages... MUST NOT contain ANY Anthropic-internal information. Do not blow your cover.&quot;</p>
+</blockquote>
+<p>你可以用 <code>CLAUDE_CODE_UNDERCOVER=1</code> 強制開啟它，但沒有任何方式可以強制關閉。在外部建置版本中，整個函數會被 dead-code-elimination 消除成空返回值。這是一道單向門。</p>
+<p>這個功能目前只影響 Anthropic 內部員工在外部 repo 的使用情境，不會影響一般使用者。但它的存在提醒了一件事：你使用的 AI 工具裡可能有你不知道的行為模式。</p>
+<h3 id="Anti-Distillation：往-API-裡注入假工具"><a href="#Anti-Distillation：往-API-裡注入假工具" class="headerlink" title="Anti-Distillation：往 API 裡注入假工具"></a>Anti-Distillation：往 API 裡注入假工具</h3><p><code>ANTI_DISTILLATION_CC</code> 這個 feature flag 做的事情很直接：在 API 請求裡注入<strong>假的工具定義</strong>。</p>
+<p>目的？如果有競爭對手在錄製 API 流量來訓練自己的模型，這些假工具定義會污染他們的訓練資料。</p>
+<p>這是一個防禦機制，但它的存在本身就暗示了 Anthropic 認為確實有人在這麼做。AI 軍備競賽裡的暗戰，比檯面上的產品競爭精彩得多。</p>
+<h3 id="Frustration-Regex：用正則表達式偵測你在生氣"><a href="#Frustration-Regex：用正則表達式偵測你在生氣" class="headerlink" title="Frustration Regex：用正則表達式偵測你在生氣"></a>Frustration Regex：用正則表達式偵測你在生氣</h3><p><code>userPromptKeywords.ts</code> 裡有一個 regex 模式，用來偵測使用者是否正在表達挫折感。</p>
+<p>一家做大型語言模型的公司，用<strong>正則表達式</strong>做情緒分析。</p>
+<p>理性來看，regex 比 LLM inference call 快幾百倍也便宜幾百倍，在高頻觸發的場景下這是正確的工程判斷。但社群不可能放過這個諷刺點。</p>
+<h3 id="44-個-Feature-Flags-和-KAIROS-的野心"><a href="#44-個-Feature-Flags-和-KAIROS-的野心" class="headerlink" title="44 個 Feature Flags 和 KAIROS 的野心"></a>44 個 Feature Flags 和 KAIROS 的野心</h3><p>原始碼裡有 44 個 compile-time feature flags，控制著那些已經寫好但還沒開放的功能。其中 <strong>KAIROS</strong> 被提及超過 150 次。</p>
+<p>KAIROS 不是一個小功能。它是一個完整的 daemon 模式，讓 Claude Code 變成永遠在背景跑的自主 agent——可以排程（<code>AGENT_TRIGGERS</code>）、可以跨頻道通訊（<code>KAIROS_CHANNELS</code>）、可以訂閱 GitHub webhook（<code>KAIROS_GITHUB_WEBHOOKS</code>）。搭配 <code>PROACTIVE</code> flag 讓 agent 在你不在的時候主動工作，以及 <code>autoDream</code> 背景服務在跨 session 之間自動分析你的工作模式。</p>
+<p>其他值得注意的還有 <code>COORDINATOR_MODE</code>（多 Agent 指揮官模式——Coordinator 負責拆任務和分配，Worker 負責執行）、<code>CCR</code>（雲端遠端執行，支援旁觀者模式）、<code>BUDDY</code>（一個有稀有度系統的 ASCII 電子雞寵物，Legendary 機率 1%）、<code>ULTRAPLAN</code>（企業版進階規劃模式）。</p>
+<p>這些 flag 加在一起，勾勒出的不是一個 CLI 工具的升級計畫，是一個<strong>開發者作業系統</strong>的藍圖。</p>
+<h2 id="社群的反應速度比-Anthropic-的修復速度快得多"><a href="#社群的反應速度比-Anthropic-的修復速度快得多" class="headerlink" title="社群的反應速度比 Anthropic 的修復速度快得多"></a>社群的反應速度比 Anthropic 的修復速度快得多</h2><p>洩漏發生後幾小時內，社群已經做了 Anthropic 公關團隊可能需要幾週才能消化的事。</p>
+<h3 id="claw-code：GitHub-史上最快破-50K-stars-的專案"><a href="#claw-code：GitHub-史上最快破-50K-stars-的專案" class="headerlink" title="claw-code：GitHub 史上最快破 50K stars 的專案"></a>claw-code：GitHub 史上最快破 50K stars 的專案</h3><p>有開發者做了一個受洩漏架構啟發的重寫版本——用 Python 重新實作 CC 的核心 agent harness 模式。這個叫 <a target="_blank" rel="noopener" href="https://github.com/instructkr/claw-code">claw-code</a> 的 repo <strong>2 小時內突破 50,000 stars</strong>，成為 GitHub 史上達到這個里程碑最快的專案，目前因 Anthropic 發出 DMCA 通知後轉向 Rust 完全重寫，部分使用者取消關注，略降至 48K+ stars。</p>
+<p>forks 數（56K+）反而超過 stars，這在洩漏事件的語境下不算反常——很多人第一時間 fork 是為了保存原始碼或基於它做自己的版本，不一定會順手按星。</p>
+<h3 id="分析生態爆發"><a href="#分析生態爆發" class="headerlink" title="分析生態爆發"></a>分析生態爆發</h3><ul>
+<li>有人把原始碼分析成一個 <a target="_blank" rel="noopener" href="https://plain-sun-1ffe.hunshcn429.workers.dev/">67 頁的技術文件網站</a>，逐目錄、逐檔案拆解</li>
+<li>GitHub 上出現了 <a target="_blank" rel="noopener" href="https://github.com/nblintao/awesome-claude-code-postleak-insights">awesome-claude-code-postleak-insights</a> 策展 repo</li>
+<li>多篇深度分析文在 <a target="_blank" rel="noopener" href="https://dev.to/gabrielanhaia/claude-codes-entire-source-code-was-just-leaked-via-npm-source-maps-heres-whats-inside-cjo">DEV Community</a>、Medium、<a target="_blank" rel="noopener" href="https://news.ycombinator.com/item?id=47586778">Hacker News</a> 上獲得大量關注</li>
+<li>中文社群在微信建群分析，台灣的 <a target="_blank" rel="noopener" href="https://www.inside.com.tw/article/40985-claude-code-source-code-leak-buddy-kairos-features">INSIDE</a>、<a target="_blank" rel="noopener" href="https://www.ithome.com.tw/news/174812">iThome</a>、動區都做了報導</li>
+<li>多個獨立的 <a target="_blank" rel="noopener" href="https://github.com/Kuberwastaken/claude-code">Rust 重寫版本</a>出現</li>
+</ul>
+<p>開發者要的不只是「看」原始碼。他們要的是<strong>擁有</strong>一個不被任何公司控制的 AI 開發工具。claw-code 的爆發證明了這個需求有多強烈。</p>
+<h3 id="法律灰色地帶"><a href="#法律灰色地帶" class="headerlink" title="法律灰色地帶"></a>法律灰色地帶</h3><p>但這裡有一個大部分分析文都迴避的問題：<strong>這些衍生作品的法律地位是什麼？</strong></p>
+<p>洩漏的程式碼不是開源碼。它沒有任何授權條款。下載它、分析它、基於它重寫——在不同司法管轄區有不同的法律風險。claw-code 自稱受架構啟發的重寫，但當你能逐行對照原始碼時，「啟發」和「抄襲」的界線變得模糊。Anthropic 發出 DMCA 通知也證實了他們認為存在侵權。</p>
+<p>如果你是台灣的開發者，實務上的建議是：<strong>讀分析文了解架構思路沒問題，但不要在工作專案裡直接參考洩漏的原始碼。</strong> 這不值得冒法律風險。</p>
+<h2 id="Codex-開源了一年，幾乎沒人做過同等深度的分析"><a href="#Codex-開源了一年，幾乎沒人做過同等深度的分析" class="headerlink" title="Codex 開源了一年，幾乎沒人做過同等深度的分析"></a>Codex 開源了一年，幾乎沒人做過同等深度的分析</h2><p>這是整件事最耐人尋味的部分。</p>
+<p>OpenAI 在 2025 年 4 月就<a target="_blank" rel="noopener" href="https://github.com/openai/codex">開源了 Codex CLI</a>。完整原始碼，Apache 2.0 授權，你可以合法地 fork、修改、商用。到今天已經一年了，累積 67K stars、9K forks、400+ contributors。</p>
+<p>但你見過有人為 Codex CLI 做 67 頁的逆向分析嗎？有人逐檔案拆解它的架構嗎？</p>
+<p>CC 洩漏一天之內就有了。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Claude Code（洩漏）</th>
+<th>Codex CLI（開源一年）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原始碼規模</td>
+<td>~1,900 檔案、512K 行</td>
+<td>精簡設計</td>
+</tr>
+<tr>
+<td>深度分析</td>
+<td>67 頁分析網站 + 大量逆向文章</td>
+<td>幾乎沒有同等深度的</td>
+</tr>
+<tr>
+<td>衍生重寫</td>
+<td>claw-code + 多個 Rust 版</td>
+<td>社群直接貢獻原 repo</td>
+</tr>
+<tr>
+<td>媒體報導</td>
+<td>VentureBeat、Fortune、The Register…</td>
+<td>有限</td>
+</tr>
+<tr>
+<td>法律狀態</td>
+<td>❌ 未授權，存在 DMCA 風險</td>
+<td>✅ Apache 2.0，合法使用</td>
+</tr>
+</tbody></table>
+<p>為什麼會這樣？我認為有三個原因。</p>
+<p><strong>第一，產品複雜度本身就是吸引力。</strong> CC 的 1,900 個檔案、44 個 feature flags、六層架構、三層壓縮系統——每一層都有值得拆解的設計決策。Codex CLI 的極簡哲學（薄 wrapper + 強模型）是另一種設計選擇，不是缺點，但「極簡」確實意味著分析空間有限。</p>
+<p><strong>第二，禁果效應是真實的。</strong> 被迫透明和主動透明在心理上完全不同。OpenAI 說「來看吧」，你覺得隨時都能看，不急。Anthropic 說「不要看」但東西漏了出來，你會覺得這裡面一定有秘密。而且 Codex 開源一年了——如果你一年前就能看，為什麼現在才要看？</p>
+<p><strong>第三，「安全至上」的品牌在這個語境下變成了最好的行銷素材。</strong> 一家號稱最安全的公司犯了最基本的安全錯誤，這個敘事太完美了。每一篇報導都會提到「安全至上」和「.npmignore」的反差，讓事件的傳播力翻倍。</p>
+<p>但公平地說，Codex CLI 的開源策略有一個 CC 永遠不會有的優勢：<strong>合法性。</strong> 你可以放心地 fork Codex、基於它建立商業產品、在工作中引用它的程式碼。CC 即使洩漏了全部原始碼，你做的任何衍生作品都活在 DMCA 的陰影下。長期來看，合法開源建立的生態一定比洩漏催生的生態更健康。</p>
+<h2 id="這件事對你意味著什麼"><a href="#這件事對你意味著什麼" class="headerlink" title="這件事對你意味著什麼"></a>這件事對你意味著什麼</h2><p>如果你是 CC 的使用者，短期內不用擔心什麼。洩漏的是工具的原始碼，不是模型權重，也不是你的對話紀錄。Anthropic 已經移除了受影響版本，確保你不要繼續跑 v2.1.88 就好。</p>
+<p>但有幾件事你可以現在就做：</p>
+<p><strong>檢查你自己的 .npmignore。</strong> 如果你有維護 npm 套件，現在是個好時機檢查你的 <code>.npmignore</code> 和 <code>package.json</code> 的 <code>files</code> 欄位。順便確認你的 CI/CD pipeline 有 package size check——如果 Anthropic 有這個 check，今天的事就不會發生。</p>
+<p><strong>評估你對第三方工具的依賴。</strong> KAIROS 做的事情和 <a target="_blank" rel="noopener" href="https://github.com/nicepkg/openclaw">OpenClaw</a> 等第三方自動化工具高度重疊。當平台決定自己做，第三方的生存空間會被壓縮。如果你正在用這類工具，開始想想 Plan B。</p>
+<p><strong>重新評估你對「安全品牌」的信任。</strong> 短短幾天內連續出包，同樣的 source map 錯誤犯兩次。我認為這不是技術能力的問題——能寫出 512K 行這種水準程式碼的團隊，技術力毋庸置疑。這是工程管理的問題：發佈流程的 checklist、自動化防護欄、事後覆盤的執行力。技術做得好不代表流程做得好，而使用者的資料安全最終靠的是流程。</p>
+<hr>
+<p>一個 <code>.npmignore</code> 的疏忽，512K 行程式碼見光，2 小時 50K stars，一家安全公司的品牌敘事被自己的 bundler 擊穿。</p>
+<p>而在同一年，另一家公司主動攤開了自己的原始碼，幾乎沒有人做過同等深度的分析。</p>
+<p>市場不獎勵透明。市場獎勵故事。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Claude-Code/" rel="tag"># Claude Code</a>
+              <a href="/tags/Anthropic/" rel="tag"># Anthropic</a>
+              <a href="/tags/Codex/" rel="tag"># Codex</a>
+              <a href="/tags/source-code-leak/" rel="tag"># source code leak</a>
+              <a href="/tags/AI%E9%96%8B%E7%99%BC%E5%B7%A5%E5%85%B7/" rel="tag"># AI開發工具</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/ce3a1642/" rel="prev" title="你的 AI 產品準備好被審計了嗎？美國兩部法案正在搶著定義規則">
+                  <i class="fa fa-angle-left"></i> 你的 AI 產品準備好被審計了嗎？美國兩部法案正在搶著定義規則
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kyosora</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">484k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">7:20</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>
