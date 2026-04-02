@@ -1,32 +1,11 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-  <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222">
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
-  <meta name="google-site-verification" content="GOinl_lrNWB9APjfgt6dbVdgki38olFzWmFDv3Yh1y8">
-
-<link rel="stylesheet" href="/css/main.css">
-
-
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
-
-<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
-
-    <meta name="description" content="一個人寫程式碼容易盲點。所以我們發明了 pair programming——兩個人看同一份程式碼，一個寫、一個審。  現在有人問：如果兩個都換成 AI 呢？  這個概念從哪來 Axel Delafosse 在他的部落格上發了一篇「Agent-to-agent pair programming」，在 HN 拿了 97 分和 34 則討論。核心想法：讓 Claude Code 負責寫程式碼，讓 Ope">
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？ | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一個人寫程式碼容易盲點。所以我們發明了 pair programming——兩個人看同一份程式碼，一個寫、一個審。  現在有人問：如果兩個都換成 AI 呢？  這個概念從哪來 Axel Delafosse 在他的部落格上發了一篇「Agent-to-agent pair programming」，在 HN 拿了 97 分和 34 則討論。核心想法：讓 Claude Code 負責寫程式碼，讓 Ope">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？">
 <meta property="og:url" content="https://kyosora.github.io/posts/4a4e3530/">
 <meta property="og:site_name" content="kyosora 筆記">
 <meta property="og:description" content="一個人寫程式碼容易盲點。所以我們發明了 pair programming——兩個人看同一份程式碼，一個寫、一個審。  現在有人問：如果兩個都換成 AI 呢？  這個概念從哪來 Axel Delafosse 在他的部落格上發了一篇「Agent-to-agent pair programming」，在 HN 拿了 97 分和 34 則討論。核心想法：讓 Claude Code 負責寫程式碼，讓 Ope">
 <meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-4.png">
 <meta property="article:published_time" content="2026-03-27T15:30:00.000Z">
 <meta property="article:modified_time" content="2026-03-27T14:20:49.263Z">
 <meta property="article:author" content="kyosora">
@@ -36,220 +15,173 @@
 <meta property="article:tag" content="Codex">
 <meta property="article:tag" content="多Agent協作">
 <meta name="twitter:card" content="summary">
-
-
-<link rel="canonical" href="https://kyosora.github.io/posts/4a4e3530/">
-
-
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/4a4e3530/","path":"posts/4a4e3530/","title":"Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？"}</script>
-
-<script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？ | kyosora 筆記</title>
-  
-
-
-
-
-
-
-
-
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
-<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
-
-  
-
-
-
-
-
-
-  
-
-
-
-
-
-
-<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
-
-  <noscript>
-    <link rel="stylesheet" href="/css/noscript.css">
-  </noscript>
-</head>
-
-<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
-  <div class="headband"></div>
-
-  <main class="main">
-    <div class="column">
-      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切換導航欄" role="button">
-    </div>
-  </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <i class="logo-line"></i>
-      <p class="site-title">kyosora 筆記</p>
-      <i class="logo-line"></i>
-    </a>
-      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
-  </div>
-
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
-    </div>
-  </div>
-</div>
-
-
-
-
-
-
-
-</header>
-        
-  
-  <aside class="sidebar">
-
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
-      <ul class="sidebar-nav">
-        <li class="sidebar-nav-toc">
-          文章目錄
-        </li>
-        <li class="sidebar-nav-overview">
-          本站概要
-        </li>
-      </ul>
-
-      <div class="sidebar-panel-container">
-        <!--noindex-->
-        <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%99%E5%80%8B%E6%A6%82%E5%BF%B5%E5%BE%9E%E5%93%AA%E4%BE%86"><span class="nav-number">1.</span> <span class="nav-text">這個概念從哪來</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E9%9A%9B%E6%80%8E%E9%BA%BC%E9%81%8B%E4%BD%9C"><span class="nav-number">2.</span> <span class="nav-text">實際怎麼運作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E7%94%A8%E4%B8%8D%E5%90%8C%E7%9A%84-AI"><span class="nav-number">3.</span> <span class="nav-text">為什麼用不同的 AI</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BE%E7%BE%A4%E8%A3%A1%E7%9A%84%E5%88%86%E6%AD%A7"><span class="nav-number">4.</span> <span class="nav-text">社群裡的分歧</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%99%E5%B0%8D%E4%BD%A0%E7%9A%84%E9%96%8B%E7%99%BC%E6%B5%81%E7%A8%8B%E6%9C%89%E4%BB%80%E9%BA%BC%E5%95%9F%E7%99%BC"><span class="nav-number">5.</span> <span class="nav-text">這對你的開發流程有什麼啟發</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%95%E6%9C%9B"><span class="nav-number">6.</span> <span class="nav-text">展望</span></a></li></ol></div>
-        </div>
-        <!--/noindex-->
-
-        <div class="site-overview-wrap sidebar-panel">
-          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">kyosora</p>
-  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
-</div>
-<div class="site-state-wrap animated">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-        <a href="/archives/">
-          <span class="site-state-item-count">165</span>
-          <span class="site-state-item-name">文章</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">91</span>
-        <span class="site-state-item-name">分類</span>
-      </div>
-      <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">313</span>
-        <span class="site-state-item-name">標籤</span>
-      </div>
-  </nav>
-</div>
-
-        </div>
-      </div>
-    </div>
-
-    
-  </aside>
-
-
-    </div>
-
-    <div class="main-inner post posts-expand">
-
-
-  
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/4a4e3530/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="kyosora">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kyosora 筆記">
-      <meta itemprop="description" content="個人技術筆記和學習心得分享">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？ | kyosora 筆記">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？
-        </h1>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">發表於</span>
+<meta name="twitter:image" content="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-4.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？",
+  "url": "https://kyosora.github.io/posts/4a4e3530/",
+  "image": "https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-4.png",
+  "datePublished": "2026-03-27T15:30:00.000Z",
+  "dateModified": "2026-03-27T14:20:49.263Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kyosora",
+      "url": "https://kyosora.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://kyosora.github.io/posts/4a4e3530/"><link rel="preconnect" href="https://jsd.012700.xyz"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://jsd.012700.xyz/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://jsd.012700.xyz/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
       
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
 
-      <time title="創建時間：2026-03-27 23:30:00 / 修改時間：22:20:49" itemprop="dateCreated datePublished" datetime="2026-03-27T23:30:00+08:00">2026-03-27</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分類於</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/AI/%E9%96%8B%E7%99%BC%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">開發工具</span></a>
-        </span>
-    </span>
-
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
   
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="文章字數">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">文章字數：</span>
-      <span>2.4k</span>
-    </span>
-    <span class="post-meta-item" title="所需閱讀時間">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>2 分鐘</span>
-    </span>
-</div>
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
 
-        </div>
-      </header>
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
 
+      const theme = saveToLocal.get('theme')
     
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
     
-    
-    <div class="post-body" itemprop="articleBody"><p>一個人寫程式碼容易盲點。所以我們發明了 pair programming——兩個人看同一份程式碼，一個寫、一個審。</p>
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://jsd.012700.xyz/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://jsd.012700.xyz"><link href="/self/btf.css" rel="stylesheet"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "/img/loading.gif" data-lazy-src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">165</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">313</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">91</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 圖庫</span></a></li><li><a class="site-page child" href="/talking/"><i class="fa-fw fas fa-comment-dots"></i><span> 說說</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-thumbs-up"></i><span> 示例</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文檔</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/posts/21cfbf15/"><span> 🚀 快速開始</span></a></li><li><a class="site-page child" href="/posts/dc584b87/"><span> 📑 主題頁面</span></a></li><li><a class="site-page child" href="/posts/4aa8abbe/"><span> 🛠 主題配置</span></a></li><li><a class="site-page child" href="/posts/ceeb73f/"><span> ⚔️ 標簽外挂</span></a></li><li><a class="site-page child" href="/posts/98d20436/"><span> ❓ 主題問答</span></a></li><li><a class="site-page child" href="/posts/4073eda/"><span> ⚡️ 進階教程</span></a></li><li><a class="site-page child" href="/posts/198a4240/"><span> ✨ 更新日誌</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fas fa-comment-dots"></i><span> 留言板</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 語言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-4.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a><a class="nav-page-title" href="/"><span class="site-name">Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 圖庫</span></a></li><li><a class="site-page child" href="/talking/"><i class="fa-fw fas fa-comment-dots"></i><span> 說說</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-thumbs-up"></i><span> 示例</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文檔</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/posts/21cfbf15/"><span> 🚀 快速開始</span></a></li><li><a class="site-page child" href="/posts/dc584b87/"><span> 📑 主題頁面</span></a></li><li><a class="site-page child" href="/posts/4aa8abbe/"><span> 🛠 主題配置</span></a></li><li><a class="site-page child" href="/posts/ceeb73f/"><span> ⚔️ 標簽外挂</span></a></li><li><a class="site-page child" href="/posts/98d20436/"><span> ❓ 主題問答</span></a></li><li><a class="site-page child" href="/posts/4073eda/"><span> ⚡️ 進階教程</span></a></li><li><a class="site-page child" href="/posts/198a4240/"><span> ✨ 更新日誌</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fas fa-comment-dots"></i><span> 留言板</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 語言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？<a class="post-edit-link" href="https://github.com/jerryc127/butterfly.js.org/edit/main/source/_posts/agent-to-agent-pair-programming-two-ai-write-better-code.md" title="編輯" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">發表於</span><time datetime="2026-03-27T15:30:00.000Z" title="發表於 2026-03-27 23:30:00">2026-03-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI/">AI</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI/%E9%96%8B%E7%99%BC%E5%B7%A5%E5%85%B7/">開發工具</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">1.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>4分鐘</span></span><span class="post-meta-separator">|</span><span id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">瀏覽量:</span><span id="umamiPV" data-path="/posts/4a4e3530/"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>一個人寫程式碼容易盲點。所以我們發明了 pair programming——兩個人看同一份程式碼，一個寫、一個審。</p>
 <p>現在有人問：如果兩個都換成 AI 呢？</p>
 <h2 id="這個概念從哪來"><a href="#這個概念從哪來" class="headerlink" title="這個概念從哪來"></a>這個概念從哪來</h2><p>Axel Delafosse 在他的部落格上發了一篇「Agent-to-agent pair programming」，在 HN 拿了 97 分和 34 則討論。核心想法：讓 Claude Code 負責寫程式碼，讓 OpenAI Codex 負責 review，兩個 agent 在同一個 codebase 上來回迭代，直到 review 通過。</p>
 <p>不是人 + AI，是 AI + AI。人類退到 supervisor 的角色——設定目標、審核最終結果，中間過程交給兩個 agent 自己跑。</p>
@@ -284,97 +216,507 @@
 <p>如果你現在就想試，不需要等工具成熟。打開兩個終端機，一個跑 Claude Code，一個跑 Codex CLI。手動把一邊的產出餵給另一邊。笨，但有效。等生態系統成熟了，再考慮自動化。</p>
 <hr>
 <p><em>相關資源：<a target="_blank" rel="noopener" href="https://news.ycombinator.com/item?id=47538190">HN 討論</a>、<a target="_blank" rel="noopener" href="https://swival.dev/pages/reviews.html">Swival self-review</a>、<a target="_blank" rel="noopener" href="https://github.com/AxmeAI/axme">AxmeAI agent lifecycle</a></em></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kyosora.github.io">kyosora</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://kyosora.github.io/posts/4a4e3530/">https://kyosora.github.io/posts/4a4e3530/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 授權協議。轉載請註明來源 <a href="https://kyosora.github.io" target="_blank">kyosora 筆記</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/AI-Agent/">AI Agent</a><a class="post-meta__tags" href="/tags/Claude-Code/">Claude Code</a><a class="post-meta__tags" href="/tags/%E9%85%8D%E5%B0%8D%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">配對程式設計</a><a class="post-meta__tags" href="/tags/Codex/">Codex</a><a class="post-meta__tags" href="/tags/%E5%A4%9AAgent%E5%8D%94%E4%BD%9C/">多Agent協作</a></div><div class="post-share"><div class="social-share" data-image="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-4.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://jsd.012700.xyz/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://jsd.012700.xyz/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-8919908724705274" data-ad-slot="5978969231"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/6986445c/" title="一天、$400 的 token、年省 $500K：Reco 用 AI 重寫 JSONata 的真實帳本"><img class="cover" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-5.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">一天、$400 的 token、年省 $500K：Reco 用 AI 重寫 JSONata 的真實帳本</div></div><div class="info-2"><div class="info-item-1">Reco（一家 SaaS 安全公司）用 AI 在七小時內把 JSONata 從 JavaScript 重寫成 Go，產出 13,000 行程式碼，通過 1,778 個測試案例。token 花費 $400。上線後每月省 $25,000 compute 費用，加上後續的 pipeline 優化，年省 $500K。 這個故事在 Hacker News 上拿了 207 分和 186 則討論。數字很吸睛，但真正值得學的不是數字——是他們怎麼確保 AI 生成的 13,000 行程式碼不會在生產環境炸掉。 問題：一條昂貴的語言邊界Reco 有一個 policy engine，用 JSONata（一種 JSON 查詢和轉換語言，類似 jq 但有 lambda）對資料管線中的每條事件做規則比對。幾十億條事件，上千條規則。 JSONata 的參考實作是 JavaScript。Reco 的 pipeline 是 Go。所以他們多年來一直在 Kubernetes 上跑一整組 Node.js pod——Go 服務透過 RPC 呼叫 Node.js 來做 JSONata 運算。 每次呼叫的代價：序列化 →...</div></div></div></a><a class="pagination-related" href="/posts/b8da5d90/" title="Meta 的 HyperAgents：AI Agent 開始改進自己的改進方式了"><img class="cover" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-3.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Meta 的 HyperAgents：AI Agent 開始改進自己的改進方式了</div></div><div class="info-2"><div class="info-item-1">Meta 發了一篇論文叫 HyperAgents，副標題是「Self-referential self-improving agents that can optimize for any computable task」。GitHub 上已經開源，1.6k stars。 讓我把它翻譯成人話：一個 AI agent 不只能改進自己解題的方式，還能改進「自己改進自己」的方式。 聽起來像繞口令。但它指向的方向，值得每個做 AI 應用的開發者留意。 問題：現有的自我改進都卡在一個地方AI agent 的「自我改進」不是新概念。最直觀的版本：agent 跑完一個任務，回頭看看哪裡做得不好，調整策略，下次做得更好。OpenAI 的 o1 用的 self-play、DeepSeek 的 self-improvement、還有去年的 Darwin Gödel Machine（DGM），都是這個思路的變體。 DGM 特別有意思——它能自己修改自己的程式碼，然後測試修改後的版本是否更好。在 coding 領域效果很棒，因為「改善 coding...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/6bed35e0/" title="61 個 Markdown 檔讓你的 IDE 變成 AI 公司：agency-agents 爆紅背後的技術邏輯"><img class="cover" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-3.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-14</div><div class="info-item-2">61 個 Markdown 檔讓你的 IDE 變成 AI 公司：agency-agents 爆紅背後的技術邏輯</div></div><div class="info-2"><div class="info-item-1">一個 GitHub 專案，沒有任何可執行程式碼，只有 61 個 Markdown 檔案，7 天內拿到 10,000 顆星。截至 3/14 已經衝到 39,300 星。 這不是什麼新框架或新語言。agency-agents 做的事情只有一件：用 Markdown 定義 AI 的專業人格。 聽起來荒謬，但它戳中了一個真實的問題。 你的 AI 助手什麼都會，所以什麼都做不好用過 Claude Code 或 Cursor 的人都有這個經驗：你請 AI 寫一個 REST API，它給你一個「還行」的版本。能跑，但缺少認證考量、沒有速率限制、錯誤處理敷衍、命名風格前後不一。 問題不在模型能力。GPT-5.4、Claude Opus 4.6、Gemini 3.1 Pro——這些模型的知識量早就超過任何單一工程師。問題在於 context window 裡塞了太多可能性，模型不知道你要哪一種。 你問「幫我設計 API」，模型在 REST、GraphQL、gRPC 之間游移。你問「幫我寫測試」，模型不確定你要 unit test 還是 integration...</div></div></div></a><a class="pagination-related" href="/posts/33e4604/" title="Xcode 終於讓 AI Agent 進場了：兩分鐘做出一個 App 的背後意味著什麼"><img class="cover" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-6.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-09</div><div class="info-item-2">Xcode 終於讓 AI Agent 進場了：兩分鐘做出一個 App 的背後意味著什麼</div></div><div class="info-2"><div class="info-item-1">二月底，Apple 悄悄推了 Xcode 26.3。沒有 Keynote，沒有 Craig Federighi 站在台上用動畫炫技。但這次更新可能是 Xcode 近五年來最重要的一個版本。 因為從這個版本開始，你可以在 Xcode 裡直接使用 AI coding agent。不是那種「自動補完下一行」的小聰明，而是整個 agent 接管你的專案：理解架構、搜文件、改多個檔案、跑 build、看 Preview、發現 UI 有問題還會自己修。 有人用它兩分鐘內做出一個完整的 Pomodoro 計時器 App——有設定頁面、提醒功能、能跑的 UI。 兩分鐘。 這不是 Copilot 的升級版先說清楚 agentic coding 跟傳統 AI 輔助寫 code 的差別。 GitHub Copilot 和早期的 AI 工具做的事情是「你寫一行，它猜下一行」。你是主角，AI 是配角。你的游標在哪裡，它就在那裡幫你。 Agentic coding 完全不同。你給 agent 一個目標——「幫我做一個 Pomodoro 計時器」——然後它自己拆解任務、決定要改哪些檔案、寫 code、跑...</div></div></div></a><a class="pagination-related" href="/posts/a3991147/" title="你的 CLAUDE.md 寫太多了：7,308 次實驗證明 AI Agent 指令 2-3 條就好"><img class="cover" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-3.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-08</div><div class="info-item-2">你的 CLAUDE.md 寫太多了：7,308 次實驗證明 AI Agent 指令 2-3 條就好</div></div><div class="info-2"><div class="info-item-1">上週我在整理自己的 CLAUDE.md 時，發現它已經膨脹到快 800 行。規則疊規則、範例套範例，像一本員工手冊。直覺告訴我這樣「比較完整」，但實際體感是——Claude Code 有時會忽略我寫在後半段的指令，偶爾還會把兩條規則搞混。 然後我讀到 SkillsBench 這篇論文，它用 7,308 條執行軌跡和 84 個任務做了一件事：測量「給 AI Agent 的操作指引（Skills）」到底給多少、寫多長才有效。 結論讓我重新打開編輯器，把那 800 行砍掉一半。 先講數字研究團隊在 Claude Code、Codex CLI、Gemini CLI 三個平台上，測試了七種模型配置。每個任務跑五次，用程式化斷言判定通過與否——不是讓另一個 LLM 當裁判，是寫死的測試。 整體結論：精心撰寫的 Skills 平均提升 16.2 個百分點。這個數字本身不意外，有指引當然比沒有好。 意外的是拆開來看的時候。 2-3 條指引是甜蜜點，4 條以上開始拖後腿   Skills 數量 有 Skills 無 Skills 差距    1...</div></div></div></a><a class="pagination-related" href="/posts/e299559c/" title="Claude Code 跑一半就停？Ralph Wiggum 讓 AI 自主工作 3 個月不中斷"><img class="cover" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-1.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-07</div><div class="info-item-2">Claude Code 跑一半就停？Ralph Wiggum 讓 AI 自主工作 3 個月不中斷</div></div><div class="info-2"><div class="info-item-1">你有沒有遇過這種情況：Claude Code 跑到一半說「完成了」，結果測試根本沒過？或是修好一個 bug 後，卻發現另外三個地方壞掉？ 更慘的是，每次都要手動檢查、手動下指令、再手動確認。一個簡單的「把所有測試跑通」任務，你可能要來回操作 10 次以上。 如果我告訴你，有個技術能讓 Claude Code 自己迭代、自己修 bug、自己跑測試，直到真的完成為止——甚至有人用它讓 AI 自主開發了整整 3 個月，做出一個完整的程式語言編譯器，你信嗎？ 這就是 Ralph Wiggum。 問題：AI 的「一次性思維」困境症狀 1：虛假的「完成」Claude Code 很聰明，但它有個致命問題：它以為自己做完了，但其實沒有。 1234你：「幫我把這個 API 的測試覆蓋率提升到 80%」Claude：「好的，我已經新增了 5 個測試檔案」你：npm test結果：❌ 12 tests failed, coverage: 45%  問題在哪？Claude 寫完測試就認為任務結束，但它沒有真正驗證結果。 症狀 2：迭代開發的高成本真實的開發場景通常是：  寫代碼 跑測試 →...</div></div></div></a><a class="pagination-related" href="/posts/15a54ef4/" title=".npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析"><img class="cover" src= "/img/loading.gif" data-lazy-src="/images/posts/claude-code-leak-cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-04-02</div><div class="info-item-2">.npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析</div></div><div class="info-2"><div class="info-item-1">2026 年 3 月 31 日 UTC 凌晨 4 點，Anthropic 把 Claude Code v2.1.88 推上 npm。23 分鐘後，一位累積 190 萬美元漏洞賞金的安全研究員在 X 上發了一則貼文，引爆了 AI 開發工具史上最大的原始碼洩漏事件。 512,000 行 TypeScript。1,900 個檔案。44 個未開放的 Feature Flags。全部見光。 而最諷刺的是，這家公司的品牌定位是「安全至上」。 一個 .npmignore 的遺漏如何釀成災難事情的根因簡單到令人難以置信。 Claude Code 用 Bun 做 bundler。Bun 預設會產生 source map 檔案——一個 59.8 MB 的 cli.js.map，用來把打包後的程式碼對應回原始 TypeScript。這個檔案指向 Anthropic 的 Cloudflare R2 儲存桶上一個 zip 壓縮檔，裡面裝著完整的未混淆原始碼。 正常流程下，.npmignore 應該排除這個檔案。但不知道是哪個環節出了問題，它被一起推上了公開的 npm registry。 更慘的是，Bun...</div></div></div></a><a class="pagination-related" href="/posts/365db273/" title="AI Agent 框架大亂鬥：NemoClaw、OpenClaw 和開發者的真實選擇"><img class="cover" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-9.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-15</div><div class="info-item-2">AI Agent 框架大亂鬥：NemoClaw、OpenClaw 和開發者的真實選擇</div></div><div class="info-2"><div class="info-item-1">老闆走過來說：「我看到競爭對手在用 AI Agent 自動處理客服了，我們也來做一個。」 你心裡的 OS 大概是：用哪個框架？LangChain？AutoGen？還是最近爆紅的 OpenClaw？明天 NVIDIA GTC 又要發布 NemoClaw，這局面到底怎麼選？ 我花了一整晚研究目前的 AI Agent 框架生態，把我的觀察整理成這篇。不賣焦慮，只講開發者真正需要思考的問題。 數字先看：這不是 hype，但也不全是真的Gartner 和 Forrester 都把 2026 年標記為「多代理系統的突破年」。幾個關鍵數據：  57% 的企業已經有 AI Agent 在生產環境跑了（G2 調查） 40% 的企業應用預計會嵌入特定任務的 AI Agent 80% 的受訪者表示 AI Agent 已經產生可衡量的經濟影響 全球 Agentic AI 市場規模從 2026 年的 91.4 億美元，預計 2034 年達到 1,390 億美元  但 Gartner 同時預測：超過 40% 的 Agent 專案會在 2027...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div><div class="comment-switch"><span class="first-comment">Artalk</span><span id="switch-btn"></span><span class="second-comment">Disqus</span></div></div><div class="comment-wrap"><div><div id="artalk-wrap"></div></div><div><div id="disqus_thread"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "/img/loading.gif" data-lazy-src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kyosora</div><div class="author-info-description">個人技術筆記和學習心得分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">165</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">313</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">91</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly"><i class="fab fa-github"></i><span>主題 GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:my@crazywong.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%99%E5%80%8B%E6%A6%82%E5%BF%B5%E5%BE%9E%E5%93%AA%E4%BE%86"><span class="toc-number">1.</span> <span class="toc-text">這個概念從哪來</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%A6%E9%9A%9B%E6%80%8E%E9%BA%BC%E9%81%8B%E4%BD%9C"><span class="toc-number">2.</span> <span class="toc-text">實際怎麼運作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E7%94%A8%E4%B8%8D%E5%90%8C%E7%9A%84-AI"><span class="toc-number">3.</span> <span class="toc-text">為什麼用不同的 AI</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BE%E7%BE%A4%E8%A3%A1%E7%9A%84%E5%88%86%E6%AD%A7"><span class="toc-number">4.</span> <span class="toc-text">社群裡的分歧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%99%E5%B0%8D%E4%BD%A0%E7%9A%84%E9%96%8B%E7%99%BC%E6%B5%81%E7%A8%8B%E6%9C%89%E4%BB%80%E9%BA%BC%E5%95%9F%E7%99%BC"><span class="toc-number">5.</span> <span class="toc-text">這對你的開發流程有什麼啟發</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%95%E6%9C%9B"><span class="toc-number">6.</span> <span class="toc-text">展望</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/15a54ef4/" title=".npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析"><img src= "/img/loading.gif" data-lazy-src="/images/posts/claude-code-leak-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt=".npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析"/></a><div class="content"><a class="title" href="/posts/15a54ef4/" title=".npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析">.npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析</a><time datetime="2026-04-02T02:00:00.000Z" title="發表於 2026-04-02 10:00:00">2026-04-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/ce3a1642/" title="你的 AI 產品準備好被審計了嗎？美國兩部法案正在搶著定義規則"><img src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-8.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="你的 AI 產品準備好被審計了嗎？美國兩部法案正在搶著定義規則"/></a><div class="content"><a class="title" href="/posts/ce3a1642/" title="你的 AI 產品準備好被審計了嗎？美國兩部法案正在搶著定義規則">你的 AI 產品準備好被審計了嗎？美國兩部法案正在搶著定義規則</a><time datetime="2026-03-28T05:00:00.000Z" title="發表於 2026-03-28 13:00:00">2026-03-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/55188ba6/" title="當攻擊者也有了 AI Agent：地下論壇討論量暴增 1500%，agentic 攻擊框架長什麼樣"><img src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-2.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="當攻擊者也有了 AI Agent：地下論壇討論量暴增 1500%，agentic 攻擊框架長什麼樣"/></a><div class="content"><a class="title" href="/posts/55188ba6/" title="當攻擊者也有了 AI Agent：地下論壇討論量暴增 1500%，agentic 攻擊框架長什麼樣">當攻擊者也有了 AI Agent：地下論壇討論量暴增 1500%，agentic 攻擊框架長什麼樣</a><time datetime="2026-03-28T04:00:00.000Z" title="發表於 2026-03-28 12:00:00">2026-03-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3253bf10/" title="一台 Mac mini 變成 24 小時 AI 員工：Perplexity Personal Computer 的架構野心"><img src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-6.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一台 Mac mini 變成 24 小時 AI 員工：Perplexity Personal Computer 的架構野心"/></a><div class="content"><a class="title" href="/posts/3253bf10/" title="一台 Mac mini 變成 24 小時 AI 員工：Perplexity Personal Computer 的架構野心">一台 Mac mini 變成 24 小時 AI 員工：Perplexity Personal Computer 的架構野心</a><time datetime="2026-03-28T03:00:00.000Z" title="發表於 2026-03-28 11:00:00">2026-03-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/de191204/" title="你的商品開始在 ChatGPT 裡被賣了：Shopify Agentic Storefronts 技術拆解"><img src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-7.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="你的商品開始在 ChatGPT 裡被賣了：Shopify Agentic Storefronts 技術拆解"/></a><div class="content"><a class="title" href="/posts/de191204/" title="你的商品開始在 ChatGPT 裡被賣了：Shopify Agentic Storefronts 技術拆解">你的商品開始在 ChatGPT 裡被賣了：Shopify Agentic Storefronts 技術拆解</a><time datetime="2026-03-28T02:00:00.000Z" title="發表於 2026-03-28 10:00:00">2026-03-28</time></div></div></div></div><div class="card-widget ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8919908724705274" data-ad-slot="8108145410" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div></div></div></main><footer id="footer" style="background-image: url(https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-4.png);"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2026 By kyosora</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/utils.min.js"></script><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/main.min.js"></script><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/tw_cn.min.js"></script><script src="https://jsd.012700.xyz/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://jsd.012700.xyz/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://jsd.012700.xyz/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
 
-    </div>
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
 
-    
-    
-    
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
 
-    <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/AI-Agent/" rel="tag"># AI Agent</a>
-              <a href="/tags/Claude-Code/" rel="tag"># Claude Code</a>
-              <a href="/tags/%E9%85%8D%E5%B0%8D%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/" rel="tag"># 配對程式設計</a>
-              <a href="/tags/Codex/" rel="tag"># Codex</a>
-              <a href="/tags/%E5%A4%9AAgent%E5%8D%94%E4%BD%9C/" rel="tag"># 多Agent協作</a>
-          </div>
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
 
-        
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
 
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/posts/6986445c/" rel="prev" title="一天、$400 的 token、年省 $500K：Reco 用 AI 重寫 JSONata 的真實帳本">
-                  <i class="fa fa-angle-left"></i> 一天、$400 的 token、年省 $500K：Reco 用 AI 重寫 JSONata 的真實帳本
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/posts/b8da5d90/" rel="next" title="Meta 的 HyperAgents：AI Agent 開始改進自己的改進方式了">
-                  Meta 的 HyperAgents：AI Agent 開始改進自己的改進方式了 <i class="fa fa-angle-right"></i>
-                </a>
-            </div>
-          </div>
-    </footer>
-  </article>
-</div>
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
 
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
 
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://jsd.012700.xyz/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
 
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const applyThemeDefaultsConfig = theme => {
+    if (theme === 'dark-mode') {
+      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
+      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    } else {
+      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
+      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    }
+  }
 
+  // Recursively traverse the config object and automatically apply theme-specific color schemes
+  const applyThemeConfig = (obj, theme) => {
+    if (typeof obj !== 'object' || obj === null) return
 
+    Object.keys(obj).forEach(key => {
+      const value = obj[key]
+      // If the property is an object and has theme-specific options, apply them
+      if (typeof value === 'object' && value !== null) {
+        if (value[theme]) {
+          obj[key] = value[theme] // Apply the value for the current theme
+        } else {
+          // Recursively process child objects
+          applyThemeConfig(value, theme)
+        }
+      }
+    })
+  }
 
-    <div class="comments utterances-container"></div>
-</div>
-  </main>
+  const runChartJS = ele => {
+    window.loadChartJS = true
 
-  <footer class="footer">
-    <div class="footer-inner">
+    Array.from(ele).forEach((item, index) => {
+      const chartSrc = item.firstElementChild
+      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
+      const width = item.getAttribute('data-width')
+      const existingCanvas = document.getElementById(chartID)
 
-  <div class="copyright">
-    &copy; 
-    <span itemprop="copyrightYear">2026</span>
-    <span class="with-love">
-      <i class="fa fa-heart"></i>
-    </span>
-    <span class="author" itemprop="copyrightHolder">kyosora</span>
-  </div>
-<div class="wordcount">
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon">
-      <i class="fa fa-chart-line"></i>
-    </span>
-    <span title="總字數">484k</span>
-  </span>
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon">
-      <i class="fa fa-coffee"></i>
-    </span>
-    <span title="所需總閱讀時間">7:20</span>
-  </span>
-</div>
-  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
-  </div>
+      // If a canvas already exists, remove it to avoid rendering duplicates
+      if (existingCanvas) {
+          existingCanvas.parentNode.remove()
+      }
 
-    </div>
-  </footer>
+      const chartDefinition = chartSrc.textContent
+      const canvas = document.createElement('canvas')
+      canvas.id = chartID
 
-  
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-  <div class="sidebar-dimmer"></div>
-  <div class="back-to-top" role="button" aria-label="回到頂端">
-    <i class="fa fa-arrow-up fa-lg"></i>
-    <span>0%</span>
-  </div>
+      const div = document.createElement('div')
+      div.className = 'chartjs-wrap'
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
-<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
-<script src="/js/third-party/comments/utterances.js" defer></script>
+      if (width) {
+        div.style.width = width
+      }
 
-</body>
-</html>
+      div.appendChild(canvas)
+      chartSrc.insertAdjacentElement('afterend', div)
+
+      const ctx = document.getElementById(chartID).getContext('2d')
+
+      const config = JSON.parse(chartDefinition)
+
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
+
+      // Set default styles (initial setup)
+      applyThemeDefaultsConfig(theme)
+
+      // Automatically traverse the config and apply dual-mode color schemes
+      applyThemeConfig(config, theme)
+
+      new Chart(ctx, config)
+    })
+  }
+
+  const loadChartJS = () => {
+    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
+    if (chartJSEle.length === 0) return
+
+    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://jsd.012700.xyz/npm/chart.js/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
+  }
+
+  // Listen for theme change events
+  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
+  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
+
+  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
+})()</script><script>(() => {
+  let artalkItem = null
+  const option = null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+
+  const destroyArtalk = () => {
+    if (artalkItem) {
+      artalkItem.destroy()
+      artalkItem = null
+    }
+  }
+
+  const artalkChangeMode = theme => artalkItem && artalkItem.setDarkMode(theme === 'dark')
+
+  const initArtalk = (el = document, pageKey = location.pathname) => {
+    artalkItem = Artalk.init({
+      el: el.querySelector('#artalk-wrap'),
+      server: 'https://artalk.crazywong.com',
+      site: 'Butterfly-Docs',
+      darkMode: document.documentElement.getAttribute('data-theme') === 'dark',
+      ...option,
+      pageKey: isShuoshuo ? pageKey : (option && option.pageKey) || pageKey
+    })
+
+    if (GLOBAL_CONFIG.lightbox === 'null') return
+    artalkItem.on('list-loaded', () => {
+      artalkItem.ctx.get('list').getCommentNodes().forEach(comment => {
+        const $content = comment.getRender().$content
+        btf.loadLightbox($content.querySelectorAll('img:not([atk-emoticon])'))
+      })
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyArtalk = () => {
+        destroyArtalk()
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    btf.addGlobalFn('pjaxSendOnce', destroyArtalk, 'destroyArtalk')
+    btf.addGlobalFn('themeChange', artalkChangeMode, 'artalk')
+  }
+
+  const loadArtalk = async (el, pageKey) => {
+    if (typeof Artalk === 'object') initArtalk(el, pageKey)
+    else {
+      await btf.getCSS('https://jsd.012700.xyz/npm/artalk/dist/Artalk.min.css')
+      await btf.getScript('https://jsd.012700.xyz/npm/artalk/dist/Artalk.min.js')
+      initArtalk(el, pageKey)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Artalk' === 'Artalk'
+      ? window.shuoshuoComment = { loadComment: loadArtalk }
+      : window.loadOtherComment = loadArtalk
+    return
+  }
+
+  if ('Artalk' === 'Artalk' || !true) {
+    if (true) btf.loadComment(document.getElementById('artalk-wrap'), loadArtalk)
+    else setTimeout(loadArtalk, 100)
+  } else {
+    window.loadOtherComment = loadArtalk
+  }
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+
+  const disqusReset = conf => {
+    window.DISQUS && window.DISQUS.reset({
+      reload: true,
+      config: conf
+    })
+  }
+
+  const loadDisqus = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyDisqus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    window.disqus_identifier = isShuoshuo ? path : '/posts/4a4e3530/'
+    window.disqus_url = isShuoshuo ? location.origin + path : 'https://kyosora.github.io/posts/4a4e3530/'
+
+    const disqus_config = function () {
+      this.page.url = disqus_url
+      this.page.identifier = disqus_identifier
+      this.page.title = 'Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？'
+    }
+
+    if (window.DISQUS) disqusReset(disqus_config)
+    else {
+      const script = document.createElement('script')
+      script.src = 'https://demo-jerryc-me.disqus.com/embed.js'
+      script.setAttribute('data-timestamp', +new Date())
+      document.head.appendChild(script)
+    }
+
+    btf.addGlobalFn('themeChange', () => disqusReset(disqus_config), 'disqus')
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqus-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=demo-jerryc-me&api_key=&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Artalk' === 'Disqus'
+      ? window.shuoshuoComment = { loadComment: loadDisqus }
+      : window.loadOtherComment = loadDisqus
+    return
+  }
+
+  if ('Artalk' === 'Disqus' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqus_thread'), loadDisqus)
+    else {
+      loadDisqus()
+      GLOBAL_CONFIG_SITE.pageType === 'post' && getCount()
+    }
+  } else {
+    window.loadOtherComment = loadDisqus
+  }
+})()</script></div><script>window.newestComments = {
+  changeContent: content => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[圖片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[連結]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[程式碼]') // replace code
+    content = content.replace(/<code>.*?<\/code>/gi, '[程式碼]') // replace code
+    content = content.replace(/<[^>]+>/g, "") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0, 150) + '...'
+    }
+    return content
+  },
+
+  generateHtml: (array, ele) => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class="aside-list-item">'
+
+        if (true && array[i].avatar) {
+          const imgAttr = 'data-lazy-src'
+          const lazyloadNative = ''
+          result += `<a href="${array[i].url}" class="thumbnail"><img ${imgAttr}="${array[i].avatar}" alt="${array[i].nick}" ${lazyloadNative}></a>`
+        }
+
+        result += `<div class="content">
+        <a class="comment" href="${array[i].url}" title="${array[i].content}">${array[i].content}</a>
+        <div class="name"><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '尚無評論'
+    }
+
+    ele.innerHTML = result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh(ele)
+  },
+
+  newestCommentInit: (name, getComment) => {
+    const $dom = document.querySelector('#card-newest-comments .aside-list')
+    if ($dom) {
+      const data = btf.saveToLocal.get(name)
+      if (data) {
+        newestComments.generateHtml(JSON.parse(data), $dom)
+      } else {
+        getComment($dom)
+      }
+    }
+  },
+
+  run: (name, getComment) => {
+    newestComments.newestCommentInit(name, getComment)
+    btf.addGlobalFn('pjaxComplete', () => newestComments.newestCommentInit(name, getComment), name)
+  }
+}</script><script>window.addEventListener('load', () => {
+  const keyName = 'artalk-newest-comments'
+  const { changeContent, generateHtml, run } = window.newestComments
+
+  const getAvatarValue = async () => {
+    const predefinedAvatarCdn = ''
+    const predefinedAvatarDefault = ''
+
+    const avatarDefaultFormat = e => e.startsWith('d=') ? e : `d=${e}`
+
+    if (predefinedAvatarCdn && predefinedAvatarDefault) {
+      return { avatarCdn: predefinedAvatarCdn, avatarDefault: avatarDefaultFormat(predefinedAvatarDefault) }
+    }
+
+    try {
+      const res = await fetch('https://artalk.crazywong.com/api/v2/conf')
+      const result = await res.json()
+      const { mirror, params, default: defaults } = result.frontend_conf.gravatar
+      const avatarCdn = predefinedAvatarCdn || mirror
+      let avatarDefault = avatarDefaultFormat(predefinedAvatarDefault || params || defaults)
+      return { avatarCdn, avatarDefault}
+    } catch (e) {
+      console.error(e)
+      return { avatarCdn: predefinedAvatarCdn, avatarDefault: avatarDefaultFormat(predefinedAvatarDefault) }
+    }
+  }
+
+  const searchParams = new URLSearchParams({
+    'site_name': 'Butterfly-Docs',
+    'limit': '12', // Fetch more comments to filter pending comments
+  })
+
+  const getComment = async (ele) => {
+    try {
+      const res = await fetch(`https://artalk.crazywong.com/api/v2/stats/latest_comments?${searchParams}`)
+      const result = await res.json()
+      const { avatarCdn, avatarDefault } = await getAvatarValue()
+      const artalk = result.data
+        .filter(e => !e.is_pending) // Filter pending comments
+        .slice(0, 6) // Limit the number of comments
+        .map(e => {
+          const avatar = avatarCdn && e.email_encrypted ? `${avatarCdn}${e.email_encrypted}?${avatarDefault}` : ''
+          return {
+            'avatar': avatar,
+            'content': changeContent(e.content_marked),
+            'nick': e.nick,
+            'url': e.page_url,
+            'date': e.date,
+          }
+        })
+      btf.saveToLocal.set(keyName, JSON.stringify(artalk), 5/(60*24))
+      generateHtml(artalk, ele)
+    } catch (e) {
+      console.log(e)
+      ele.textContent= "無法獲取評論，請確認相關配置是否正確"
+    }
+  }
+
+  run(keyName, getComment)
+})</script><script data-pjax src="/self/btf.js"></script><script defer="defer" id="ribbon" src="https://jsd.012700.xyz/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script src="https://jsd.012700.xyz/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      const usePjax = true
+      true 
+        ? (usePjax ? pjax.loadUrl('/404') : window.location.href = '/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})()</script><script>(() => {
+  const option = null
+  const config = {"site_uv":true,"site_pv":true,"page_pv":true,"token":"qTvz1SkmPDt785fgh6BpiA5qiFFIVUwxj8Ft+rPW+cdN59v1hXjwRgSmy0+ji9m+oLlcxvo2NfDSMa6epVl3NTlsN3ejCIwWeP8Y51aEJ0Sbem4UexGmJLspB7AkOBId2SdtT6QWEBlGmFIIQgchQ2zAKYxTmc/kpBED5aLSr+3uvmQ9/G7FJQeVFpveDkK0xM1hu36xq4a6/FSeROxtoEp5zabzTWiYTlLsQzIl/NlELnCq3nxK+oo/vl3UQo/oM/rae/gJX/MaVKsgIUCd2ABJogNkx2KTenBIBpbPki5FzOgPh6/z4GPa4HvhNO51DDVG1SEQZooqEYmt/gnybLBWFbN+7liZWw=="}
+
+  const runTrack = () => {
+    umami.track(props => ({ ...props, url: window.location.pathname, title: GLOBAL_CONFIG_SITE.title }))
+  }
+
+  const loadUmamiJS = () => {
+    btf.getScript('https://umami.012700.xyz/script.js', {
+      'data-website-id': '2a796d6c-6499-42d8-8eb4-d9a2930b0ff3',
+      'data-auto-track': 'false',
+      ...option
+    }).then(runTrack)
+  }
+
+  const getData = async (isPost) => {
+    const now = Date.now()
+    const keyUrl = isPost ? `&url=${window.location.pathname}` : ''
+    const headerList = { 'Accept': 'application/json' }
+    if (true) headerList['Authorization'] = `Bearer ${config.token}`
+    else headerList['x-umami-api-key'] = config.token
+    const res = await fetch(`https://umami.012700.xyz/api/websites/2a796d6c-6499-42d8-8eb4-d9a2930b0ff3/stats?startAt=0000000000&endAt=${now}${keyUrl}`, {
+      method: "GET",
+      headers: headerList
+    })
+    return await res.json()
+  }
+
+  const insertData = async () => {
+    try {
+      if (GLOBAL_CONFIG_SITE.pageType === 'post' && config.page_pv) {
+        const pagePV = document.getElementById('umamiPV')
+        if (pagePV) {
+          const data = await getData(true)
+          pagePV.textContent = data.pageviews.value
+        }
+      } else {
+        const data = (config.site_uv || config.site_pv) && await getData()
+        if (config.site_uv) {
+          const siteUV = document.getElementById('umami-site-uv')
+          if (siteUV) siteUV.textContent = data.visitors.value
+        }
+        if (config.site_pv) {
+          const sitePV = document.getElementById('umami-site-pv')
+          if (sitePV) sitePV.textContent = data.pageviews.value
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load Umami Analytics:', e)
+    }
+  }
+
+  btf.addGlobalFn('pjaxComplete', runTrack, 'umami_analytics_run_track')
+  btf.addGlobalFn('pjaxComplete', insertData, 'umami_analytics_insert')
+
+  loadUmamiJS()
+  insertData()
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜尋文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/search/local-search.min.js"></script></div></div></body></html>

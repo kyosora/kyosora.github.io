@@ -1,253 +1,183 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-  <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222">
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
-  <meta name="google-site-verification" content="GOinl_lrNWB9APjfgt6dbVdgki38olFzWmFDv3Yh1y8">
-
-<link rel="stylesheet" href="/css/main.css">
-
-
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
-
-<script class="next-config" data-name="main" type="application/json">{"hostname":"kyosora.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
-
-    <meta name="description" content="2024年CSS終於實現垂直置中 在2024年，align-content終於可以在塊級佈局中運作了。只需一個CSS屬性就能實現垂直置中，而不需使用Flexbox或Grid。  1 2 3      align-content 現在可以直接使用了!    支援情況: Chrome: 123 | Firefox: 125 | Safari: 17.4  可以看到只支援比較新的瀏覽器版本，所以使用上還">
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>2024年CSS終於實現垂直置中 | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="2024年CSS終於實現垂直置中 在2024年，align-content終於可以在塊級佈局中運作了。只需一個CSS屬性就能實現垂直置中，而不需使用Flexbox或Grid。  1 2 3      align-content 現在可以直接使用了!    支援情況: Chrome: 123 | Firefox: 125 | Safari: 17.4  可以看到只支援比較新的瀏覽器版本，所以使用上還">
 <meta property="og:type" content="article">
 <meta property="og:title" content="2024年CSS終於實現垂直置中">
 <meta property="og:url" content="https://kyosora.github.io/posts/a955718e/">
 <meta property="og:site_name" content="kyosora 筆記">
 <meta property="og:description" content="2024年CSS終於實現垂直置中 在2024年，align-content終於可以在塊級佈局中運作了。只需一個CSS屬性就能實現垂直置中，而不需使用Flexbox或Grid。  1 2 3      align-content 現在可以直接使用了!    支援情況: Chrome: 123 | Firefox: 125 | Safari: 17.4  可以看到只支援比較新的瀏覽器版本，所以使用上還">
 <meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-4.png">
 <meta property="article:published_time" content="2024-09-05T03:44:37.000Z">
 <meta property="article:modified_time" content="2025-12-08T07:36:07.256Z">
 <meta property="article:author" content="kyosora">
 <meta property="article:tag" content="CSS">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-4.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "2024年CSS終於實現垂直置中",
+  "url": "https://kyosora.github.io/posts/a955718e/",
+  "image": "https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-4.png",
+  "datePublished": "2024-09-05T03:44:37.000Z",
+  "dateModified": "2025-12-08T07:36:07.256Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kyosora",
+      "url": "https://kyosora.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://kyosora.github.io/posts/a955718e/"><link rel="preconnect" href="https://jsd.012700.xyz"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://jsd.012700.xyz/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://jsd.012700.xyz/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
 
-
-<link rel="canonical" href="https://kyosora.github.io/posts/a955718e/">
-
-
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://kyosora.github.io/posts/a955718e/","path":"posts/a955718e/","title":"2024年CSS終於實現垂直置中"}</script>
-
-<script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>2024年CSS終於實現垂直置中 | kyosora 筆記</title>
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
   
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
 
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
 
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
 
-
-
-
-
-
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
-<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
-
-  
-
-
-
-
-
-
-  
-
-
-
-
-
-
-<script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
-
-  <noscript>
-    <link rel="stylesheet" href="/css/noscript.css">
-  </noscript>
-</head>
-
-<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
-  <div class="headband"></div>
-
-  <main class="main">
-    <div class="column">
-      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切換導航欄" role="button">
-    </div>
-  </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <i class="logo-line"></i>
-      <p class="site-title">kyosora 筆記</p>
-      <i class="logo-line"></i>
-    </a>
-      <p class="site-subtitle" itemprop="description">技術探索與學習分享</p>
-  </div>
-
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
-    </div>
-  </div>
-</div>
-
-
-
-
-
-
-
-</header>
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
         
-  
-  <aside class="sidebar">
-
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
-      <ul class="sidebar-nav">
-        <li class="sidebar-nav-toc">
-          文章目錄
-        </li>
-        <li class="sidebar-nav-overview">
-          本站概要
-        </li>
-      </ul>
-
-      <div class="sidebar-panel-container">
-        <!--noindex-->
-        <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#2024%E5%B9%B4CSS%E7%B5%82%E6%96%BC%E5%AF%A6%E7%8F%BE%E5%9E%82%E7%9B%B4%E7%BD%AE%E4%B8%AD"><span class="nav-number">1.</span> <span class="nav-text">2024年CSS終於實現垂直置中</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E4%BB%80%E9%BA%BC%E6%96%B0%E8%AE%8A%E5%8C%96"><span class="nav-number">1.1.</span> <span class="nav-text">有什麼新變化?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9E%82%E7%9B%B4%E7%BD%AE%E4%B8%AD-%E6%AD%B7%E5%8F%B2%E5%9B%9E%E9%A1%A7"><span class="nav-number">1.2.</span> <span class="nav-text">垂直置中 - 歷史回顧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%951-%E8%A1%A8%E6%A0%BC%E5%96%AE%E5%85%83%E6%A0%BC"><span class="nav-number">1.2.1.</span> <span class="nav-text">方法1:表格單元格</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%952-%E7%B5%95%E5%B0%8D%E5%AE%9A%E4%BD%8D"><span class="nav-number">1.2.2.</span> <span class="nav-text">方法2:絕對定位</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%953-%E8%A1%8C%E5%85%A7%E5%85%A7%E5%AE%B9"><span class="nav-number">1.2.3.</span> <span class="nav-text">方法3:行內內容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%954-%E5%96%AE%E8%A1%8Cflexbox"><span class="nav-number">1.2.4.</span> <span class="nav-text">方法4:單行flexbox</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%955-%E5%A4%9A%E8%A1%8Cflexbox"><span class="nav-number">1.2.5.</span> <span class="nav-text">方法5:多行flexbox</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%956-%E7%B6%B2%E6%A0%BC%E5%85%A7%E5%AE%B9"><span class="nav-number">1.2.6.</span> <span class="nav-text">方法6:網格內容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%957-%E7%B6%B2%E6%A0%BC%E5%96%AE%E5%85%83%E6%A0%BC"><span class="nav-number">1.2.7.</span> <span class="nav-text">方法7:網格單元格</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%958-%E8%87%AA%E5%8B%95%E5%A4%96%E9%82%8A%E8%B7%9D"><span class="nav-number">1.2.8.</span> <span class="nav-text">方法8:自動外邊距</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%959-2024%E5%B9%B4%E7%9A%84%E9%80%99%E7%AF%87%E6%96%87%E7%AB%A0"><span class="nav-number">1.2.9.</span> <span class="nav-text">方法9:2024年的這篇文章</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B8%BD%E7%B5%90"><span class="nav-number">1.2.10.</span> <span class="nav-text">總結</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%A6%E7%8F%BE%E4%BA%8C%E7%B6%AD%E5%B0%8D%E9%BD%8A"><span class="nav-number">1.3.</span> <span class="nav-text">實現二維對齊</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF-CSS%E8%BB%B8%E8%A1%93%E8%AA%9E"><span class="nav-number">1.3.1.</span> <span class="nav-text">背景:CSS軸術語</span></a></li></ol></li></ol></li></ol></div>
-        </div>
-        <!--/noindex-->
-
-        <div class="site-overview-wrap sidebar-panel">
-          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">kyosora</p>
-  <div class="site-description" itemprop="description">個人技術筆記和學習心得分享</div>
-</div>
-<div class="site-state-wrap animated">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-        <a href="/archives/">
-          <span class="site-state-item-count">165</span>
-          <span class="site-state-item-name">文章</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">91</span>
-        <span class="site-state-item-name">分類</span>
-      </div>
-      <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">313</span>
-        <span class="site-state-item-name">標籤</span>
-      </div>
-  </nav>
-</div>
-
-        </div>
-      </div>
-    </div>
-
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
     
-  </aside>
-
-
-    </div>
-
-    <div class="main-inner post posts-expand">
-
-
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
   
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="https://kyosora.github.io/posts/a955718e/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="kyosora">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kyosora 筆記">
-      <meta itemprop="description" content="個人技術筆記和學習心得分享">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="2024年CSS終於實現垂直置中 | kyosora 筆記">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          2024年CSS終於實現垂直置中
-        </h1>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">發表於</span>
-
-      <time title="創建時間：2024-09-05 11:44:37" itemprop="dateCreated datePublished" datetime="2024-09-05T11:44:37+08:00">2024-09-05</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2025-12-08 15:36:07" itemprop="dateModified" datetime="2025-12-08T15:36:07+08:00">2025-12-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分類於</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/" itemprop="url" rel="index"><span itemprop="name">程式教學</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="文章字數">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">文章字數：</span>
-      <span>6.9k</span>
-    </span>
-    <span class="post-meta-item" title="所需閱讀時間">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>6 分鐘</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody"><h1 id="2024年CSS終於實現垂直置中"><a href="#2024年CSS終於實現垂直置中" class="headerlink" title="2024年CSS終於實現垂直置中"></a>2024年CSS終於實現垂直置中</h1><p>在2024年，<code>align-content</code>終於可以在塊級佈局中運作了。只需<strong>一個CSS屬性</strong>就能實現垂直置中，而不需使用Flexbox或Grid。</p>
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://jsd.012700.xyz/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '2024年CSS終於實現垂直置中',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://jsd.012700.xyz"><link href="/self/btf.css" rel="stylesheet"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "/img/loading.gif" data-lazy-src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">165</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">313</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">91</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 圖庫</span></a></li><li><a class="site-page child" href="/talking/"><i class="fa-fw fas fa-comment-dots"></i><span> 說說</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-thumbs-up"></i><span> 示例</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文檔</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/posts/21cfbf15/"><span> 🚀 快速開始</span></a></li><li><a class="site-page child" href="/posts/dc584b87/"><span> 📑 主題頁面</span></a></li><li><a class="site-page child" href="/posts/4aa8abbe/"><span> 🛠 主題配置</span></a></li><li><a class="site-page child" href="/posts/ceeb73f/"><span> ⚔️ 標簽外挂</span></a></li><li><a class="site-page child" href="/posts/98d20436/"><span> ❓ 主題問答</span></a></li><li><a class="site-page child" href="/posts/4073eda/"><span> ⚡️ 進階教程</span></a></li><li><a class="site-page child" href="/posts/198a4240/"><span> ✨ 更新日誌</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fas fa-comment-dots"></i><span> 留言板</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 語言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-4.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a><a class="nav-page-title" href="/"><span class="site-name">2024年CSS終於實現垂直置中</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 圖庫</span></a></li><li><a class="site-page child" href="/talking/"><i class="fa-fw fas fa-comment-dots"></i><span> 說說</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-thumbs-up"></i><span> 示例</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文檔</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/posts/21cfbf15/"><span> 🚀 快速開始</span></a></li><li><a class="site-page child" href="/posts/dc584b87/"><span> 📑 主題頁面</span></a></li><li><a class="site-page child" href="/posts/4aa8abbe/"><span> 🛠 主題配置</span></a></li><li><a class="site-page child" href="/posts/ceeb73f/"><span> ⚔️ 標簽外挂</span></a></li><li><a class="site-page child" href="/posts/98d20436/"><span> ❓ 主題問答</span></a></li><li><a class="site-page child" href="/posts/4073eda/"><span> ⚡️ 進階教程</span></a></li><li><a class="site-page child" href="/posts/198a4240/"><span> ✨ 更新日誌</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fas fa-comment-dots"></i><span> 留言板</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 語言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/en/"><i class="fa-fw fas fa-e"></i><span> English</span></a></li><li><a class="site-page child" href="/"><i class="fa-fw fas fa-c"></i><span> 中文</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">2024年CSS終於實現垂直置中<a class="post-edit-link" href="https://github.com/jerryc127/butterfly.js.org/edit/main/source/_posts/2024年CSS終於實現垂直置中.md" title="編輯" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">發表於</span><time datetime="2024-09-05T03:44:37.000Z" title="發表於 2024-09-05 11:44:37">2024-09-05</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%A8%8B%E5%BC%8F%E6%95%99%E5%AD%B8/">程式教學</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">2.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>10分鐘</span></span><span class="post-meta-separator">|</span><span id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">瀏覽量:</span><span id="umamiPV" data-path="/posts/a955718e/"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="2024年CSS終於實現垂直置中"><a href="#2024年CSS終於實現垂直置中" class="headerlink" title="2024年CSS終於實現垂直置中"></a>2024年CSS終於實現垂直置中</h1><p>在2024年，<code>align-content</code>終於可以在塊級佈局中運作了。只需<strong>一個CSS屬性</strong>就能實現垂直置中，而不需使用Flexbox或Grid。</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;align-content: center; height: 100px;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">code</span>&gt;</span>align-content<span class="tag">&lt;/<span class="name">code</span>&gt;</span> 現在可以直接使用了!</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p><a target="_blank" rel="noopener" href="https://caniuse.com/mdn-css_properties_align-content_block_context">支援情況</a>:<br>Chrome: 123 | Firefox: 125 | Safari: 17.4</p>
@@ -379,93 +309,507 @@
 <p>表:不同佈局中的對齊屬性</p>
 <h3 id="背景-CSS軸術語"><a href="#背景-CSS軸術語" class="headerlink" title="背景:CSS軸術語"></a>背景:CSS軸術語</h3><p><em>block軸</em>通常是<em>垂直的</em>，<em>inline軸</em>是<em>水平的</em>。需要這些術語是因為<a target="_blank" rel="noopener" href="https://build-your-own.org/visual_css/2p40_box_model.html#:~:text=Logical%20properties">垂直<code>writing-mode</code></a>是存在的,所以<strong>block軸和inline軸是相對於文字方向的</strong>。這類似於<em>主軸</em>和<em>交叉軸</em>是相對於flexbox項目方向的。</p>
 <p><strong>結論</strong>: &quot;items&quot;用於可以<em>單獨</em>對齊的內容。在主軸上,flex項目不能單獨對齊,所以是&quot;content&quot;。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kyosora.github.io">kyosora</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://kyosora.github.io/posts/a955718e/">https://kyosora.github.io/posts/a955718e/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 授權協議。轉載請註明來源 <a href="https://kyosora.github.io" target="_blank">kyosora 筆記</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/CSS/">CSS</a></div><div class="post-share"><div class="social-share" data-image="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-4.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://jsd.012700.xyz/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://jsd.012700.xyz/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-8919908724705274" data-ad-slot="5978969231"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/8b13da19/" title="Docker 容器化進階：自動化部署與 CI/CD 實戰指南"><img class="cover" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-1.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Docker 容器化進階：自動化部署與 CI/CD 實戰指南</div></div><div class="info-2"><div class="info-item-1">Docker 容器化進階：自動化部署與 CI/CD 實戰指南本文承接從零開始的 Docker 容器化指南，主要討論如何實現全自動化的 Docker 部署流程。透過整合 GitHub Actions、Docker Hub 和自動化工具，我們可以實現程式碼推送後自動更新生產環境的目標。 目錄 自動化部署概述 GitHub Actions 設定 自動更新容器設定 零停機部署策略 備份與還原機制 監控與告警設定 故障排除與回滾流程 最佳實踐建議  自動化部署概述完整的自動化部署流程包含以下步驟：  開發者推送程式碼到 GitHub GitHub Actions 自動執行測試和建置 建立新的 Docker 映像檔並推送至 Docker Hub 生產環境自動偵測並更新容器 健康檢查確認部署狀態  部署流程圖graph TD     A[開發者推送程式碼] --&gt; B[GitHub Actions 觸發]     B --&gt; C[執行測試]     C --&gt; D[建立 Docker 映像檔]     D --&gt; E[推送至 Docker Hub]     E...</div></div></div></a><a class="pagination-related" href="/posts/c073a9b5/" title="C# 常用命名空間參考指南"><img class="cover" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-9.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">C# 常用命名空間參考指南</div></div><div class="info-2"><div class="info-item-1">C# 常用命名空間參考指南筆記一些常用到的命名空間 1. 基礎核心命名空間12345678910using System;                     // 基礎類型、例外處理using System.Collections;         // 非泛型集合using System.Collections.Generic; // 泛型集合using System.Linq;               // LINQ 查詢using System.ComponentModel;      // 資料綁定、型別轉換using System.Text;               // 文字處理using System.Text.RegularExpressions; // 正則表達式using System.Globalization;      // 地區和文化資訊using System.Configuration;      // 應用程式配置using System.Runtime.Serialization; // 序列化  2. 檔案與 I/O...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/931f146f/" title="網站圖片路徑大崩潰？一次搞懂網站部署時的圖片路徑問題"><img class="cover" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-1.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-23</div><div class="info-item-2">網站圖片路徑大崩潰？一次搞懂網站部署時的圖片路徑問題</div></div><div class="info-2"><div class="info-item-1">網站圖片路徑大崩潰？一次搞懂網站部署時的圖片路徑問題前言在開發網站時，我們經常會遇到一個困擾：明明在本機開發環境中運作正常的圖片，部署到正式環境後卻突然無法顯示了。這個問題常常讓開發者感到困惑，今天就讓我們一次徹底搞懂這個問題！ 問題情境假設我們有以下情況：  本機開發環境：http://localhost:56961/Project/ 正式環境：https://www.Project.com.tw/Project/ 圖片相對路徑：./Content/images/image.png  在本機環境一切正常，但部署到正式環境後，圖片路徑解析卻變成了：https://www.Project.com.tw/Content/images/image.png 少了專案資料夾名稱 Project，導致圖片無法正確顯示。 為什麼會發生這種問題？這個問題主要與網站的根目錄設定和相對路徑的解析有關。當我們使用 ./ 作為相對路徑時，瀏覽器會以當前頁面的位置作為參考點來解析路徑。在不同的環境配置下，這個參考點可能會有所不同。 解決方案方案一：使用絕對路徑12/* 改用絕對路徑...</div></div></div></a><a class="pagination-related" href="/posts/9e294297/" title="CSS 偽元素指南"><img class="cover" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-2.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-09</div><div class="info-item-2">CSS 偽元素指南</div></div><div class="info-2"><div class="info-item-1">CSS 偽元素指南在 CSS 的世界裡，偽元素是一個強大但常被忽視的功能。本文將深入探討 CSS 偽元素，特別是 ::before 和 ::after，以及其他常用的偽元素。 什麼是偽元素？偽元素允許您在文檔中插入內容或選擇特定部分，而無需修改 HTML 結構。它們使用雙冒號 :: 語法（儘管出於向後兼容性，某些偽元素也支援單冒號 : 語法）。 CSS 偽元素列表以下是常見的 CSS 偽元素：  ::before - 在元素內容之前插入內容 ::after - 在元素內容之後插入內容 ::first-line - 選擇元素的第一行 ::first-letter - 選擇元素的第一個字母 ::selection - 選擇用戶高亮的部分 ::placeholder - 選擇輸入框的預設文字 ::marker - 選擇列表項目的標記（例如點或數字） ::backdrop - 用於全螢幕元素底下的背景  較少使用但在特定情況下很有用的偽元素：  ::cue - 用於 WebVTT 字幕 ::slotted() - 用於 Web Components 中的投影內容  ::before 和...</div></div></div></a><a class="pagination-related" href="/posts/12f680f0/" title="CSS實現DOM節點水平居中的多種方式"><img class="cover" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-3.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-18</div><div class="info-item-2">CSS實現DOM節點水平居中的多種方式</div></div><div class="info-2"><div class="info-item-1">CSS實現DOM節點水平居中的多種方式在網頁設計中，將元素水平居中是一個常見的需求。CSS提供了多種方法來實現這一目標，每種方法都有其適用場景和優缺點。本文將詳細介紹幾種常用的CSS水平居中方法，幫助您在不同情況下選擇最適合的技術。 1. 使用 text-align: center這是最簡單的方法，適用於行內元素或者行內塊元素。 123.parent &#123;  text-align: center;&#125;  優點：  簡單易用 兼容性好  缺點：  只適用於行內元素或行內塊元素 對塊級元素無效  2. 使用 margin: auto這種方法適用於有固定寬度的塊級元素。 1234.child &#123;  width: 300px;  margin: 0 auto;&#125;  優點：  簡單有效 廣泛支持  缺點：  需要指定元素的寬度 不適用於行內元素  3. 使用 FlexboxFlexbox是一種現代的布局方式，可以輕鬆實現各種居中效果。 1234.parent &#123;  display: flex;  justify-content:...</div></div></div></a><a class="pagination-related" href="/posts/5d86d29a/" title="實現左右佈局的多種CSS方法"><img class="cover" src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-2.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-02-08</div><div class="info-item-2">實現左右佈局的多種CSS方法</div></div><div class="info-2"><div class="info-item-1">實現左右佈局的多種CSS方法在網頁設計中，左右佈局是一種常見的需求。通常，我們希望左側有一個固定寬度的欄位（例如導航欄或側邊欄），而右側則可以自適應剩餘的空間。本文將介紹幾種使用CSS實現這種佈局的方法，其中左側寬度為200px，右側自適應。 1. 浮動（Float）方法這是一種傳統的方法，雖然現在不太常用，但對於理解CSS佈局原理很有幫助。 12345678910.container &#123;  overflow: hidden; /* 清除浮動 */&#125;.left &#123;  float: left;  width: 200px;&#125;.right &#123;  margin-left: 200px; /* 與左側寬度相同 */&#125;  優點：兼容性好，支持舊版瀏覽器。缺點：需要清除浮動，可能影響其他元素。 2. 絕對定位（Absolute Positioning）方法這種方法使用絕對定位來固定左側欄位。 1234567891011.container &#123;  position: relative;&#125;.left &#123; ...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div><div class="comment-switch"><span class="first-comment">Artalk</span><span id="switch-btn"></span><span class="second-comment">Disqus</span></div></div><div class="comment-wrap"><div><div id="artalk-wrap"></div></div><div><div id="disqus_thread"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "/img/loading.gif" data-lazy-src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kyosora</div><div class="author-info-description">個人技術筆記和學習心得分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">165</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">313</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">91</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly"><i class="fab fa-github"></i><span>主題 GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:my@crazywong.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#2024%E5%B9%B4CSS%E7%B5%82%E6%96%BC%E5%AF%A6%E7%8F%BE%E5%9E%82%E7%9B%B4%E7%BD%AE%E4%B8%AD"><span class="toc-number">1.</span> <span class="toc-text">2024年CSS終於實現垂直置中</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%89%E4%BB%80%E9%BA%BC%E6%96%B0%E8%AE%8A%E5%8C%96"><span class="toc-number">1.1.</span> <span class="toc-text">有什麼新變化?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9E%82%E7%9B%B4%E7%BD%AE%E4%B8%AD-%E6%AD%B7%E5%8F%B2%E5%9B%9E%E9%A1%A7"><span class="toc-number">1.2.</span> <span class="toc-text">垂直置中 - 歷史回顧</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%951-%E8%A1%A8%E6%A0%BC%E5%96%AE%E5%85%83%E6%A0%BC"><span class="toc-number">1.2.1.</span> <span class="toc-text">方法1:表格單元格</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%952-%E7%B5%95%E5%B0%8D%E5%AE%9A%E4%BD%8D"><span class="toc-number">1.2.2.</span> <span class="toc-text">方法2:絕對定位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%953-%E8%A1%8C%E5%85%A7%E5%85%A7%E5%AE%B9"><span class="toc-number">1.2.3.</span> <span class="toc-text">方法3:行內內容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%954-%E5%96%AE%E8%A1%8Cflexbox"><span class="toc-number">1.2.4.</span> <span class="toc-text">方法4:單行flexbox</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%955-%E5%A4%9A%E8%A1%8Cflexbox"><span class="toc-number">1.2.5.</span> <span class="toc-text">方法5:多行flexbox</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%956-%E7%B6%B2%E6%A0%BC%E5%85%A7%E5%AE%B9"><span class="toc-number">1.2.6.</span> <span class="toc-text">方法6:網格內容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%957-%E7%B6%B2%E6%A0%BC%E5%96%AE%E5%85%83%E6%A0%BC"><span class="toc-number">1.2.7.</span> <span class="toc-text">方法7:網格單元格</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%958-%E8%87%AA%E5%8B%95%E5%A4%96%E9%82%8A%E8%B7%9D"><span class="toc-number">1.2.8.</span> <span class="toc-text">方法8:自動外邊距</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%959-2024%E5%B9%B4%E7%9A%84%E9%80%99%E7%AF%87%E6%96%87%E7%AB%A0"><span class="toc-number">1.2.9.</span> <span class="toc-text">方法9:2024年的這篇文章</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B8%BD%E7%B5%90"><span class="toc-number">1.2.10.</span> <span class="toc-text">總結</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%A6%E7%8F%BE%E4%BA%8C%E7%B6%AD%E5%B0%8D%E9%BD%8A"><span class="toc-number">1.3.</span> <span class="toc-text">實現二維對齊</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%83%8C%E6%99%AF-CSS%E8%BB%B8%E8%A1%93%E8%AA%9E"><span class="toc-number">1.3.1.</span> <span class="toc-text">背景:CSS軸術語</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/15a54ef4/" title=".npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析"><img src= "/img/loading.gif" data-lazy-src="/images/posts/claude-code-leak-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt=".npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析"/></a><div class="content"><a class="title" href="/posts/15a54ef4/" title=".npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析">.npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析</a><time datetime="2026-04-02T02:00:00.000Z" title="發表於 2026-04-02 10:00:00">2026-04-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/ce3a1642/" title="你的 AI 產品準備好被審計了嗎？美國兩部法案正在搶著定義規則"><img src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-8.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="你的 AI 產品準備好被審計了嗎？美國兩部法案正在搶著定義規則"/></a><div class="content"><a class="title" href="/posts/ce3a1642/" title="你的 AI 產品準備好被審計了嗎？美國兩部法案正在搶著定義規則">你的 AI 產品準備好被審計了嗎？美國兩部法案正在搶著定義規則</a><time datetime="2026-03-28T05:00:00.000Z" title="發表於 2026-03-28 13:00:00">2026-03-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/55188ba6/" title="當攻擊者也有了 AI Agent：地下論壇討論量暴增 1500%，agentic 攻擊框架長什麼樣"><img src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-2.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="當攻擊者也有了 AI Agent：地下論壇討論量暴增 1500%，agentic 攻擊框架長什麼樣"/></a><div class="content"><a class="title" href="/posts/55188ba6/" title="當攻擊者也有了 AI Agent：地下論壇討論量暴增 1500%，agentic 攻擊框架長什麼樣">當攻擊者也有了 AI Agent：地下論壇討論量暴增 1500%，agentic 攻擊框架長什麼樣</a><time datetime="2026-03-28T04:00:00.000Z" title="發表於 2026-03-28 12:00:00">2026-03-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3253bf10/" title="一台 Mac mini 變成 24 小時 AI 員工：Perplexity Personal Computer 的架構野心"><img src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-6.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一台 Mac mini 變成 24 小時 AI 員工：Perplexity Personal Computer 的架構野心"/></a><div class="content"><a class="title" href="/posts/3253bf10/" title="一台 Mac mini 變成 24 小時 AI 員工：Perplexity Personal Computer 的架構野心">一台 Mac mini 變成 24 小時 AI 員工：Perplexity Personal Computer 的架構野心</a><time datetime="2026-03-28T03:00:00.000Z" title="發表於 2026-03-28 11:00:00">2026-03-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/de191204/" title="你的商品開始在 ChatGPT 裡被賣了：Shopify Agentic Storefronts 技術拆解"><img src= "/img/loading.gif" data-lazy-src="https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-7.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="你的商品開始在 ChatGPT 裡被賣了：Shopify Agentic Storefronts 技術拆解"/></a><div class="content"><a class="title" href="/posts/de191204/" title="你的商品開始在 ChatGPT 裡被賣了：Shopify Agentic Storefronts 技術拆解">你的商品開始在 ChatGPT 裡被賣了：Shopify Agentic Storefronts 技術拆解</a><time datetime="2026-03-28T02:00:00.000Z" title="發表於 2026-03-28 10:00:00">2026-03-28</time></div></div></div></div><div class="card-widget ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8919908724705274" data-ad-slot="8108145410" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div></div></div></main><footer id="footer" style="background-image: url(https://oss.012700.xyz/butterfly/2024/11/butterfly-docs-changelog-cover-4.png);"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2026 By kyosora</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/utils.min.js"></script><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/main.min.js"></script><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/tw_cn.min.js"></script><script src="https://jsd.012700.xyz/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://jsd.012700.xyz/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://jsd.012700.xyz/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
 
-    </div>
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
 
-    
-    
-    
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
 
-    <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/CSS/" rel="tag"># CSS</a>
-          </div>
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
 
-        
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
 
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/posts/8b13da19/" rel="prev" title="Docker 容器化進階：自動化部署與 CI&#x2F;CD 實戰指南">
-                  <i class="fa fa-angle-left"></i> Docker 容器化進階：自動化部署與 CI/CD 實戰指南
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/posts/c073a9b5/" rel="next" title="C# 常用命名空間參考指南">
-                  C# 常用命名空間參考指南 <i class="fa fa-angle-right"></i>
-                </a>
-            </div>
-          </div>
-    </footer>
-  </article>
-</div>
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
 
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
 
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://jsd.012700.xyz/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
 
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const applyThemeDefaultsConfig = theme => {
+    if (theme === 'dark-mode') {
+      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
+      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    } else {
+      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
+      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    }
+  }
 
+  // Recursively traverse the config object and automatically apply theme-specific color schemes
+  const applyThemeConfig = (obj, theme) => {
+    if (typeof obj !== 'object' || obj === null) return
 
+    Object.keys(obj).forEach(key => {
+      const value = obj[key]
+      // If the property is an object and has theme-specific options, apply them
+      if (typeof value === 'object' && value !== null) {
+        if (value[theme]) {
+          obj[key] = value[theme] // Apply the value for the current theme
+        } else {
+          // Recursively process child objects
+          applyThemeConfig(value, theme)
+        }
+      }
+    })
+  }
 
-    <div class="comments utterances-container"></div>
-</div>
-  </main>
+  const runChartJS = ele => {
+    window.loadChartJS = true
 
-  <footer class="footer">
-    <div class="footer-inner">
+    Array.from(ele).forEach((item, index) => {
+      const chartSrc = item.firstElementChild
+      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
+      const width = item.getAttribute('data-width')
+      const existingCanvas = document.getElementById(chartID)
 
-  <div class="copyright">
-    &copy; 
-    <span itemprop="copyrightYear">2026</span>
-    <span class="with-love">
-      <i class="fa fa-heart"></i>
-    </span>
-    <span class="author" itemprop="copyrightHolder">kyosora</span>
-  </div>
-<div class="wordcount">
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon">
-      <i class="fa fa-chart-line"></i>
-    </span>
-    <span title="總字數">484k</span>
-  </span>
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon">
-      <i class="fa fa-coffee"></i>
-    </span>
-    <span title="所需總閱讀時間">7:20</span>
-  </span>
-</div>
-  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
-  </div>
+      // If a canvas already exists, remove it to avoid rendering duplicates
+      if (existingCanvas) {
+          existingCanvas.parentNode.remove()
+      }
 
-    </div>
-  </footer>
+      const chartDefinition = chartSrc.textContent
+      const canvas = document.createElement('canvas')
+      canvas.id = chartID
 
-  
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-  <div class="sidebar-dimmer"></div>
-  <div class="back-to-top" role="button" aria-label="回到頂端">
-    <i class="fa fa-arrow-up fa-lg"></i>
-    <span>0%</span>
-  </div>
+      const div = document.createElement('div')
+      div.className = 'chartjs-wrap'
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
-<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kyosora/kyosora.github.io","issue_term":"pathname","theme":"github-light"}</script>
-<script src="/js/third-party/comments/utterances.js" defer></script>
+      if (width) {
+        div.style.width = width
+      }
 
-</body>
-</html>
+      div.appendChild(canvas)
+      chartSrc.insertAdjacentElement('afterend', div)
+
+      const ctx = document.getElementById(chartID).getContext('2d')
+
+      const config = JSON.parse(chartDefinition)
+
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
+
+      // Set default styles (initial setup)
+      applyThemeDefaultsConfig(theme)
+
+      // Automatically traverse the config and apply dual-mode color schemes
+      applyThemeConfig(config, theme)
+
+      new Chart(ctx, config)
+    })
+  }
+
+  const loadChartJS = () => {
+    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
+    if (chartJSEle.length === 0) return
+
+    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://jsd.012700.xyz/npm/chart.js/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
+  }
+
+  // Listen for theme change events
+  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
+  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
+
+  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
+})()</script><script>(() => {
+  let artalkItem = null
+  const option = null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+
+  const destroyArtalk = () => {
+    if (artalkItem) {
+      artalkItem.destroy()
+      artalkItem = null
+    }
+  }
+
+  const artalkChangeMode = theme => artalkItem && artalkItem.setDarkMode(theme === 'dark')
+
+  const initArtalk = (el = document, pageKey = location.pathname) => {
+    artalkItem = Artalk.init({
+      el: el.querySelector('#artalk-wrap'),
+      server: 'https://artalk.crazywong.com',
+      site: 'Butterfly-Docs',
+      darkMode: document.documentElement.getAttribute('data-theme') === 'dark',
+      ...option,
+      pageKey: isShuoshuo ? pageKey : (option && option.pageKey) || pageKey
+    })
+
+    if (GLOBAL_CONFIG.lightbox === 'null') return
+    artalkItem.on('list-loaded', () => {
+      artalkItem.ctx.get('list').getCommentNodes().forEach(comment => {
+        const $content = comment.getRender().$content
+        btf.loadLightbox($content.querySelectorAll('img:not([atk-emoticon])'))
+      })
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyArtalk = () => {
+        destroyArtalk()
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    btf.addGlobalFn('pjaxSendOnce', destroyArtalk, 'destroyArtalk')
+    btf.addGlobalFn('themeChange', artalkChangeMode, 'artalk')
+  }
+
+  const loadArtalk = async (el, pageKey) => {
+    if (typeof Artalk === 'object') initArtalk(el, pageKey)
+    else {
+      await btf.getCSS('https://jsd.012700.xyz/npm/artalk/dist/Artalk.min.css')
+      await btf.getScript('https://jsd.012700.xyz/npm/artalk/dist/Artalk.min.js')
+      initArtalk(el, pageKey)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Artalk' === 'Artalk'
+      ? window.shuoshuoComment = { loadComment: loadArtalk }
+      : window.loadOtherComment = loadArtalk
+    return
+  }
+
+  if ('Artalk' === 'Artalk' || !true) {
+    if (true) btf.loadComment(document.getElementById('artalk-wrap'), loadArtalk)
+    else setTimeout(loadArtalk, 100)
+  } else {
+    window.loadOtherComment = loadArtalk
+  }
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+
+  const disqusReset = conf => {
+    window.DISQUS && window.DISQUS.reset({
+      reload: true,
+      config: conf
+    })
+  }
+
+  const loadDisqus = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyDisqus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    window.disqus_identifier = isShuoshuo ? path : '/posts/a955718e/'
+    window.disqus_url = isShuoshuo ? location.origin + path : 'https://kyosora.github.io/posts/a955718e/'
+
+    const disqus_config = function () {
+      this.page.url = disqus_url
+      this.page.identifier = disqus_identifier
+      this.page.title = '2024年CSS終於實現垂直置中'
+    }
+
+    if (window.DISQUS) disqusReset(disqus_config)
+    else {
+      const script = document.createElement('script')
+      script.src = 'https://demo-jerryc-me.disqus.com/embed.js'
+      script.setAttribute('data-timestamp', +new Date())
+      document.head.appendChild(script)
+    }
+
+    btf.addGlobalFn('themeChange', () => disqusReset(disqus_config), 'disqus')
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqus-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=demo-jerryc-me&api_key=&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Artalk' === 'Disqus'
+      ? window.shuoshuoComment = { loadComment: loadDisqus }
+      : window.loadOtherComment = loadDisqus
+    return
+  }
+
+  if ('Artalk' === 'Disqus' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqus_thread'), loadDisqus)
+    else {
+      loadDisqus()
+      GLOBAL_CONFIG_SITE.pageType === 'post' && getCount()
+    }
+  } else {
+    window.loadOtherComment = loadDisqus
+  }
+})()</script></div><script>window.newestComments = {
+  changeContent: content => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[圖片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[連結]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[程式碼]') // replace code
+    content = content.replace(/<code>.*?<\/code>/gi, '[程式碼]') // replace code
+    content = content.replace(/<[^>]+>/g, "") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0, 150) + '...'
+    }
+    return content
+  },
+
+  generateHtml: (array, ele) => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class="aside-list-item">'
+
+        if (true && array[i].avatar) {
+          const imgAttr = 'data-lazy-src'
+          const lazyloadNative = ''
+          result += `<a href="${array[i].url}" class="thumbnail"><img ${imgAttr}="${array[i].avatar}" alt="${array[i].nick}" ${lazyloadNative}></a>`
+        }
+
+        result += `<div class="content">
+        <a class="comment" href="${array[i].url}" title="${array[i].content}">${array[i].content}</a>
+        <div class="name"><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '尚無評論'
+    }
+
+    ele.innerHTML = result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh(ele)
+  },
+
+  newestCommentInit: (name, getComment) => {
+    const $dom = document.querySelector('#card-newest-comments .aside-list')
+    if ($dom) {
+      const data = btf.saveToLocal.get(name)
+      if (data) {
+        newestComments.generateHtml(JSON.parse(data), $dom)
+      } else {
+        getComment($dom)
+      }
+    }
+  },
+
+  run: (name, getComment) => {
+    newestComments.newestCommentInit(name, getComment)
+    btf.addGlobalFn('pjaxComplete', () => newestComments.newestCommentInit(name, getComment), name)
+  }
+}</script><script>window.addEventListener('load', () => {
+  const keyName = 'artalk-newest-comments'
+  const { changeContent, generateHtml, run } = window.newestComments
+
+  const getAvatarValue = async () => {
+    const predefinedAvatarCdn = ''
+    const predefinedAvatarDefault = ''
+
+    const avatarDefaultFormat = e => e.startsWith('d=') ? e : `d=${e}`
+
+    if (predefinedAvatarCdn && predefinedAvatarDefault) {
+      return { avatarCdn: predefinedAvatarCdn, avatarDefault: avatarDefaultFormat(predefinedAvatarDefault) }
+    }
+
+    try {
+      const res = await fetch('https://artalk.crazywong.com/api/v2/conf')
+      const result = await res.json()
+      const { mirror, params, default: defaults } = result.frontend_conf.gravatar
+      const avatarCdn = predefinedAvatarCdn || mirror
+      let avatarDefault = avatarDefaultFormat(predefinedAvatarDefault || params || defaults)
+      return { avatarCdn, avatarDefault}
+    } catch (e) {
+      console.error(e)
+      return { avatarCdn: predefinedAvatarCdn, avatarDefault: avatarDefaultFormat(predefinedAvatarDefault) }
+    }
+  }
+
+  const searchParams = new URLSearchParams({
+    'site_name': 'Butterfly-Docs',
+    'limit': '12', // Fetch more comments to filter pending comments
+  })
+
+  const getComment = async (ele) => {
+    try {
+      const res = await fetch(`https://artalk.crazywong.com/api/v2/stats/latest_comments?${searchParams}`)
+      const result = await res.json()
+      const { avatarCdn, avatarDefault } = await getAvatarValue()
+      const artalk = result.data
+        .filter(e => !e.is_pending) // Filter pending comments
+        .slice(0, 6) // Limit the number of comments
+        .map(e => {
+          const avatar = avatarCdn && e.email_encrypted ? `${avatarCdn}${e.email_encrypted}?${avatarDefault}` : ''
+          return {
+            'avatar': avatar,
+            'content': changeContent(e.content_marked),
+            'nick': e.nick,
+            'url': e.page_url,
+            'date': e.date,
+          }
+        })
+      btf.saveToLocal.set(keyName, JSON.stringify(artalk), 5/(60*24))
+      generateHtml(artalk, ele)
+    } catch (e) {
+      console.log(e)
+      ele.textContent= "無法獲取評論，請確認相關配置是否正確"
+    }
+  }
+
+  run(keyName, getComment)
+})</script><script data-pjax src="/self/btf.js"></script><script defer="defer" id="ribbon" src="https://jsd.012700.xyz/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script src="https://jsd.012700.xyz/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      const usePjax = true
+      true 
+        ? (usePjax ? pjax.loadUrl('/404') : window.location.href = '/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})()</script><script>(() => {
+  const option = null
+  const config = {"site_uv":true,"site_pv":true,"page_pv":true,"token":"qTvz1SkmPDt785fgh6BpiA5qiFFIVUwxj8Ft+rPW+cdN59v1hXjwRgSmy0+ji9m+oLlcxvo2NfDSMa6epVl3NTlsN3ejCIwWeP8Y51aEJ0Sbem4UexGmJLspB7AkOBId2SdtT6QWEBlGmFIIQgchQ2zAKYxTmc/kpBED5aLSr+3uvmQ9/G7FJQeVFpveDkK0xM1hu36xq4a6/FSeROxtoEp5zabzTWiYTlLsQzIl/NlELnCq3nxK+oo/vl3UQo/oM/rae/gJX/MaVKsgIUCd2ABJogNkx2KTenBIBpbPki5FzOgPh6/z4GPa4HvhNO51DDVG1SEQZooqEYmt/gnybLBWFbN+7liZWw=="}
+
+  const runTrack = () => {
+    umami.track(props => ({ ...props, url: window.location.pathname, title: GLOBAL_CONFIG_SITE.title }))
+  }
+
+  const loadUmamiJS = () => {
+    btf.getScript('https://umami.012700.xyz/script.js', {
+      'data-website-id': '2a796d6c-6499-42d8-8eb4-d9a2930b0ff3',
+      'data-auto-track': 'false',
+      ...option
+    }).then(runTrack)
+  }
+
+  const getData = async (isPost) => {
+    const now = Date.now()
+    const keyUrl = isPost ? `&url=${window.location.pathname}` : ''
+    const headerList = { 'Accept': 'application/json' }
+    if (true) headerList['Authorization'] = `Bearer ${config.token}`
+    else headerList['x-umami-api-key'] = config.token
+    const res = await fetch(`https://umami.012700.xyz/api/websites/2a796d6c-6499-42d8-8eb4-d9a2930b0ff3/stats?startAt=0000000000&endAt=${now}${keyUrl}`, {
+      method: "GET",
+      headers: headerList
+    })
+    return await res.json()
+  }
+
+  const insertData = async () => {
+    try {
+      if (GLOBAL_CONFIG_SITE.pageType === 'post' && config.page_pv) {
+        const pagePV = document.getElementById('umamiPV')
+        if (pagePV) {
+          const data = await getData(true)
+          pagePV.textContent = data.pageviews.value
+        }
+      } else {
+        const data = (config.site_uv || config.site_pv) && await getData()
+        if (config.site_uv) {
+          const siteUV = document.getElementById('umami-site-uv')
+          if (siteUV) siteUV.textContent = data.visitors.value
+        }
+        if (config.site_pv) {
+          const sitePV = document.getElementById('umami-site-pv')
+          if (sitePV) sitePV.textContent = data.pageviews.value
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load Umami Analytics:', e)
+    }
+  }
+
+  btf.addGlobalFn('pjaxComplete', runTrack, 'umami_analytics_run_track')
+  btf.addGlobalFn('pjaxComplete', insertData, 'umami_analytics_insert')
+
+  loadUmamiJS()
+  insertData()
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜尋文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/search/local-search.min.js"></script></div></div></body></html>
