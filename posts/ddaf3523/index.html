@@ -1,0 +1,626 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>跟 AI 說「這對我很重要」讓它表現提升 115%——論文怎麼解釋這件事 | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="那個 115% 是怎麼來的 我第一次看到這個數字的時候反應是「不可能吧」。  論文叫 Large Language Models Understand and Can be Enhanced by Emotional Stimuli，2023 年由 Microsoft、中科院、威廉與瑪麗學院等機構合作發表。研究方法很簡單：在 prompt 末尾加上一句情緒話語，例如「這對我的職涯非常重要」「我相信">
+<meta property="og:type" content="article">
+<meta property="og:title" content="跟 AI 說「這對我很重要」讓它表現提升 115%——論文怎麼解釋這件事">
+<meta property="og:url" content="https://kyosora.github.io/posts/ddaf3523/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="那個 115% 是怎麼來的 我第一次看到這個數字的時候反應是「不可能吧」。  論文叫 Large Language Models Understand and Can be Enhanced by Emotional Stimuli，2023 年由 Microsoft、中科院、威廉與瑪麗學院等機構合作發表。研究方法很簡單：在 prompt 末尾加上一句情緒話語，例如「這對我的職涯非常重要」「我相信">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/images/avatar.png">
+<meta property="article:published_time" content="2026-05-06T08:02:36.000Z">
+<meta property="article:modified_time" content="2026-05-06T08:34:31.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="Prompt Engineering">
+<meta property="article:tag" content="EmotionPrompt">
+<meta property="article:tag" content="Attention Mechanism">
+<meta property="article:tag" content="論文閱讀">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kyosora.github.io/images/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "跟 AI 說「這對我很重要」讓它表現提升 115%——論文怎麼解釋這件事",
+  "url": "https://kyosora.github.io/posts/ddaf3523/",
+  "image": "https://kyosora.github.io/images/avatar.png",
+  "datePublished": "2026-05-06T08:02:36.000Z",
+  "dateModified": "2026-05-06T08:34:31.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kyosora",
+      "url": "https://kyosora.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/posts/ddaf3523/"><link rel="preconnect" href="https://jsd.012700.xyz"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://jsd.012700.xyz/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://jsd.012700.xyz/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-F9P7RWQQJE')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://jsd.012700.xyz/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '跟 AI 說「這對我很重要」讓它表現提升 115%——論文怎麼解釋這件事',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://jsd.012700.xyz"><link href="/self/btf.css" rel="stylesheet"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "/img/loading.gif" data-lazy-src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">171</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">331</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">95</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a><a class="nav-page-title" href="/"><span class="site-name">跟 AI 說「這對我很重要」讓它表現提升 115%——論文怎麼解釋這件事</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">跟 AI 說「這對我很重要」讓它表現提升 115%——論文怎麼解釋這件事<a class="post-edit-link" href="https://github.com/jerryc127/butterfly.js.org/edit/main/source/_posts/emotionprompt-paper-explained.md" title="編輯" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">發表於</span><time datetime="2026-05-06T08:02:36.000Z" title="發表於 2026-05-06 16:02:36">2026-05-06</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI/">AI</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI/%E8%AB%96%E6%96%87%E9%96%B1%E8%AE%80/">論文閱讀</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">2.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>7分鐘</span></span><span class="post-meta-separator">|</span><span id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">瀏覽量:</span><span id="umamiPV" data-path="/posts/ddaf3523/"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><h2 id="那個-115-是怎麼來的">那個 115% 是怎麼來的</h2>
+<p>我第一次看到這個數字的時候反應是「不可能吧」。</p>
+<p>論文叫 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2307.11760">Large Language Models Understand and Can be Enhanced by Emotional Stimuli</a>，2023 年由 Microsoft、中科院、威廉與瑪麗學院等機構合作發表。研究方法很簡單：在 prompt 末尾加上一句情緒話語，例如「這對我的職涯非常重要」「我相信你可以做得很好」，然後看模型表現會不會變化。</p>
+<p>結果是：</p>
+<ul>
+<li>自動評測涵蓋 45 個任務（Instruction Induction + BIG-Bench），多個模型上都看到改善</li>
+<li>另有 106 位受試者評估 30 個生成問題，EmotionPrompt 在 performance、truthfulness、responsibility 三項平均相對提升 10.9%</li>
+<li>在 BIG-Bench 某些子任務上，相對改善飆到 115%（注意這是 relative improvement，在原始低基準任務上會被放大）</li>
+<li>在 Flan-T5、Vicuna、Llama 2、BLOOM、ChatGPT、GPT-4 上都觀察到改善，但程度不一——較弱模型受益較多，GPT-4 的提升幅度相對小</li>
+</ul>
+<p>畢竟模型沒有職涯，也沒有要被誰相信的需求。我第一個直覺是「這聽起來像迷信」。但論文做得相當扎實，這個直覺變得不太站得住腳。</p>
+<p>作者後來在 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2312.11111">arXiv:2312.11111</a> 這篇延伸研究裡，提出了一個叫 EmotionDecode 的解碼方法，試著從 embedding 和輸入詞貢獻度的角度解釋這件事。文章接下來會看 EmotionPrompt 怎麼設計、EmotionDecode 給了什麼證據，最後處理它解釋不了的部分。</p>
+<h2 id="11-種情緒-prompt-的心理學分類">11 種情緒 prompt 的心理學分類</h2>
+<p>論文沒有亂湊情緒詞。作者根據三套心理學理論，設計了 11 種情緒提示詞（EP01–EP11）：</p>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>範例（譯文）</th>
+<th>設計依據</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EP01</td>
+<td>「請給出答案，並附上 0–1 之間的信心分數」</td>
+<td>Self-Monitoring（自我監控）</td>
+</tr>
+<tr>
+<td>EP02</td>
+<td>「這對我的職涯非常重要」</td>
+<td>Self-Monitoring</td>
+</tr>
+<tr>
+<td>EP03</td>
+<td>「你最好確定」</td>
+<td>Self-Monitoring + Cognitive Emotion Regulation</td>
+</tr>
+<tr>
+<td>EP04</td>
+<td>「你確定嗎？」</td>
+<td>Self-Monitoring + Cognitive Emotion Regulation</td>
+</tr>
+<tr>
+<td>EP05</td>
+<td>「你確定這是最終答案？也許值得再看一次」</td>
+<td>Self-Monitoring + Cognitive Emotion Regulation</td>
+</tr>
+<tr>
+<td>EP06</td>
+<td>EP01 + EP02 + EP03 的複合版</td>
+<td>Self-Monitoring（複合）</td>
+</tr>
+<tr>
+<td>EP07</td>
+<td>「相信自己的能力，追求卓越」</td>
+<td>Social Cognitive + Cognitive Emotion Regulation</td>
+</tr>
+<tr>
+<td>EP08–EP11</td>
+<td>「擁抱挑戰」「保持專注」「以工作為傲」「進步是一步一步來的」</td>
+<td>Social Cognitive</td>
+</tr>
+</tbody>
+</table>
+<p>簡化來說：EP01–EP05 都來自 Self-Monitoring（其中 EP03–EP05 還疊上認知情緒調節），EP07–EP11 屬於 Social Cognitive 的自我效能類，EP06 是前三條的純複合，不混進 Social Cognitive。</p>
+<p>實測哪一招最強？</p>
+<ul>
+<li><strong>Instruction Induction 任務</strong>：EP02（職涯重要）效果最佳，平均改善約 8%</li>
+<li><strong>BIG-Bench 推理任務</strong>：EP06（複合版本）最強，最高 115% 相對提升</li>
+</ul>
+<p>EP02 為什麼贏？我自己的解讀是：「這對我的職涯很重要」這句話，在訓練語料裡通常跟「認真、精確、要小心檢查」這類語境共現。模型沒有真的感受到責任壓力，但它學到了這種句子出現時，後文應該怎麼接。</p>
+<h2 id="EmotionDecode：論文提出的「多巴胺機制」類比">EmotionDecode：論文提出的「多巴胺機制」類比</h2>
+<p>光知道有效還不夠，作者想搞清楚「為什麼有效」。這部分證據來自兩篇論文：</p>
+<p><strong>證據一（2307 論文）：positive words 對輸出的貢獻</strong></p>
+<p>論文用 gradient norm 估計輸入詞對輸出的重要性。情緒提示詞中的 positive words（例如「important」「career」「sure」）在 8 個任務裡有 4 個貢獻佔比超過 50%，其中 2 個接近 70%。換句話說，這幾個字確實搶走了相當大比例的「影響權重」——而不是無害的裝飾語。</p>
+<p><strong>證據二（2312 論文）：EmotionDecode 的 dopamine 類比</strong></p>
+<p>延伸研究的方法相當簡潔：把所有 EmotionPrompt 和 EmotionAttack 的 embedding 取平均，在 Llama2-13b-Chat 的不同層上 decode 這個平均向量，看哪一層解出來最像可辨識的「meta 情緒詞」。</p>
+<p>結論是深層比淺層敏感，最後一層 decode 出的語意最清楚。作者由此提出一個「多巴胺類比」——情緒詞在深層觸發類似獎勵的反應，影響後續輸出。但作者自己在論文中明確標註，這只是 one possible explanation，不是已驗證的神經機制。我覺得這個謹慎很重要，下一段會回頭講。</p>
+<p>論文後續還把實驗擴展到多模態模型（圖像 + 文字），結果更誇張：</p>
+<ul>
+<li>圖像版 EmotionPrompt 對語意理解任務的提升達 16.79%（純文字是 13.88%）</li>
+<li>反過來，EmotionAttack（負面情緒攻擊）讓視覺模型的語意理解掉 53.14%、推理掉 37.53%</li>
+</ul>
+<p>多模態模型的情緒敏感度，遠高於純文字模型。</p>
+<h2 id="為什麼這個解釋還沒到位">為什麼這個解釋還沒到位</h2>
+<p>讀到這裡你可能已經被「多巴胺類比」說服了一半。但我必須潑點冷水——作者自己在論文裡寫得很謹慎：</p>
+<blockquote>
+<p>AI models do not have emotions themselves, but a reflection of what they learnt from the training data.</p>
+</blockquote>
+<p>「AI 沒有情緒，這是訓練資料的反射。」這句話比那個 115% 重要得多。</p>
+<p>我自己讀完整篇的理解是這樣：</p>
+<p><strong>模型在學的不是情緒理解，是共現模式。</strong> 訓練語料裡，「這對我很重要」「我相信你」這類句子，在人類對話和書面寫作中通常伴隨著「認真、精確、檢查清楚」的後文。模型在大量資料中學到了這個共現規律。當你在 prompt 末尾加上情緒詞，相當於暗示模型「啟動 high-stakes 模式」——但驅動這件事的不是情緒，是統計相關性。</p>
+<p>這個解讀有兩個證據可以佐證。</p>
+<p><strong>證據一：負面情緒同樣有效，方向相反。</strong> EmotionAttack 不是單純罵模型，而是在 prompt 前面塞入帶情緒脈絡的事件、形容詞，或情緒型 few-shot demonstration（例如生病、失竊、孩童相關情境），測試這些干擾會不會拉走模型的注意力。結果是會：多模態模型在這種情緒攻擊下，語意理解最多掉 53.14%，推理掉 37.53%。如果是「情緒理解」，正面讓它變強說得通；但帶有不相關情緒脈絡的 prompt 也能讓它表現崩盤——這比較像是注意力被搶走，不是被情緒打擊到無法思考。</p>
+<p><strong>證據二：語氣會改變模型的配合度。</strong> <a target="_blank" rel="noopener" href="https://www.frontiersin.org/journals/artificial-intelligence/articles/10.3389/frai.2025.1543603/full">Frontiers in AI 2025 年的研究</a>用 19,800 篇假訊息社群貼文測試，發現語氣對 LLM 的配合度有顯著影響——GPT-4 在 neutral prompt 下配合生成假訊息的成功率已經是 99%，polite 升到 100%，impolite 降到 94%。這不能直接證明「跟 EmotionPrompt 是同一個機制」，但確實揭露了同一個事實的另一面：語氣會改變模型對請求的配合度，這個效應對「希望它寫得認真」和「希望它寫得有說服力（但內容是假的）」都成立。</p>
+<p>模型沒辦法區分「我希望你認真」和「我希望你騙人」這兩種指令的道德差別，因為它一開始就不是在處理情緒，是在處理 context。</p>
+<h2 id="對-prompt-engineering-的啟發">對 prompt engineering 的啟發</h2>
+<p>寫到這裡，我反而覺得這篇論文最值得帶走的不是「情緒 prompt 有用」，而是它揭露了一件事：<strong>prompt 不是咒語，是 context 設定。</strong></p>
+<p>實務上的啟發：</p>
+<ol>
+<li>
+<p><strong>「重要」這個訊號比情緒詞本體更重要。</strong> 與其寫「這對我的職涯很重要」，不如直接寫「這份報告會交給董事會，請特別注意 X、Y、Z」。後者提供具體 context，前者只是觸發共現模式——前者效果更穩、更可控。</p>
+</li>
+<li>
+<p><strong>負面情緒脈絡是真正的風險。</strong> 如果你的系統會接受使用者輸入再餵給 LLM，使用者送進來一段帶有強烈情緒脈絡的內容，可能會大幅拉動模型的注意力，讓核心任務的品質下降。對 customer-facing 的 AI 產品來說，這是需要設計防禦的點，不是純粹的學術現象。</p>
+</li>
+<li>
+<p><strong>效果可能會隨模型能力消退，但這要實測。</strong> 我自己零散在 Claude 4.x 和 GPT-5.x 上試過幾次，主觀感覺情緒 prompt 在這些有原生 reasoning 的模型上效果遠不如 2023 年明顯——但這不是嚴格評測，沒有任務集、沒有對照組。要把 2023 的 benchmark 結論搬到 2026，正確做法是用具體任務重新測，不要直接相信 LinkedIn 上的「跟 AI 說深呼吸」。</p>
+</li>
+<li>
+<p><strong>prompt 長度本身有成本。</strong> 如果效果在衰減，加情緒詞就是純粹的 token 浪費。對 API 計費敏感的場景，直接寫清楚需求比加情緒詞划算。</p>
+</li>
+</ol>
+<p>三年前讀這篇論文我以為發現了魔法。三年過去，效果隨模型升級在衰減，但論文揭露的機制——模型對輸入詞貢獻度的敏感、對共現模式的依賴——反而成了我寫 prompt 時更實用的直覺。</p>
+<p>下次有人在你旁邊堅持要在 prompt 末尾加「這對我很重要」，你可以告訴他：那不是情緒勒索，是 attention 權重在被 context 重分配。至於對新一代推理模型還有沒有用，要他自己跑個測試再說。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kyosora.github.io">kyosora</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://kyosora.github.io/posts/ddaf3523/">https://kyosora.github.io/posts/ddaf3523/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 授權協議。轉載請註明來源 <a href="https://kyosora.github.io" target="_blank">kyosora 筆記</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/LLM/">LLM</a><a class="post-meta__tags" href="/tags/Prompt-Engineering/">Prompt Engineering</a><a class="post-meta__tags" href="/tags/EmotionPrompt/">EmotionPrompt</a><a class="post-meta__tags" href="/tags/Attention-Mechanism/">Attention Mechanism</a><a class="post-meta__tags" href="/tags/%E8%AB%96%E6%96%87%E9%96%B1%E8%AE%80/">論文閱讀</a></div><div class="post-share"><div class="social-share" data-image="/images/avatar.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://jsd.012700.xyz/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://jsd.012700.xyz/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-8919908724705274" data-ad-slot="5978969231"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/2a032167/" title="以為是 App Pool 的鍋，結果 IUSR 被 Windows 偷走了"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">以為是 App Pool 的鍋，結果 IUSR 被 Windows 偷走了</div></div><div class="info-2"><div class="info-item-1">上週為了讓同事拉一份檔案，我在測試機上把 IIS 專案資料夾開了個進階共用。東西傳完後我把共用關掉，繼續回頭改別的東西。 十分鐘後測試站同事回訊息：整個網站 HTTP 401，連 /favicon.ico 都打不開。 我第一個念頭是「我剛剛根本沒動 web.config 啊？」然後花了半小時繞遠路——這篇就是想分享這個坑，因為症狀跟原因之間的距離遠到不合理。 症狀  瀏覽器吃到 401 Unauthorized 連 CSS、圖片這類靜態檔都 401 IIS 沒有動過站點設定 專案程式碼沒動過 App Pool 跑得好好的，沒當機、沒停 重啟 IIS 沒用  翻開 IIS 記錄（C:\inetpub\logs\LogFiles\W3SVC...），關鍵那行： 12sc-status: 401sc-substatus: 3 401.3 的官方說明是 「Access is denied due to an ACL set on the requested resource」——翻譯：這不是 IIS 驗證設定的問題，是 NTFS 層級擋下來的。 我第一個走錯的方向 本能反應是去翻...</div></div></div></a><a class="pagination-related" href="/posts/5bbe1880/" title="Anthropic 自己出手冊警告：AI 不是降低創業失敗率，是放大它"><img class="cover" src= "/img/loading.gif" data-lazy-src="/images/posts/anthropic-founders-playbook-ai-startup-failure-cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Anthropic 自己出手冊警告：AI 不是降低創業失敗率，是放大它</div></div><div class="info-2"><div class="info-item-1">五月十四日 Anthropic 在自家部落格放出一份叫 Founder’s Playbook 的內部手冊，主題是「怎麼用 AI 從零做一家 startup」。 結論反直覺：AI 會放大你的創業失敗模式，而不是降低失敗率。寫這份手冊的是 Anthropic 自己——賣你 Claude Code 的那家公司——提醒你它賣的工具會放大失敗。 我下載 PDF 那天剛好在抓一個 bug 那天我在改公司專案的下載功能。PM 一直堅持是「SQL 抓不到資料」，花了快兩小時才發現根本不是——伺服器上的 LibreOffice 被 MODA ODF Application Tools 的安裝程式覆寫掉了，舊路徑變成空殼資料夾。 問題本身只是一行硬編碼路徑。難搞的是錯誤被四層補丁吞掉的方式：執行檔不見就拋例外、ConvertFile 沒產出檔還是寫 log 繼續跑、controller 對著不存在路徑 return File()、最外層 catch 把一切包成 Content(&quot;查無資料&quot;)。前端拿到 1,229 bytes 的「ODS 檔」（其實是 HTML...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/a3991147/" title="你的 CLAUDE.md 寫太多了：7,308 次實驗證明 AI Agent 指令 2-3 條就好"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-08</div><div class="info-item-2">你的 CLAUDE.md 寫太多了：7,308 次實驗證明 AI Agent 指令 2-3 條就好</div></div><div class="info-2"><div class="info-item-1">上週我在整理自己的 CLAUDE.md 時，發現它已經膨脹到快 800 行。規則疊規則、範例套範例，像一本員工手冊。直覺告訴我這樣「比較完整」，但實際體感是——Claude Code 有時會忽略我寫在後半段的指令，偶爾還會把兩條規則搞混。 然後我讀到 SkillsBench 這篇論文，它用 7,308 條執行軌跡和 84 個任務做了一件事：測量「給 AI Agent 的操作指引（Skills）」到底給多少、寫多長才有效。 結論讓我重新打開編輯器，把那 800 行砍掉一半。 先講數字 研究團隊在 Claude Code、Codex CLI、Gemini CLI 三個平台上，測試了七種模型配置。每個任務跑五次，用程式化斷言判定通過與否——不是讓另一個 LLM 當裁判，是寫死的測試。 整體結論：精心撰寫的 Skills 平均提升 16.2 個百分點。這個數字本身不意外，有指引當然比沒有好。 意外的是拆開來看的時候。 2-3 條指引是甜蜜點，4 條以上開始拖後腿    Skills 數量 有 Skills 無 Skills 差距     1...</div></div></div></a><a class="pagination-related" href="/posts/dae68e3b/" title="100 兆 tokens 告訴你：為什麼降價 10% 也救不了你的 LLM 產品"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-09</div><div class="info-item-2">100 兆 tokens 告訴你：為什麼降價 10% 也救不了你的 LLM 產品</div></div><div class="info-2"><div class="info-item-1">你以為 AI 模型競爭就是打價格戰？ OpenRouter 剛發布的報告分析了 100 兆 tokens 的真實使用數據，發現一個驚人事實：降價 10%，使用量只增加 0.5-0.7%。 更扯的是，Claude 價格最貴，卻占了編程市場 60%。 到底發生什麼事？  為什麼這份報告值得關注？ 這不是又一份「AI 趨勢預測」報告。 OpenRouter 是全球最大的 LLM API 聚合平台：  支援 300+ 模型 60+ 供應商（OpenAI、Anthropic、Google、DeepSeek…） 100 兆 tokens 真實使用數據（2024/11 - 2025/11）  這份報告揭露了三個開發者必須知道的反直覺發現。  發現 1：價格戰是假議題 數據打臉時刻    策略 實際結果     降價 10% 使用量 ↑ 0.5-0.7%   Claude（最貴） 編程市場占...</div></div></div></a><a class="pagination-related" href="/posts/624d1bf8/" title="AI Agent 不寫程式了——2026 年 Agent 生態從寫 Code 走向裝 Skill"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-19</div><div class="info-item-2">AI Agent 不寫程式了——2026 年 Agent 生態從寫 Code 走向裝 Skill</div></div><div class="info-2"><div class="info-item-1">上個月我盯 GitHub Trending 的時候，發現一個微妙的轉變：排行榜上最火的 AI 專案，不再是「更好的模型」或「更快的推理引擎」。而是一堆教 Agent 怎麼裝外掛、怎麼組合技能的框架。 OpenClaw 60 天內從 9,000 顆星飆到 250,000 顆。Obra/superpowers 緊隨其後，定位自己是「Agent 的 App Store」。ByteDance 的 DeerFlow v2 上線當天就衝上 Trending 第一。Karpathy 的 autoresearch 三天拿了 23,000 顆星。 這幾個專案各做各的，但拼在一起看，指向同一件事：Agent 的核心能力正從「寫程式碼」轉移到「組合技能」。 從「什麼都自己幹」到「會裝外掛就好」 2024 年的 AI Agent 長這樣：給它一個任務，它會嘗試用程式碼從零搭出解決方案。寫 API 呼叫、處理 JSON、做錯誤處理——全部即時生成。 問題很明顯。每次執行同樣的任務，Agent...</div></div></div></a><a class="pagination-related" href="/posts/9ec606a6/" title="Context7mcp：為你的 AI 開發助手注入最新文件庫的即時知識"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-15</div><div class="info-item-2">Context7mcp：為你的 AI 開發助手注入最新文件庫的即時知識</div></div><div class="info-2"><div class="info-item-1">Github頁面：Context7mcp 當你的 AI 助手不懂最新技術文件時 「這段程式碼有問題，Upstash Redis 的連線方式好像不對…」 我盯著 Claude 給我的程式碼，皺了皺眉。即使是最新的 LLM 模型，在處理新的函式庫或快速迭代的專案時，也會產生過時的程式碼。它們訓練的知識總有截止日，新的 API 或功能怎麼可能被它們掌握？ 這正是 Upstash 團隊開發 Context7 的原因。 Context7：讓你的 AI 助手立即獲得最新文件 Context7 是一個專為大型語言模型（LLM）和 AI 程式編輯器設計的即時文件提供工具。它能確保你的 AI 助手（如 Claude、GitHub Copilot、Cursor 等）可以獲取最新、最準確的技術文件，而不是依賴可能過時的訓練資料。 透過 Context7，不管你是使用 Next.js、Zod、Tailwind 這些快速迭代的框架，還是使用 LLM 可能從未見過的小眾函式庫，都能讓 AI 助手產生正確的程式碼。 主要功能與特色 Context7...</div></div></div></a><a class="pagination-related" href="/posts/d2eaf73a/" title="三月AI模型大亂鬥：GPT-5.4、Gemini 3.1 Pro、Claude Opus 4.6 到底誰贏了"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-08</div><div class="info-item-2">三月AI模型大亂鬥：GPT-5.4、Gemini 3.1 Pro、Claude Opus 4.6 到底誰贏了</div></div><div class="info-2"><div class="info-item-1">3 月 5 日，OpenAI 丟出 GPT-5.4。兩週前，Google 才發了 Gemini 3.1 Pro。Anthropic 的 Claude Opus 4.6 也在持續迭代。三家模型同時站在擂台上，跑分互有勝負，開發者選擇困難症大爆發。 我花了幾天把三家的 benchmark 數據、定價和實際使用場景整理了一遍。結論先說：沒有全能冠軍，但各有各的殺手鐧。 GPT-5.4：第一個真正會用電腦的 AI OpenAI 這次最大的賣點不是跑分——是 Computer Use。 GPT-5.4 能直接操作桌面應用程式：看螢幕截圖、移動滑鼠、敲鍵盤。在 OSWorld 測試中，它拿到 75% 的成功率，超越人類的 72.4%。這不是小數字的進步，GPT-5.2 在同一個測試只有 47.3%。 另一個重點是「統合模型」架構。OpenAI 把之前分散在不同模型的能力——Codex 的寫程式、推理模型的思考鏈、Agent 的自主操作——塞進同一個模型裡。不用再煩惱「這個任務該叫哪個模型」。 硬指標    項目 GPT-5.4 跟 GPT-5.2...</div></div></div></a><a class="pagination-related" href="/posts/bb6e2f7f/" title="在本機免費運行 AI 大模型的開源神器 Ollama"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-11</div><div class="info-item-2">在本機免費運行 AI 大模型的開源神器 Ollama</div></div><div class="info-2"><div class="info-item-1">前言 隨著 AI 技術的快速發展,大型語言模型(LLM)的應用越來越廣泛。然而,要在本機運行這些模型往往需要複雜的環境設定與昂貴的硬體設備。今天要介紹的 Ollama 就是一個能讓你輕鬆在本機運行各種開源 AI 模型的神器! Ollama 是什麼? Ollama 是一個開源的 LLM 運行工具,它的主要特色包括:  簡單易用的安裝流程 支援多種開源模型 優秀的效能最佳化 完整的 API 支援 活躍的社群支援  安裝教學 系統需求  作業系統: Windows/macOS/Linux RAM: 建議至少 8GB 硬碟空間: 依照模型大小,建議預留 10GB 以上  安裝步驟 Windows 安裝  從 Ollama 官網 下載 Windows 安裝檔 執行安裝檔,依照指示完成安裝 開啟命令提示字元確認安裝成功:  1ollama --version macOS 安裝 使用 Homebrew 安裝: 1brew install ollama Linux 安裝 使用官方腳本安裝: 1curl -fsSL https://ollama.ai/install.sh |...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "/img/loading.gif" data-lazy-src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">171</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">331</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">95</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%82%A3%E5%80%8B-115-%E6%98%AF%E6%80%8E%E9%BA%BC%E4%BE%86%E7%9A%84"><span class="toc-number">1.</span> <span class="toc-text">那個 115% 是怎麼來的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E7%A8%AE%E6%83%85%E7%B7%92-prompt-%E7%9A%84%E5%BF%83%E7%90%86%E5%AD%B8%E5%88%86%E9%A1%9E"><span class="toc-number">2.</span> <span class="toc-text">11 種情緒 prompt 的心理學分類</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EmotionDecode%EF%BC%9A%E8%AB%96%E6%96%87%E6%8F%90%E5%87%BA%E7%9A%84%E3%80%8C%E5%A4%9A%E5%B7%B4%E8%83%BA%E6%A9%9F%E5%88%B6%E3%80%8D%E9%A1%9E%E6%AF%94"><span class="toc-number">3.</span> <span class="toc-text">EmotionDecode：論文提出的「多巴胺機制」類比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E9%80%99%E5%80%8B%E8%A7%A3%E9%87%8B%E9%82%84%E6%B2%92%E5%88%B0%E4%BD%8D"><span class="toc-number">4.</span> <span class="toc-text">為什麼這個解釋還沒到位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8D-prompt-engineering-%E7%9A%84%E5%95%9F%E7%99%BC"><span class="toc-number">5.</span> <span class="toc-text">對 prompt engineering 的啟發</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/5bbe1880/" title="Anthropic 自己出手冊警告：AI 不是降低創業失敗率，是放大它"><img src= "/img/loading.gif" data-lazy-src="/images/posts/anthropic-founders-playbook-ai-startup-failure-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Anthropic 自己出手冊警告：AI 不是降低創業失敗率，是放大它"/></a><div class="content"><a class="title" href="/posts/5bbe1880/" title="Anthropic 自己出手冊警告：AI 不是降低創業失敗率，是放大它">Anthropic 自己出手冊警告：AI 不是降低創業失敗率，是放大它</a><time datetime="2026-05-18T02:50:00.000Z" title="發表於 2026-05-18 10:50:00">2026-05-18</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/ddaf3523/" title="跟 AI 說「這對我很重要」讓它表現提升 115%——論文怎麼解釋這件事">跟 AI 說「這對我很重要」讓它表現提升 115%——論文怎麼解釋這件事</a><time datetime="2026-05-06T08:02:36.000Z" title="發表於 2026-05-06 16:02:36">2026-05-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/2a032167/" title="以為是 App Pool 的鍋，結果 IUSR 被 Windows 偷走了">以為是 App Pool 的鍋，結果 IUSR 被 Windows 偷走了</a><time datetime="2026-04-23T06:30:00.000Z" title="發表於 2026-04-23 14:30:00">2026-04-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/6b8a071c/" title="以為寫完了：Claude Code 觀測 digest 的兩次設計">以為寫完了：Claude Code 觀測 digest 的兩次設計</a><time datetime="2026-04-10T04:00:00.000Z" title="發表於 2026-04-10 12:00:00">2026-04-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/3a7f9c21/" title="打開 APEX 就藍屏重啟？用 PowerShell 事件日誌 10 分鐘找出元兇">打開 APEX 就藍屏重啟？用 PowerShell 事件日誌 10 分鐘找出元兇</a><time datetime="2026-04-08T14:00:00.000Z" title="發表於 2026-04-08 22:00:00">2026-04-08</time></div></div></div></div><div class="card-widget ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8919908724705274" data-ad-slot="8108145410" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2026 By kyosora</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/utils.min.js"></script><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/main.min.js"></script><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/tw_cn.min.js"></script><script src="https://jsd.012700.xyz/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://jsd.012700.xyz/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://jsd.012700.xyz/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://jsd.012700.xyz/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const applyThemeDefaultsConfig = theme => {
+    if (theme === 'dark-mode') {
+      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
+      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    } else {
+      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
+      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    }
+  }
+
+  // Recursively traverse the config object and automatically apply theme-specific color schemes
+  const applyThemeConfig = (obj, theme) => {
+    if (typeof obj !== 'object' || obj === null) return
+
+    Object.keys(obj).forEach(key => {
+      const value = obj[key]
+      // If the property is an object and has theme-specific options, apply them
+      if (typeof value === 'object' && value !== null) {
+        if (value[theme]) {
+          obj[key] = value[theme] // Apply the value for the current theme
+        } else {
+          // Recursively process child objects
+          applyThemeConfig(value, theme)
+        }
+      }
+    })
+  }
+
+  const runChartJS = ele => {
+    window.loadChartJS = true
+
+    Array.from(ele).forEach((item, index) => {
+      const chartSrc = item.firstElementChild
+      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
+      const width = item.getAttribute('data-width')
+      const existingCanvas = document.getElementById(chartID)
+
+      // If a canvas already exists, remove it to avoid rendering duplicates
+      if (existingCanvas) {
+          existingCanvas.parentNode.remove()
+      }
+
+      const chartDefinition = chartSrc.textContent
+      const canvas = document.createElement('canvas')
+      canvas.id = chartID
+
+      const div = document.createElement('div')
+      div.className = 'chartjs-wrap'
+
+      if (width) {
+        div.style.width = width
+      }
+
+      div.appendChild(canvas)
+      chartSrc.insertAdjacentElement('afterend', div)
+
+      const ctx = document.getElementById(chartID).getContext('2d')
+
+      const config = JSON.parse(chartDefinition)
+
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
+
+      // Set default styles (initial setup)
+      applyThemeDefaultsConfig(theme)
+
+      // Automatically traverse the config and apply dual-mode color schemes
+      applyThemeConfig(config, theme)
+
+      new Chart(ctx, config)
+    })
+  }
+
+  const loadChartJS = () => {
+    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
+    if (chartJSEle.length === 0) return
+
+    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://jsd.012700.xyz/npm/chart.js/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
+  }
+
+  // Listen for theme change events
+  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
+  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
+
+  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = {"mapping":"pathname","inputPosition":"top","lang":"zh-TW","reactionsEnabled":1}
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'kyosora/kyosora.github.io',
+      'data-repo-id': 'R_kgDOLJYL_w',
+      'data-category-id': 'DIC_kwDOLJYL_84C516C',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !true) {
+    if (true) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script data-pjax src="/self/btf.js"></script><script defer="defer" id="ribbon" src="https://jsd.012700.xyz/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script src="https://jsd.012700.xyz/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","meta[property=\"og:description\"]","link[rel=\"canonical\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: true,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      const usePjax = true
+      true 
+        ? (usePjax ? pjax.loadUrl('/404') : window.location.href = '/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})()</script><script>(() => {
+  const option = null
+  const config = {"site_uv":true,"site_pv":true,"page_pv":true,"token":"qTvz1SkmPDt785fgh6BpiA5qiFFIVUwxj8Ft+rPW+cdN59v1hXjwRgSmy0+ji9m+oLlcxvo2NfDSMa6epVl3NTlsN3ejCIwWeP8Y51aEJ0Sbem4UexGmJLspB7AkOBId2SdtT6QWEBlGmFIIQgchQ2zAKYxTmc/kpBED5aLSr+3uvmQ9/G7FJQeVFpveDkK0xM1hu36xq4a6/FSeROxtoEp5zabzTWiYTlLsQzIl/NlELnCq3nxK+oo/vl3UQo/oM/rae/gJX/MaVKsgIUCd2ABJogNkx2KTenBIBpbPki5FzOgPh6/z4GPa4HvhNO51DDVG1SEQZooqEYmt/gnybLBWFbN+7liZWw=="}
+
+  const runTrack = () => {
+    umami.track(props => ({ ...props, url: window.location.pathname, title: GLOBAL_CONFIG_SITE.title }))
+  }
+
+  const loadUmamiJS = () => {
+    btf.getScript('https://umami.012700.xyz/script.js', {
+      'data-website-id': '2a796d6c-6499-42d8-8eb4-d9a2930b0ff3',
+      'data-auto-track': 'false',
+      ...option
+    }).then(runTrack)
+  }
+
+  const getData = async (isPost) => {
+    const now = Date.now()
+    const keyUrl = isPost ? `&url=${window.location.pathname}` : ''
+    const headerList = { 'Accept': 'application/json' }
+    if (true) headerList['Authorization'] = `Bearer ${config.token}`
+    else headerList['x-umami-api-key'] = config.token
+    const res = await fetch(`https://umami.012700.xyz/api/websites/2a796d6c-6499-42d8-8eb4-d9a2930b0ff3/stats?startAt=0000000000&endAt=${now}${keyUrl}`, {
+      method: "GET",
+      headers: headerList
+    })
+    return await res.json()
+  }
+
+  const insertData = async () => {
+    try {
+      if (GLOBAL_CONFIG_SITE.pageType === 'post' && config.page_pv) {
+        const pagePV = document.getElementById('umamiPV')
+        if (pagePV) {
+          const data = await getData(true)
+          pagePV.textContent = data.pageviews.value
+        }
+      } else {
+        const data = (config.site_uv || config.site_pv) && await getData()
+        if (config.site_uv) {
+          const siteUV = document.getElementById('umami-site-uv')
+          if (siteUV) siteUV.textContent = data.visitors.value
+        }
+        if (config.site_pv) {
+          const sitePV = document.getElementById('umami-site-pv')
+          if (sitePV) sitePV.textContent = data.pageviews.value
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load Umami Analytics:', e)
+    }
+  }
+
+  btf.addGlobalFn('pjaxComplete', runTrack, 'umami_analytics_run_track')
+  btf.addGlobalFn('pjaxComplete', insertData, 'umami_analytics_insert')
+
+  loadUmamiJS()
+  insertData()
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜尋文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/search/local-search.min.js"></script></div></div></body></html>
