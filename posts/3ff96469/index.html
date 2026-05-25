@@ -1,0 +1,554 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>用 Claude Code 半年，我從寫程式的變成幫 AI 收尾的 | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="去年十二月，我那份週報的最後一行寫著「團隊士氣：優秀，技術架構清晰，開發效率高」。  五月的週報，標題是「退回潮收斂期」。  中間發生了什麼，這篇就是要講的事。我把一個有數百個頁面的舊系統從 AngularJS 搬到 Vue 3，主力是 AI——半年下來程式碼幾乎都是它寫的，但我整個人變成了幫它擦屁股的。  蜜月期：一週幹完三週的活 一開始真的很爽。  專案的前置準備階段，原本排了三週。我把環境建">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用 Claude Code 半年，我從寫程式的變成幫 AI 收尾的">
+<meta property="og:url" content="https://kyosora.github.io/posts/3ff96469/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="去年十二月，我那份週報的最後一行寫著「團隊士氣：優秀，技術架構清晰，開發效率高」。  五月的週報，標題是「退回潮收斂期」。  中間發生了什麼，這篇就是要講的事。我把一個有數百個頁面的舊系統從 AngularJS 搬到 Vue 3，主力是 AI——半年下來程式碼幾乎都是它寫的，但我整個人變成了幫它擦屁股的。  蜜月期：一週幹完三週的活 一開始真的很爽。  專案的前置準備階段，原本排了三週。我把環境建">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/images/posts/ai-sandwich-finisher-cover.png">
+<meta property="article:published_time" content="2026-05-25T05:10:00.000Z">
+<meta property="article:modified_time" content="2026-05-25T05:49:58.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Claude Code">
+<meta property="article:tag" content="AI 輔助開發">
+<meta property="article:tag" content="前端遷移">
+<meta property="article:tag" content="程式碼審查">
+<meta property="article:tag" content="軟體工程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kyosora.github.io/images/posts/ai-sandwich-finisher-cover.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "用 Claude Code 半年，我從寫程式的變成幫 AI 收尾的",
+  "url": "https://kyosora.github.io/posts/3ff96469/",
+  "image": "https://kyosora.github.io/images/posts/ai-sandwich-finisher-cover.png",
+  "datePublished": "2026-05-25T05:10:00.000Z",
+  "dateModified": "2026-05-25T05:49:58.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kyosora",
+      "url": "https://kyosora.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/posts/3ff96469/"><link rel="preconnect" href="https://jsd.012700.xyz"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://jsd.012700.xyz/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://jsd.012700.xyz/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-F9P7RWQQJE')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://jsd.012700.xyz/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '用 Claude Code 半年，我從寫程式的變成幫 AI 收尾的',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://jsd.012700.xyz"><link href="/self/btf.css" rel="stylesheet"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "/img/loading.gif" data-lazy-src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">183</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">369</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">107</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/posts/ai-sandwich-finisher-cover.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a><a class="nav-page-title" href="/"><span class="site-name">用 Claude Code 半年，我從寫程式的變成幫 AI 收尾的</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">用 Claude Code 半年，我從寫程式的變成幫 AI 收尾的<a class="post-edit-link" href="https://github.com/jerryc127/butterfly.js.org/edit/main/source/_posts/用-Claude-Code-半年我從寫程式的變成幫-AI-收尾的.md" title="編輯" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">發表於</span><time datetime="2026-05-25T05:10:00.000Z" title="發表於 2026-05-25 13:10:00">2026-05-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI-%E9%96%8B%E7%99%BC/">AI 開發</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI-%E9%96%8B%E7%99%BC/%E5%B7%A5%E4%BD%9C%E5%8F%8D%E6%80%9D/">工作反思</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">2.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>8分鐘</span></span><span class="post-meta-separator">|</span><span id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">瀏覽量:</span><span id="umamiPV" data-path="/posts/3ff96469/"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>去年十二月，我那份週報的最後一行寫著「團隊士氣：優秀，技術架構清晰，開發效率高」。</p>
+<p>五月的週報，標題是「退回潮收斂期」。</p>
+<p>中間發生了什麼，這篇就是要講的事。我把一個有數百個頁面的舊系統從 AngularJS 搬到 Vue 3，主力是 AI——半年下來程式碼幾乎都是它寫的，但我整個人變成了幫它擦屁股的。</p>
+<h2 id="蜜月期：一週幹完三週的活">蜜月期：一週幹完三週的活</h2>
+<p>一開始真的很爽。</p>
+<p>專案的前置準備階段，原本排了三週。我把環境建置、登入流程、Layout 元件、狀態管理這些丟給 Claude Code，它一週就全做完了，還順手把舊系統漏掉的九個功能補上。階段提前兩週收工。</p>
+<p>那時候我心裡的念頭很單純：照這個速度，這專案根本不用排到四個月。</p>
+<p>我那時候真的信了。</p>
+<p>接下來幾個月，產出數字一路往上飆。隨便抓幾週的紀錄：某一週 82 個 commit、改了兩百多個檔案、淨增三萬六千行；五月某個禮拜一，光是一天就推了 33 個 commit。如果你只看這些數字，會以為這是一支開了外掛、穩到不行的團隊。</p>
+<h2 id="然後，退回潮來了">然後，退回潮來了</h2>
+<p>問題是，commit 數不等於完成數。</p>
+<p>業主驗收一輪一輪退回來。我的週報開始反覆出現「退回」「二次修復」「再修復」這些字。最誇張的一天，我一口氣推了十幾個 commit，幾乎全部都是前幾週「已完成」功能的二次退回修復。</p>
+<p>有些 bug 改到我都會背了。某個選單的職責分離，我一週之內調了三次方向——改完發現側邊欄高亮被路由邏輯蓋掉，再改;改完又冒出殘留的孤兒頁面，再改。還有一個 issue，AI 改完，隔天我發現它連帶搞壞了別的東西，整個 commit revert 掉重來。改了退、退了改。</p>
+<p>但這些還只是煩。真正讓我背脊發涼的是另一種。</p>
+<p>AI 幫某個表單寫了存檔功能，跑起來一切正常：按下儲存、畫面跳出成功、列表也重新整理了。直到業主回報「資料怎麼都存不進去」，我追下去才發現——<strong>它寫的欄位名跟資料庫對不上</strong>。程式碼語法完全正確、不會報錯、該有的流程一個不少，唯獨資料安安靜靜地沒寫進任何一張表。這種錯沒有紅字、沒有例外、沒有堆疊追蹤，它就是不動聲色地什麼都沒做。</p>
+<p>還有一次更哲學。某張申請書要匯出成 PDF，AI 加了一套檔案格式白名單，用 magic bytes（檔案開頭那幾個位元組，用來辨識檔案真正的類型）驗證產出的確實是 PDF。它驗證通過，回報完成。我打開一看——格式是對的，<strong>裡面的欄位內容全是錯的</strong>。</p>
+<p>我那週的風險筆記裡留了一句話給自己：「magic bytes、檔案大小通過，不代表內容正確。」這句話後來變成我看所有 AI 產出的預設心態。</p>
+<p>最戲劇性的一次，是一整個模組被我整包刪掉。AI 認認真真把那個模組從頭建好了，頁面、API、路由一應俱全，但回頭一看：功能定義模糊、跟另一個模組大量重疊、文件缺東缺西。我算了一下，發現重寫比修補還快，於是直接砍掉重來。那一週的整體進度，從 18.9% 倒退到 17.4%。一個禮拜的產出歸零，週報上的數字第一次往回走。</p>
+<p>（順帶一提，它偶爾還會自作主張。有個退回項目的修法，commit 訊息我是這樣寫的：「移除 AI 自加的工期提示文字」——它在表單上加了一段需求裡根本沒有的說明文字，我得專門花一個 commit 把它請走。）</p>
+<h2 id="它沒有騙我，它是真心覺得自己做完了">它沒有騙我，它是真心覺得自己做完了</h2>
+<p>這裡要幫 AI 講句公道話。它回報「完成」的時候，不是在敷衍。</p>
+<p>在它的世界裡，那個 PDF 確實做完了：檔案產生了、格式驗證過了、程式沒報錯。那個存檔功能也做完了：流程跑完、畫面有回應。問題是「做完」這件事，它判斷的標準跟業主驗收的標準，是兩個不同的框架。AI 活在「我有沒有產出一個合法的、語法正確的東西」這個框架裡，而真正的問題是「這張表此刻該長什麼樣、哪幾個欄位對應資料庫的哪一欄、業主紅筆圈了哪裡」——這個框架它進不去。</p>
+<p>我後來常想到那些嚇人的 AI 跑分。那些數字全是在人先出好的考題上跑出來的：題目的框架是人定的，答案的邊界也是人圈的。可是業主的驗收標準不在任何一張考卷上，它每天都在變，藏在一通電話、一句「這個不是我要的」裡。模型再會考試，也考不到這一題。</p>
+<p>我最近讀到 Every 的 Dan Shipper 寫的〈After Automation〉，裡面有個說法我盯著看了很久，大意是：一個情境一旦被化約成文字、變成了訓練語料，它就成了一具屍體。</p>
+<p>AI 知道怎麼寫一個 PDF 匯出、怎麼寫一個存檔功能，因為這種事被寫過幾百萬次，全在它的訓練資料裡。但它不知道<strong>這一張</strong>表單、<strong>這一個</strong>業主、<strong>這一刻</strong>的驗收重點長什麼樣——因為那還沒變成文字，還活著，只活在我和業主的對話裡。</p>
+<p>有一次這件事具體到讓我記到現在。AI 寫了個新增功能，程式碼乾淨到我挑不出毛病——組好物件、帶上主鍵、呼叫儲存，每一步都是教科書上最標準的寫法。結果一執行，後端整個崩了。我追了半天才發現，這個專案的資料存取層是十幾年前公司底層專案刻的，藏著一條反直覺的地雷：新增資料時，如果你把那個自動遞增的主鍵也一起傳進去，它不會聰明地忽略，而是拿這個值去找一筆根本不存在的舊紀錄，然後當場崩潰。正確做法是新增時「不要」傳主鍵，讓它自己長。</p>
+<p>這條規則沒寫在任何文件裡，只躺在那份十幾年沒人動過的原始碼深處。AI 會寫出那段「正確」的程式碼，正是因為它讀過幾百萬份「正確」的範例——可這個專案的地雷，從來不在那幾百萬份裡面。它沒變成過文字，所以對 AI 來說，它根本不存在。</p>
+<p>Shipper 給這種協作模式取了個名字叫「human sandwich」：人在前面設定框架，AI 在中間把任務壓扁，人在後面判斷結果好不好、再把它接回現實。我們是 AI 工作的兩片麵包。</p>
+<p>讀完那天我才意識到，我這半年根本就是那兩片麵包。前面我要把模糊的需求翻譯成 AI 聽得懂的指令，後面我要逐項驗收它到底有沒有真的做到。中間那層夾心填得飛快，但夾心不會自己決定要夾什麼。</p>
+<h2 id="我被迫長出一套防呆系統">我被迫長出一套防呆系統</h2>
+<p>更現實的是，AI 不只在業務邏輯上要人收尾，它連工程紀律都會給你捅婁子。</p>
+<p>連續密集派工一段時間後，我踩了夠多雷，最後在專案的 <code>CLAUDE.md</code>（給 AI 看的專案規則檔）裡沉澱出三條鐵律：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># Agent 派工 SOP（血淚換來的）</span></span><br><span class="line"></span><br><span class="line"><span class="bullet">1.</span> 派 Agent 前，先同步 git 狀態</span><br><span class="line">   → 不然多個 agent 在不同步的基底上各改各的，主 repo 直接衝突</span><br><span class="line"></span><br><span class="line"><span class="bullet">2.</span> Agent 交辦單一律禁跑 build，由我收尾統一跑一次</span><br><span class="line">   → agent 各自跑 build 會互相覆蓋產物，還會誤判通過</span><br><span class="line"></span><br><span class="line"><span class="bullet">3.</span> Agent 的 lint 永遠在主 repo 跑，禁止在 worktree 裡 npm install</span><br><span class="line">   → 不然它在自己的小天地裡 lint 過了，回到主 repo 整個爆掉</span><br></pre></td></tr></table></figure>
+<p>這三條每一條背後都是一次真實的災難。第三條我印象最深——AI 在它自己的工作目錄裝了套件、lint 跑得漂漂亮亮、回報「build 通過」，我合回主 repo 才發現根本兜不起來。它沒說謊，它只是又一次在自己的框架裡通過了。</p>
+<p>光有規則還不夠。後來我多養了一個習慣：讓另一個 AI 去審第一個 AI 寫的東西。某個模組是 Claude 在一天之內趕出來的，我不放心，丟給 Codex 做一輪對抗式審查——結果它揪出三個 Critical 級的問題：一個 SQL 注入、一個子表沒做 fail-fast、一個 Object URL 用完沒釋放、記憶體就這樣漏著。一個 AI 寫、另一個 AI 挑刺、最後我來裁決。聽起來很荒謬，但這就是我現在每天在做的事。</p>
+<p>寫規則、設防呆、養一個 AI 來監督另一個 AI——這些工作以前都不存在。它們是 AI 帶來產能的同時，硬塞回我手上的新工作。</p>
+<h2 id="所以，自動化讓我變閒了嗎？">所以，自動化讓我變閒了嗎？</h2>
+<p>完全沒有。</p>
+<p>我花在「敲鍵盤寫程式」的時間確實大幅下降，但省下來的時間全被三件事吃掉：把需求拆成 AI 能執行的框架、逐項驗收它的產出、以及想辦法防止它用語法正確的方式做錯的事。產出的總量爆增了，但其中沒有任何一行，在我看過、確認過、接回現實之前，是可以信的。</p>
+<p>吐槽歸吐槽，我沒有要退回去一頁一頁自己手刻，這個專案原本預估我一人兩年，最後被業主壓縮到一年要開發完，結果現在能半年內開發完，雖然問題很多，但的確速度快了不少。AI 把這個專案的天花板拉高了——有些一個人扛不動的大規模重構，現在敢動了。我的工作沒有變少，是換了形態：從生產者，變成框架的設定者和結果的裁決者。</p>
+<p>老實說，這個身分我還在適應。偶爾會懷念那種一行一行把東西敲出來的踏實感——但那種日子大概是回不去了。</p>
+<p>如果你也正準備把一個大專案交給 AI，我只有一個從血裡撈出來的建議：估時程的時候，把你以為的「收尾時間」直接乘以三。剩下的，等你也當過幾週麵包就懂了。</p>
+<hr>
+<p>延伸閱讀：這篇的靈感來自 Dan Shipper 的〈After Automation〉。如果你想看他完整的論點——為什麼 AI 越自動化、人類專家反而越搶手——我整理了一篇導讀：<a href="/posts/undefined/" title="沒有「取代所有人」的臨界點——讀 Dan Shipper 的〈After Automation〉">沒有「取代所有人」的臨界點</a>。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kyosora.github.io">kyosora</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://kyosora.github.io/posts/3ff96469/">https://kyosora.github.io/posts/3ff96469/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 授權協議。轉載請註明來源 <a href="https://kyosora.github.io" target="_blank">kyosora 筆記</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Claude-Code/">Claude Code</a><a class="post-meta__tags" href="/tags/AI-%E8%BC%94%E5%8A%A9%E9%96%8B%E7%99%BC/">AI 輔助開發</a><a class="post-meta__tags" href="/tags/%E5%89%8D%E7%AB%AF%E9%81%B7%E7%A7%BB/">前端遷移</a><a class="post-meta__tags" href="/tags/%E7%A8%8B%E5%BC%8F%E7%A2%BC%E5%AF%A9%E6%9F%A5/">程式碼審查</a><a class="post-meta__tags" href="/tags/%E8%BB%9F%E9%AB%94%E5%B7%A5%E7%A8%8B/">軟體工程</a></div><div class="post-share"><div class="social-share" data-image="/images/posts/ai-sandwich-finisher-cover.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://jsd.012700.xyz/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://jsd.012700.xyz/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-8919908724705274" data-ad-slot="5978969231"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/326effc8/" title="400 tps 是分水嶺：智譜 GLM-5.1 高速版能解決哪些工程瓶頸"><img class="cover" src= "/img/loading.gif" data-lazy-src="/images/posts/glm-5-1-highspeed-400tps-engineering-watershed-cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">400 tps 是分水嶺：智譜 GLM-5.1 高速版能解決哪些工程瓶頸</div></div><div class="info-2"><div class="info-item-1">智譜 5/22 對部分企業客戶推出 GLM-5.1 高速版，API 輸出速度達 400 tokens/s。新聞標題是「全球最快」，但這個說法不嚴謹——Cerebras 跑 Llama 405B 早就破 900 tps。真正值得單獨講的不是「誰快」，而是 400 tps 在工程上意味著什麼。 這篇不是寫智譜的 PR 稿。我關心的問題是：旗艦級大模型過了某個速度門檻之後，工程師能做的事會出現質變——這個門檻大概在哪裡？哪些場景真的能因此解鎖？哪些只是看起來很厲害的行銷數字？ 速度光譜定位 先把 400 tps 放到正確的座標上。市面上幾個常見的推理速度：    模型 / 平台 輸出速度 性質     GPT-5 / Claude Sonnet 4.6（標準 API） 60-120 tps 旗艦級的「典型」速度   Groq LPU 跑 Llama 70B ~280 tps 中型模型 + 客製晶片   智譜 GLM-5.1 highspeed 400 tps 旗艦級 + 純軟體優化   Cerebras WSE-3 跑 Llama 405B ~970 tps 旗艦級 +...</div></div></div></a><a class="pagination-related" href="/posts/589db222/" title="沒有「取代所有人」的臨界點——讀 Dan Shipper 的〈After Automation〉"><img class="cover" src= "/img/loading.gif" data-lazy-src="/images/posts/after-automation-frames-cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">沒有「取代所有人」的臨界點——讀 Dan Shipper 的〈After Automation〉</div></div><div class="info-2"><div class="info-item-1">我們這行最近最焦慮的一個問題是：下一個模型發布，會不會就是把我們全部換掉的那一個？ Every 的執行長 Dan Shipper 在〈After Automation〉裡給的答案是：沒有那一天。不是因為 AI 不夠強，而是因為這個問題本身問錯了。這篇文章值得每個天天用 Claude Code、Codex 寫程式的人讀一遍——它把「AI 越強、人類越沒事做」這個直覺，整個翻了過來。 我把它的論點整理成下面幾條，順便講講我自己半年下來、哪裡認同、哪裡存疑。 一個反直覺的前提：越自動化，人類工作越多 Shipper 開頭就攤牌：Every 這家三十人左右的公司，把能自動化的全自動化了——寫程式、寫稿、設計、客服，全靠 Codex 和 Claude Code。他們搶先測試 OpenAI、Anthropic、Google 還沒發布的模型。照理說人應該越用越少。 結果相反。他們沒有裁掉所有員工換成 agent，還是請真人寫稿、編輯、工程師、客服。工作的「形態」完全變了——沒人手寫程式碼了，Slack 上 tag 一個人你還不確定對方是真人還是...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/3a171ac6/" title="AI 刪了我的檔案，到底該怪誰？從 Claude 災難看責任歸屬與自救指南"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-08</div><div class="info-item-2">AI 刪了我的檔案，到底該怪誰？從 Claude 災難看責任歸屬與自救指南</div></div><div class="info-2"><div class="info-item-1">「幫我清理一下舊 repo 的 packages」——這句話毀了一個開發者的整個 Mac。 2025 年某個普通的工作日，Reddit 用戶在 r/ClaudeAI 發了一篇求救文：「Claude CLI 刪了我整個家目錄，所有工作都沒了！這能救回來嗎？」 這不是第一起，也不會是最後一起。GitHub Issues 上有超過 10 起類似的嚴重事件報告。當 AI Coding Assistant 變得越來越強大，誰該為這些災難負責？ 災難現場：一個 ~/ 引發的血案 事件經過 用戶的原始請求很簡單：「清理舊 repo 的 packages」。 Claude Code 生成並執行了這個命令： 1rm -rf tests/ patches/ plan/ ~/ 看到問題了嗎？ 最後的 ~/ 不是某個目錄名稱，而是用戶的整個家目錄。 損失清單 這個命令執行後，用戶失去了：  ✅ 整個 Desktop（桌面上的所有檔案） ✅ Documents、Downloads（多年的文件和下載） ✅ Keychain（所有儲存的密碼和憑證） ✅ ~/.claude（Claude...</div></div></div></a><a class="pagination-related" href="/posts/6bed35e0/" title="61 個 Markdown 檔讓你的 IDE 變成 AI 公司：agency-agents 爆紅背後的技術邏輯"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-14</div><div class="info-item-2">61 個 Markdown 檔讓你的 IDE 變成 AI 公司：agency-agents 爆紅背後的技術邏輯</div></div><div class="info-2"><div class="info-item-1">一個 GitHub 專案，沒有任何可執行程式碼，只有 61 個 Markdown 檔案，7 天內拿到 10,000 顆星。截至 3/14 已經衝到 39,300 星。 這不是什麼新框架或新語言。agency-agents 做的事情只有一件：用 Markdown 定義 AI 的專業人格。 聽起來荒謬，但它戳中了一個真實的問題。 你的 AI 助手什麼都會，所以什麼都做不好 用過 Claude Code 或 Cursor 的人都有這個經驗：你請 AI 寫一個 REST API，它給你一個「還行」的版本。能跑，但缺少認證考量、沒有速率限制、錯誤處理敷衍、命名風格前後不一。 問題不在模型能力。GPT-5.4、Claude Opus 4.6、Gemini 3.1 Pro——這些模型的知識量早就超過任何單一工程師。問題在於 context window 裡塞了太多可能性，模型不知道你要哪一種。 你問「幫我設計 API」，模型在 REST、GraphQL、gRPC 之間游移。你問「幫我寫測試」，模型不確定你要 unit test 還是 integration...</div></div></div></a><a class="pagination-related" href="/posts/51217f8c/" title="Cursor 自建 AI 模型的背後邏輯：當你的 IDE 不想再幫別人打工"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-20</div><div class="info-item-2">Cursor 自建 AI 模型的背後邏輯：當你的 IDE 不想再幫別人打工</div></div><div class="info-2"><div class="info-item-1">三月十九號，Bloomberg 丟出一顆炸彈：Cursor 正在自建 AI 模型。 不是微調，不是套殼。是從頭訓練一個專門寫程式碼的基礎模型，叫做 Composer 2。同一天，消息傳出 Cursor 正在以約 500 億美元估值募資。 一個 IDE 公司，估值比大多數 SaaS 獨角獸加起來還高，然後決定去做模型。這件事值得認真想一下。 為什麼 Cursor 要自己做模型？ 先看數字：Cursor 現在每天有超過一百萬活躍用戶，五萬家企業客戶——包括 Stripe 和 Figma 這種等級的公司。ARR 已經衝到 20 億美元。 表面上看，一切都很好。但 Cursor 的核心焦慮其實很明確：他們最重要的能力，是別人提供的。 Cursor 背後的模型主要是 Claude 和 GPT。每一次 Anthropic 改了 API 定價、每一次 OpenAI 決定把 Codex 做得更好、每一次這些公司推出自己的 IDE 或 Agent 產品——Cursor 的護城河就窄了一點。 這不是被害妄想。Claude Code 已經在搶 Cursor 的午餐。OpenAI 的 Codex...</div></div></div></a><a class="pagination-related" href="/posts/33e4604/" title="Xcode 終於讓 AI Agent 進場了：兩分鐘做出一個 App 的背後意味著什麼"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-09</div><div class="info-item-2">Xcode 終於讓 AI Agent 進場了：兩分鐘做出一個 App 的背後意味著什麼</div></div><div class="info-2"><div class="info-item-1">二月底，Apple 悄悄推了 Xcode 26.3。沒有 Keynote，沒有 Craig Federighi 站在台上用動畫炫技。但這次更新可能是 Xcode 近五年來最重要的一個版本。 因為從這個版本開始，你可以在 Xcode 裡直接使用 AI coding agent。不是那種「自動補完下一行」的小聰明，而是整個 agent 接管你的專案：理解架構、搜文件、改多個檔案、跑 build、看 Preview、發現 UI 有問題還會自己修。 有人用它兩分鐘內做出一個完整的 Pomodoro 計時器 App——有設定頁面、提醒功能、能跑的 UI。 兩分鐘。 這不是 Copilot 的升級版 先說清楚 agentic coding 跟傳統 AI 輔助寫 code 的差別。 GitHub Copilot 和早期的 AI 工具做的事情是「你寫一行，它猜下一行」。你是主角，AI 是配角。你的游標在哪裡，它就在那裡幫你。 Agentic coding 完全不同。你給 agent 一個目標——「幫我做一個 Pomodoro 計時器」——然後它自己拆解任務、決定要改哪些檔案、寫 code、跑...</div></div></div></a><a class="pagination-related" href="/posts/4a4e3530/" title="Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-27</div><div class="info-item-2">Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？</div></div><div class="info-2"><div class="info-item-1">一個人寫程式碼容易盲點。所以我們發明了 pair programming——兩個人看同一份程式碼，一個寫、一個審。 現在有人問：如果兩個都換成 AI 呢？ 這個概念從哪來 Axel Delafosse 在他的部落格上發了一篇「Agent-to-agent pair programming」，在 HN 拿了 97 分和 34 則討論。核心想法：讓 Claude Code 負責寫程式碼，讓 OpenAI Codex 負責 review，兩個 agent 在同一個 codebase 上來回迭代，直到 review 通過。 不是人 + AI，是 AI + AI。人類退到 supervisor 的角色——設定目標、審核最終結果，中間過程交給兩個 agent 自己跑。 實際怎麼運作 目前有幾種做法在社群裡流通： 手動切換派。 最原始但很多人在用。Claude Code 寫完一個 feature，把 diff 丟給 Codex review。Codex 找到問題，人類把 review 結果貼回 Claude Code。來回幾輪直到通過。HN 上有人提到做了 10-15 輪...</div></div></div></a><a class="pagination-related" href="/posts/awesome-claude-code/" title="你的 Claude Code 只用到了 20%？這份 25k Stars 的資源清單讓它變 5 倍強"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-02-25</div><div class="info-item-2">你的 Claude Code 只用到了 20%？這份 25k Stars 的資源清單讓它變 5 倍強</div></div><div class="info-2"><div class="info-item-1">剛開始用 Claude Code 的時候，我以為它就是個進階版的「對話框」——貼代碼進去，等它回答。 直到我看到 awesome-claude-code 這個 repo，才發現自己根本沒在用這個工具。 這份由社群維護的清單目前有 25k Stars、1.5k Forks，收錄了超過 200 個工具、工作流程、配置模板和自動化腳本。不是那種「整理一堆連結就叫 awesome」的水貨清單——每個項目都要求有實際可用的功能，不收實驗性的佔坑。 拆開來看，你會發現 Claude Code 早就進化成一個完整的開發生態系了。  大多數人都在手動做的事，這裡早有自動化方案 先說最實際的：Hooks。 Claude Code 支援在特定事件觸發時執行自定義腳本——工具執行前後、Session 結束時都能掛載。清單裡有幾個直接可以用的：  CCNotify：每次 Claude Code 完成任務就發桌面通知。你終於不用一直盯著終端機等它跑完了 Britfix：自動把美式英語拼法轉成英式（color → colour，analyze → analyse）。在有語言規範要求的專案裡省下大量...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "/img/loading.gif" data-lazy-src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">183</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">369</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">107</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%9C%9C%E6%9C%88%E6%9C%9F%EF%BC%9A%E4%B8%80%E9%80%B1%E5%B9%B9%E5%AE%8C%E4%B8%89%E9%80%B1%E7%9A%84%E6%B4%BB"><span class="toc-number">1.</span> <span class="toc-text">蜜月期：一週幹完三週的活</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%84%B6%E5%BE%8C%EF%BC%8C%E9%80%80%E5%9B%9E%E6%BD%AE%E4%BE%86%E4%BA%86"><span class="toc-number">2.</span> <span class="toc-text">然後，退回潮來了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%83%E6%B2%92%E6%9C%89%E9%A8%99%E6%88%91%EF%BC%8C%E5%AE%83%E6%98%AF%E7%9C%9F%E5%BF%83%E8%A6%BA%E5%BE%97%E8%87%AA%E5%B7%B1%E5%81%9A%E5%AE%8C%E4%BA%86"><span class="toc-number">3.</span> <span class="toc-text">它沒有騙我，它是真心覺得自己做完了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E8%A2%AB%E8%BF%AB%E9%95%B7%E5%87%BA%E4%B8%80%E5%A5%97%E9%98%B2%E5%91%86%E7%B3%BB%E7%B5%B1"><span class="toc-number">4.</span> <span class="toc-text">我被迫長出一套防呆系統</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%80%E4%BB%A5%EF%BC%8C%E8%87%AA%E5%8B%95%E5%8C%96%E8%AE%93%E6%88%91%E8%AE%8A%E9%96%92%E4%BA%86%E5%97%8E%EF%BC%9F"><span class="toc-number">5.</span> <span class="toc-text">所以，自動化讓我變閒了嗎？</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/589db222/" title="沒有「取代所有人」的臨界點——讀 Dan Shipper 的〈After Automation〉"><img src= "/img/loading.gif" data-lazy-src="/images/posts/after-automation-frames-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="沒有「取代所有人」的臨界點——讀 Dan Shipper 的〈After Automation〉"/></a><div class="content"><a class="title" href="/posts/589db222/" title="沒有「取代所有人」的臨界點——讀 Dan Shipper 的〈After Automation〉">沒有「取代所有人」的臨界點——讀 Dan Shipper 的〈After Automation〉</a><time datetime="2026-05-25T05:45:00.000Z" title="發表於 2026-05-25 13:45:00">2026-05-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3ff96469/" title="用 Claude Code 半年，我從寫程式的變成幫 AI 收尾的"><img src= "/img/loading.gif" data-lazy-src="/images/posts/ai-sandwich-finisher-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用 Claude Code 半年，我從寫程式的變成幫 AI 收尾的"/></a><div class="content"><a class="title" href="/posts/3ff96469/" title="用 Claude Code 半年，我從寫程式的變成幫 AI 收尾的">用 Claude Code 半年，我從寫程式的變成幫 AI 收尾的</a><time datetime="2026-05-25T05:10:00.000Z" title="發表於 2026-05-25 13:10:00">2026-05-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/326effc8/" title="400 tps 是分水嶺：智譜 GLM-5.1 高速版能解決哪些工程瓶頸"><img src= "/img/loading.gif" data-lazy-src="/images/posts/glm-5-1-highspeed-400tps-engineering-watershed-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="400 tps 是分水嶺：智譜 GLM-5.1 高速版能解決哪些工程瓶頸"/></a><div class="content"><a class="title" href="/posts/326effc8/" title="400 tps 是分水嶺：智譜 GLM-5.1 高速版能解決哪些工程瓶頸">400 tps 是分水嶺：智譜 GLM-5.1 高速版能解決哪些工程瓶頸</a><time datetime="2026-05-22T08:30:00.000Z" title="發表於 2026-05-22 16:30:00">2026-05-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/dee349ad/" title="90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解"><img src= "/img/loading.gif" data-lazy-src="/images/posts/90-to-99-cursor-cloud-agent-lessons-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解"/></a><div class="content"><a class="title" href="/posts/dee349ad/" title="90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解">90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解</a><time datetime="2026-05-22T07:00:00.000Z" title="發表於 2026-05-22 15:00:00">2026-05-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/a7baf052/" title="xAI 一年虧 64 億、OpenAI 燒不出獲利、NVIDIA 一季淨賺 583 億——AI 鏈條真正賺錢的位置"><img src= "/img/loading.gif" data-lazy-src="/images/posts/nvidia-583-billion-profit-vs-ai-companies-burning-cash-shovel-seller-wins-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="xAI 一年虧 64 億、OpenAI 燒不出獲利、NVIDIA 一季淨賺 583 億——AI 鏈條真正賺錢的位置"/></a><div class="content"><a class="title" href="/posts/a7baf052/" title="xAI 一年虧 64 億、OpenAI 燒不出獲利、NVIDIA 一季淨賺 583 億——AI 鏈條真正賺錢的位置">xAI 一年虧 64 億、OpenAI 燒不出獲利、NVIDIA 一季淨賺 583 億——AI 鏈條真正賺錢的位置</a><time datetime="2026-05-21T08:00:00.000Z" title="發表於 2026-05-21 16:00:00">2026-05-21</time></div></div></div></div><div class="card-widget ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8919908724705274" data-ad-slot="8108145410" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div></div></div></main><footer id="footer" style="background-image: url(/images/posts/ai-sandwich-finisher-cover.png);"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2026 By kyosora</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/utils.min.js"></script><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/main.min.js"></script><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/tw_cn.min.js"></script><script src="https://jsd.012700.xyz/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://jsd.012700.xyz/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://jsd.012700.xyz/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://jsd.012700.xyz/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const applyThemeDefaultsConfig = theme => {
+    if (theme === 'dark-mode') {
+      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
+      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    } else {
+      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
+      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    }
+  }
+
+  // Recursively traverse the config object and automatically apply theme-specific color schemes
+  const applyThemeConfig = (obj, theme) => {
+    if (typeof obj !== 'object' || obj === null) return
+
+    Object.keys(obj).forEach(key => {
+      const value = obj[key]
+      // If the property is an object and has theme-specific options, apply them
+      if (typeof value === 'object' && value !== null) {
+        if (value[theme]) {
+          obj[key] = value[theme] // Apply the value for the current theme
+        } else {
+          // Recursively process child objects
+          applyThemeConfig(value, theme)
+        }
+      }
+    })
+  }
+
+  const runChartJS = ele => {
+    window.loadChartJS = true
+
+    Array.from(ele).forEach((item, index) => {
+      const chartSrc = item.firstElementChild
+      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
+      const width = item.getAttribute('data-width')
+      const existingCanvas = document.getElementById(chartID)
+
+      // If a canvas already exists, remove it to avoid rendering duplicates
+      if (existingCanvas) {
+          existingCanvas.parentNode.remove()
+      }
+
+      const chartDefinition = chartSrc.textContent
+      const canvas = document.createElement('canvas')
+      canvas.id = chartID
+
+      const div = document.createElement('div')
+      div.className = 'chartjs-wrap'
+
+      if (width) {
+        div.style.width = width
+      }
+
+      div.appendChild(canvas)
+      chartSrc.insertAdjacentElement('afterend', div)
+
+      const ctx = document.getElementById(chartID).getContext('2d')
+
+      const config = JSON.parse(chartDefinition)
+
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
+
+      // Set default styles (initial setup)
+      applyThemeDefaultsConfig(theme)
+
+      // Automatically traverse the config and apply dual-mode color schemes
+      applyThemeConfig(config, theme)
+
+      new Chart(ctx, config)
+    })
+  }
+
+  const loadChartJS = () => {
+    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
+    if (chartJSEle.length === 0) return
+
+    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://jsd.012700.xyz/npm/chart.js/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
+  }
+
+  // Listen for theme change events
+  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
+  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
+
+  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = {"mapping":"pathname","inputPosition":"top","lang":"zh-TW","reactionsEnabled":1}
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'kyosora/kyosora.github.io',
+      'data-repo-id': 'R_kgDOLJYL_w',
+      'data-category-id': 'DIC_kwDOLJYL_84C516C',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !true) {
+    if (true) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script data-pjax src="/self/btf.js"></script><script defer="defer" id="ribbon" src="https://jsd.012700.xyz/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script src="https://jsd.012700.xyz/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","meta[property=\"og:description\"]","link[rel=\"canonical\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: true,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      const usePjax = true
+      true 
+        ? (usePjax ? pjax.loadUrl('/404') : window.location.href = '/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})()</script><script>(() => {
+  const option = null
+  const config = {"site_uv":true,"site_pv":true,"page_pv":true,"token":"qTvz1SkmPDt785fgh6BpiA5qiFFIVUwxj8Ft+rPW+cdN59v1hXjwRgSmy0+ji9m+oLlcxvo2NfDSMa6epVl3NTlsN3ejCIwWeP8Y51aEJ0Sbem4UexGmJLspB7AkOBId2SdtT6QWEBlGmFIIQgchQ2zAKYxTmc/kpBED5aLSr+3uvmQ9/G7FJQeVFpveDkK0xM1hu36xq4a6/FSeROxtoEp5zabzTWiYTlLsQzIl/NlELnCq3nxK+oo/vl3UQo/oM/rae/gJX/MaVKsgIUCd2ABJogNkx2KTenBIBpbPki5FzOgPh6/z4GPa4HvhNO51DDVG1SEQZooqEYmt/gnybLBWFbN+7liZWw=="}
+
+  const runTrack = () => {
+    umami.track(props => ({ ...props, url: window.location.pathname, title: GLOBAL_CONFIG_SITE.title }))
+  }
+
+  const loadUmamiJS = () => {
+    btf.getScript('https://umami.012700.xyz/script.js', {
+      'data-website-id': '2a796d6c-6499-42d8-8eb4-d9a2930b0ff3',
+      'data-auto-track': 'false',
+      ...option
+    }).then(runTrack)
+  }
+
+  const getData = async (isPost) => {
+    const now = Date.now()
+    const keyUrl = isPost ? `&url=${window.location.pathname}` : ''
+    const headerList = { 'Accept': 'application/json' }
+    if (true) headerList['Authorization'] = `Bearer ${config.token}`
+    else headerList['x-umami-api-key'] = config.token
+    const res = await fetch(`https://umami.012700.xyz/api/websites/2a796d6c-6499-42d8-8eb4-d9a2930b0ff3/stats?startAt=0000000000&endAt=${now}${keyUrl}`, {
+      method: "GET",
+      headers: headerList
+    })
+    return await res.json()
+  }
+
+  const insertData = async () => {
+    try {
+      if (GLOBAL_CONFIG_SITE.pageType === 'post' && config.page_pv) {
+        const pagePV = document.getElementById('umamiPV')
+        if (pagePV) {
+          const data = await getData(true)
+          pagePV.textContent = data.pageviews.value
+        }
+      } else {
+        const data = (config.site_uv || config.site_pv) && await getData()
+        if (config.site_uv) {
+          const siteUV = document.getElementById('umami-site-uv')
+          if (siteUV) siteUV.textContent = data.visitors.value
+        }
+        if (config.site_pv) {
+          const sitePV = document.getElementById('umami-site-pv')
+          if (sitePV) sitePV.textContent = data.pageviews.value
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load Umami Analytics:', e)
+    }
+  }
+
+  btf.addGlobalFn('pjaxComplete', runTrack, 'umami_analytics_run_track')
+  btf.addGlobalFn('pjaxComplete', insertData, 'umami_analytics_insert')
+
+  loadUmamiJS()
+  insertData()
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜尋文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/search/local-search.min.js"></script></div></div></body></html>

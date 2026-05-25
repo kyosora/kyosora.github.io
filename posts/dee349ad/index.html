@@ -1,0 +1,610 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解 | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Cursor 在 5&#x2F;21 釋出一篇「What we’ve learned building cloud agents」，作者是 Josh Ma。看起來像普通的工程經驗總結，但藏了一個讓我看完盯著螢幕想很久的數字：他們把 Cursor 內部 monorepo 的 40% PR 交給雲端 Agent 寫，而且這個比例還在漲。  這套系統最後支撐到 40% 之前，他們花了一年——不是「把本地 Agen">
+<meta property="og:type" content="article">
+<meta property="og:title" content="90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解">
+<meta property="og:url" content="https://kyosora.github.io/posts/dee349ad/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="Cursor 在 5&#x2F;21 釋出一篇「What we’ve learned building cloud agents」，作者是 Josh Ma。看起來像普通的工程經驗總結，但藏了一個讓我看完盯著螢幕想很久的數字：他們把 Cursor 內部 monorepo 的 40% PR 交給雲端 Agent 寫，而且這個比例還在漲。  這套系統最後支撐到 40% 之前，他們花了一年——不是「把本地 Agen">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/images/posts/90-to-99-cursor-cloud-agent-lessons-cover.png">
+<meta property="article:published_time" content="2026-05-22T07:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-22T07:18:36.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Cursor">
+<meta property="article:tag" content="AI Agent">
+<meta property="article:tag" content="Temporal">
+<meta property="article:tag" content="系統可靠性">
+<meta property="article:tag" content="工程實踐">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kyosora.github.io/images/posts/90-to-99-cursor-cloud-agent-lessons-cover.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解",
+  "url": "https://kyosora.github.io/posts/dee349ad/",
+  "image": "https://kyosora.github.io/images/posts/90-to-99-cursor-cloud-agent-lessons-cover.png",
+  "datePublished": "2026-05-22T07:00:00.000Z",
+  "dateModified": "2026-05-22T07:18:36.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kyosora",
+      "url": "https://kyosora.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/posts/dee349ad/"><link rel="preconnect" href="https://jsd.012700.xyz"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://jsd.012700.xyz/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://jsd.012700.xyz/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-F9P7RWQQJE')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://jsd.012700.xyz/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://jsd.012700.xyz"><link href="/self/btf.css" rel="stylesheet"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "/img/loading.gif" data-lazy-src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">183</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">369</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">107</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/posts/90-to-99-cursor-cloud-agent-lessons-cover.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a><a class="nav-page-title" href="/"><span class="site-name">90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解<a class="post-edit-link" href="https://github.com/jerryc127/butterfly.js.org/edit/main/source/_posts/90-to-99-cursor-cloud-agent-lessons.md" title="編輯" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">發表於</span><time datetime="2026-05-22T07:00:00.000Z" title="發表於 2026-05-22 15:00:00">2026-05-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E8%A1%93%E8%A7%80%E5%AF%9F/">技術觀察</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E8%A1%93%E8%A7%80%E5%AF%9F/AI-%E5%B7%A5%E7%A8%8B/">AI 工程</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">2.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>8分鐘</span></span><span class="post-meta-separator">|</span><span id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">瀏覽量:</span><span id="umamiPV" data-path="/posts/dee349ad/"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>Cursor 在 5/21 釋出一篇「What we’ve learned building cloud agents」，作者是 Josh Ma。看起來像普通的工程經驗總結，但藏了一個讓我看完盯著螢幕想很久的數字：他們把 Cursor 內部 monorepo 的 40% PR 交給雲端 Agent 寫，而且這個比例還在漲。</p>
+<p>這套系統最後支撐到 40% 之前，他們花了一年——不是「把本地 Agent 搬到伺服器」那種一年，而是把可靠性從 90%（一個九）拉到 99%（兩個九），中間放棄了自研架構、改用 Temporal、重新拆解了 agent、機器、對話三個狀態。</p>
+<p>我自己沒做過 cloud agent 產品，但這篇花了一個下午消化，因為文章拆出來的五個學習，每一個都是「想做 AI Agent SaaS 的人遲早會撞上的牆」。寫一篇給台灣中階開發者看的拆解版。（附帶一個小插曲：中文 AI 資訊聚合站把原文的 “two nines” 翻成「99.9%」，實際是 99%。讀任何技術摘要，最後一步都要回原文校對。）</p>
+<h2 id="第一個坑：以為雲端-Agent-就是把本地-Agent-搬到-server">第一個坑：以為雲端 Agent 就是把本地 Agent 搬到 server</h2>
+<p>Cursor 自己承認，一年前推出 cloud agents 時，內部把它當成「本地 Agent 的延伸」。後來才發現這個定位完全錯了。</p>
+<p>本地 Agent 跑在你筆電上，繼承你的工作環境——你裝好的 SDK、登入過的 GitHub、設定好的 .env、跑過的 dev server。你寫程式時這些東西「就在那裡」。Agent 也用得到。</p>
+<p>搬到雲端，這套不見了。你得從零重建。</p>
+<p>而最狡猾的問題是：環境不完整不會崩潰。Agent 還是會跑完任務、還是會生出一個 PR、還是會自信地回覆「已經改好」。但輸出品質會悄悄下降——少了某個 lib、少了某個權限、少了某個內部 API token，結果就是 Agent 開始繞路、用 workaround、寫出能跑但完全沒抓到重點的代碼。</p>
+<p>Cursor 為了解決這個問題，最後在自家做了一整套「Agent 專用的企業 IT」：</p>
+<ul>
+<li>VM 之間的 sleep / resume 機制</li>
+<li>VM 映像的 checkpoint、restore、fork pipeline</li>
+<li>受控的網路存取（建 PR、拉依賴、做研究）</li>
+<li>密鑰編輯、網路政策、認證管理</li>
+</ul>
+<p>看到這串清單我笑了。這些不是「AI 功能」——這是 IT 部門做的事。要做雲端 Agent 產品，你會先變成你自己團隊的 IT。</p>
+<h2 id="第二個坑：自研架構撐不到「兩個九」">第二個坑：自研架構撐不到「兩個九」</h2>
+<p>Cursor 最初的雲端 Agent 架構叫「工作竊取」（work-stealing）——一堆 worker node 從佇列裡撈 Agent 任務、跑到完成。聽起來合理：你有一堆 VM、一堆 task，誰閒就誰拿。</p>
+<p>結果早期測試版的可靠性只有「一個九」（90%）。</p>
+<p>這個數字看起來不差。一百個任務跑完九十個。但你想想，如果你的 cloud agent 任務平均跑 30 分鐘，使用者一天用十次，那一週後他會碰到 7 次失敗——而且不是「跑到一半提示要重試」的乾淨失敗，是「跑了 25 分鐘然後 worker pod 被 K8s 替換掉、任務蒸發」的那種失敗。</p>
+<p>三個風險來源直接打在工作竊取架構的最弱點：</p>
+<ol>
+<li>推理供應商中斷（OpenAI / Anthropic API 抖一下）</li>
+<li>Pod 需要被替換（Kubernetes 滾動更新、scale down）</li>
+<li>EC2 節點故障（AWS 隨時可能 reclaim 機器）</li>
+</ol>
+<p>Cursor 發現自己正在重建一套東西：跨機器調度、自動重試、節點故障下的耐久執行（durable execution，意思是任務狀態要能撐過機器死亡而不丟）。然後意識到——這套東西已經有人做過了，叫 Temporal。</p>
+<p>他們遷過去。</p>
+<p>遷移後的數字：</p>
+<ul>
+<li>可靠性突破「兩個九」（99%）</li>
+<li>Temporal 每天處理 5000 萬個 actions、跨 700 萬個唯一 workflow</li>
+<li>Cursor 內部 monorepo 的 40% PR 由 cloud agent 寫</li>
+</ul>
+<p>另一個值得單獨提的細節，Cursor 還重寫了 Temporal workflow 的設計——從「永恆」（eternal）workflow 改成「完成一個任務就退出」的短 workflow。原因不是可靠性，是版本升級——eternal workflow 跑半年的話，你想改一行 logic 都得處理「進行中的 workflow 用舊版、新進來的用新版」的相容性。短 workflow 就沒這問題。</p>
+<p>說白了，他們交出去的不是性能，是控制權。自研架構完全掌握，但 race condition、跨機器調度、節點故障下的耐久執行——這些工程時間 Temporal 全部還給你。代價是你不能再從根上動它。</p>
+<h2 id="第三個坑：Agent、機器、對話狀態本來是同一個東西">第三個坑：Agent、機器、對話狀態本來是同一個東西</h2>
+<p>本地 Agent 你不會分這三層。你的 IDE 開著、Agent 在那個 process 裡跑、對話歷史寫在 IDE 的 SQLite。三層合一。</p>
+<p>雲端不能這樣。</p>
+<p>Cursor 拆成三層：</p>
+<ol>
+<li><strong>Agent 循環</strong>：跑在 Temporal 上，跟特定 VM 解耦——VM 死了 Temporal 還記得任務跑到哪</li>
+<li><strong>VM 池</strong>：支援多種 pod 類型（唯讀 VM、預熱 VM、含特殊權限的 VM）。Agent 循環需要哪種就要哪種</li>
+<li><strong>對話狀態</strong>：分成存儲層（append-only 結構）和串流層（往 web / desktop client 推更新）</li>
+</ol>
+<p>第三層藏了一個容易被略過但很要緊的細節。原文是這樣寫的：</p>
+<blockquote>
+<p>這層會處理重試。若 agent 循環步驟在串流部分輸出後失敗並重新嘗試，client 能偵測並回卷串流、顯示新資料。</p>
+</blockquote>
+<p>翻譯成人話：Agent 跑到一半失敗、Temporal 重試、第二次跑出來的結果可能跟第一次「已經串流給使用者看的部分」不一樣。Cursor 的 client 會自動把先前看到的部分「捲回去」、用新的取代。</p>
+<p>一般 web app 你失敗就重新整理。但 AI Agent 的 token 是邊算邊吐的——失敗發生在第 3000 個 token 的時候，前 2999 個你已經給使用者看了。這是 streaming 時代才有的 UX bug，而且解法不在前端、不在後端，是要在「對話協議」這一層處理。</p>
+<h2 id="第四個坑：Harness-一開始抓得太緊">第四個坑：Harness 一開始抓得太緊</h2>
+<p>Harness 是 Agent 跑在裡面的「外殼」——決定哪些工具給 Agent 用、什麼時候強制中斷、出錯時怎麼 fallback。</p>
+<p>Cursor 早期的 harness 很「保姆型」：</p>
+<ul>
+<li>每個 task 跑完後雙重檢查</li>
+<li>強制提交、強制 push</li>
+<li>多倉庫情境硬編碼 routing 邏輯</li>
+<li>CI 失敗時自動抓 log 給 Agent</li>
+</ul>
+<p>隨著 GPT-4 / Claude 3 / 後來的 Claude Opus 變聰明，這些 hard-coded 邏輯反而成了限制。Cursor 改成「只給工具、讓 Agent 自己決定」：</p>
+<ul>
+<li>多倉庫：給 Agent「倉庫佈局描述」+「PR 工具」，讓它自己選怎麼走</li>
+<li>CI Autofix：只給 GitHub CLI 存取，Agent 自己抓 log、自己決定要不要寫到檔案</li>
+</ul>
+<p>文章裡有一句話直接寫出 cloud agent 的本質：</p>
+<blockquote>
+<p>Cloud agents 需要不同的 harness 提示詞。鼓勵更高自主性，因為阻塞成本更高——本地你知道 agent 何時停止等待許可，但雲端可能數小時無人檢查。</p>
+</blockquote>
+<p>這直接打到我在 Claude Code 裡的體感。本地你可以一直 Ctrl+C 重來，停五分鐘等你回來。雲端不行——你 5 點下班開始跑、半夜 12 點看，發現它 5:03 就卡在等你回答「要不要建分支」的對話框。整個晚上白等。</p>
+<p>所以雲端 harness 的 prompt 要更狠：「自己決定、不要等、出錯就 retry、最壞情況留 log 給人類事後看。」</p>
+<h2 id="第五個坑（沒講透但很重要）：自癒環境">第五個坑（沒講透但很重要）：自癒環境</h2>
+<p>文章最後一段提到他們未來方向是給 Agent「理解周圍系統」的工具，讓它能自己回報「缺少某個 API key」「網路被擋」這類阻礙，再自己修。Cursor 把這方向叫 autoinstall。</p>
+<p>這段原文寫得很短，但落地代表著 Agent 從「會用工具」走向「會診斷自己的環境」。目前的 Agent 碰到環境問題會「猜」——猜你用 npm、猜你的 PATH、猜你的 GitHub token 在哪。猜對就跑、猜錯就用 workaround 繞過。</p>
+<p>要做到「Agent 知道自己不知道什麼」很難，這不是寫個 introspect 工具就能解的——你得設計 prompt、訓練模型在不確定時主動報告而不是硬猜、再設計回報後的人類介入流程。Cursor 寫得輕描淡寫，但這是整篇文章我覺得最遠的目標。</p>
+<h2 id="對台灣中階工程師意味著什麼">對台灣中階工程師意味著什麼</h2>
+<p>你大概不會明天就開始做雲端 Agent SaaS。但如果你的團隊接下來會讓 Agent 動到 PR 流程（不論用的是 Cursor、Claude Code、Codex、還是別的），Cursor 這篇文章揭示了一個現實：你能讓 Agent 跑多遠，取決於你的開發環境長得多漂亮。</p>
+<p>具體該動的幾件事：</p>
+<ul>
+<li><strong>devcontainer 寫好寫滿</strong>：Agent 拿到的環境得跟工程師本地一致，缺一個 lib 就出現「能跑但繞路」的悄悄掉品質</li>
+<li><strong>CI log 要能被機器讀</strong>：靠人類解讀的 stack trace、亂碼編碼、混在 stdout 裡的 ANSI escape——Agent 看到只會無腦重試</li>
+<li><strong>Secret policy 要有「Agent 視角」</strong>：哪些 token 可以給 Agent、哪些不行、給的時候有沒有 expiration 和 audit log</li>
+<li><strong>Repo layout 寫成文件</strong>：多倉庫專案的關係、哪個 repo 跑哪個 service、哪個 PR 要連帶改哪些——這在 Cursor harness 改造後變成 Agent 自己要讀的「地圖」</li>
+</ul>
+<p>如果這幾項沒做，買再多 Cursor Pro / Claude Max 都救不回品質。</p>
+<h2 id="看完這篇的三個帶得走的判斷">看完這篇的三個帶得走的判斷</h2>
+<ol>
+<li>
+<p><strong>「把 X 搬到雲端」永遠是錯的問題</strong>。真正的問題是「X 在雲端要附帶哪些原本免費繼承的東西」。本地免費的環境，到雲端都要付錢做基礎設施。</p>
+</li>
+<li>
+<p><strong>可靠性不是寫程式寫出來的，是選對抽象選出來的</strong>。Cursor 自研架構卡在 90%，不是因為他們工程師不夠強——是 work-stealing 模型本身對「跨機器耐久性」這件事不友善。換成 Temporal 不是「改架構」，是換問題的座標系。</p>
+</li>
+<li>
+<p><strong>40% 的內部 PR 由 Agent 寫，這個數字會繼續漲</strong>。Cursor 不是普通公司——他們是天天跟 Agent 工作的人。如果這 40% 是真的且還在漲，那其他公司之後也會走到這數字。中階工程師最該擔心的不是「會不會被取代」，而是「我的 PR 流程裡有沒有對 Agent 友善的設計」。</p>
+</li>
+</ol>
+<p>一個值得回頭翻的細節：Temporal 把可靠性推上 99%，而 eternal workflow 改成 short workflow 是為了版本升級——兩個決定一個解可靠性、一個解可維護性。工程師讀技術文章常會把「換工具的決定」記得很牢，忘了真正讓系統長久工作的是後面那些沒人講的設計取捨。</p>
+<p>老實說，我看完最大的感覺不是「我也想做雲端 Agent 產品」，而是 Cursor 願意把踩過的工程坑寫出來——這在 2026 年的 AI 創業圈非常少見。多數公司會把這種文章鎖在內部 wiki 裡，當競爭壁壘。</p>
+<p>原文：<a target="_blank" rel="noopener" href="https://cursor.com/blog/cloud-agent-lessons">cursor.com/blog/cloud-agent-lessons</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kyosora.github.io">kyosora</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://kyosora.github.io/posts/dee349ad/">https://kyosora.github.io/posts/dee349ad/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 授權協議。轉載請註明來源 <a href="https://kyosora.github.io" target="_blank">kyosora 筆記</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Cursor/">Cursor</a><a class="post-meta__tags" href="/tags/AI-Agent/">AI Agent</a><a class="post-meta__tags" href="/tags/Temporal/">Temporal</a><a class="post-meta__tags" href="/tags/%E7%B3%BB%E7%B5%B1%E5%8F%AF%E9%9D%A0%E6%80%A7/">系統可靠性</a><a class="post-meta__tags" href="/tags/%E5%B7%A5%E7%A8%8B%E5%AF%A6%E8%B8%90/">工程實踐</a></div><div class="post-share"><div class="social-share" data-image="/images/posts/90-to-99-cursor-cloud-agent-lessons-cover.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://jsd.012700.xyz/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://jsd.012700.xyz/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-8919908724705274" data-ad-slot="5978969231"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/a7baf052/" title="xAI 一年虧 64 億、OpenAI 燒不出獲利、NVIDIA 一季淨賺 583 億——AI 鏈條真正賺錢的位置"><img class="cover" src= "/img/loading.gif" data-lazy-src="/images/posts/nvidia-583-billion-profit-vs-ai-companies-burning-cash-shovel-seller-wins-cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">xAI 一年虧 64 億、OpenAI 燒不出獲利、NVIDIA 一季淨賺 583 億——AI 鏈條真正賺錢的位置</div></div><div class="info-2"><div class="info-item-1">2026 年 5 月 20 日這一天，三條財經新聞在同一時間冒出來。 第一條：NVIDIA 公布 FY27 Q1 財報——單季營收 816 億美元（+85% YoY）、淨利 583 億美元（+211%）、毛利率 74.9%、宣布 800 億美元股票回購、預測下季 910 億美元營收。 第二條：SpaceX 提交 IPO 招股書，順帶揭露剛被併入的 xAI 2025 年財務——全年虧損 64 億美元，營收 32 億，CapEx 127 億。SpaceX + xAI 合併後 2025 全年淨虧 49.4 億。 第三條：CNBC 報導 OpenAI 最快本週五提交 IPO 招股書草案，目標 2026 年 9 月上市，私募估值 5000 億美元，但訓練 + 推理 CapEx 長期遠高於營收，是公開的賠錢業務。 三條新聞放在同一張表上，AI 鏈條真正賺錢的位置就一覽無遺了。所有做模型的公司都在燒錢，賣 GPU 的那家一季淨賺一個 OpenAI 估值 12% 的數字。...</div></div></div></a><a class="pagination-related" href="/posts/326effc8/" title="400 tps 是分水嶺：智譜 GLM-5.1 高速版能解決哪些工程瓶頸"><img class="cover" src= "/img/loading.gif" data-lazy-src="/images/posts/glm-5-1-highspeed-400tps-engineering-watershed-cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">400 tps 是分水嶺：智譜 GLM-5.1 高速版能解決哪些工程瓶頸</div></div><div class="info-2"><div class="info-item-1">智譜 5/22 對部分企業客戶推出 GLM-5.1 高速版，API 輸出速度達 400 tokens/s。新聞標題是「全球最快」，但這個說法不嚴謹——Cerebras 跑 Llama 405B 早就破 900 tps。真正值得單獨講的不是「誰快」，而是 400 tps 在工程上意味著什麼。 這篇不是寫智譜的 PR 稿。我關心的問題是：旗艦級大模型過了某個速度門檻之後，工程師能做的事會出現質變——這個門檻大概在哪裡？哪些場景真的能因此解鎖？哪些只是看起來很厲害的行銷數字？ 速度光譜定位 先把 400 tps 放到正確的座標上。市面上幾個常見的推理速度：    模型 / 平台 輸出速度 性質     GPT-5 / Claude Sonnet 4.6（標準 API） 60-120 tps 旗艦級的「典型」速度   Groq LPU 跑 Llama 70B ~280 tps 中型模型 + 客製晶片   智譜 GLM-5.1 highspeed 400 tps 旗艦級 + 純軟體優化   Cerebras WSE-3 跑 Llama 405B ~970 tps 旗艦級 +...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/51217f8c/" title="Cursor 自建 AI 模型的背後邏輯：當你的 IDE 不想再幫別人打工"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-20</div><div class="info-item-2">Cursor 自建 AI 模型的背後邏輯：當你的 IDE 不想再幫別人打工</div></div><div class="info-2"><div class="info-item-1">三月十九號，Bloomberg 丟出一顆炸彈：Cursor 正在自建 AI 模型。 不是微調，不是套殼。是從頭訓練一個專門寫程式碼的基礎模型，叫做 Composer 2。同一天，消息傳出 Cursor 正在以約 500 億美元估值募資。 一個 IDE 公司，估值比大多數 SaaS 獨角獸加起來還高，然後決定去做模型。這件事值得認真想一下。 為什麼 Cursor 要自己做模型？ 先看數字：Cursor 現在每天有超過一百萬活躍用戶，五萬家企業客戶——包括 Stripe 和 Figma 這種等級的公司。ARR 已經衝到 20 億美元。 表面上看，一切都很好。但 Cursor 的核心焦慮其實很明確：他們最重要的能力，是別人提供的。 Cursor 背後的模型主要是 Claude 和 GPT。每一次 Anthropic 改了 API 定價、每一次 OpenAI 決定把 Codex 做得更好、每一次這些公司推出自己的 IDE 或 Agent 產品——Cursor 的護城河就窄了一點。 這不是被害妄想。Claude Code 已經在搶 Cursor 的午餐。OpenAI 的 Codex...</div></div></div></a><a class="pagination-related" href="/posts/365db273/" title="AI Agent 框架大亂鬥：NemoClaw、OpenClaw 和開發者的真實選擇"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-15</div><div class="info-item-2">AI Agent 框架大亂鬥：NemoClaw、OpenClaw 和開發者的真實選擇</div></div><div class="info-2"><div class="info-item-1">老闆走過來說：「我看到競爭對手在用 AI Agent 自動處理客服了，我們也來做一個。」 你心裡的 OS 大概是：用哪個框架？LangChain？AutoGen？還是最近爆紅的 OpenClaw？明天 NVIDIA GTC 又要發布 NemoClaw，這局面到底怎麼選？ 我花了一整晚研究目前的 AI Agent 框架生態，把我的觀察整理成這篇。不賣焦慮，只講開發者真正需要思考的問題。 數字先看：這不是 hype，但也不全是真的 Gartner 和 Forrester 都把 2026 年標記為「多代理系統的突破年」。幾個關鍵數據：  57% 的企業已經有 AI Agent 在生產環境跑了（G2 調查） 40% 的企業應用預計會嵌入特定任務的 AI Agent 80% 的受訪者表示 AI Agent 已經產生可衡量的經濟影響 全球 Agentic AI 市場規模從 2026 年的 91.4 億美元，預計 2034 年達到 1,390 億美元  但 Gartner 同時預測：超過 40% 的 Agent 專案會在 2027...</div></div></div></a><a class="pagination-related" href="/posts/624d1bf8/" title="AI Agent 不寫程式了——2026 年 Agent 生態從寫 Code 走向裝 Skill"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-19</div><div class="info-item-2">AI Agent 不寫程式了——2026 年 Agent 生態從寫 Code 走向裝 Skill</div></div><div class="info-2"><div class="info-item-1">上個月我盯 GitHub Trending 的時候，發現一個微妙的轉變：排行榜上最火的 AI 專案，不再是「更好的模型」或「更快的推理引擎」。而是一堆教 Agent 怎麼裝外掛、怎麼組合技能的框架。 OpenClaw 60 天內從 9,000 顆星飆到 250,000 顆。Obra/superpowers 緊隨其後，定位自己是「Agent 的 App Store」。ByteDance 的 DeerFlow v2 上線當天就衝上 Trending 第一。Karpathy 的 autoresearch 三天拿了 23,000 顆星。 這幾個專案各做各的，但拼在一起看，指向同一件事：Agent 的核心能力正從「寫程式碼」轉移到「組合技能」。 從「什麼都自己幹」到「會裝外掛就好」 2024 年的 AI Agent 長這樣：給它一個任務，它會嘗試用程式碼從零搭出解決方案。寫 API 呼叫、處理 JSON、做錯誤處理——全部即時生成。 問題很明顯。每次執行同樣的任務，Agent...</div></div></div></a><a class="pagination-related" href="/posts/6bed35e0/" title="61 個 Markdown 檔讓你的 IDE 變成 AI 公司：agency-agents 爆紅背後的技術邏輯"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-14</div><div class="info-item-2">61 個 Markdown 檔讓你的 IDE 變成 AI 公司：agency-agents 爆紅背後的技術邏輯</div></div><div class="info-2"><div class="info-item-1">一個 GitHub 專案，沒有任何可執行程式碼，只有 61 個 Markdown 檔案，7 天內拿到 10,000 顆星。截至 3/14 已經衝到 39,300 星。 這不是什麼新框架或新語言。agency-agents 做的事情只有一件：用 Markdown 定義 AI 的專業人格。 聽起來荒謬，但它戳中了一個真實的問題。 你的 AI 助手什麼都會，所以什麼都做不好 用過 Claude Code 或 Cursor 的人都有這個經驗：你請 AI 寫一個 REST API，它給你一個「還行」的版本。能跑，但缺少認證考量、沒有速率限制、錯誤處理敷衍、命名風格前後不一。 問題不在模型能力。GPT-5.4、Claude Opus 4.6、Gemini 3.1 Pro——這些模型的知識量早就超過任何單一工程師。問題在於 context window 裡塞了太多可能性，模型不知道你要哪一種。 你問「幫我設計 API」，模型在 REST、GraphQL、gRPC 之間游移。你問「幫我寫測試」，模型不確定你要 unit test 還是 integration...</div></div></div></a><a class="pagination-related" href="/posts/f0b3a61e/" title="AI 比人類更會操作電腦了：GPT-5.4 Computer Use 技術拆解與開發者該注意的三件事"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-14</div><div class="info-item-2">AI 比人類更會操作電腦了：GPT-5.4 Computer Use 技術拆解與開發者該注意的三件事</div></div><div class="info-2"><div class="info-item-1">3 月 5 日，OpenAI 發布 GPT-5.4。大多數人的注意力被 1M token context window 和 Tool Search 搶走了，但我認為真正該被討論的是另一件事：Computer Use。 GPT-5.4 在 OSWorld 基準測試拿到 75.0% 的成功率。人類專家是 72.4%。 AI 操作電腦的成功率，正式超過人類了。 OSWorld 75%，這個數字為什麼重要 先說清楚 OSWorld 在測什麼。它不是問 AI「怎麼操作試算表」然後看回答正不正確。它是真的把 AI 丟到一台有作業系統的電腦前面，給它任務，看它能不能完成。 任務長這樣：  「找到最近修改過的試算表並打開它」 「把 Wi-Fi 切換到辦公室網路」 「打開 Chrome，到某個網站，把這份表單填完」  都是你每天在做的事。而 GPT-5.4 做這些事的成功率，比被付錢來完美完成任務的人類測試員還高。    模型 OSWorld 成功率 與人類（72.4%）比較     GPT-5.4 75.0% +2.6%   GPT-5.2 47.3% -25.1%   之前最佳...</div></div></div></a><a class="pagination-related" href="/posts/100dadfe/" title="Prompt Injection 不只是學術問題：OpenAI 收購 Promptfoo 背後的 Agent 安全困局"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-19</div><div class="info-item-2">Prompt Injection 不只是學術問題：OpenAI 收購 Promptfoo 背後的 Agent 安全困局</div></div><div class="info-2"><div class="info-item-1">三月初 OpenAI 宣布收購 Promptfoo，一家專門做 LLM 安全測試的新創。消息不算爆炸性——沒有天價估值、沒有千人團隊。但如果你正在寫 AI Agent，這件事值得你停下來想一分鐘。 為什麼一家手握 GPT-5.4 的公司，需要花錢買一個做 prompt injection 測試的工具？ Agent 不是 Chatbot，安全模型完全不同 傳統 chatbot 的安全問題相對好處理。使用者輸入一句話，模型回一句話。最壞的情況是輸出不當內容，加個 content filter 就能擋掉大部分。 Agent 不一樣。 一個典型的 Agent 工作流程長這樣：使用者下指令 → Agent 拆解任務 → 呼叫工具（搜尋、寫檔案、發 API）→ 讀取工具回傳結果 → 決定下一步 → 重複。每一步都有外部資料進入 context window。每一筆外部資料都是潛在的攻擊面。 想像你的 Agent 去搜尋一個網頁，網頁裡藏了一段 &lt;div style=&quot;display:none&quot;&gt;Ignore previous instructions....</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "/img/loading.gif" data-lazy-src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">183</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">369</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">107</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E5%80%8B%E5%9D%91%EF%BC%9A%E4%BB%A5%E7%82%BA%E9%9B%B2%E7%AB%AF-Agent-%E5%B0%B1%E6%98%AF%E6%8A%8A%E6%9C%AC%E5%9C%B0-Agent-%E6%90%AC%E5%88%B0-server"><span class="toc-number">1.</span> <span class="toc-text">第一個坑：以為雲端 Agent 就是把本地 Agent 搬到 server</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%80%8B%E5%9D%91%EF%BC%9A%E8%87%AA%E7%A0%94%E6%9E%B6%E6%A7%8B%E6%92%90%E4%B8%8D%E5%88%B0%E3%80%8C%E5%85%A9%E5%80%8B%E4%B9%9D%E3%80%8D"><span class="toc-number">2.</span> <span class="toc-text">第二個坑：自研架構撐不到「兩個九」</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E5%80%8B%E5%9D%91%EF%BC%9AAgent%E3%80%81%E6%A9%9F%E5%99%A8%E3%80%81%E5%B0%8D%E8%A9%B1%E7%8B%80%E6%85%8B%E6%9C%AC%E4%BE%86%E6%98%AF%E5%90%8C%E4%B8%80%E5%80%8B%E6%9D%B1%E8%A5%BF"><span class="toc-number">3.</span> <span class="toc-text">第三個坑：Agent、機器、對話狀態本來是同一個東西</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E5%80%8B%E5%9D%91%EF%BC%9AHarness-%E4%B8%80%E9%96%8B%E5%A7%8B%E6%8A%93%E5%BE%97%E5%A4%AA%E7%B7%8A"><span class="toc-number">4.</span> <span class="toc-text">第四個坑：Harness 一開始抓得太緊</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E5%80%8B%E5%9D%91%EF%BC%88%E6%B2%92%E8%AC%9B%E9%80%8F%E4%BD%86%E5%BE%88%E9%87%8D%E8%A6%81%EF%BC%89%EF%BC%9A%E8%87%AA%E7%99%92%E7%92%B0%E5%A2%83"><span class="toc-number">5.</span> <span class="toc-text">第五個坑（沒講透但很重要）：自癒環境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8D%E5%8F%B0%E7%81%A3%E4%B8%AD%E9%9A%8E%E5%B7%A5%E7%A8%8B%E5%B8%AB%E6%84%8F%E5%91%B3%E8%91%97%E4%BB%80%E9%BA%BC"><span class="toc-number">6.</span> <span class="toc-text">對台灣中階工程師意味著什麼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9C%8B%E5%AE%8C%E9%80%99%E7%AF%87%E7%9A%84%E4%B8%89%E5%80%8B%E5%B8%B6%E5%BE%97%E8%B5%B0%E7%9A%84%E5%88%A4%E6%96%B7"><span class="toc-number">7.</span> <span class="toc-text">看完這篇的三個帶得走的判斷</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/589db222/" title="沒有「取代所有人」的臨界點——讀 Dan Shipper 的〈After Automation〉"><img src= "/img/loading.gif" data-lazy-src="/images/posts/after-automation-frames-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="沒有「取代所有人」的臨界點——讀 Dan Shipper 的〈After Automation〉"/></a><div class="content"><a class="title" href="/posts/589db222/" title="沒有「取代所有人」的臨界點——讀 Dan Shipper 的〈After Automation〉">沒有「取代所有人」的臨界點——讀 Dan Shipper 的〈After Automation〉</a><time datetime="2026-05-25T05:45:00.000Z" title="發表於 2026-05-25 13:45:00">2026-05-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3ff96469/" title="用 Claude Code 半年，我從寫程式的變成幫 AI 收尾的"><img src= "/img/loading.gif" data-lazy-src="/images/posts/ai-sandwich-finisher-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用 Claude Code 半年，我從寫程式的變成幫 AI 收尾的"/></a><div class="content"><a class="title" href="/posts/3ff96469/" title="用 Claude Code 半年，我從寫程式的變成幫 AI 收尾的">用 Claude Code 半年，我從寫程式的變成幫 AI 收尾的</a><time datetime="2026-05-25T05:10:00.000Z" title="發表於 2026-05-25 13:10:00">2026-05-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/326effc8/" title="400 tps 是分水嶺：智譜 GLM-5.1 高速版能解決哪些工程瓶頸"><img src= "/img/loading.gif" data-lazy-src="/images/posts/glm-5-1-highspeed-400tps-engineering-watershed-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="400 tps 是分水嶺：智譜 GLM-5.1 高速版能解決哪些工程瓶頸"/></a><div class="content"><a class="title" href="/posts/326effc8/" title="400 tps 是分水嶺：智譜 GLM-5.1 高速版能解決哪些工程瓶頸">400 tps 是分水嶺：智譜 GLM-5.1 高速版能解決哪些工程瓶頸</a><time datetime="2026-05-22T08:30:00.000Z" title="發表於 2026-05-22 16:30:00">2026-05-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/dee349ad/" title="90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解"><img src= "/img/loading.gif" data-lazy-src="/images/posts/90-to-99-cursor-cloud-agent-lessons-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解"/></a><div class="content"><a class="title" href="/posts/dee349ad/" title="90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解">90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解</a><time datetime="2026-05-22T07:00:00.000Z" title="發表於 2026-05-22 15:00:00">2026-05-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/a7baf052/" title="xAI 一年虧 64 億、OpenAI 燒不出獲利、NVIDIA 一季淨賺 583 億——AI 鏈條真正賺錢的位置"><img src= "/img/loading.gif" data-lazy-src="/images/posts/nvidia-583-billion-profit-vs-ai-companies-burning-cash-shovel-seller-wins-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="xAI 一年虧 64 億、OpenAI 燒不出獲利、NVIDIA 一季淨賺 583 億——AI 鏈條真正賺錢的位置"/></a><div class="content"><a class="title" href="/posts/a7baf052/" title="xAI 一年虧 64 億、OpenAI 燒不出獲利、NVIDIA 一季淨賺 583 億——AI 鏈條真正賺錢的位置">xAI 一年虧 64 億、OpenAI 燒不出獲利、NVIDIA 一季淨賺 583 億——AI 鏈條真正賺錢的位置</a><time datetime="2026-05-21T08:00:00.000Z" title="發表於 2026-05-21 16:00:00">2026-05-21</time></div></div></div></div><div class="card-widget ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8919908724705274" data-ad-slot="8108145410" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div></div></div></main><footer id="footer" style="background-image: url(/images/posts/90-to-99-cursor-cloud-agent-lessons-cover.png);"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2026 By kyosora</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/utils.min.js"></script><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/main.min.js"></script><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/tw_cn.min.js"></script><script src="https://jsd.012700.xyz/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://jsd.012700.xyz/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://jsd.012700.xyz/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://jsd.012700.xyz/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const applyThemeDefaultsConfig = theme => {
+    if (theme === 'dark-mode') {
+      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
+      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    } else {
+      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
+      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    }
+  }
+
+  // Recursively traverse the config object and automatically apply theme-specific color schemes
+  const applyThemeConfig = (obj, theme) => {
+    if (typeof obj !== 'object' || obj === null) return
+
+    Object.keys(obj).forEach(key => {
+      const value = obj[key]
+      // If the property is an object and has theme-specific options, apply them
+      if (typeof value === 'object' && value !== null) {
+        if (value[theme]) {
+          obj[key] = value[theme] // Apply the value for the current theme
+        } else {
+          // Recursively process child objects
+          applyThemeConfig(value, theme)
+        }
+      }
+    })
+  }
+
+  const runChartJS = ele => {
+    window.loadChartJS = true
+
+    Array.from(ele).forEach((item, index) => {
+      const chartSrc = item.firstElementChild
+      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
+      const width = item.getAttribute('data-width')
+      const existingCanvas = document.getElementById(chartID)
+
+      // If a canvas already exists, remove it to avoid rendering duplicates
+      if (existingCanvas) {
+          existingCanvas.parentNode.remove()
+      }
+
+      const chartDefinition = chartSrc.textContent
+      const canvas = document.createElement('canvas')
+      canvas.id = chartID
+
+      const div = document.createElement('div')
+      div.className = 'chartjs-wrap'
+
+      if (width) {
+        div.style.width = width
+      }
+
+      div.appendChild(canvas)
+      chartSrc.insertAdjacentElement('afterend', div)
+
+      const ctx = document.getElementById(chartID).getContext('2d')
+
+      const config = JSON.parse(chartDefinition)
+
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
+
+      // Set default styles (initial setup)
+      applyThemeDefaultsConfig(theme)
+
+      // Automatically traverse the config and apply dual-mode color schemes
+      applyThemeConfig(config, theme)
+
+      new Chart(ctx, config)
+    })
+  }
+
+  const loadChartJS = () => {
+    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
+    if (chartJSEle.length === 0) return
+
+    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://jsd.012700.xyz/npm/chart.js/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
+  }
+
+  // Listen for theme change events
+  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
+  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
+
+  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = {"mapping":"pathname","inputPosition":"top","lang":"zh-TW","reactionsEnabled":1}
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'kyosora/kyosora.github.io',
+      'data-repo-id': 'R_kgDOLJYL_w',
+      'data-category-id': 'DIC_kwDOLJYL_84C516C',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !true) {
+    if (true) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script data-pjax src="/self/btf.js"></script><script defer="defer" id="ribbon" src="https://jsd.012700.xyz/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script src="https://jsd.012700.xyz/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","meta[property=\"og:description\"]","link[rel=\"canonical\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: true,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      const usePjax = true
+      true 
+        ? (usePjax ? pjax.loadUrl('/404') : window.location.href = '/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})()</script><script>(() => {
+  const option = null
+  const config = {"site_uv":true,"site_pv":true,"page_pv":true,"token":"qTvz1SkmPDt785fgh6BpiA5qiFFIVUwxj8Ft+rPW+cdN59v1hXjwRgSmy0+ji9m+oLlcxvo2NfDSMa6epVl3NTlsN3ejCIwWeP8Y51aEJ0Sbem4UexGmJLspB7AkOBId2SdtT6QWEBlGmFIIQgchQ2zAKYxTmc/kpBED5aLSr+3uvmQ9/G7FJQeVFpveDkK0xM1hu36xq4a6/FSeROxtoEp5zabzTWiYTlLsQzIl/NlELnCq3nxK+oo/vl3UQo/oM/rae/gJX/MaVKsgIUCd2ABJogNkx2KTenBIBpbPki5FzOgPh6/z4GPa4HvhNO51DDVG1SEQZooqEYmt/gnybLBWFbN+7liZWw=="}
+
+  const runTrack = () => {
+    umami.track(props => ({ ...props, url: window.location.pathname, title: GLOBAL_CONFIG_SITE.title }))
+  }
+
+  const loadUmamiJS = () => {
+    btf.getScript('https://umami.012700.xyz/script.js', {
+      'data-website-id': '2a796d6c-6499-42d8-8eb4-d9a2930b0ff3',
+      'data-auto-track': 'false',
+      ...option
+    }).then(runTrack)
+  }
+
+  const getData = async (isPost) => {
+    const now = Date.now()
+    const keyUrl = isPost ? `&url=${window.location.pathname}` : ''
+    const headerList = { 'Accept': 'application/json' }
+    if (true) headerList['Authorization'] = `Bearer ${config.token}`
+    else headerList['x-umami-api-key'] = config.token
+    const res = await fetch(`https://umami.012700.xyz/api/websites/2a796d6c-6499-42d8-8eb4-d9a2930b0ff3/stats?startAt=0000000000&endAt=${now}${keyUrl}`, {
+      method: "GET",
+      headers: headerList
+    })
+    return await res.json()
+  }
+
+  const insertData = async () => {
+    try {
+      if (GLOBAL_CONFIG_SITE.pageType === 'post' && config.page_pv) {
+        const pagePV = document.getElementById('umamiPV')
+        if (pagePV) {
+          const data = await getData(true)
+          pagePV.textContent = data.pageviews.value
+        }
+      } else {
+        const data = (config.site_uv || config.site_pv) && await getData()
+        if (config.site_uv) {
+          const siteUV = document.getElementById('umami-site-uv')
+          if (siteUV) siteUV.textContent = data.visitors.value
+        }
+        if (config.site_pv) {
+          const sitePV = document.getElementById('umami-site-pv')
+          if (sitePV) sitePV.textContent = data.pageviews.value
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load Umami Analytics:', e)
+    }
+  }
+
+  btf.addGlobalFn('pjaxComplete', runTrack, 'umami_analytics_run_track')
+  btf.addGlobalFn('pjaxComplete', insertData, 'umami_analytics_insert')
+
+  loadUmamiJS()
+  insertData()
+})()</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜尋文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="https://jsd.012700.xyz/npm/hexo-theme-butterfly/source/js/search/local-search.min.js"></script></div></div></body></html>
