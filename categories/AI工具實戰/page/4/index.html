@@ -1,0 +1,725 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>分類: AI工具實戰 | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="個人技術筆記和學習心得分享">
+<meta property="og:type" content="website">
+<meta property="og:title" content="kyosora 筆記">
+<meta property="og:url" content="https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/page/4/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="個人技術筆記和學習心得分享">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/images/avatar.png">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="網路安全, 系統管理, 程式設計, 技術筆記">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kyosora.github.io/images/avatar.png"><script type="application/ld+json"></script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/page/4/"><link rel="preconnect" href="https://cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-F9P7RWQQJE')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '分類: AI工具實戰',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'category'
+}</script><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="/css/about-cards.css"><link rel="stylesheet" href="/css/bg-gradient-mesh.css"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">193</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">391</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><h1 class="title-seo">AI工具實戰</h1></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/49fc8ff1/" title="你的 AI 開發工具鏈被下毒了嗎？LiteLLM 供應鏈攻擊事件完整解析">你的 AI 開發工具鏈被下毒了嗎？LiteLLM 供應鏈攻擊事件完整解析</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-03-27T14:00:00.000Z" title="發表於 2026-03-27 22:00:00">2026-03-27</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/">資訊安全</a></span></div><div class="content">2026 年 3 月 24 日上午 10:52 UTC，有人把一個藏了後門的 litellm 1.82.8 推上了 PyPI。六分鐘後，一位工程師的筆電因為 11,000 個 Python 程序同時爆開而當機。 他原本以為是 Cursor 更新搞的鬼。結果是一場精心設計的供應鏈攻擊——而且他是全世界第一個發現的人。 事件怎麼發生的litellm 是 AI 開發圈的常客。做 LLM 應用的人幾乎都用過它——統一呼叫 OpenAI、Anthropic、Gemini 等不同模型 API 的 proxy 層。PyPI 上的週下載量是百萬級別。 攻擊者拿到了 litellm 的 PyPI 發布權限（很可能是維護者帳號被盜），直接推了一個 1.82.8 版本上去。GitHub 上完全沒有對應的 tag 或 release——繞過了正常的發布流程。 惡意程式碼藏在一個叫 litellm_init.pth 的檔案裡。.pth 是 Python 的一個古老機制：放在 site-packages 目錄下的 .pth 檔案，會在每次 Python 啟動時自動執行。不需要 import，不需要呼叫，Py...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/3e49e530/" title="Sora 之死不是敗給誰——是 OpenAI 在 IPO 前算了一筆帳">Sora 之死不是敗給誰——是 OpenAI 在 IPO 前算了一筆帳</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-03-25T14:30:00.000Z" title="發表於 2026-03-25 22:30:00">2026-03-25</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a></span></div><div class="content">3 月 24 日，OpenAI 宣布全面關閉 Sora——app 砍了、API 砍了、ChatGPT 裡的影片生成也砍了。Disney 那筆 10 億美元的投資？胎死腹中，一毛錢都沒付出去。 群組裡在喊「Sora 已死」，不少人第一反應是「被 Seedance 打爆了吧？」 沒那麼簡單。Sora 的死因不是單一競爭對手，而是一連串產品、商業和戰略層面的連環失誤，最後由 OpenAI 自己拔掉了插頭。 960 萬次下載，140 萬美元營收先看數字。 去年九月 Sora 2 以獨立社群 app 的形式上線，五天內衝破百萬下載，比 ChatGPT 當初還快。十一月達到高峰——單月 330 萬次下載。所有人都覺得這是下一個殺手級應用。 然後就開始崩了。    時間 月下載量 變化    2025 年 11 月 330 萬 高峰   2025 年 12 月 224 萬 -32%   2026 年 1 月 120 萬 -45%   2026 年 2 月 110 萬 -8%   整個產品生命週期，消費者總共花了 140 萬美元。高峰月營收 54 萬美元，到三月只剩 36.7 萬。 一個需要天文...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/51217f8c/" title="Cursor 自建 AI 模型的背後邏輯：當你的 IDE 不想再幫別人打工">Cursor 自建 AI 模型的背後邏輯：當你的 IDE 不想再幫別人打工</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-03-19T17:30:00.000Z" title="發表於 2026-03-20 01:30:00">2026-03-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E5%B7%A5%E5%85%B7%E8%88%87%E7%94%9F%E7%94%A2%E5%8A%9B/">工具與生產力</a></span></div><div class="content">三月十九號，Bloomberg 丟出一顆炸彈：Cursor 正在自建 AI 模型。 不是微調，不是套殼。是從頭訓練一個專門寫程式碼的基礎模型，叫做 Composer 2。同一天，消息傳出 Cursor 正在以約 500 億美元估值募資。 一個 IDE 公司，估值比大多數 SaaS 獨角獸加起來還高，然後決定去做模型。這件事值得認真想一下。 為什麼 Cursor 要自己做模型？先看數字：Cursor 現在每天有超過一百萬活躍用戶，五萬家企業客戶——包括 Stripe 和 Figma 這種等級的公司。ARR 已經衝到 20 億美元。 表面上看，一切都很好。但 Cursor 的核心焦慮其實很明確：他們最重要的能力，是別人提供的。 Cursor 背後的模型主要是 Claude 和 GPT。每一次 Anthropic 改了 API 定價、每一次 OpenAI 決定把 Codex 做得更好、每一次這些公司推出自己的 IDE 或 Agent 產品——Cursor 的護城河就窄了一點。 這不是被害妄想。Claude Code 已經在搶 Cursor 的午餐。OpenAI 的 Codex 直接整合...</div></div></div><div class="recent-post-item ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-8919908724705274" data-ad-slot="1538867630"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/624d1bf8/" title="AI Agent 不寫程式了——2026 年 Agent 生態從寫 Code 走向裝 Skill">AI Agent 不寫程式了——2026 年 Agent 生態從寫 Code 走向裝 Skill</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-03-18T19:00:00.000Z" title="發表於 2026-03-19 03:00:00">2026-03-19</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E5%B7%A5%E5%85%B7%E8%88%87%E7%94%9F%E7%94%A2%E5%8A%9B/">工具與生產力</a></span></div><div class="content">上個月我盯 GitHub Trending 的時候，發現一個微妙的轉變：排行榜上最火的 AI 專案，不再是「更好的模型」或「更快的推理引擎」。而是一堆教 Agent 怎麼裝外掛、怎麼組合技能的框架。 OpenClaw 60 天內從 9,000 顆星飆到 250,000 顆。Obra/superpowers 緊隨其後，定位自己是「Agent 的 App Store」。ByteDance 的 DeerFlow v2 上線當天就衝上 Trending 第一。Karpathy 的 autoresearch 三天拿了 23,000 顆星。 這幾個專案各做各的，但拼在一起看，指向同一件事：Agent 的核心能力正從「寫程式碼」轉移到「組合技能」。 從「什麼都自己幹」到「會裝外掛就好」2024 年的 AI Agent 長這樣：給它一個任務，它會嘗試用程式碼從零搭出解決方案。寫 API 呼叫、處理 JSON、做錯誤處理——全部即時生成。 問題很明顯。每次執行同樣的任務，Agent 可能生出完全不同的程式碼。有時候能跑，有時候炸掉。更糟的是，它不會從上一次的錯誤中學到教訓，因為那些程式碼是用完即棄...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/82f73c0d/" title="AI 投資三年了，錢到底花到哪去了？從 Bloomberg 的靈魂拷問看開發者該知道的事">AI 投資三年了，錢到底花到哪去了？從 Bloomberg 的靈魂拷問看開發者該知道的事</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-03-18T17:30:00.000Z" title="發表於 2026-03-19 01:30:00">2026-03-19</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a></span></div><div class="content">Bloomberg 今天丟出一篇標題很直白的文章：「AI 泡沫要破了嗎？」三年過去，華爾街自己都搞不定這個問題——有人說投資人低估了 AI，有人說砸進去的錢已經變成一顆定時炸彈。 我不是金融分析師，但身為一個每天跟 AI 工具打交道的開發者，我想從技術端的角度聊聊：錢到底去了哪裡，哪些地方看得到回報，哪些地方還在燒。 錢去了三個地方第一塊：算力基礎設施。 Jensen Huang 在 GTC 2026 說 Blackwell 加 Vera Rubin 的訂單量預計到 2027 年達到一兆美元。雲端合作夥伴的 GPU 總量突破 100 萬顆。這些錢是實打實花出去的——資料中心、電力、散熱、光纖。你用 Claude、GPT 或任何一個 AI 服務，背後都是這些硬體在撐。 第二塊：模型研發。 OpenAI、Anthropic、Google、xAI、DeepSeek——每家都在瘋狂燒錢訓練下一代模型。GPT-5.4 三個月內把推理效率提升 32 倍，Groq 3 LPU 的推理速度是 GPU 的 35 倍。這些進步是真的，但訓練一個前沿模型的成本也是真的——動輒數億美元。 第三塊：應用層...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/6a9da963/" title="Chrome DevTools MCP vs Claude in Chrome：兩種 AI 瀏覽器自動化方案，你該選哪個？">Chrome DevTools MCP vs Claude in Chrome：兩種 AI 瀏覽器自動化方案，你該選哪個？</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-03-18T09:00:00.000Z" title="發表於 2026-03-18 17:00:00">2026-03-18</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E5%B7%A5%E5%85%B7%E8%88%87%E7%94%9F%E7%94%A2%E5%8A%9B/">工具與生產力</a></span></div><div class="content">GitHub 頁面：Chrome DevTools MCP瀏覽器自動化進入 MCP 時代我在 Claude Code 裡已經用了好幾個月的 Claude in Chrome，拿它來做網頁截圖、填表單、讀取頁面內容。直到最近看到 Google 官方推出了 Chrome DevTools MCP——由 Chrome DevTools 團隊維護，整合了 Puppeteer、效能追蹤、Lighthouse 審計等功能。 這就讓我好奇了：同樣都是讓 AI 控制瀏覽器的 MCP server，兩者的定位和能力差在哪裡？ Chrome DevTools MCP：它是什麼Chrome DevTools MCP 是 Google 官方維護的 MCP server，透過 Chrome DevTools Protocol（CDP）讓 AI agent 控制和檢查 Chrome 瀏覽器。它不只是「能點按鈕、填表單」這種程度，而是把 Chrome DevTools 的完整除錯能力暴露給 AI。 核心特點：  效能追蹤：錄製 Performance trace，分析載入瓶頸，整合 CrUX 真實使用者數據 ...</div></div></div><div class="recent-post-item ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-8919908724705274" data-ad-slot="1538867630"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/1ed064c6/" title="你的 AI 帳單即將縮水 30 倍：一天之內 NVIDIA 和 OpenAI 同時給出的訊號">你的 AI 帳單即將縮水 30 倍：一天之內 NVIDIA 和 OpenAI 同時給出的訊號</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-03-16T18:00:00.000Z" title="發表於 2026-03-17 02:00:00">2026-03-17</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%B3%BB%E7%B5%B1%E8%88%87%E7%B6%AD%E9%81%8B/">系統與維運</a></span></div><div class="content">3 月 16 日晚上，兩件事同時發生。 Jensen Huang 在 GTC 主題演講上揭曉 Groq 3 LPU，宣稱每瓦 tokens 效能提升 35 倍。幾個小時後，Sam Altman 在 X 上發文：GPT-5.2 到 5.4，三個月內效率提升 32 倍，每個任務成本降到 37 美分。 兩家公司，一硬一軟，同一天給出幾乎相同的數字。這不是巧合。 硬體端：Groq 3 LPU 到底是什麼NVIDIA 在 2025 年底花 200 億美元買下 Groq 的核心團隊和技術。GTC 上第一次展示成果：Groq 3 LPU（Language Processing Unit），專門為推理設計的晶片。 跟 GPU 最大的差異在架構。GPU 用 HBM（高頻寬記憶體）做訓練和推理都行，但推理階段的記憶體存取模式跟訓練完全不同。LPU 用 SRAM 直接塞在晶片上，消除了記憶體瓶頸。結果就是：推理延遲極低，每瓦輸出的 tokens 數量暴增。 NVIDIA 的做法很聰明。LPX 機架裝 256 顆 LPU，設計成放在 Vera Rubin GPU 機架旁邊一起用。訓練用 GPU，推理用 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/fefd29b9/" title="從 10 萬到 9700 萬下載：MCP 如何在 14 個月內變成 AI 工具連接的 USB">從 10 萬到 9700 萬下載：MCP 如何在 14 個月內變成 AI 工具連接的 USB</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-03-15T21:00:00.000Z" title="發表於 2026-03-16 05:00:00">2026-03-16</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E5%B7%A5%E5%85%B7%E8%88%87%E7%94%9F%E7%94%A2%E5%8A%9B/">工具與生產力</a></span></div><div class="content">2024 年 11 月，Anthropic 發了一篇不起眼的公告，介紹一個叫 Model Context Protocol 的東西。SDK 月下載量大約 10 萬。 14 個月後的今天，MCP 月下載量 9,700 萬。970 倍。OpenAI、Google、Microsoft、AWS 全部原生支援。治理權捐給了 Linux Foundation 底下的 Agentic AI Foundation。 10 萬到 9,700 萬，一年多一點。我想聊聊這件事為什麼值得開發者認真看待。 問題不是技術，是膠水2024 年底的 AI 開發長這樣：你的 LLM 需要讀 GitHub issue，你寫一個 function call。需要查 Slack 訊息，再寫一個。需要讀資料庫，再來一個。每個整合都是客製化的，每換一個 LLM 供應商就要重寫一遍。 這跟 USB 出現之前的電腦周邊一模一樣。印表機用 parallel port，滑鼠用 serial port，鍵盤用 PS/2。每種設備一種接口，每種接口一個驅動程式。 MCP 做的事情就是定義一個統一接口：LLM（client）透過標準化的...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/3c11bb40/" title="NVIDIA 不只賣 GPU 了：從 200 億 Groq 收購到 NemoClaw，黃仁勳怎麼蓋出 AI 全棧帝國">NVIDIA 不只賣 GPU 了：從 200 億 Groq 收購到 NemoClaw，黃仁勳怎麼蓋出 AI 全棧帝國</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-03-15T19:00:00.000Z" title="發表於 2026-03-16 03:00:00">2026-03-16</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a></span></div><div class="content">2026 年 3 月 16 日，NVIDIA GTC 大會在聖荷西 SAP Center 開幕。39,000 人從 190 個國家飛來，等著看黃仁勳穿皮夾克站上台講兩個小時。 但今年的 GTC 跟往年不一樣。往年你聽到的是「我們的新 GPU 比上一代快幾倍」。今年的主軸是：NVIDIA 已經不是一家 GPU 公司了。 200 億美元買下 Groq，買的不是公司2025 年底，NVIDIA 花了 200 億美元跟 Groq 簽了一份「非排他性授權協議」。說是授權，實際上 Groq 的創辦人 Jonathan Ross（Google TPU 的設計者）和 80% 的工程團隊都跑去 NVIDIA 了。Groq 名義上還在，GroqCloud 繼續營運，但核心技術和人才已經搬家。 CNBC 分析師直接說：這筆交易的結構是「維持競爭存在的假象」。 NVIDIA 買的是 Groq 的 LPU（Language Processing Unit）技術。LPU 專為推理設計，不跑訓練。它的架構跟 GPU 完全不同——沒有外部記憶體存取的瓶頸，推理延遲極低。 根據 GTC 前夕的報導，NVIDIA ...</div></div></div><div class="recent-post-item ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-8919908724705274" data-ad-slot="1538867630"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/627f7aa4/" title="你選的程式語言，其實是 AI 替你選的：GitHub 數據揭露的便利迴圈">你選的程式語言，其實是 AI 替你選的：GitHub 數據揭露的便利迴圈</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-03-15T18:30:00.000Z" title="發表於 2026-03-16 02:30:00">2026-03-16</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E5%B7%A5%E5%85%B7%E8%88%87%E7%94%9F%E7%94%A2%E5%8A%9B/">工具與生產力</a></span></div><div class="content">2025 年 8 月，TypeScript 在 GitHub 上超越 Python 和 JavaScript，成為平台上最多人使用的程式語言。一年內新增超過一百萬名貢獻者，成長幅度 66%。 這不是自然演化。這是 AI 在背後推了一把。 GitHub 的開發者倡導者 Andrea Griffiths 替這個現象取了一個名字：便利迴圈（Convenience Loop）。當 AI 讓某個技術用起來特別順手，開發者就會湧向它。湧入的開發者產出更多程式碼，這些程式碼成為 AI 的訓練資料，AI 對這個技術變得更強，吸引更多開發者。 迴圈就這樣轉起來了。而且停不下來。 TypeScript 為什麼是最大贏家一個數字就能說明問題：2025 年一項學術研究發現，LLM 產出的編譯錯誤中，94% 是型別檢查失敗。 想想這代表什麼。AI 寫的程式碼，十次編譯錯誤有九次以上是型別搞錯了。TypeScript 的型別系統就像一張安全網——你宣告了 x: string，AI 立刻知道該排除所有不適用於字串的操作。Python 的動態型別沒有這道防線，錯誤要到 runtime 才會爆開。 對 AI 來說...</div></div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/page/3/"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">1</a><span class="space">&hellip;</span><a class="page-number" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/page/8/">8</a><a class="extend next" rel="next" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/page/5/"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">193</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">391</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/a6baa4b7/" title="AI agent 用什麼抓網頁？四個主流爬蟲工具，多數時候你只需要最便宜那個"><img src="/images/posts/ai-scraping-tools-firecrawl-crawl4ai-jina-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="AI agent 用什麼抓網頁？四個主流爬蟲工具，多數時候你只需要最便宜那個"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/a6baa4b7/" title="AI agent 用什麼抓網頁？四個主流爬蟲工具，多數時候你只需要最便宜那個">AI agent 用什麼抓網頁？四個主流爬蟲工具，多數時候你只需要最便宜那個</a><time datetime="2026-06-04T10:10:00.000Z" title="發表於 2026-06-04 18:10:00">2026-06-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/c55595b2/" title="57.5% 的網頁請求已經不是人類——你的網站還在只為真人設計嗎"><img src="/images/posts/bots-surpass-humans-web-who-do-you-build-for-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="57.5% 的網頁請求已經不是人類——你的網站還在只為真人設計嗎"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/c55595b2/" title="57.5% 的網頁請求已經不是人類——你的網站還在只為真人設計嗎">57.5% 的網頁請求已經不是人類——你的網站還在只為真人設計嗎</a><time datetime="2026-06-04T08:38:15.000Z" title="發表於 2026-06-04 16:38:15">2026-06-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/563aaa0d/" title="我給 AI 一個逃生欄「找不到就填 NONE」，它還是編了一個假檔名"><img src="/images/posts/workflow-schema-fabrication-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="我給 AI 一個逃生欄「找不到就填 NONE」，它還是編了一個假檔名"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/563aaa0d/" title="我給 AI 一個逃生欄「找不到就填 NONE」，它還是編了一個假檔名">我給 AI 一個逃生欄「找不到就填 NONE」，它還是編了一個假檔名</a><time datetime="2026-06-04T03:38:00.000Z" title="發表於 2026-06-04 11:38:00">2026-06-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/9fcf0a9d/" title="Claude Code 動態工作流實戰：用一支 JavaScript 派一群子代理，順便算了筆 token 帳"><img src="/images/posts/dynamic-workflows-fanout-tutorial-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Claude Code 動態工作流實戰：用一支 JavaScript 派一群子代理，順便算了筆 token 帳"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/9fcf0a9d/" title="Claude Code 動態工作流實戰：用一支 JavaScript 派一群子代理，順便算了筆 token 帳">Claude Code 動態工作流實戰：用一支 JavaScript 派一群子代理，順便算了筆 token 帳</a><time datetime="2026-06-03T07:03:45.000Z" title="發表於 2026-06-03 15:03:45">2026-06-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/ac250f0e/" title="我叫 Claude Code 寫篇技術文檔，它自己幻覺了，還騙過兩輪 AI 審稿"><img src="/images/posts/claude-code-dynamic-workflows-hallucination-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="我叫 Claude Code 寫篇技術文檔，它自己幻覺了，還騙過兩輪 AI 審稿"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/ac250f0e/" title="我叫 Claude Code 寫篇技術文檔，它自己幻覺了，還騙過兩輪 AI 審稿">我叫 Claude Code 寫篇技術文檔，它自己幻覺了，還騙過兩輪 AI 審稿</a><time datetime="2026-06-03T06:10:46.000Z" title="發表於 2026-06-03 14:10:46">2026-06-03</time></div></div></div></div><div class="card-widget ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8919908724705274" data-ad-slot="8108145410" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>分類</span>
+            
+          </div>
+          <ul class="card-category-list expandBtn" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"><span class="card-category-list-name">AI工具實戰</span><span class="card-category-list-count">76</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/"><span class="card-category-list-name">AI產業觀察</span><span class="card-category-list-count">32</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%89%8D%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/"><span class="card-category-list-name">前後端開發</span><span class="card-category-list-count">15</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%B7%A5%E5%85%B7%E8%88%87%E7%94%9F%E7%94%A2%E5%8A%9B/"><span class="card-category-list-name">工具與生產力</span><span class="card-category-list-count">41</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/"><span class="card-category-list-name">程式設計</span><span class="card-category-list-count">57</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%B3%BB%E7%B5%B1%E8%88%87%E7%B6%AD%E9%81%8B/"><span class="card-category-list-name">系統與維運</span><span class="card-category-list-count">15</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%81%B7%E6%B6%AF%E8%88%87%E5%8F%8D%E6%80%9D/"><span class="card-category-list-name">職涯與反思</span><span class="card-category-list-count">16</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB/"><span class="card-category-list-name">資料庫</span><span class="card-category-list-count">9</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/"><span class="card-category-list-name">資訊安全</span><span class="card-category-list-count">18</span></a></li>
+          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>標籤</span></div><div class="card-tag-cloud"><a href="/tags/%E6%9C%AC%E5%9C%B0LLM/" style="font-size: 1.15em; color: rgb(135, 130, 61);">本地LLM</a><a href="/tags/benchmark/" style="font-size: 1.15em; color: rgb(134, 163, 50);">benchmark</a><a href="/tags/ATLAS/" style="font-size: 1.15em; color: rgb(59, 50, 60);">ATLAS</a><a href="/tags/Claude/" style="font-size: 1.36em; color: rgb(50, 118, 50);">Claude</a><a href="/tags/%E6%88%90%E6%9C%AC%E5%88%86%E6%9E%90/" style="font-size: 1.15em; color: rgb(143, 103, 50);">成本分析</a><a href="/tags/CSS/" style="font-size: 1.27em; color: rgb(50, 50, 95);">CSS</a><a href="/tags/Cursor/" style="font-size: 1.18em; color: rgb(50, 76, 196);">Cursor</a><a href="/tags/AI-Agent/" style="font-size: 1.45em; color: rgb(50, 149, 129);">AI Agent</a><a href="/tags/Temporal/" style="font-size: 1.15em; color: rgb(64, 97, 50);">Temporal</a><a href="/tags/%E7%B3%BB%E7%B5%B1%E5%8F%AF%E9%9D%A0%E6%80%A7/" style="font-size: 1.15em; color: rgb(176, 139, 50);">系統可靠性</a><a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AF%A6%E8%B8%90/" style="font-size: 1.15em; color: rgb(157, 50, 155);">工程實踐</a><a href="/tags/LLM/" style="font-size: 1.33em; color: rgb(92, 67, 111);">LLM</a><a href="/tags/DeepSeek/" style="font-size: 1.18em; color: rgb(69, 99, 84);">DeepSeek</a><a href="/tags/Gemini/" style="font-size: 1.24em; color: rgb(161, 200, 142);">Gemini</a><a href="/tags/AI-%E8%B6%A8%E5%8B%A2/" style="font-size: 1.18em; color: rgb(50, 62, 50);">AI 趨勢</a><a href="/tags/OpenRouter/" style="font-size: 1.15em; color: rgb(50, 85, 182);">OpenRouter</a><a href="/tags/Claude-Code/" style="font-size: 1.42em; color: rgb(50, 50, 119);">Claude Code</a><a href="/tags/%E5%A4%9A-Agent-%E7%B3%BB%E7%B5%B1/" style="font-size: 1.15em; color: rgb(81, 66, 69);">多 Agent 系統</a><a href="/tags/%E9%96%8B%E7%99%BC%E8%80%85%E5%B7%A5%E5%85%B7/" style="font-size: 1.24em; color: rgb(148, 104, 138);">開發者工具</a><a href="/tags/GitHub-%E9%96%8B%E6%BA%90/" style="font-size: 1.15em; color: rgb(50, 50, 60);">GitHub 開源</a><a href="/tags/NemoClaw/" style="font-size: 1.24em; color: rgb(148, 109, 86);">NemoClaw</a><a href="/tags/OpenClaw/" style="font-size: 1.27em; color: rgb(161, 151, 128);">OpenClaw</a><a href="/tags/GTC-2026/" style="font-size: 1.21em; color: rgb(50, 117, 82);">GTC 2026</a><a href="/tags/%E6%A1%86%E6%9E%B6%E9%81%B8%E5%9E%8B/" style="font-size: 1.15em; color: rgb(79, 132, 181);">框架選型</a><a href="/tags/GitHub-Trending/" style="font-size: 1.15em; color: rgb(55, 50, 133);">GitHub Trending</a><a href="/tags/Firefox/" style="font-size: 1.15em; color: rgb(50, 100, 63);">Firefox</a><a href="/tags/%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E/" style="font-size: 1.15em; color: rgb(50, 153, 165);">安全漏洞</a><a href="/tags/AI%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/" style="font-size: 1.15em; color: rgb(109, 195, 50);">AI安全研究</a><a href="/tags/LLM%E6%87%89%E7%94%A8/" style="font-size: 1.15em; color: rgb(50, 59, 95);">LLM應用</a><a href="/tags/AI-Coding-Assistant/" style="font-size: 1.15em; color: rgb(123, 50, 184);">AI Coding Assistant</a><a href="/tags/%E5%AE%89%E5%85%A8%E6%80%A7/" style="font-size: 1.15em; color: rgb(50, 50, 146);">安全性</a><a href="/tags/%E9%96%8B%E7%99%BC%E7%B6%93%E9%A9%97/" style="font-size: 1.15em; color: rgb(108, 153, 50);">開發經驗</a><a href="/tags/AI/" style="font-size: 1.21em; color: rgb(50, 50, 64);">AI</a><a href="/tags/%E6%8A%95%E8%B3%87/" style="font-size: 1.15em; color: rgb(169, 175, 56);">投資</a><a href="/tags/%E7%94%A2%E6%A5%AD%E5%88%86%E6%9E%90/" style="font-size: 1.15em; color: rgb(172, 88, 158);">產業分析</a><a href="/tags/%E9%96%8B%E7%99%BC%E8%80%85%E7%94%9F%E6%85%8B/" style="font-size: 1.15em; color: rgb(177, 50, 50);">開發者生態</a><a href="/tags/NVIDIA/" style="font-size: 1.3em; color: rgb(50, 148, 115);">NVIDIA</a><a href="/tags/Anthropic/" style="font-size: 1.39em; color: rgb(50, 109, 55);">Anthropic</a><a href="/tags/AI-%E5%AE%89%E5%85%A8/" style="font-size: 1.18em; color: rgb(50, 165, 50);">AI 安全</a><a href="/tags/%E7%BE%8E%E5%9C%8B%E5%9C%8B%E9%98%B2%E9%83%A8/" style="font-size: 1.15em; color: rgb(50, 50, 50);">美國國防部</a></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>歸檔</span>
+      <a class="card-more-btn" href="/archives/"
+            title="檢視更多">
+            <i class="fas fa-angle-right"></i>
+          </a>
+    </div>
+  
+    <ul class="card-archive-list">
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/06/">
+            <span class="card-archive-list-date">
+              2026年06月
+            </span>
+            <span class="card-archive-list-count">8</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/05/">
+            <span class="card-archive-list-date">
+              2026年05月
+            </span>
+            <span class="card-archive-list-count">17</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/04/">
+            <span class="card-archive-list-date">
+              2026年04月
+            </span>
+            <span class="card-archive-list-count">5</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/03/">
+            <span class="card-archive-list-date">
+              2026年03月
+            </span>
+            <span class="card-archive-list-count">47</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/02/">
+            <span class="card-archive-list-date">
+              2026年02月
+            </span>
+            <span class="card-archive-list-count">3</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/01/">
+            <span class="card-archive-list-date">
+              2026年01月
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/12/">
+            <span class="card-archive-list-date">
+              2025年12月
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/09/">
+            <span class="card-archive-list-date">
+              2025年09月
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>網站資訊</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章數量 :</div><div class="item-count">193</div></div><div class="webinfo-item"><div class="item-name">運行時間 :</div><div class="item-count" id="runtimeshow" data-publishDate="2019-11-12T16:00:00.000Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">總字數 :</div><div class="item-count">300.2k</div></div><div class="webinfo-item"><div class="item-name">最後更新時間 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-06-04T13:32:46.925Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By kyosora</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/utils.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/main.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/tw_cn.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const applyThemeDefaultsConfig = theme => {
+    if (theme === 'dark-mode') {
+      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
+      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    } else {
+      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
+      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    }
+  }
+
+  // Recursively traverse the config object and automatically apply theme-specific color schemes
+  const applyThemeConfig = (obj, theme) => {
+    if (typeof obj !== 'object' || obj === null) return
+
+    Object.keys(obj).forEach(key => {
+      const value = obj[key]
+      // If the property is an object and has theme-specific options, apply them
+      if (typeof value === 'object' && value !== null) {
+        if (value[theme]) {
+          obj[key] = value[theme] // Apply the value for the current theme
+        } else {
+          // Recursively process child objects
+          applyThemeConfig(value, theme)
+        }
+      }
+    })
+  }
+
+  const runChartJS = ele => {
+    window.loadChartJS = true
+
+    Array.from(ele).forEach((item, index) => {
+      const chartSrc = item.firstElementChild
+      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
+      const width = item.getAttribute('data-width')
+      const existingCanvas = document.getElementById(chartID)
+
+      // If a canvas already exists, remove it to avoid rendering duplicates
+      if (existingCanvas) {
+          existingCanvas.parentNode.remove()
+      }
+
+      const chartDefinition = chartSrc.textContent
+      const canvas = document.createElement('canvas')
+      canvas.id = chartID
+
+      const div = document.createElement('div')
+      div.className = 'chartjs-wrap'
+
+      if (width) {
+        div.style.width = width
+      }
+
+      div.appendChild(canvas)
+      chartSrc.insertAdjacentElement('afterend', div)
+
+      const ctx = document.getElementById(chartID).getContext('2d')
+
+      const config = JSON.parse(chartDefinition)
+
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
+
+      // Set default styles (initial setup)
+      applyThemeDefaultsConfig(theme)
+
+      // Automatically traverse the config and apply dual-mode color schemes
+      applyThemeConfig(config, theme)
+
+      new Chart(ctx, config)
+    })
+  }
+
+  const loadChartJS = () => {
+    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
+    if (chartJSEle.length === 0) return
+
+    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
+  }
+
+  // Listen for theme change events
+  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
+  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
+
+  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
+})()</script></div><script src="/js/about-cards.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","meta[property=\"og:description\"]","link[rel=\"canonical\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: true,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/search/local-search.min.js"></script></div></div></body></html>
