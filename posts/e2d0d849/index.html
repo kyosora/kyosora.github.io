@@ -1,0 +1,765 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>AI 寫的 code 一直要打掉重練？Spec Kit 想用一份可執行規範終結 vibe coding | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="用 AI 寫 code 卻一直追加 prompt、改完一個壞另一個？問題常不在模型，而在需求沒講清楚。GitHub 衝破 10 萬星的 Spec Kit 把規範變成給 AI 的可執行合約，這篇拆解它的六步流程，以及該不該全盤照用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI 寫的 code 一直要打掉重練？Spec Kit 想用一份可執行規範終結 vibe coding">
+<meta property="og:url" content="https://kyosora.github.io/posts/e2d0d849/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="用 AI 寫 code 卻一直追加 prompt、改完一個壞另一個？問題常不在模型，而在需求沒講清楚。GitHub 衝破 10 萬星的 Spec Kit 把規範變成給 AI 的可執行合約，這篇拆解它的六步流程，以及該不該全盤照用。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/images/posts/spec-kit-spec-driven-development-end-vibe-coding-cover.png">
+<meta property="article:published_time" content="2026-06-08T02:30:00.000Z">
+<meta property="article:modified_time" content="2026-06-08T03:04:00.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Claude Code">
+<meta property="article:tag" content="AI輔助開發">
+<meta property="article:tag" content="Spec Kit">
+<meta property="article:tag" content="spec-driven">
+<meta property="article:tag" content="vibe coding">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kyosora.github.io/images/posts/spec-kit-spec-driven-development-end-vibe-coding-cover.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "AI 寫的 code 一直要打掉重練？Spec Kit 想用一份可執行規範終結 vibe coding",
+  "url": "https://kyosora.github.io/posts/e2d0d849/",
+  "image": "https://kyosora.github.io/images/posts/spec-kit-spec-driven-development-end-vibe-coding-cover.png",
+  "datePublished": "2026-06-08T02:30:00.000Z",
+  "dateModified": "2026-06-08T03:04:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kyosora",
+      "url": "https://kyosora.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/posts/e2d0d849/"><link rel="preconnect" href="https://cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-F9P7RWQQJE')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'AI 寫的 code 一直要打掉重練？Spec Kit 想用一份可執行規範終結 vibe coding',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="/css/about-cards.css"><link rel="stylesheet" href="/css/bg-gradient-mesh.css"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">197</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">402</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/posts/spec-kit-spec-driven-development-end-vibe-coding-cover.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a><a class="nav-page-title" href="/"><span class="site-name">AI 寫的 code 一直要打掉重練？Spec Kit 想用一份可執行規範終結 vibe coding</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首頁</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">AI 寫的 code 一直要打掉重練？Spec Kit 想用一份可執行規範終結 vibe coding<a class="post-edit-link" href="https://github.com/jerryc127/butterfly.js.org/edit/main/source/_posts/spec-kit-spec-driven-development-end-vibe-coding.md" title="編輯" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">發表於</span><time datetime="2026-06-08T02:30:00.000Z" title="發表於 2026-06-08 10:30:00">2026-06-08</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%B7%A5%E5%85%B7%E8%88%87%E7%94%9F%E7%94%A2%E5%8A%9B/">工具與生產力</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">2.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>7分鐘</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>我用 AI 寫 code 兩年多，最常打掉重練的，不是那些真的很難的演算法，而是一句話沒講清楚惹出來的麻煩。</p>
+<p>「幫我做一個檔案上傳功能。」AI 三十秒丟回一坨能跑的東西，介面有了、錯誤處理也有了。然後我才發現：它預設存本地磁碟，而我要的是上傳到物件儲存；它沒驗副檔名；50MB 的檔直接讓記憶體爆掉；前端完全沒有上傳進度。於是我追加一句 prompt，它改；再追加一句，它改歪了別的地方，把剛才好好的錯誤處理弄不見了。一個下午過去，那個「三十秒就好」的功能還在原地打轉。</p>
+<p>這不是模型笨。是我從頭到尾沒給它一份講清楚的合約。</p>
+<h2 id="三十秒生出來的東西，為什麼一個下午還收不了尾"><a href="#三十秒生出來的東西，為什麼一個下午還收不了尾" class="headerlink" title="三十秒生出來的東西，為什麼一個下午還收不了尾"></a>三十秒生出來的東西，為什麼一個下午還收不了尾</h2><p>這就是現在大家在做的事，英文叫 vibe coding——憑感覺對 AI 下指令，看它生出什麼，不對再喊它改。它的賣點是快，問題也是快：你把「想清楚要什麼」這件事，從動手前延後到了看到結果之後。</p>
+<p>延後不等於省掉。需求遲早要補完，邊界遲早要劃清，只是現在改的對象，從你腦袋裡的設計，變成了一坨已經寫出來、還在長大的 code。改三次還行，改到第八次，新的 prompt 開始把前幾次講好的決定蓋掉——AI 不是忘了，是它老實照你最新一句話做，而你最新那句剛好沒提到前面那條約束。</p>
+<p>我認為 vibe coding 真正的代價，不是寫得慢，是返工。它把規範的成本從事前挪到了事後，而事後永遠比事前貴。</p>
+<p>2026 年 6 月初，GitHub 開源的 Spec Kit 衝破 10 萬星。它想處理的就是這件事。</p>
+<h2 id="Spec-Kit-到底做了什麼"><a href="#Spec-Kit-到底做了什麼" class="headerlink" title="Spec Kit 到底做了什麼"></a>Spec Kit 到底做了什麼</h2><p>一句話：把流程從「讓 AI 直接 build」改成「先把規範寫成可執行的文件，再讓 AI 照規範實作」。</p>
+<p>它不是又一個聊天框，而是一套裝進你現有 AI 工具的工作流。裝法是先用 uv 把 CLI 拉下來，再在專案裡初始化：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安裝 specify CLI（注意：它不在 PyPI 上，得從 git 裝，</span></span><br><span class="line"><span class="comment"># @vX.Y.Z 換成 Releases 頁面的最新版本號）</span></span><br><span class="line">uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@vX.Y.Z</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在專案裡初始化，指定你用哪個 AI 工具</span></span><br><span class="line">specify init my-project --integration claude</span><br></pre></td></tr></table></figure>
+
+<p><code>--integration</code> 後面可以接 Claude Code、Copilot、Codex CLI、Gemini CLI、Cursor 等等，官方說支援 30 種以上的 AI coding agent。初始化之後，它會在你的 AI 工具裡塞進一組 slash command，整個流程照這個順序走：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/speckit.constitution   # 先定下這個專案的鐵則（技術棧、風格、不可碰的紅線）</span><br><span class="line">/speckit.specify        # 寫需求和使用者故事——只講「要什麼」，不講「怎麼做」</span><br><span class="line">/speckit.clarify        # 讓 AI 反問你規範裡含糊的地方（選用，但建議做）</span><br><span class="line">/speckit.plan           # 根據規範產出技術方案</span><br><span class="line">/speckit.tasks          # 把方案拆成一條條可執行的任務</span><br><span class="line">/speckit.implement      # 照任務清單逐項實作</span><br></pre></td></tr></table></figure>
+
+<p>關鍵在前三步。<code>constitution</code> 是專案憲法，把「這專案一律用 PostgreSQL、不准引第三方 UI 庫、所有 API 回統一錯誤格式」這種會反覆出現的約束寫死一次，往後每一步都受它管。<code>specify</code> 強迫你把需求和實作分開——你只准描述行為，不准描述技術選型。<code>clarify</code> 則反過來，讓 AI 把你規範裡的洞挑出來反問你，例如「上傳大小上限是多少」「副檔名白名單還黑名單」。</p>
+<p>我前面那個檔案上傳的下午，就是死在這三步全跳過了。</p>
+<h2 id="我一開始覺得這是在開倒車"><a href="#我一開始覺得這是在開倒車" class="headerlink" title="我一開始覺得這是在開倒車"></a>我一開始覺得這是在開倒車</h2><p>老實說，第一眼看到 Spec Kit 我是有點抗拒的。</p>
+<p>先寫一堆規範文件、定義驗收標準、拆任務，再讓人（這裡是 AI）照著做——這不就是瀑布式開發嗎？我們花了二十年才從「先寫三個月規格書再動工」掙脫出來，現在 AI 來了，反而要繞回去先寫文件？而且 AI 最大的好處不就是快，把這套流程套上去，快還剩多少？</p>
+<p>我想了幾天，結論是：這個質疑問錯了方向。</p>
+<p>瀑布式的問題從來不是「先寫規範」，而是「規範寫完就鎖死，之後不准改」。Spec Kit 的規範是活的——它是 code 的上游，你改規範、重跑 <code>/speckit.plan</code>，下游跟著重生。它要的不是一份簽字封存的合約書，是一份隨時可以重新編譯的原始碼。差別在這裡。</p>
+<p>至於快，我換個算法就想通了。AI 寫 code 本來就快到不是瓶頸了，真正的瓶頸是「AI 寫完之後，你要花多久發現它寫的不是你要的、再來回喊它改」。Spec Kit 慢的是前面那十五分鐘的規範，省的是後面那兩小時的返工。對小東西不划算，對稍微有點規模的功能，這筆帳是賺的。</p>
+<h2 id="規範不是文件，是給-AI-的合約"><a href="#規範不是文件，是給-AI-的合約" class="headerlink" title="規範不是文件，是給 AI 的合約"></a>規範不是文件，是給 AI 的合約</h2><p>不過先別管時間帳怎麼算。Spec Kit 真正讓我停下來想的是一個更根本的東西，而且就算你根本不裝它，這個觀念都值得借走。</p>
+<p>我們一聽到「寫規範」就想到那種沒人看的 Word 文件，寫給人類看、寫完歸檔、跟 code 各過各的。但給 AI 的規範不一樣——它是 AI 接下來每一個決定的依據，是真的會被「執行」的。你在 specify 階段漏寫「檔案要驗毒」，AI 就真的不會驗，這個漏洞會原封不動長進 code 裡。</p>
+<p>所以這份規範的精確度，直接決定產出的精確度。人類工程師會腦補——看到「做個上傳功能」會自己補上「大概要驗一下檔案吧」；AI 不會，你沒寫到的它不補。規範裡的每一個含糊，都是 code 裡的一個賭注。</p>
+<p><code>/speckit.clarify</code> 之所以重要，就是它把這些賭注在動手前一次攤開來問你。與其讓 AI 猜錯再返工，不如先花五分鐘把該講的講完。</p>
+<h2 id="但別把每個小腳本都塞進這套流程"><a href="#但別把每個小腳本都塞進這套流程" class="headerlink" title="但別把每個小腳本都塞進這套流程"></a>但別把每個小腳本都塞進這套流程</h2><p>講了這麼多好話，得潑點冷水，免得你以為從今天起每行 code 都該先寫憲法。</p>
+<p>不是。一個三十行的資料清洗腳本、一個改 CSS 顏色的小調整、一次性的 migration——這些東西套 Spec Kit 的六步流程，純粹是儀式性的浪費。你寫 constitution 的時間夠你手刻三遍了。</p>
+<p>Spec Kit 划算的區間，是那種「需求有好幾條、彼此會互相牽動、而且你還會回來改」的功能。一個有權限分級的後台、一條牽涉三方對接的金流、一套要支援多種匯出格式的報表。這種東西的特性是：邊界條件多到你光用嘴講會漏，而漏掉的每一條都是 AI 的一個錯誤實作。</p>
+<p>判準很簡單：如果你能一口氣把需求講完不會漏，那就直接 vibe；如果你講到一半發現「啊還有那個情況」、「對了還要處理這個」，那就是該寫規範的訊號了。</p>
+<p>我自己其實在用 Spec Kit 之前，就習慣讓 AI 先寫一份 plan、我審過再讓它動手——Claude Code 本來就有這個 plan 模式。Spec Kit 等於把這套「先想清楚再動手」的土法，做成了有版本、有結構、可重跑的標準流程。對一個人的小專案，我的土法夠用；對要交接、要協作、要長期維護的專案，標準化是有價值的。</p>
+<h2 id="規範寫好了，AI-就一定照做嗎"><a href="#規範寫好了，AI-就一定照做嗎" class="headerlink" title="規範寫好了，AI 就一定照做嗎"></a>規範寫好了，AI 就一定照做嗎</h2><p>不一定。這是 Spec Kit 的宣傳不會強調的部分。</p>
+<p>clarify 把含糊攤開來問你，但它管不到 implement 階段 AI 會不會自己飄。實作到一半，AI 還是可能為了「讓眼前這段 code 跑起來」繞過規範裡的某條約束——它不是不認得規範，是當下那個局部問題的引力比較大。所以 tasks 那層你還是得逐條看，規範不是免死金牌。</p>
+<p>還有一個更現實的坑：需求會變，規範要跟著改。正確的做法是回頭改 spec、重跑 plan，讓下游一起重生；偷懶的做法是直接在 code 層面打補丁，繞過規範。一旦你開始打補丁，spec 和 code 就各說各話了，Spec Kit 的整個前提也跟著垮掉。規範是活的沒錯，前提是你真的回去維護它——這部分沒有工具能幫你，得靠紀律。</p>
+<h2 id="先說清楚，AI-才幫得上忙"><a href="#先說清楚，AI-才幫得上忙" class="headerlink" title="先說清楚，AI 才幫得上忙"></a>先說清楚，AI 才幫得上忙</h2><p>繞了一圈，Spec Kit 教我的其實是一件很舊的事：你沒辦法把一個你自己都沒想清楚的東西，外包給任何人——包括 AI。</p>
+<p>以前需求模糊，頂多是工程師抱怨幾句、自己腦補補上；現在需求模糊，AI 會用驚人的效率，把你沒想清楚的東西，飛快地實作成一坨要打掉重練的 code。</p>
+<p>下次再要 AI 做一個有點複雜的功能之前，我大概會先停十五分鐘，把要什麼、不要什麼、邊界在哪寫成一份清單——不管用不用 Spec Kit。那個檔案上傳的下午，要是我先停這十五分鐘，大概午休前就收工了。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kyosora.github.io">kyosora</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://kyosora.github.io/posts/e2d0d849/">https://kyosora.github.io/posts/e2d0d849/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 授權協議。轉載請註明來源 <a href="https://kyosora.github.io" target="_blank">kyosora 筆記</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Claude-Code/">Claude Code</a><a class="post-meta__tags" href="/tags/AI%E8%BC%94%E5%8A%A9%E9%96%8B%E7%99%BC/">AI輔助開發</a><a class="post-meta__tags" href="/tags/Spec-Kit/">Spec Kit</a><a class="post-meta__tags" href="/tags/spec-driven/">spec-driven</a><a class="post-meta__tags" href="/tags/vibe-coding/">vibe coding</a></div><div class="post-share"><div class="social-share" data-image="/images/posts/spec-kit-spec-driven-development-end-vibe-coding-cover.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-8919908724705274" data-ad-slot="5978969231"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/78059686/" title="一個北海道西蘭花農把 Codex 當工程師用，比任何「AI 取代工程師」的爭論都有說服力"><img class="cover" src="/images/posts/hokkaido-broccoli-farmer-codex-engineer-cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">一個北海道西蘭花農把 Codex 當工程師用，比任何「AI 取代工程師」的爭論都有說服力</div></div><div class="info-2"><div class="info-item-1">前幾天滑到一則整理貼文，主角是北海道一個種田的農民，富安（Hiroki Tomiyasu），列了他這一年用 ChatGPT 和 Codex 做過的事。我看完愣了一下。 先說清楚他不是玩票的小菜農：經營約 100 公頃，種西蘭花、南瓜、青蔥、大豆，有曳引機要跑。但他本行就是種田——用日本媒體的說法，是個「程式知識為零的文科農家」。而那一串他做出來的東西，每一件我都大概知道「正規做法」要花多少錢、要請什麼樣的人。他一個人，靠一個聊天框，全做了。 他做了什麼挑幾個我覺得最有代表性的講。 他拍一張西蘭花的照片丟給 AI，問這是什麼病。這個你可能覺得還好，手機 App 早就能做。但接下來的就不太一樣了。 他用衛星資料抓自己田的 NDVI。NDVI（Normalized Difference Vegetation Index，歸一化植被指數）是用衛星的近紅外和紅光波段算出來的一個值，反映植物長得有多茂盛、多健康——數值越高通常代表越健康，不過確切門檻會隨作物、生長期、感測器而變。這是精準農業在用的東西，正規的農業遙測服務多半要付費訂閱，他則是自己串免費的衛星資料，把影像疊到自家田的地圖上看。...</div></div></div></a><a class="pagination-related" href="/posts/a6baa4b7/" title="AI agent 用什麼抓網頁？四個主流爬蟲工具，多數時候你只需要最便宜那個"><img class="cover" src="/images/posts/ai-scraping-tools-firecrawl-crawl4ai-jina-cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">AI agent 用什麼抓網頁？四個主流爬蟲工具，多數時候你只需要最便宜那個</div></div><div class="info-2"><div class="info-item-1">上一篇我寫了件讓人有點不安的事：在 Cloudflare 的觀測範圍裡，對網頁的請求已經有超過半數來自機器、不是人。那篇談的是需求側——誰在抓。這篇換個角度，談供給側：這些機器，到底拿什麼在抓？ 問題是我自己的。我有一套夜班工作流，每天清晨讓 Claude Code 自動撈財經新聞、AI 文章、社群討論，整理成一份報告。撐起它抓取層的，目前主要是兩樣東西：Jina Reader 把網頁轉成乾淨 markdown，Agent-Reach 串各家平台。用了一陣子，我開始想——市面上那些更炫的 AI 爬蟲，Firecrawl、Crawl4AI、ScrapeGraphAI，要不要換、或該加進來？於是花了點時間把四個主流工具攤開比。結論有點反直覺：多數時候，你需要的是最便宜、最笨的那個。 先搞清楚：這四個根本不是同一種東西把它們擺在一起比，第一個陷阱是以為它們在搶同一個位子。其實它們站在四條不同的路線上，先分清楚再談取捨：  格式轉換（Jina Reader）：把一個 URL 變成乾淨 markdown，僅此而已。 託管平台（Firecrawl）：雲端 SaaS，幫你把爬取、反爬、prox...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/94451623/" title="你的 CLAUDE.md 超過 300 行了嗎？我用分層架構解決了三個問題"><img class="cover" src="/images/posts/claude-layers-layered-architecture-for-claude-md-cover.png" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-04-02</div><div class="info-item-2">你的 CLAUDE.md 超過 300 行了嗎？我用分層架構解決了三個問題</div></div><div class="info-2"><div class="info-item-1">我的 CLAUDE.md 曾經有 800 多行。裡面塞了程式碼規範、交易哲學、小說寫作標準、TRPG 跑團引擎、150 個 skill 綁定，全部標「必須使用」。 結果就是：AI 每次回應都在評估一百多條規則，該觸發的 skill 常常漏掉，不該觸發的反而亂觸發。寫程式的時候它想跟我討論交易策略，跑團的時候它想幫我做程式碼審查。 花了幾週迭代，最後整理成一套架構，解決了三個具體問題。今天把它開源了：claude-layers。   問題一：150 個 Skill 全標「必須使用」裝了三四十個 skill 之後，CLAUDE.md 裡的綁定表越來越長。每一條都寫「看到這個關鍵字，必須觸發這個 skill」。 聽起來很合理，直到你發現 AI 把「必須」當成「全部一樣重要」。 實際狀況是：有些 skill 包裝了外部 API（像 Twitter 發推用的 xurl、Google Workspace 用的 gog），不觸發就真的做不了事。但有些 skill 只是品質指引（像 python-patterns 提供 PEP 8 建議），不觸發也不會怎樣，只是品質稍差。 把這兩種混在一起全部標...</div></div></div></a><a class="pagination-related" href="/posts/6a9da963/" title="Chrome DevTools MCP vs Claude in Chrome：兩種 AI 瀏覽器自動化方案，你該選哪個？"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-18</div><div class="info-item-2">Chrome DevTools MCP vs Claude in Chrome：兩種 AI 瀏覽器自動化方案，你該選哪個？</div></div><div class="info-2"><div class="info-item-1">GitHub 頁面：Chrome DevTools MCP瀏覽器自動化進入 MCP 時代我在 Claude Code 裡已經用了好幾個月的 Claude in Chrome，拿它來做網頁截圖、填表單、讀取頁面內容。直到最近看到 Google 官方推出了 Chrome DevTools MCP——由 Chrome DevTools 團隊維護，整合了 Puppeteer、效能追蹤、Lighthouse 審計等功能。 這就讓我好奇了：同樣都是讓 AI 控制瀏覽器的 MCP server，兩者的定位和能力差在哪裡？ Chrome DevTools MCP：它是什麼Chrome DevTools MCP 是 Google 官方維護的 MCP server，透過 Chrome DevTools Protocol（CDP）讓 AI agent 控制和檢查 Chrome 瀏覽器。它不只是「能點按鈕、填表單」這種程度，而是把 Chrome DevTools 的完整除錯能力暴露給 AI。 核心特點：  效能追蹤：錄製 Performance trace，分析載入瓶頸，整合 CrUX 真實使用者數據 ...</div></div></div></a><a class="pagination-related" href="/posts/33e4604/" title="Xcode 終於讓 AI Agent 進場了：兩分鐘做出一個 App 的背後意味著什麼"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-09</div><div class="info-item-2">Xcode 終於讓 AI Agent 進場了：兩分鐘做出一個 App 的背後意味著什麼</div></div><div class="info-2"><div class="info-item-1">二月底，Apple 悄悄推了 Xcode 26.3。沒有 Keynote，沒有 Craig Federighi 站在台上用動畫炫技。但這次更新可能是 Xcode 近五年來最重要的一個版本。 因為從這個版本開始，你可以在 Xcode 裡直接使用 AI coding agent。不是那種「自動補完下一行」的小聰明，而是整個 agent 接管你的專案：理解架構、搜文件、改多個檔案、跑 build、看 Preview、發現 UI 有問題還會自己修。 有人用它兩分鐘內做出一個完整的 Pomodoro 計時器 App——有設定頁面、提醒功能、能跑的 UI。 兩分鐘。 這不是 Copilot 的升級版先說清楚 agentic coding 跟傳統 AI 輔助寫 code 的差別。 GitHub Copilot 和早期的 AI 工具做的事情是「你寫一行，它猜下一行」。你是主角，AI 是配角。你的游標在哪裡，它就在那裡幫你。 Agentic coding 完全不同。你給 agent 一個目標——「幫我做一個 Pomodoro 計時器」——然後它自己拆解任務、決定要改哪些檔案、寫 code、跑 bu...</div></div></div></a><a class="pagination-related" href="/posts/49fc8ff1/" title="你的 AI 開發工具鏈被下毒了嗎？LiteLLM 供應鏈攻擊事件完整解析"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-27</div><div class="info-item-2">你的 AI 開發工具鏈被下毒了嗎？LiteLLM 供應鏈攻擊事件完整解析</div></div><div class="info-2"><div class="info-item-1">2026 年 3 月 24 日上午 10:52 UTC，有人把一個藏了後門的 litellm 1.82.8 推上了 PyPI。六分鐘後，一位工程師的筆電因為 11,000 個 Python 程序同時爆開而當機。 他原本以為是 Cursor 更新搞的鬼。結果是一場精心設計的供應鏈攻擊——而且他是全世界第一個發現的人。 事件怎麼發生的litellm 是 AI 開發圈的常客。做 LLM 應用的人幾乎都用過它——統一呼叫 OpenAI、Anthropic、Gemini 等不同模型 API 的 proxy 層。PyPI 上的週下載量是百萬級別。 攻擊者拿到了 litellm 的 PyPI 發布權限（很可能是維護者帳號被盜），直接推了一個 1.82.8 版本上去。GitHub 上完全沒有對應的 tag 或 release——繞過了正常的發布流程。 惡意程式碼藏在一個叫 litellm_init.pth 的檔案裡。.pth 是 Python 的一個古老機制：放在 site-packages 目錄下的 .pth 檔案，會在每次 Python 啟動時自動執行。不需要 import，不需要呼叫，Py...</div></div></div></a><a class="pagination-related" href="/posts/9fcf0a9d/" title="Claude Code 動態工作流實戰：用一支 JavaScript 派一群子代理，順便算了筆 token 帳"><img class="cover" src="/images/posts/dynamic-workflows-fanout-tutorial-cover.png" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-03</div><div class="info-item-2">Claude Code 動態工作流實戰：用一支 JavaScript 派一群子代理，順便算了筆 token 帳</div></div><div class="info-2"><div class="info-item-1">Claude Code 最近多了一個功能叫動態工作流（dynamic workflows）：讓主代理在執行時，當場寫一支 JavaScript，生成並協調一群子代理——每個子代理有自己獨立的 context window 和一個聚焦的小目標。 我前幾天用它做了件很實際的雜活：評估四個候選部落格選題，看哪個跟我既有文章庫重複、哪個值得寫。這篇把那支 script 整個攤開，講三件事——怎麼寫、parallel 和 pipeline 怎麼選、跑一次燒多少 token。 為什麼不是「開更多分頁」那麼簡單你可能會想，並行做事，開幾個對話視窗不就好了？ 差別在 context。Claude Code 過去是「一個對話、一條 context」，所有東西擠在同一個上下文視窗。長任務這個模式有三個老毛病，官方發布時直接點名：智能惰性（做到一半宣布完工）、自我偏好偏差（驗證自己的產出時護短）、目標漂移（對話太長、尤其壓縮過後忘了最初目標）。 動態工作流的解法不是把單一 context 養得更肥，而是把活切開：每個子代理拿一塊乾淨的上下文，做一件聚焦的事，彼此不互相汙染。並行只是順帶的好處，真正的價...</div></div></div></a><a class="pagination-related" href="/posts/3a171ac6/" title="AI 刪了我的檔案，到底該怪誰？從 Claude 災難看責任歸屬與自救指南"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-08</div><div class="info-item-2">AI 刪了我的檔案，到底該怪誰？從 Claude 災難看責任歸屬與自救指南</div></div><div class="info-2"><div class="info-item-1">「幫我清理一下舊 repo 的 packages」——這句話毀了一個開發者的整個 Mac。 2025 年某個普通的工作日，Reddit 用戶在 r/ClaudeAI 發了一篇求救文：「Claude CLI 刪了我整個家目錄，所有工作都沒了！這能救回來嗎？」 這不是第一起，也不會是最後一起。GitHub Issues 上有超過 10 起類似的嚴重事件報告。當 AI Coding Assistant 變得越來越強大，誰該為這些災難負責？ 災難現場：一個 ~/ 引發的血案事件經過用戶的原始請求很簡單：「清理舊 repo 的 packages」。 Claude Code 生成並執行了這個命令： 1rm -rf tests/ patches/ plan/ ~/  看到問題了嗎？ 最後的 ~/ 不是某個目錄名稱，而是用戶的整個家目錄。 損失清單這個命令執行後，用戶失去了：  ✅ 整個 Desktop（桌面上的所有檔案） ✅ Documents、Downloads（多年的文件和下載） ✅ Keychain（所有儲存的密碼和憑證） ✅ ~/.claude（Claude 的設定和歷史記錄） ✅ 所...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">197</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">402</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E5%8D%81%E7%A7%92%E7%94%9F%E5%87%BA%E4%BE%86%E7%9A%84%E6%9D%B1%E8%A5%BF%EF%BC%8C%E7%82%BA%E4%BB%80%E9%BA%BC%E4%B8%80%E5%80%8B%E4%B8%8B%E5%8D%88%E9%82%84%E6%94%B6%E4%B8%8D%E4%BA%86%E5%B0%BE"><span class="toc-number">1.</span> <span class="toc-text">三十秒生出來的東西，為什麼一個下午還收不了尾</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spec-Kit-%E5%88%B0%E5%BA%95%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC"><span class="toc-number">2.</span> <span class="toc-text">Spec Kit 到底做了什麼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E4%B8%80%E9%96%8B%E5%A7%8B%E8%A6%BA%E5%BE%97%E9%80%99%E6%98%AF%E5%9C%A8%E9%96%8B%E5%80%92%E8%BB%8A"><span class="toc-number">3.</span> <span class="toc-text">我一開始覺得這是在開倒車</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A6%8F%E7%AF%84%E4%B8%8D%E6%98%AF%E6%96%87%E4%BB%B6%EF%BC%8C%E6%98%AF%E7%B5%A6-AI-%E7%9A%84%E5%90%88%E7%B4%84"><span class="toc-number">4.</span> <span class="toc-text">規範不是文件，是給 AI 的合約</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%86%E5%88%A5%E6%8A%8A%E6%AF%8F%E5%80%8B%E5%B0%8F%E8%85%B3%E6%9C%AC%E9%83%BD%E5%A1%9E%E9%80%B2%E9%80%99%E5%A5%97%E6%B5%81%E7%A8%8B"><span class="toc-number">5.</span> <span class="toc-text">但別把每個小腳本都塞進這套流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A6%8F%E7%AF%84%E5%AF%AB%E5%A5%BD%E4%BA%86%EF%BC%8CAI-%E5%B0%B1%E4%B8%80%E5%AE%9A%E7%85%A7%E5%81%9A%E5%97%8E"><span class="toc-number">6.</span> <span class="toc-text">規範寫好了，AI 就一定照做嗎</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E8%AA%AA%E6%B8%85%E6%A5%9A%EF%BC%8CAI-%E6%89%8D%E5%B9%AB%E5%BE%97%E4%B8%8A%E5%BF%99"><span class="toc-number">7.</span> <span class="toc-text">先說清楚，AI 才幫得上忙</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/6d803eef/" title="Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告"><img src="/images/posts/her-claude-code-session-analysis-observability-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/6d803eef/" title="Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告">Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告</a><time datetime="2026-06-08T04:00:00.000Z" title="發表於 2026-06-08 12:00:00">2026-06-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/41ca610c/" title="OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事"><img src="/images/posts/openai-chat-is-dead-super-app-financial-truth-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/41ca610c/" title="OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事">OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事</a><time datetime="2026-06-08T03:30:00.000Z" title="發表於 2026-06-08 11:30:00">2026-06-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/78059686/" title="一個北海道西蘭花農把 Codex 當工程師用，比任何「AI 取代工程師」的爭論都有說服力"><img src="/images/posts/hokkaido-broccoli-farmer-codex-engineer-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一個北海道西蘭花農把 Codex 當工程師用，比任何「AI 取代工程師」的爭論都有說服力"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/78059686/" title="一個北海道西蘭花農把 Codex 當工程師用，比任何「AI 取代工程師」的爭論都有說服力">一個北海道西蘭花農把 Codex 當工程師用，比任何「AI 取代工程師」的爭論都有說服力</a><time datetime="2026-06-08T03:00:00.000Z" title="發表於 2026-06-08 11:00:00">2026-06-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/e2d0d849/" title="AI 寫的 code 一直要打掉重練？Spec Kit 想用一份可執行規範終結 vibe coding"><img src="/images/posts/spec-kit-spec-driven-development-end-vibe-coding-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="AI 寫的 code 一直要打掉重練？Spec Kit 想用一份可執行規範終結 vibe coding"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/e2d0d849/" title="AI 寫的 code 一直要打掉重練？Spec Kit 想用一份可執行規範終結 vibe coding">AI 寫的 code 一直要打掉重練？Spec Kit 想用一份可執行規範終結 vibe coding</a><time datetime="2026-06-08T02:30:00.000Z" title="發表於 2026-06-08 10:30:00">2026-06-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/a6baa4b7/" title="AI agent 用什麼抓網頁？四個主流爬蟲工具，多數時候你只需要最便宜那個"><img src="/images/posts/ai-scraping-tools-firecrawl-crawl4ai-jina-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="AI agent 用什麼抓網頁？四個主流爬蟲工具，多數時候你只需要最便宜那個"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/a6baa4b7/" title="AI agent 用什麼抓網頁？四個主流爬蟲工具，多數時候你只需要最便宜那個">AI agent 用什麼抓網頁？四個主流爬蟲工具，多數時候你只需要最便宜那個</a><time datetime="2026-06-04T10:10:00.000Z" title="發表於 2026-06-04 18:10:00">2026-06-04</time></div></div></div></div><div class="card-widget ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8919908724705274" data-ad-slot="8108145410" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div></div></div></main><footer id="footer" style="background-image: url(/images/posts/spec-kit-spec-driven-development-end-vibe-coding-cover.png);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By kyosora</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/utils.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/main.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/tw_cn.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const applyThemeDefaultsConfig = theme => {
+    if (theme === 'dark-mode') {
+      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
+      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    } else {
+      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
+      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    }
+  }
+
+  // Recursively traverse the config object and automatically apply theme-specific color schemes
+  const applyThemeConfig = (obj, theme) => {
+    if (typeof obj !== 'object' || obj === null) return
+
+    Object.keys(obj).forEach(key => {
+      const value = obj[key]
+      // If the property is an object and has theme-specific options, apply them
+      if (typeof value === 'object' && value !== null) {
+        if (value[theme]) {
+          obj[key] = value[theme] // Apply the value for the current theme
+        } else {
+          // Recursively process child objects
+          applyThemeConfig(value, theme)
+        }
+      }
+    })
+  }
+
+  const runChartJS = ele => {
+    window.loadChartJS = true
+
+    Array.from(ele).forEach((item, index) => {
+      const chartSrc = item.firstElementChild
+      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
+      const width = item.getAttribute('data-width')
+      const existingCanvas = document.getElementById(chartID)
+
+      // If a canvas already exists, remove it to avoid rendering duplicates
+      if (existingCanvas) {
+          existingCanvas.parentNode.remove()
+      }
+
+      const chartDefinition = chartSrc.textContent
+      const canvas = document.createElement('canvas')
+      canvas.id = chartID
+
+      const div = document.createElement('div')
+      div.className = 'chartjs-wrap'
+
+      if (width) {
+        div.style.width = width
+      }
+
+      div.appendChild(canvas)
+      chartSrc.insertAdjacentElement('afterend', div)
+
+      const ctx = document.getElementById(chartID).getContext('2d')
+
+      const config = JSON.parse(chartDefinition)
+
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
+
+      // Set default styles (initial setup)
+      applyThemeDefaultsConfig(theme)
+
+      // Automatically traverse the config and apply dual-mode color schemes
+      applyThemeConfig(config, theme)
+
+      new Chart(ctx, config)
+    })
+  }
+
+  const loadChartJS = () => {
+    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
+    if (chartJSEle.length === 0) return
+
+    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
+  }
+
+  // Listen for theme change events
+  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
+  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
+
+  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = {"mapping":"pathname","inputPosition":"top","lang":"zh-TW","reactionsEnabled":1}
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'kyosora/kyosora.github.io',
+      'data-repo-id': 'R_kgDOLJYL_w',
+      'data-category-id': 'DIC_kwDOLJYL_84C516C',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !true) {
+    if (true) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script src="/js/about-cards.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","meta[property=\"og:description\"]","link[rel=\"canonical\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: true,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/search/local-search.min.js"></script></div></div></body></html>

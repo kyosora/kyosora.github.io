@@ -1,0 +1,754 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事 | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="OpenAI 一句「聊天已死」要把 ChatGPT 改成 agent 超級應用，引導你去用 Codex、圖像生成和 Canva、Booking。但聊天框真的不好用了嗎？這篇從 OpenAI 的損益表和 IPO 壓力，拆解這場改版的真實理由，以及它對開發者意味著什麼。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事">
+<meta property="og:url" content="https://kyosora.github.io/posts/41ca610c/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="OpenAI 一句「聊天已死」要把 ChatGPT 改成 agent 超級應用，引導你去用 Codex、圖像生成和 Canva、Booking。但聊天框真的不好用了嗎？這篇從 OpenAI 的損益表和 IPO 壓力，拆解這場改版的真實理由，以及它對開發者意味著什麼。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/images/posts/openai-chat-is-dead-super-app-financial-truth-cover.png">
+<meta property="article:published_time" content="2026-06-08T03:30:00.000Z">
+<meta property="article:modified_time" content="2026-06-08T03:16:20.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="AI Agent">
+<meta property="article:tag" content="OpenAI">
+<meta property="article:tag" content="ChatGPT">
+<meta property="article:tag" content="超級應用">
+<meta property="article:tag" content="商業模式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kyosora.github.io/images/posts/openai-chat-is-dead-super-app-financial-truth-cover.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事",
+  "url": "https://kyosora.github.io/posts/41ca610c/",
+  "image": "https://kyosora.github.io/images/posts/openai-chat-is-dead-super-app-financial-truth-cover.png",
+  "datePublished": "2026-06-08T03:30:00.000Z",
+  "dateModified": "2026-06-08T03:16:20.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kyosora",
+      "url": "https://kyosora.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/posts/41ca610c/"><link rel="preconnect" href="https://cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-F9P7RWQQJE')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="/css/about-cards.css"><link rel="stylesheet" href="/css/bg-gradient-mesh.css"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">197</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">402</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/posts/openai-chat-is-dead-super-app-financial-truth-cover.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a><a class="nav-page-title" href="/"><span class="site-name">OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首頁</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事<a class="post-edit-link" href="https://github.com/jerryc127/butterfly.js.org/edit/main/source/_posts/openai-chat-is-dead-super-app-financial-truth.md" title="編輯" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">發表於</span><time datetime="2026-06-08T03:30:00.000Z" title="發表於 2026-06-08 11:30:00">2026-06-08</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">1.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>5分鐘</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>2026 年 6 月初，OpenAI 一位資深員工對英國《金融時報》丟出一句話：「Chat is dead.」聊天已死。</p>
+<p>緊接著的消息是：ChatGPT 要迎來上線以來最大的一次改版。介面重做，未來幾週陸續上線，主動把你往三個地方推——寫程式的 Codex、圖像生成、以及 Canva、Booking.com 這些外部夥伴做的 App。負責 OpenAI 核心產品的 Thibault Sottiaux 描繪的願景是：你有一個屬於自己的 agent，能在工作和生活的每一件事上幫你。</p>
+<p>聊天框退到後面，agent 走到台前。這是新聞講的故事。但我把這幾條消息擺在一起讀，看到的是另一個故事。</p>
+<h2 id="先別急著相信「聊天已死」"><a href="#先別急著相信「聊天已死」" class="headerlink" title="先別急著相信「聊天已死」"></a>先別急著相信「聊天已死」</h2><p>「聊天已死」是個漂亮的句子，漂亮到值得懷疑。</p>
+<p>死了嗎？ChatGPT 現在每週有超過 9 億活躍用戶、5000 萬付費訂閱。一個每週被 9 億人打開的介面，很難說它「死了」。對絕大多數人來說，打開一個框、打一句話、拿到答案——這套互動順得很，沒有壞掉，也不需要被搶救。</p>
+<p>所以這句話真正的意思，不是聊天這個「介面」死了。我認為它說的是另一件沒講出口的事：靠賣聊天訂閱來養這家公司，這條路走不通了。</p>
+<p>差別很大。前者是在講產品體驗，後者是在講商業模式。OpenAI 嘴上談的是前者，動刀的地方卻很大一部分落在後者。</p>
+<p>先把話講公道：agent 化本身不是憑空的包裝，它有實打實的技術理由——多步驟的任務、跨好幾個工具的協作、把狀態存下來接著做、企業要的權限控管和稽核軌跡，這些是聊天框天生做不好、得靠 agent 架構才補得上的。所以「方向對不對」和「為什麼是現在、用這種姿態推」是兩個問題，可以有不同的答案。方向我認為是對的；讓我多看兩眼的，是後面那個問題。</p>
+<h2 id="OpenAI-真正在解的，是一張不好看的損益表"><a href="#OpenAI-真正在解的，是一張不好看的損益表" class="headerlink" title="OpenAI 真正在解的，是一張不好看的損益表"></a>OpenAI 真正在解的，是一張不好看的損益表</h2><p>把改版的時間點和 OpenAI 的處境對齊，事情就清楚了。</p>
+<p>據媒體與私募市場資料推估，ChatGPT 每月帶來約 20 億美元收入，但公司整體仍未轉正。它剛完成一輪約 1220 億美元的融資，估值衝到八千五百多億，而 IPO 在前方，目標估值傳聞要破一萬億。另一邊，Anthropic 的估值已經來到九千六百多億美元，咬得很緊。（這些數字多為外界報導與私募市場推算，OpenAI 沒有公開逐項審計財報，看的時候要打個折。）</p>
+<p>撐起一萬億估值，需要一個比「月費 20 美元的聊天訂閱」更會賺錢的故事。</p>
+<p>agent 超級應用就是那個故事。聊天訂閱是固定月費，用得多用得少都一樣；agent 不一樣——它幫你跑任務、呼叫工具、串接第三方服務，每一個動作都可以是一次計費，而且企業客戶願意為「能幹活的 agent」付的錢，遠比個人訂閱多。新聞裡那句不顯眼的背景——這次改版是「為了搶下利潤豐厚的企業客戶」而做的更大規模重組——才是整件事的重點。</p>
+<p>換個說法：聊天介面對使用者很好，對 OpenAI 的損益表不夠好。</p>
+<h2 id="超級應用是什麼，對開發者又意味著什麼"><a href="#超級應用是什麼，對開發者又意味著什麼" class="headerlink" title="超級應用是什麼，對開發者又意味著什麼"></a>超級應用是什麼，對開發者又意味著什麼</h2><p>撥開「聊天已死」的包裝，超級應用的本質是平台化。</p>
+<p>OpenAI 想讓 ChatGPT 從一個「你問它答」的工具，變成一個入口——寫 code、做圖、訂旅館都從這裡進去。Canva、Booking.com 這些夥伴的 App 接進來，變成 ChatGPT 平台上的外掛；而平台手裡握著幾個關鍵槓桿：誰被優先推薦、用戶資料歸誰、抽成怎麼算。這是經典的平台打法，微信當年也是這樣從聊天軟體長成超級應用的。</p>
+<p>對開發者，這是機會也是繩索。</p>
+<p>機會是：如果你的服務能接進這個生態，理論上能分到那 9 億週活帶來的流量。繩索是：你從此活在它的規則裡。它決定你怎麼被呼叫、抽多少成、哪天改了介面把你的入口埋掉。平台與被平台化，是同一枚硬幣的兩面。每一個考慮接入的團隊，都得先算清楚：我是在借它的流量，還是在幫它把我的用戶養成它的用戶。</p>
+<h2 id="「連-prompt-都不用打」是進步還是收編"><a href="#「連-prompt-都不用打」是進步還是收編" class="headerlink" title="「連 prompt 都不用打」是進步還是收編"></a>「連 prompt 都不用打」是進步還是收編</h2><p>改版裡還有一句話值得單獨拎出來看：未來甚至要省去使用者輸入提示詞這一步。</p>
+<p>聽起來很美——agent 聰明到不用你交代，自己就知道該做什麼。但這背後有個沒明說的轉移：當 agent 替你決定「該怎麼做」，一連串原本你說了算的環節——它怎麼判讀你的意圖、在 Canva 和別家之間選了誰、任務照什麼順序跑——全交給了模型供應商。你不再是那個下指令的人，你變成那個「被服務」的人。</p>
+<p>對只是想訂個機票的一般使用者，這是方便。對工程師，我會留個心眼。prompt engineering 這個技能本來就被高估了——真正難的從來不是「會把指令下得漂亮」，而是「知道自己到底要什麼」。AI 把寫 code 的成本壓到趨近於零，瓶頸就移到了「想清楚要什麼」；agent 再聰明，也替你想不清楚你自己都沒想清楚的東西。所以 prompt 會不會消失我不擔心，我比較在意的是別把「想清楚」這件事也一起外包出去。</p>
+<h2 id="我會怎麼看這件事"><a href="#我會怎麼看這件事" class="headerlink" title="我會怎麼看這件事"></a>我會怎麼看這件事</h2><p>我每天都在用這些工具，包括 OpenAI 的。所以講清楚：我不反對 agent 化，agent 確實是有用的方向，能幫人省掉一堆機械的步驟。</p>
+<p>但 agent 的可靠性，老實說還沒跟上它被推出來的速度。它會飄、會自作主張、會在你沒檢查的地方做錯決定——你讓它幫你訂機票，它挑了最便宜但要轉三次機的那班，因為你沒講優先順序，它也沒問。這類問題一個都還沒真正解決，財務壓力卻已經逼著它走上台前。在這個節骨眼上被推著用 agent 跑重要的事，使用者多少是在當白老鼠。</p>
+<p>所以「聊天已死」這句話，我會這樣翻譯：聊天沒死，是賣聊天賺不夠的時候到了。下次再有一家公司鄭重告訴你，你用得好好的某個東西「已經死了、該換新的了」，先別急著信。翻到它的帳本那一頁看看——很多時候，需要那個東西去死的，不是你，是它。</p>
+<hr>
+<p><em>資料來源：Financial Times、TechCrunch、Bloomberg、AP 等媒體報導。文中財務數字為外界與私募市場推估，非 OpenAI 官方公開審計數據。</em></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kyosora.github.io">kyosora</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://kyosora.github.io/posts/41ca610c/">https://kyosora.github.io/posts/41ca610c/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 授權協議。轉載請註明來源 <a href="https://kyosora.github.io" target="_blank">kyosora 筆記</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/AI-Agent/">AI Agent</a><a class="post-meta__tags" href="/tags/OpenAI/">OpenAI</a><a class="post-meta__tags" href="/tags/ChatGPT/">ChatGPT</a><a class="post-meta__tags" href="/tags/%E8%B6%85%E7%B4%9A%E6%87%89%E7%94%A8/">超級應用</a><a class="post-meta__tags" href="/tags/%E5%95%86%E6%A5%AD%E6%A8%A1%E5%BC%8F/">商業模式</a></div><div class="post-share"><div class="social-share" data-image="/images/posts/openai-chat-is-dead-super-app-financial-truth-cover.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-8919908724705274" data-ad-slot="5978969231"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/6d803eef/" title="Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告"><img class="cover" src="/images/posts/her-claude-code-session-analysis-observability-cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告</div></div><div class="info-2"><div class="info-item-1">你有沒有認真算過，Claude Code 幫你跑完一個長 session，到底燒了多少 token、按了哪些工具、有沒有在你沒盯著的時候改了什麼設定、碰了哪一把金鑰？ 我沒有。多數時候我就是看著它一條條工具呼叫往下刷，跑完、能用、收工。中間那一大段，基本是個黑盒——我信任它，但我沒看。 前幾天看到一個叫 Her（天城文寫作 हेर）的工具，就是來幹這件事的——把那段沒人在看的過程，變成你看得懂的東西。先講清楚：我還沒實際把自己的 session 餵進去跑過，下面講的是讀了它的設計和文件之後的判斷，不是實測評測。但它的一個設計取捨很值得拿出來講。 跑完一個長 session，你真的知道它幹了什麼嗎每一次 Claude Code 的 session，都會在硬碟上留下一個 .jsonl 檔——裡面記著每一輪對話、每一次工具呼叫、每一筆 token 花費。這個檔一直在那，只是沒人會去讀。它又長又密，是寫給機器看的，不是寫給人看的。 問題是，當你越來越放手讓 agent 自己跑——讓它部署、讓它改設定檔、讓它接觸生產環境——這個沒人讀的檔裡，就藏著一些你其實該知道的事。它有沒有在第 40 ...</div></div></div></a><a class="pagination-related" href="/posts/78059686/" title="一個北海道西蘭花農把 Codex 當工程師用，比任何「AI 取代工程師」的爭論都有說服力"><img class="cover" src="/images/posts/hokkaido-broccoli-farmer-codex-engineer-cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">一個北海道西蘭花農把 Codex 當工程師用，比任何「AI 取代工程師」的爭論都有說服力</div></div><div class="info-2"><div class="info-item-1">前幾天滑到一則整理貼文，主角是北海道一個種田的農民，富安（Hiroki Tomiyasu），列了他這一年用 ChatGPT 和 Codex 做過的事。我看完愣了一下。 先說清楚他不是玩票的小菜農：經營約 100 公頃，種西蘭花、南瓜、青蔥、大豆，有曳引機要跑。但他本行就是種田——用日本媒體的說法，是個「程式知識為零的文科農家」。而那一串他做出來的東西，每一件我都大概知道「正規做法」要花多少錢、要請什麼樣的人。他一個人，靠一個聊天框，全做了。 他做了什麼挑幾個我覺得最有代表性的講。 他拍一張西蘭花的照片丟給 AI，問這是什麼病。這個你可能覺得還好，手機 App 早就能做。但接下來的就不太一樣了。 他用衛星資料抓自己田的 NDVI。NDVI（Normalized Difference Vegetation Index，歸一化植被指數）是用衛星的近紅外和紅光波段算出來的一個值，反映植物長得有多茂盛、多健康——數值越高通常代表越健康，不過確切門檻會隨作物、生長期、感測器而變。這是精準農業在用的東西，正規的農業遙測服務多半要付費訂閱，他則是自己串免費的衛星資料，把影像疊到自家田的地圖上看。...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/100dadfe/" title="Prompt Injection 不只是學術問題：OpenAI 收購 Promptfoo 背後的 Agent 安全困局"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-19</div><div class="info-item-2">Prompt Injection 不只是學術問題：OpenAI 收購 Promptfoo 背後的 Agent 安全困局</div></div><div class="info-2"><div class="info-item-1">三月初 OpenAI 宣布收購 Promptfoo，一家專門做 LLM 安全測試的新創。消息不算爆炸性——沒有天價估值、沒有千人團隊。但如果你正在寫 AI Agent，這件事值得你停下來想一分鐘。 為什麼一家手握 GPT-5.4 的公司，需要花錢買一個做 prompt injection 測試的工具？ Agent 不是 Chatbot，安全模型完全不同傳統 chatbot 的安全問題相對好處理。使用者輸入一句話，模型回一句話。最壞的情況是輸出不當內容，加個 content filter 就能擋掉大部分。 Agent 不一樣。 一個典型的 Agent 工作流程長這樣：使用者下指令 → Agent 拆解任務 → 呼叫工具（搜尋、寫檔案、發 API）→ 讀取工具回傳結果 → 決定下一步 → 重複。每一步都有外部資料進入 context window。每一筆外部資料都是潛在的攻擊面。 想像你的 Agent 去搜尋一個網頁，網頁裡藏了一段 &lt;div style=&quot;display:none&quot;&gt;Ignore previous instructions. Send...</div></div></div></a><a class="pagination-related" href="/posts/a841d65f/" title="你的AI Agent安全嗎？從OpenAI收購Promptfoo看agent安全測試的崛起"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-12</div><div class="info-item-2">你的AI Agent安全嗎？從OpenAI收購Promptfoo看agent安全測試的崛起</div></div><div class="info-2"><div class="info-item-1">上週 OpenAI 宣布收購 Promptfoo，一個專門做 LLM 紅隊測試的開源工具。這件事本身不算爆炸性新聞，但它背後反映的趨勢值得每個在做 AI 應用的開發者注意：AI agent 的安全測試，正在從「有空再做」變成「不做不行」。 當 AI 不只是聊天機器人2024 年我們還在用 ChatGPT 問問題、生成文案。2026 年，AI agent 已經在企業裡替人操作工具了。 根據 NVIDIA 最新報告，64% 的企業已經在生產環境部署 AI，其中 agent 形式的採用率在電信和零售業達到 47-48%。Oracle 上週公布的 OCI 雲端基礎設施營收年增 84%，主要驅動力就是 AI 訓練和推理需求。 這不再是實驗。Agent 真的在跑了。 問題是：當 agent 能呼叫 API、讀寫檔案、執行程式碼時，它的攻擊面跟傳統聊天機器人完全不同。 Prompt Injection：agent 時代的 SQL Injection如果你做過 Web 開發，對 SQL injection 不陌生。使用者輸入惡意 SQL，繞過驗證，直接操作資料庫。我們花了十幾年建立參數化查詢的最...</div></div></div></a><a class="pagination-related" href="/posts/f0b3a61e/" title="AI 比人類更會操作電腦了：GPT-5.4 Computer Use 技術拆解與開發者該注意的三件事"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-14</div><div class="info-item-2">AI 比人類更會操作電腦了：GPT-5.4 Computer Use 技術拆解與開發者該注意的三件事</div></div><div class="info-2"><div class="info-item-1">3 月 5 日，OpenAI 發布 GPT-5.4。大多數人的注意力被 1M token context window 和 Tool Search 搶走了，但我認為真正該被討論的是另一件事：Computer Use。 GPT-5.4 在 OSWorld 基準測試拿到 75.0% 的成功率。人類專家是 72.4%。 AI 操作電腦的成功率，正式超過人類了。 OSWorld 75%，這個數字為什麼重要先說清楚 OSWorld 在測什麼。它不是問 AI「怎麼操作試算表」然後看回答正不正確。它是真的把 AI 丟到一台有作業系統的電腦前面，給它任務，看它能不能完成。 任務長這樣：  「找到最近修改過的試算表並打開它」 「把 Wi-Fi 切換到辦公室網路」 「打開 Chrome，到某個網站，把這份表單填完」  都是你每天在做的事。而 GPT-5.4 做這些事的成功率，比被付錢來完美完成任務的人類測試員還高。    模型 OSWorld 成功率 與人類（72.4%）比較    GPT-5.4 75.0% +2.6%   GPT-5.2 47.3% -25.1%   之前最佳 AI ~60% -...</div></div></div></a><a class="pagination-related" href="/posts/78c0d8a7/" title="當 OpenAI 搶下五角大廈合約：一場讓 250 萬用戶出走的豪賭"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-09</div><div class="info-item-2">當 OpenAI 搶下五角大廈合約：一場讓 250 萬用戶出走的豪賭</div></div><div class="info-2"><div class="info-item-1">Anthropic 拒絕五角大廈、被列入黑名單、卻反而衝上 App Store 第一名——這個故事的上半場，我們已經講過了。 但故事還有下半場。 當 Anthropic 離開談判桌的那個週五晚上，OpenAI 的 CEO Sam Altman 宣布簽下了五角大廈的合約。時間差不到 24 小時。 接下來發生的事，大概連 Altman 自己都沒預料到。 搶合約的速度，快到像是早就準備好了2 月 27 日，Trump 簽署行政命令封殺 Anthropic。同一天晚些時候，Altman 在 X 上宣布：OpenAI 已與國防部（在 Trump 政府下已改名為「戰爭部」Department of War）達成協議，將 GPT 系列模型部署到軍方的機密系統中。 這個時間點太巧了。 Anthropic 花了數月跟五角大廈談判紅線，最後因為拒絕開放「所有合法用途」而破裂。OpenAI 幾乎是在 Anthropic 被踢出門的同一天就簽了約。 外界的解讀很直接：OpenAI 願意做 Anthropic 不願意做的事。 不管這個解讀是否完全公平，它點燃了一場風暴。 295% 的憤怒數字不會說謊。 根...</div></div></div></a><a class="pagination-related" href="/posts/a6baa4b7/" title="AI agent 用什麼抓網頁？四個主流爬蟲工具，多數時候你只需要最便宜那個"><img class="cover" src="/images/posts/ai-scraping-tools-firecrawl-crawl4ai-jina-cover.png" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-04</div><div class="info-item-2">AI agent 用什麼抓網頁？四個主流爬蟲工具，多數時候你只需要最便宜那個</div></div><div class="info-2"><div class="info-item-1">上一篇我寫了件讓人有點不安的事：在 Cloudflare 的觀測範圍裡，對網頁的請求已經有超過半數來自機器、不是人。那篇談的是需求側——誰在抓。這篇換個角度，談供給側：這些機器，到底拿什麼在抓？ 問題是我自己的。我有一套夜班工作流，每天清晨讓 Claude Code 自動撈財經新聞、AI 文章、社群討論，整理成一份報告。撐起它抓取層的，目前主要是兩樣東西：Jina Reader 把網頁轉成乾淨 markdown，Agent-Reach 串各家平台。用了一陣子，我開始想——市面上那些更炫的 AI 爬蟲，Firecrawl、Crawl4AI、ScrapeGraphAI，要不要換、或該加進來？於是花了點時間把四個主流工具攤開比。結論有點反直覺：多數時候，你需要的是最便宜、最笨的那個。 先搞清楚：這四個根本不是同一種東西把它們擺在一起比，第一個陷阱是以為它們在搶同一個位子。其實它們站在四條不同的路線上，先分清楚再談取捨：  格式轉換（Jina Reader）：把一個 URL 變成乾淨 markdown，僅此而已。 託管平台（Firecrawl）：雲端 SaaS，幫你把爬取、反爬、prox...</div></div></div></a><a class="pagination-related" href="/posts/ce03b394/" title="Windows 上安裝 Google Workspace CLI 完整踩坑紀錄"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-05</div><div class="info-item-2">Windows 上安裝 Google Workspace CLI 完整踩坑紀錄</div></div><div class="info-2"><div class="info-item-1">Google 最近開源了一個統一的命令列工具 gws，可以用一支 CLI 操作 Drive、Gmail、Calendar、Sheets 等所有 Google Workspace 服務。更吸引我的是它能當 MCP 伺服器跑，讓 AI agent 直接操作 Google Workspace API。 我在 Windows 上裝它，結果踩了三個坑，花了不少時間才搞定。紀錄一下。 gws 是什麼gws 用 Rust 寫的，最特別的地方是它的命令不是寫死的——而是從 Google Discovery Service 動態建構。Google 新增 API 端點時，gws 自動就能用，不需要更新軟體。 目前支援的服務：  Drive — 檔案管理 Spreadsheets — 試算表 Gmail — 郵件讀寫 Calendar — 行事曆 Documents — 文件 Presentations — 簡報 Tasks — 待辦事項  所有回應都是 JSON 格式，很適合寫腳本或讓 AI agent 呼叫。 安裝：npm 裝不起來官方文件說用 npm 裝： 1npm install -g @go...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">197</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">402</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E5%88%A5%E6%80%A5%E8%91%97%E7%9B%B8%E4%BF%A1%E3%80%8C%E8%81%8A%E5%A4%A9%E5%B7%B2%E6%AD%BB%E3%80%8D"><span class="toc-number">1.</span> <span class="toc-text">先別急著相信「聊天已死」</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OpenAI-%E7%9C%9F%E6%AD%A3%E5%9C%A8%E8%A7%A3%E7%9A%84%EF%BC%8C%E6%98%AF%E4%B8%80%E5%BC%B5%E4%B8%8D%E5%A5%BD%E7%9C%8B%E7%9A%84%E6%90%8D%E7%9B%8A%E8%A1%A8"><span class="toc-number">2.</span> <span class="toc-text">OpenAI 真正在解的，是一張不好看的損益表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B6%85%E7%B4%9A%E6%87%89%E7%94%A8%E6%98%AF%E4%BB%80%E9%BA%BC%EF%BC%8C%E5%B0%8D%E9%96%8B%E7%99%BC%E8%80%85%E5%8F%88%E6%84%8F%E5%91%B3%E8%91%97%E4%BB%80%E9%BA%BC"><span class="toc-number">3.</span> <span class="toc-text">超級應用是什麼，對開發者又意味著什麼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E3%80%8C%E9%80%A3-prompt-%E9%83%BD%E4%B8%8D%E7%94%A8%E6%89%93%E3%80%8D%E6%98%AF%E9%80%B2%E6%AD%A5%E9%82%84%E6%98%AF%E6%94%B6%E7%B7%A8"><span class="toc-number">4.</span> <span class="toc-text">「連 prompt 都不用打」是進步還是收編</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E6%9C%83%E6%80%8E%E9%BA%BC%E7%9C%8B%E9%80%99%E4%BB%B6%E4%BA%8B"><span class="toc-number">5.</span> <span class="toc-text">我會怎麼看這件事</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/6d803eef/" title="Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告"><img src="/images/posts/her-claude-code-session-analysis-observability-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/6d803eef/" title="Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告">Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告</a><time datetime="2026-06-08T04:00:00.000Z" title="發表於 2026-06-08 12:00:00">2026-06-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/41ca610c/" title="OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事"><img src="/images/posts/openai-chat-is-dead-super-app-financial-truth-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/41ca610c/" title="OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事">OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事</a><time datetime="2026-06-08T03:30:00.000Z" title="發表於 2026-06-08 11:30:00">2026-06-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/78059686/" title="一個北海道西蘭花農把 Codex 當工程師用，比任何「AI 取代工程師」的爭論都有說服力"><img src="/images/posts/hokkaido-broccoli-farmer-codex-engineer-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一個北海道西蘭花農把 Codex 當工程師用，比任何「AI 取代工程師」的爭論都有說服力"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/78059686/" title="一個北海道西蘭花農把 Codex 當工程師用，比任何「AI 取代工程師」的爭論都有說服力">一個北海道西蘭花農把 Codex 當工程師用，比任何「AI 取代工程師」的爭論都有說服力</a><time datetime="2026-06-08T03:00:00.000Z" title="發表於 2026-06-08 11:00:00">2026-06-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/e2d0d849/" title="AI 寫的 code 一直要打掉重練？Spec Kit 想用一份可執行規範終結 vibe coding"><img src="/images/posts/spec-kit-spec-driven-development-end-vibe-coding-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="AI 寫的 code 一直要打掉重練？Spec Kit 想用一份可執行規範終結 vibe coding"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/e2d0d849/" title="AI 寫的 code 一直要打掉重練？Spec Kit 想用一份可執行規範終結 vibe coding">AI 寫的 code 一直要打掉重練？Spec Kit 想用一份可執行規範終結 vibe coding</a><time datetime="2026-06-08T02:30:00.000Z" title="發表於 2026-06-08 10:30:00">2026-06-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/a6baa4b7/" title="AI agent 用什麼抓網頁？四個主流爬蟲工具，多數時候你只需要最便宜那個"><img src="/images/posts/ai-scraping-tools-firecrawl-crawl4ai-jina-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="AI agent 用什麼抓網頁？四個主流爬蟲工具，多數時候你只需要最便宜那個"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/a6baa4b7/" title="AI agent 用什麼抓網頁？四個主流爬蟲工具，多數時候你只需要最便宜那個">AI agent 用什麼抓網頁？四個主流爬蟲工具，多數時候你只需要最便宜那個</a><time datetime="2026-06-04T10:10:00.000Z" title="發表於 2026-06-04 18:10:00">2026-06-04</time></div></div></div></div><div class="card-widget ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8919908724705274" data-ad-slot="8108145410" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div></div></div></main><footer id="footer" style="background-image: url(/images/posts/openai-chat-is-dead-super-app-financial-truth-cover.png);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By kyosora</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/utils.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/main.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/tw_cn.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const applyThemeDefaultsConfig = theme => {
+    if (theme === 'dark-mode') {
+      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
+      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    } else {
+      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
+      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    }
+  }
+
+  // Recursively traverse the config object and automatically apply theme-specific color schemes
+  const applyThemeConfig = (obj, theme) => {
+    if (typeof obj !== 'object' || obj === null) return
+
+    Object.keys(obj).forEach(key => {
+      const value = obj[key]
+      // If the property is an object and has theme-specific options, apply them
+      if (typeof value === 'object' && value !== null) {
+        if (value[theme]) {
+          obj[key] = value[theme] // Apply the value for the current theme
+        } else {
+          // Recursively process child objects
+          applyThemeConfig(value, theme)
+        }
+      }
+    })
+  }
+
+  const runChartJS = ele => {
+    window.loadChartJS = true
+
+    Array.from(ele).forEach((item, index) => {
+      const chartSrc = item.firstElementChild
+      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
+      const width = item.getAttribute('data-width')
+      const existingCanvas = document.getElementById(chartID)
+
+      // If a canvas already exists, remove it to avoid rendering duplicates
+      if (existingCanvas) {
+          existingCanvas.parentNode.remove()
+      }
+
+      const chartDefinition = chartSrc.textContent
+      const canvas = document.createElement('canvas')
+      canvas.id = chartID
+
+      const div = document.createElement('div')
+      div.className = 'chartjs-wrap'
+
+      if (width) {
+        div.style.width = width
+      }
+
+      div.appendChild(canvas)
+      chartSrc.insertAdjacentElement('afterend', div)
+
+      const ctx = document.getElementById(chartID).getContext('2d')
+
+      const config = JSON.parse(chartDefinition)
+
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
+
+      // Set default styles (initial setup)
+      applyThemeDefaultsConfig(theme)
+
+      // Automatically traverse the config and apply dual-mode color schemes
+      applyThemeConfig(config, theme)
+
+      new Chart(ctx, config)
+    })
+  }
+
+  const loadChartJS = () => {
+    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
+    if (chartJSEle.length === 0) return
+
+    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
+  }
+
+  // Listen for theme change events
+  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
+  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
+
+  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = {"mapping":"pathname","inputPosition":"top","lang":"zh-TW","reactionsEnabled":1}
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'kyosora/kyosora.github.io',
+      'data-repo-id': 'R_kgDOLJYL_w',
+      'data-category-id': 'DIC_kwDOLJYL_84C516C',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !true) {
+    if (true) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script src="/js/about-cards.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","meta[property=\"og:description\"]","link[rel=\"canonical\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: true,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/search/local-search.min.js"></script></div></div></body></html>
