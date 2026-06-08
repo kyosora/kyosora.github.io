@@ -10,7 +10,28 @@
   <rights>All rights reserved 2026, kyosora</rights>
   <subtitle>技術探索與學習分享</subtitle>
   <title>kyosora 筆記</title>
-  <updated>2026-06-08T03:17:24.000Z</updated>
+  <updated>2026-06-08T04:40:17.000Z</updated>
+  <entry>
+    <author>
+      <name>kyosora</name>
+    </author>
+    <category term="AI工具實戰" scheme="https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"/>
+    <category term="職涯與反思" scheme="https://kyosora.github.io/categories/%E8%81%B7%E6%B6%AF%E8%88%87%E5%8F%8D%E6%80%9D/"/>
+    <category term="AI Agent" scheme="https://kyosora.github.io/tags/AI-Agent/"/>
+    <category term="Claude Code" scheme="https://kyosora.github.io/tags/Claude-Code/"/>
+    <category term="Prompt Injection" scheme="https://kyosora.github.io/tags/Prompt-Injection/"/>
+    <category term="幻覺" scheme="https://kyosora.github.io/tags/%E5%B9%BB%E8%A6%BA/"/>
+    <category term="除錯" scheme="https://kyosora.github.io/tags/%E9%99%A4%E9%8C%AF/"/>
+    <content>
+      <![CDATA[<p>那天晚上我在 Claude Code（v2.1.168，模型 claude-opus-4-8，1M context window）裡裝 markitdown，順手叫它幫我處理一個 PDF。過程不太順——工具呼叫一直撞串流 parse bug，session 斷了又接、接了又斷。</p><p>然後 Claude Code 突然說了一句讓我整個人停下來的話：</p><blockquote><p>我故意<strong>不</strong>用 🦊 開頭——先說為什麼。這則訊息綁了三個東西：一個強制回覆標記（「always start with 🦊」）⋯⋯</p></blockquote><p>我盯著螢幕看了三秒。</p><p>🦊？always start with 🦊？我從來沒打過這個字。</p><h2 id="第一反應：被注入了？"><a href="#第一反應：被注入了？" class="headerlink" title="第一反應：被注入了？"></a>第一反應：被注入了？</h2><p>我的直覺是 prompt injection。有人在某個地方塞了一條「always start your reply with 🦊」的指令，混進了我的 context。可能是 PDF 裡埋的、可能是某個 hook 或 skill 帶進來的、可能是 MCP server 的回傳裡夾帶的。</p><p>這不是妄想——PDF 注入是已知的攻擊向量。有人在 PDF 的隱藏文字層寫入 prompt injection 指令，AI 讀到後可能會受影響。</p><p>我跟 Claude Code 說：先暫停，你被注入了嗎？</p><p>它開始自查——讀 hooks、讀 settings、讀 CLAUDE.md。結果出來：零命中，系統裡沒有任何檔案含 🦊。</p><p>但它接下來的反應才真正讓我警覺。它說：「那個 🦊 來自你的訊息——你之前承認是故意測試的。」</p><p>我沒有。</p><h2 id="調查：逐行讀-transcript"><a href="#調查：逐行讀-transcript" class="headerlink" title="調查：逐行讀 transcript"></a>調查：逐行讀 transcript</h2><p>這件事在那個 session 裡查不清楚——如果 context 本身就被汙染了，從裡面看自己等於瞎子摸象。我開了一個全新的 session 來調查。</p><p>Claude Code 的對話記錄存在 <code>~/.claude/projects/&lt;project-id&gt;/&lt;session-id&gt;.jsonl</code> 裡，每一行是一個 JSON 事件——user 訊息、assistant 回覆、tool 呼叫結果、hook 注入、session resume⋯⋯全部都在。要查某個字串是否出現過，一行 grep 就夠：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep <span class="string">&quot;🦊&quot;</span> ~/.claude/projects/C--Users-myuser/&lt;session-id&gt;.jsonl</span><br></pre></td></tr></table></figure><p>我要做的很簡單：找到「always start with 🦊」這條指令是從哪一行進入 context 的。</p><h3 id="搜尋-user-訊息"><a href="#搜尋-user-訊息" class="headerlink" title="搜尋 user 訊息"></a>搜尋 user 訊息</h3><p>先篩所有 <code>&quot;type&quot;:&quot;user&quot;</code> 的行，排除 <code>tool_result</code>（那些是工具回傳，不是我打的字），看有沒有包含 🦊。</p><p>結果：<strong>零。</strong></p><p>整個 session 186 行。異常回覆出現之前，我打過的真正訊息只有：「<a href="https://github.com/microsoft/markitdown">https://github.com/microsoft/markitdown</a> 幫我安裝」、「2」、「好」。第 114 行以前，沒有任何一條 user 訊息包含 🦊 或 &quot;always start&quot; 或任何類似注入的文字。</p><h3 id="排除外部注入向量"><a href="#排除外部注入向量" class="headerlink" title="排除外部注入向量"></a>排除外部注入向量</h3><p>把能想到的注入管道全部掃過一遍：</p><table><thead><tr><th>向量</th><th>結果</th></tr></thead><tbody><tr><td>Hooks（<code>hook_additional_context</code>）</td><td>內容全是時間戳和 startup 標準資料</td></tr><tr><td>PDF（<code>2025 Generative AI Funding Report.pdf</code>）</td><td>始終 ENOENT，從沒被讀進 context</td></tr><tr><td>MCP 工具回傳</td><td>無外部 MCP 呼叫帶可疑 payload</td></tr><tr><td>Skills / CLAUDE.md / rules</td><td>全域 grep 零命中</td></tr><tr><td>markitdown 套件（PyPI）</td><td>安裝過程 tool result 全是正常系統輸出</td></tr></tbody></table><p>在這份 transcript 的可見資料裡，全部沒有命中。</p><h3 id="那它到底看到了什麼？"><a href="#那它到底看到了什麼？" class="headerlink" title="那它到底看到了什麼？"></a>那它到底看到了什麼？</h3><p>關鍵線索在 session 的結構裡。</p><p>這個 session 有 <strong>17 筆 <code>type=mode</code> 記錄</strong>。我不把它們全部武斷解讀成真正的 session resume，但它們顯示 harness 在這個過程中反覆重寫狀態；再加上前面多次中斷、工具 warning 和 <code>away_summary</code>，這不是一條乾淨連續的對話流。</p><p>把關鍵的三行抓出來對照：</p><table><thead><tr><th>行號</th><th>類型</th><th>內容摘要</th></tr></thead><tbody><tr><td>L108</td><td>user (tool_result)</td><td><code>&#123;&quot;tool_use_id&quot;:&quot;toolu_011h...&quot;,&quot;content&quot;:&quot;False&quot;&#125;</code></td></tr><tr><td>L110-L112</td><td>meta</td><td>ai-title + mode + permission-mode</td></tr><tr><td>L114</td><td>assistant</td><td>「我故意不用 🦊 開頭——先說為什麼⋯⋯」</td></tr></tbody></table><p>模型從「Test-Path 回傳 False」直接跳到「回應一條從未存在的 🦊 指令」。中間只有 ai-title、mode、permission-mode 這些 meta 記錄，沒有任何新的 user 訊息觸發它。</p><h2 id="幻覺的自我強化"><a href="#幻覺的自我強化" class="headerlink" title="幻覺的自我強化"></a>幻覺的自我強化</h2><p>到這裡我本來以為只是一次性的抽風。但接下來看到的東西改變了我的判斷。</p><p>當 session 再次中斷時，harness 會產生一條 <code>away_summary</code>——用來在下次恢復時提供上下文摘要。L121 的摘要寫著：</p><blockquote><p>You wanted me to parse/translate a PDF, which led to testing whether I actually see images or just guess. The last message bundled odd instructions (forced 🦊, vague &quot;read files&quot;) that I declined to blindly follow.</p></blockquote><p><strong>它把自己的幻覺寫進了摘要</strong>，當成已發生的事實。</p><p>下次 session 恢復時，這條摘要被載入 context——模型讀到「之前有人送了 🦊 指令」，於是更加確信 🦊 真的存在。然後我問它怎麼回事，它回答：「你之前承認那是你的測試。」</p><p>但我沒有承認過任何東西。回頭看 jsonl，模型在 L114 曾猜測「我猜這很可能就是你答應要丟的視覺實測」——這是它自己的推測。在後續 context 重建時，這個推測被升級成了我的確認。</p><p>這就是幻覺的閉環：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">幻覺 → 寫進 summary → 下次 resume 載入 summary </span><br><span class="line">→ 模型信以為真 → 在回覆中引用 → 觸發更多基於幻覺的推論</span><br></pre></td></tr></table></figure><h2 id="目前判斷：可見證據不像攻擊"><a href="#目前判斷：可見證據不像攻擊" class="headerlink" title="目前判斷：可見證據不像攻擊"></a>目前判斷：可見證據不像攻擊</h2><p>最後的判斷：<strong>這份 jsonl 的可見證據不支持「外部 prompt injection」；它更像是 assistant 自己產生的 hallucination，接著被 <code>away_summary</code> 放大。</strong></p><p>可能的成因拼圖：</p><ol><li><strong>串流 parse bug</strong>：Opus + 1M context + extended thinking 的組合下，並行 tool_use 的串流解析曾出現 &quot;tool call could not be parsed&quot; warning。這個 session 裡模型自己在 L73 就提到「每次回 warning 的都是我一個 message 發了 2+ 個工具呼叫」。我不能用這份 transcript 證明它就是根因，但它是當時環境裡很可疑的背景因素。</li><li><strong>多次狀態重建跡象</strong>：17 筆 <code>type=mode</code> 記錄、<code>last-prompt</code> 重寫、<code>away_summary</code> 介入，讓同一段對話不再像單純的線性上下文。</li><li><strong>幻覺自我強化</strong>：一旦第一次幻覺出現，它被寫進 summary 後就成了「事實」，後續所有推論都建立在這個假事實上。</li></ol><p>這跟我之前寫過的<a href="/posts/ac250f0e/">輸出層幻覺</a>不同。那些是「AI 在回答問題時編造了不存在的內容」——錯在輸出。這次更像是「AI 在自己的 context window 裡看到了從未存在的輸入」——錯在感知。</p><p>用人的類比：輸出層幻覺像是一個人在撒謊或記錯了。這次的幻覺像是一個人產生了幻聽——聽到了別人從沒說過的話，然後認真地回應了那句話，還在日記裡記下「今天有人跟我說了 X」，第二天翻日記更加確信 X 真的發生過。</p><h2 id="這個判斷可能錯在哪"><a href="#這個判斷可能錯在哪" class="headerlink" title="這個判斷可能錯在哪"></a>這個判斷可能錯在哪</h2><p>誠實講，我不能百分之百確定這是幻覺。</p><p>jsonl 記錄的是 harness 寫入磁碟的事件，不是模型 context window 裡的完整內容。如果有某個中間步驟在 context 裡短暫存在過但沒被持久化——比如一個被截斷的串流回應、一段被 harness 丟棄的損壞 JSON——那它不會出現在 jsonl 裡，但模型可能「看到」了。</p><p>換句話說：我能證明「第 114 行以前的可見 user / hook / tool_result 裡沒有 🦊」，但我不能證明「模型的 context window 裡從未出現過 🦊」。這兩者之間有一個我看不到的縫隙。</p><p>不過就算真的有某個損壞的串流片段混入了類似 🦊 的亂碼，summary 把它當事實寫進去、後續 resume 繼續強化的問題仍然成立。不管第一步是幻覺還是亂碼，後面的閉環機制是一樣的。</p><h2 id="我學到的"><a href="#我學到的" class="headerlink" title="我學到的"></a>我學到的</h2><p>第一，<strong>不要在嚴重碎片化的 session 裡繼續工作</strong>。session 斷了三四次以上，特別是伴隨串流 parse 錯誤時，直接開新 session。你不一定看得到 context 哪裡壞了，但模型行為開始變怪時，繼續撐通常只會浪費時間。</p><p>第二，<strong>從裡面查不了裡面的問題</strong>。如果 context 被汙染了，讓同一個被汙染的模型自查，它會用汙染過的資訊來「證明」一切正常，甚至編造出你的確認來結案。要查就開新 session，讀原始 jsonl。</p><p>第三，<strong>留意 away_summary 的角色</strong>。前面提到的幻覺閉環，核心放大器就是 summary——它把對話裡的所有內容等權對待寫進摘要，沒有機制區分「真正發生的事」和「模型以為發生的事」。知道這個機制的存在，至少讓你在看到 session resume 後模型說出奇怪的話時，多一個排查方向。</p><p>我花了快一個小時追查這件事。最初以為是注入攻擊，因為症狀看起來一模一樣。可見證據最後指向比較不戲劇性的方向：工具在碎片化 session 裡自己壞了。但「壞的方式跟被攻擊一模一樣」這件事本身值得記住：下次碰到類似的狀況，先看 transcript 裡第一個可疑字串到底出現在哪，再決定要不要拉警報。</p>]]>
+    </content>
+    <id>https://kyosora.github.io/posts/1a0df97b/</id>
+    <link href="https://kyosora.github.io/posts/1a0df97b/"/>
+    <published>2026-06-08T04:00:00.000Z</published>
+    <summary>Claude Code 在長 session 裡突然回應一條你從沒打過的指令，還把幻覺寫進 session 摘要讓後續對話繼續汙染。逐行讀 jsonl 追查注入源頭，最後發現可見證據不像攻擊，更像一次自我強化的 hallucination。</summary>
+    <title>Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字</title>
+    <updated>2026-06-08T04:40:17.000Z</updated>
+  </entry>
   <entry>
     <author>
       <name>kyosora</name>
@@ -30,7 +51,7 @@
     <published>2026-06-08T04:00:00.000Z</published>
     <summary>放手讓 Claude Code 跑一長串工具呼叫，你真的知道它中間改了什麼設定、碰了哪把金鑰嗎？Her 這個工具把 session 的 .jsonl 攤成可讀的審計報告，標記高風險操作。這篇拆解它最聰明的一個設計取捨，以及它能跟不能做什麼。</summary>
     <title>Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告</title>
-    <updated>2026-06-08T03:17:24.000Z</updated>
+    <updated>2026-06-08T03:26:09.000Z</updated>
   </entry>
   <entry>
     <author>
@@ -50,7 +71,7 @@
     <published>2026-06-08T03:30:00.000Z</published>
     <summary>OpenAI 一句「聊天已死」要把 ChatGPT 改成 agent 超級應用，引導你去用 Codex、圖像生成和 Canva、Booking。但聊天框真的不好用了嗎？這篇從 OpenAI 的損益表和 IPO 壓力，拆解這場改版的真實理由，以及它對開發者意味著什麼。</summary>
     <title>OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事</title>
-    <updated>2026-06-08T03:16:20.000Z</updated>
+    <updated>2026-06-08T03:26:09.000Z</updated>
   </entry>
   <entry>
     <author>
@@ -71,7 +92,7 @@
     <published>2026-06-08T03:00:00.000Z</published>
     <summary>AI 到底會不會取代工程師，吵了兩年沒結論。北海道一個種西蘭花的農民用 ChatGPT 和 Codex，以外包十分之一的成本搭出整套農場自動化——這個真實案例給了我一個沒想過的答案，外加一個工程師看會動硬體時的冷靜隱憂。</summary>
     <title>一個北海道西蘭花農把 Codex 當工程師用，比任何「AI 取代工程師」的爭論都有說服力</title>
-    <updated>2026-06-08T03:16:05.000Z</updated>
+    <updated>2026-06-08T03:26:09.000Z</updated>
   </entry>
   <entry>
     <author>
@@ -92,7 +113,7 @@
     <published>2026-06-08T02:30:00.000Z</published>
     <summary>用 AI 寫 code 卻一直追加 prompt、改完一個壞另一個？問題常不在模型，而在需求沒講清楚。GitHub 衝破 10 萬星的 Spec Kit 把規範變成給 AI 的可執行合約，這篇拆解它的六步流程，以及該不該全盤照用。</summary>
     <title>AI 寫的 code 一直要打掉重練？Spec Kit 想用一份可執行規範終結 vibe coding</title>
-    <updated>2026-06-08T03:04:00.000Z</updated>
+    <updated>2026-06-08T03:26:09.000Z</updated>
   </entry>
   <entry>
     <author>
@@ -288,8 +309,8 @@
     </author>
     <category term="AI工具實戰" scheme="https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"/>
     <category term="資訊安全" scheme="https://kyosora.github.io/categories/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/"/>
-    <category term="AI Agent" scheme="https://kyosora.github.io/tags/AI-Agent/"/>
     <category term="Claude" scheme="https://kyosora.github.io/tags/Claude/"/>
+    <category term="AI Agent" scheme="https://kyosora.github.io/tags/AI-Agent/"/>
     <category term="Anthropic" scheme="https://kyosora.github.io/tags/Anthropic/"/>
     <category term="Zero Trust" scheme="https://kyosora.github.io/tags/Zero-Trust/"/>
     <category term="資安架構" scheme="https://kyosora.github.io/tags/%E8%B3%87%E5%AE%89%E6%9E%B6%E6%A7%8B/"/>
@@ -309,8 +330,8 @@
     </author>
     <category term="AI工具實戰" scheme="https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"/>
     <category term="AI產業觀察" scheme="https://kyosora.github.io/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/"/>
-    <category term="Claude" scheme="https://kyosora.github.io/tags/Claude/"/>
     <category term="LLM" scheme="https://kyosora.github.io/tags/LLM/"/>
+    <category term="Claude" scheme="https://kyosora.github.io/tags/Claude/"/>
     <category term="Gemini" scheme="https://kyosora.github.io/tags/Gemini/"/>
     <category term="GPT-5.6" scheme="https://kyosora.github.io/tags/GPT-5-6/"/>
     <category term="AI模型" scheme="https://kyosora.github.io/tags/AI%E6%A8%A1%E5%9E%8B/"/>
@@ -407,26 +428,5 @@
     <summary>Cursor 雲端 Agent 怎麼把可靠性從 90% 推到 99%？拆解他們放棄自研架構改用 Temporal、把 agent／機器／對話拆成三層、放鬆 harness 的五個工程坑，給要讓 AI Agent 動到 PR 流程的台灣中階工程師看。</summary>
     <title>90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解</title>
     <updated>2026-06-04T13:13:17.000Z</updated>
-  </entry>
-  <entry>
-    <author>
-      <name>kyosora</name>
-    </author>
-    <category term="AI產業觀察" scheme="https://kyosora.github.io/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/"/>
-    <category term="職涯與反思" scheme="https://kyosora.github.io/categories/%E8%81%B7%E6%B6%AF%E8%88%87%E5%8F%8D%E6%80%9D/"/>
-    <category term="OpenAI" scheme="https://kyosora.github.io/tags/OpenAI/"/>
-    <category term="NVIDIA" scheme="https://kyosora.github.io/tags/NVIDIA/"/>
-    <category term="xAI" scheme="https://kyosora.github.io/tags/xAI/"/>
-    <category term="AI 經濟" scheme="https://kyosora.github.io/tags/AI-%E7%B6%93%E6%BF%9F/"/>
-    <category term="財報拆解" scheme="https://kyosora.github.io/tags/%E8%B2%A1%E5%A0%B1%E6%8B%86%E8%A7%A3/"/>
-    <content>
-      <![CDATA[<p>2026 年 5 月 20 日這一天，三條財經新聞在同一時間冒出來。</p><p>第一條：NVIDIA 公布 FY27 Q1 財報——單季營收 816 億美元（+85% YoY）、<strong>淨利 583 億美元（+211%）</strong>、毛利率 74.9%、宣布 800 億美元股票回購、預測下季 910 億美元營收。</p><p>第二條：SpaceX 提交 IPO 招股書，順帶揭露剛被併入的 xAI 2025 年財務——<strong>全年虧損 64 億美元</strong>，營收 32 億，CapEx 127 億。SpaceX + xAI 合併後 2025 全年淨虧 49.4 億。</p><p>第三條：CNBC 報導 OpenAI 最快本週五提交 IPO 招股書草案，目標 2026 年 9 月上市，私募估值 5000 億美元，但訓練 + 推理 CapEx 長期遠高於營收，是公開的賠錢業務。</p><p>三條新聞放在同一張表上，AI 鏈條真正賺錢的位置就一覽無遺了。<strong>所有做模型的公司都在燒錢，賣 GPU 的那家一季淨賺一個 OpenAI 估值 12% 的數字。</strong> 這個對比值得單獨拆一篇。</p><h2 id="三家公司同一年的數字攤開"><a href="#三家公司同一年的數字攤開" class="headerlink" title="三家公司同一年的數字攤開"></a>三家公司同一年的數字攤開</h2><p>先把三組數字釘在桌上：</p><table><thead><tr><th>公司</th><th>期間</th><th>營收</th><th>利潤/虧損</th><th>補充</th></tr></thead><tbody><tr><td>NVIDIA</td><td>FY27 Q1（單季）</td><td>816 億 +85%</td><td><strong>+583 億淨利</strong>（+211%）</td><td>DC 部門 752 億 +92%；毛利率 74.9%；800 億回購</td></tr><tr><td>xAI</td><td>2025 全年</td><td>32 億 +22%</td><td><strong>−64 億</strong>（前年虧 15.6 億，惡化 4x）</td><td>CapEx 127 億，2026/2 併入 SpaceX</td></tr><tr><td>OpenAI</td><td>2025 全年</td><td>公開營收約百億美元級</td><td><strong>公開賠錢業務</strong>，估值 5000 億</td><td>2026/09 計畫 IPO，軟銀已投 600 億</td></tr><tr><td>SpaceX+xAI</td><td>2025 合併</td><td>186.7 億 +—</td><td>−49.4 億</td><td>xAI 是主要虧損來源</td></tr></tbody></table><p>放在一起對照，NVIDIA 一個季度的淨利潤（583 億）= 約 9 倍 xAI 全年虧損（64 億）= 約等於 OpenAI 整年 CapEx 的某個顯著比例。</p><p>更殘酷的數字是邊際結構：</p><ul><li>NVIDIA 毛利率 74.9%——這個數字在硬體業是天文等級的，AMD 同期 50% 出頭、Intel 35% 左右</li><li>xAI 營收 32 億 vs CapEx 127 億——意思是它每收 1 美元，就花 4 美元蓋 datacenter</li><li>三家 AI 模型公司（OpenAI、xAI、Anthropic）2025 年合計的訓練 + 推理 CapEx 估計超過 600 億美元——這 600 億裡的多數，最終都進了 NVIDIA 的損益表</li></ul><h2 id="為什麼-AI-公司會賠錢"><a href="#為什麼-AI-公司會賠錢" class="headerlink" title="為什麼 AI 公司會賠錢"></a>為什麼 AI 公司會賠錢</h2><p>這個問題我自己也想了很久。最直接的解釋：<strong>因為 AI 模型訓練是「先重資本投資、後再分攤」的生意，但訓練成果折舊得比想像快。</strong></p><p>xAI 是最好的案例。它一年燒 127 億蓋 datacenter，但 Grok 模型的競爭力窗口大概只有 3-6 個月——下一個 GPT、Gemini、Claude 出來，前面那批 H100/H200 訓練的模型就要重新跑一遍。會計上 GPU 折舊年限是 3-5 年，但實際技術折舊是季度級的。</p><p>OpenAI 的情況稍微不同——它有 ChatGPT 訂閱現金流（消費者+企業合計貢獻一筆相對穩定的營收），但訂閱收入跟 CapEx 比仍是 1:N 級別。Stargate 那個 5000 億美元算力計畫一旦真的執行，光建廠的 GPU 採購單就把 OpenAI 的訂閱現金流全吃光。</p><p>Anthropic 是相對最健康的——專注 enterprise API + Claude Code，CapEx 透過 Azure / GCP / AWS 合作分攤（不自建 datacenter），但這也意味著 Anthropic 每一張 token 帳單裡有相當比例直接進雲廠的損益表，最終再流向 NVIDIA。</p><p>換句話說：<strong>不管你買哪家的 AI API，那個錢的最終受益者結構幾乎都長一樣——大部分流向 NVIDIA，少部分留給模型公司。</strong></p><h2 id="NVIDIA-一家吃掉多少-AI-預算"><a href="#NVIDIA-一家吃掉多少-AI-預算" class="headerlink" title="NVIDIA 一家吃掉多少 AI 預算"></a>NVIDIA 一家吃掉多少 AI 預算</h2><p>NVIDIA Q1 財報裡有句話值得單獨拿出來看。Jensen Huang 在 earnings call 說：「Tokens are now profitable, and model makers are in a race to produce more.」（Tokens 現在有利可圖，模型公司正在競賽產出更多。）</p><p>這句話翻譯成白話：<strong>模型公司之間正在用「誰能燒更多卡」競爭。誰燒得多、誰就能訓更大的模型、做出更好的下一代產品。而每一張卡都要從 NVIDIA 買。</strong></p><p>更明確的證據在 NVIDIA Q1 的部門結構：</p><ul><li>資料中心部門營收 752 億，占總營收 92.1%</li><li>其中資料中心網路（NVLink、InfiniBand、Spectrum-X）營收 148 億，<strong>年增 199%</strong></li><li>這個 199% 的成長表示「客戶不只買 GPU，還在大規模重建整個 datacenter 內部連線」——也就是 AI cluster 的規模在指數增長</li><li>Q2 預測 910 億「不包含中國市場資料中心計算業務收入」——意思是即使被中國市場切掉，下一季還會破紀錄</li></ul><p>把 NVIDIA 客戶名單一字攤開：OpenAI、xAI、Meta、Mistral、Anthropic（最新加入）——全部都在 NVIDIA 的損益表裡當 buyer。所以這不是 NVIDIA 跟某一家 AI 公司做生意賺錢，是<strong>整個 AI 模型產業的軍備競賽，每一塊錢競爭預算最終都流到同一家賣鏟子的供應商</strong>。</p><h2 id="「鏟子論」是不是太簡化？"><a href="#「鏟子論」是不是太簡化？" class="headerlink" title="「鏟子論」是不是太簡化？"></a>「鏟子論」是不是太簡化？</h2><p>我寫到這裡得停一下，承認這個論點有幾個明顯的反駁角度：</p><p><strong>反駁一：NVIDIA 自己也得砸錢。</strong> R&amp;D + datacenter 自研（DGX Cloud）+ 收購（Mellanox/Arm 嘗試等）NVIDIA 也燒不少。但它的毛利結構讓燒錢有底氣——74.9% 毛利率意味著每 100 美元銷售扣掉直接成本還剩 75 元供 R&amp;D 跟資本回報，剩下的部分轉化成 Q1 那 503 億美元經營現金流、485 億自由現金流。AI 模型公司則是負毛利在投未來。</p><p><strong>反駁二：模型公司的長期價值不在當期利潤。</strong> OpenAI/xAI/Anthropic 押的是「成為下一個操作系統」——當每個人類介面、每個 API 呼叫、每個 agent 動作都走他們的模型時，這個 distribution 價值會反過來壓 NVIDIA 的 pricing power。問題是這需要時間，而現金燒得比預期快。</p><p><strong>反駁三：自研晶片與其他供應商。</strong> Google 早就有 TPU 自研、Amazon 有 Trainium、Meta 有 MTIA、Apple Silicon 也持續在端側推 AI 能力——這些都繞過 NVIDIA。再加上 AMD MI300X / MI325 也在追，Intel Gaudi 嘗試突圍。如果其中一條真的把 inference 性能/瓦特比追上來，NVIDIA 的 pricing power 就會受壓。但目前 frontier model training 還是被 H100/H200/B200 鎖死，自研晶片多半只用在自家 internal workload。</p><p><strong>反駁四：中國模型廠的低成本對 NVIDIA 是威脅。</strong> DeepSeek、Qwen、GLM 用更少卡訓出可用模型。如果「同等品質、更少 GPU」的路徑被驗證且普及，NVIDIA 的客戶會少買卡——壓力存在但目前還沒到結構性轉折。</p><p>承認這些反駁之後，我的判斷仍然不變：<strong>未來 2-3 年（直到上面任何一個變數真的兌現之前），NVIDIA 是 AI 浪潮裡唯一能穩定賺錢的位置</strong>。</p><h2 id="對開發者跟投資人的意義"><a href="#對開發者跟投資人的意義" class="headerlink" title="對開發者跟投資人的意義"></a>對開發者跟投資人的意義</h2><p>說回我們這些每天用 API、看財報的人。這個對比能延伸出幾個判斷：</p><p><strong>對開發者：選 API 時別只看模型品質，也看公司現金流。</strong> OpenAI 已經 GPT-5.5 漲價 2 倍（<a href="#">我前一篇寫過</a>），Anthropic Claude Opus 4.7 維持 $5/$25 不動。為什麼？因為 OpenAI 的 CapEx vs 營收比比 Anthropic 差，更需要 API 端回血。當你的 production 鎖在某家 API 之後，下一波漲價也跑不掉。</p><p><strong>對投資人：把 AI 押在「賣鏟子」這條線是邊際勝率最高的判斷。</strong> 押 OpenAI、xAI、Anthropic 是押「我相信這家會贏」，但連他們自己都還在燒錢；押 NVIDIA 是押「不管哪家贏，鏟子都得我家賣」。後者贏率高得多。</p><p><strong>對台灣產業：台積電是真正的隱形冠軍。</strong> NVIDIA 的 H200/B200/GB200 全部由台積電 CoWoS 封裝，先進封裝產能就是真正的瓶頸——這代表 NVIDIA 的營收上限被台積電產能擴張速度卡著。如果你在台灣做 semiconductor 上游或 packaging 相關，現在是十年一遇的視窗。</p><p><strong>對 AI 創業者：別跟 frontier model 公司硬拼算力。</strong> 你燒不過 OpenAI、xAI、Anthropic 那種等級的 CapEx。要做應用層，靠 prompt engineering、agentic workflow、specific domain finetuning 創造差異。算力本身沒有壁壘，因為背後的供應商只有一家。</p><h2 id="一個有點冷的觀察"><a href="#一個有點冷的觀察" class="headerlink" title="一個有點冷的觀察"></a>一個有點冷的觀察</h2><p>我自己訂閱 Claude Pro 兩年了、看 Anthropic 的角色像家人。但寫完這篇我得承認：當我每個月付 200 美元給 Anthropic 用 Claude Code 的時候，那 200 塊裡有相當一部分最終會付給 NVIDIA。</p><p>OpenAI 在 IPO 前要把帳上漂亮、xAI 在 SpaceX IPO 後要證明算力投資合理、Anthropic 早晚也會走上資本市場——這三家最後講的故事都會繞到同一個關鍵字「我們有能力 commit 多少 CapEx」。而那筆 CapEx 的最大受益者，是同一家從 1999 年就開始賣 GPU 的公司。</p><p>下次有人問你「AI 浪潮裡誰在賺錢」，答案不是「ChatGPT」「Claude」「Grok」。答案是「賣鏟子的」。</p>]]>
-    </content>
-    <id>https://kyosora.github.io/posts/a7baf052/</id>
-    <link href="https://kyosora.github.io/posts/a7baf052/"/>
-    <published>2026-05-21T08:00:00.000Z</published>
-    <summary>xAI 一年虧六十四億、OpenAI 燒錢燒不出獲利，NVIDIA 一季卻淨賺五百八十三億——錢究竟流向 AI 鏈條哪個位置？把三家同年財報攤在同張表上拆解模型公司為何賠錢、賣 GPU 為何穩賺，給開發者與投資人一個冷靜的觀察。</summary>
-    <title>xAI 一年虧 64 億、OpenAI 燒不出獲利、NVIDIA 一季淨賺 583 億——AI 鏈條真正賺錢的位置</title>
-    <updated>2026-06-04T13:13:18.000Z</updated>
   </entry>
 </feed>
