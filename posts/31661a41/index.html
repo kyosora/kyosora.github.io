@@ -1,0 +1,777 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>我的 Claude Code 一夜被降級：鼓吹 AI 管制最力的公司，被自己要的刀砍中 | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Anthropic 最強的 Fable 5 上線三天就被美國政府令全球下線，開發者一夜被降回 Opus 4.8。鼓吹 AI 監管與出口管制最力的公司，如何被自己要的國家權力反噬？附雲端 AI 供應鏈風險與靜默降級的開發者教訓。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我的 Claude Code 一夜被降級：鼓吹 AI 管制最力的公司，被自己要的刀砍中">
+<meta property="og:url" content="https://kyosora.github.io/posts/31661a41/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="Anthropic 最強的 Fable 5 上線三天就被美國政府令全球下線，開發者一夜被降回 Opus 4.8。鼓吹 AI 監管與出口管制最力的公司，如何被自己要的國家權力反噬？附雲端 AI 供應鏈風險與靜默降級的開發者教訓。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/images/posts/fable5-summoner-sacrifice-cover.png">
+<meta property="article:published_time" content="2026-06-13T10:38:00.000Z">
+<meta property="article:modified_time" content="2026-06-13T13:16:42.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Anthropic">
+<meta property="article:tag" content="Claude Fable 5">
+<meta property="article:tag" content="AI 監管">
+<meta property="article:tag" content="出口管制">
+<meta property="article:tag" content="供應鏈風險">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kyosora.github.io/images/posts/fable5-summoner-sacrifice-cover.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "我的 Claude Code 一夜被降級：鼓吹 AI 管制最力的公司，被自己要的刀砍中",
+  "url": "https://kyosora.github.io/posts/31661a41/",
+  "image": "https://kyosora.github.io/images/posts/fable5-summoner-sacrifice-cover.png",
+  "datePublished": "2026-06-13T10:38:00.000Z",
+  "dateModified": "2026-06-13T13:16:42.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kyosora",
+      "url": "https://kyosora.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/posts/31661a41/"><link rel="preconnect" href="https://cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-F9P7RWQQJE')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '我的 Claude Code 一夜被降級：鼓吹 AI 管制最力的公司，被自己要的刀砍中',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="/css/about-cards.css"><link rel="stylesheet" href="/css/bg-gradient-mesh.css"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">200</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">406</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/posts/fable5-summoner-sacrifice-cover.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a><a class="nav-page-title" href="/"><span class="site-name">我的 Claude Code 一夜被降級：鼓吹 AI 管制最力的公司，被自己要的刀砍中</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首頁</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">我的 Claude Code 一夜被降級：鼓吹 AI 管制最力的公司，被自己要的刀砍中<a class="post-edit-link" href="https://github.com/jerryc127/butterfly.js.org/edit/main/source/_posts/我的Claude-Code一夜被降級-鼓吹AI管制的公司被自己要的刀砍中.md" title="編輯" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">發表於</span><time datetime="2026-06-13T10:38:00.000Z" title="發表於 2026-06-13 18:38:00">2026-06-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">4.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>13分鐘</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>六月十三號早上，我打開 Claude Code 想接著昨天的專案稽核，發現它不對勁。</p>
+<p>回答變慢、變保守，連我前一天問都不眨眼的東西，現在開始猶豫。狀態列那行模型名稱，從 Fable 5 變回了 Opus 4.8。</p>
+<p>我第一個念頭是自己把額度燒爆了——畢竟這三天我用得很兇，週限制已經吃掉七成。第二個念頭是網路或帳號出問題。查了一輪都不是。真正的原因比這些都荒謬：Fable 5 不是只對我關掉。美國政府前一天傍晚下了一道命令，禁止任何外國公民存取；Anthropic 說為了確保合規，只能對全球所有客戶停用它。台灣這邊我隔天一早就撞上牆。</p>
+<h2 id="我為什麼三天就燒掉七成週限制"><a href="#我為什麼三天就燒掉七成週限制" class="headerlink" title="我為什麼三天就燒掉七成週限制"></a>我為什麼三天就燒掉七成週限制</h2><p>先講我怎麼會用到這個地步。</p>
+<p>Fable 5 是 Anthropic 六月九號發布的最強模型，我當天就接上 Claude Code。第一天我開了 Ultracode 模式（Claude Code 裡火力全開、會派一群子代理平行幹活的模式），拿它去掃一個專案做全面稽核，一趟下來燒掉 11% 的週限制——是貴，貴得有感。但它在那個我自己掃過好幾輪的專案裡，揪出了我和其他模型都漏掉的問題。我那時還想，這個價錢換這種準度，划算。</p>
+<p>還有個原因讓我用得更沒節制：Fable 5 是限時免費的。Anthropic 把它免費塞進 Pro、Max 這些訂閱方案，但只到 6/22——6/23 起就從方案移除，之後要用得另外掏 usage credits，每百萬 output token 50 美元，差不多是 Opus 4.8 的兩倍。所謂免費是不另外收 token 錢，可它照樣吃我訂閱方案的週限制，而且燒額度的速度大概是 Opus 兩倍。知道窗口就這幾天，我自然把一直拖著的大工作全堆進去做——後來才知道，整個社群都在幹同一件事。</p>
+<p>三天下來用掉 70%。市面上現在的模型我幾乎都用過，Fable 5 是頭一個讓我覺得「不用把上下文講第三遍它就接得住」的。然後，它就沒了。</p>
+<p>更荒謬的是時間點：這個免費窗口本來排到 6/22，6/23 才開始收費。結果 6/12 政府令一下，它連免費試用都沒走完就死了——Anthropic 連把它變成一門生意的機會，都沒等到。</p>
+<h2 id="三天，從最強到下線"><a href="#三天，從最強到下線" class="headerlink" title="三天，從最強到下線"></a>三天，從最強到下線</h2><p>把這三天攤開看，是一條下墜得很快的曲線。</p>
+<ul>
+<li><strong>6/9</strong>：Anthropic 同時發布兩款模型——公開的 Fable 5，和只給信任夥伴、拿掉部分安全護欄的 Mythos 5。兩者其實是同一個底層模型，差別在外面包的防護層。</li>
+<li><strong>6/10</strong>：兩件事同一天炸開。一個叫 Pliny the Liberator 的人宣稱越獄了 Fable 5，貼出一份號稱是它系統提示的文件，大約十二萬字元。同一天，開發者社群發現 Fable 5 在偷偷降級——這個後面細講。</li>
+<li><strong>6/11</strong>：Anthropic 為降級這件事道歉。</li>
+<li><strong>6/12 下午 5 點 21 分（美東時間，約台灣 6/13 清晨）</strong>：Anthropic 收到政府指令。</li>
+<li><strong>6/13</strong>：兩款模型對全球所有客戶下線。我就是在這天早上撞上的。</li>
+</ul>
+<p>至於是什麼讓政府出手——後面會講，沒有你直覺想的那麼乾淨。</p>
+<h2 id="他兩天前才說，危險的-AI-該被擋下來"><a href="#他兩天前才說，危險的-AI-該被擋下來" class="headerlink" title="他兩天前才說，危險的 AI 該被擋下來"></a>他兩天前才說，危險的 AI 該被擋下來</h2><p>這裡有一個很尖的對照。</p>
+<p>6/10，也就是 Fable 5 被關掉的兩天前，Anthropic 執行長 Dario Amodei 發了一篇政策長文〈Policy on the AI Exponential〉。轉向很明確，他寫道：現在風險已經真實降臨，「是時候超越透明度，走向更嚴肅、更有約束力的 AI 監管」。他主張前沿 AI 模型應該像飛機一樣，強制通過技術測試與審計，「如果達不到高安全標準、構成公共安全威脅，它的發布就應該被擋下或撤回（blocked or reversed）」。</p>
+<p>兩天後，政府就擋下了他自己最強的模型。</p>
+<p>我得先把機制講清楚，不然這個對照只是廉價的反諷。Amodei 主張的「擋下危險模型」，講的是發布前的安全測試審查（外界拿 FAA 對飛機的審驗來比）；6/12 真正把 Fable 5 關掉的，是另一套東西——對外國人的存取管制。兩者的法律機制不一樣，他沒有、也不可能主張過「用這種管制關掉自家模型」。原文那句「blocked or reversed」用的還是被動語態，講的是模型發布該被攔，並沒有點名哪個政府部門。</p>
+<p>但迴旋鏢還是成立，只是要射在對的地方。Amodei 是這幾年科技圈把「國家應該強力介入 AI」喊得最大聲的人。早在 2025 年 1 月那篇談 DeepSeek 的文章裡，他就寫「執行良好的出口管制是唯一能阻止中國拿到數百萬顆晶片的手段，因此也是決定世界走向單極還是雙極最關鍵的因素」。他跟前白宮副國安顧問 Matt Pottinger 在《華爾街日報》合寫專欄，主張要由有民主監督、有法治的自由社會來訂 AI 的規範，而不是讓極權政府先馳得點。到 2025 年 9 月，他把晶片稱為美國對中國「唯一還剩的優勢」，說賣晶片給中國等於「在抵押國家的未來」。</p>
+<p>他花了好幾年，親手把「政府有權力、也有責任強力管制 AI」這件事正當化、推上檯面。六月十二號，同一套國家權力——不照他的劇本、不走他設計的那套審查流程——回過頭，按掉了他最強的產品。<strong>他要的是一把手術刀，政府遞回來的是一把柴刀。</strong> 所以標題那句「被自己要的刀砍中」，講的不是法律機制上的精準因果——而是他花好幾年把這種國家權力正當化，沒料到第一個挨它的就是自己。</p>
+<p>連他想要的監管，都未必照他劇本走。2024 年加州 SB 1047 那場立法就有預兆：Anthropic「謹慎支持」那部法案，卻同時遊說拿掉了其中對 AI 公司最不利的條款（在災難發生前就能起訴疏忽安全做法的那一條）。對手 Sam Altman、David Sacks 一直說 Anthropic 要的是「對自己有利的監管」、把安全變成在位者的護城河。這次更直接——國家機器連這點面子都沒給。</p>
+<h2 id="一封信就能讓你的工具蒸發"><a href="#一封信就能讓你的工具蒸發" class="headerlink" title="一封信就能讓你的工具蒸發"></a>一封信就能讓你的工具蒸發</h2><p>把政治戲劇放一邊，這件事對每天靠 AI 寫 code 的人，有兩個很實際的後果。</p>
+<p>第一個是供應鏈。我們很習慣把「廠商風險」當成投影片上的一句空話。這週它變得很具體：我把專案稽核這種放在關鍵流程上的工作交給一個雲端模型，結果一道我看不到、也參與不了的政府公文，就能讓這個工具當天從我的工作流裡消失。不是降價、不是改 API、不是預告淘汰給你半年緩衝——是當天，全球，沒了。</p>
+<p>要分清楚的是：政府的命令禁止的是外國公民存取，不分美國境內境外，連 Anthropic 自己的外籍員工都算在內。Anthropic 說為了確保合規，決定對所有客戶一起停——外界普遍推測是因為它沒辦法即時把外國人從用戶群裡分出來，但官方沒這樣明講。命令的範圍和公司的全球停用決策是兩件事，但對站在台灣的我來說，結果一樣：早上打開，工具不在了。其他 Claude 模型不受影響，這也是為什麼我被退回 Opus 4.8 而不是整個斷掉。</p>
+<p>我從這件事改的不是工具，是規劃方式。把「這個模型哪天可能突然不見」當成預設情境，而不是黑天鵝。具體一點：</p>
+<ul>
+<li><strong>把模型呼叫包一層自己的 adapter，或用 LiteLLM、OpenRouter 這類 gateway。</strong> 換供應商時只改 config，不用動業務程式碼。</li>
+<li><strong>講白本地模型的天花板。</strong> 本地模型（30B 級以上、context 夠長）頂得住日常補全和小範圍問答，但全專案稽核這種活，目前沒有等價的本地替代。所以關鍵的活，要嘛接受斷供風險、要嘛拆成弱模型也能分段完成的小步驟，別賭它永遠在。</li>
+<li><strong>把「現在到底哪個模型在答」變成可觀測指標。</strong> 在呼叫層記下實際回應的 model id 和有沒有 fallback；對關鍵流程養一組固定的 eval，模型被換掉、或整批被系統性降級時，你會從分數掉下來看到。先打預防針：這招擋得住換模型和大範圍降級，但對「針對特定請求類型、不換模型的隱形動手腳」未必管用——下一節就有個活例子。</li>
+</ul>
+<p>順帶一提，這跟早些時候 Anthropic 跟五角大廈那場衝突是同一條線，只是上次是政治封殺、這次是存取管制。當你的供應商同時是地緣政治的棋子，它的可用性就不完全由技術或商業決定。（那場前因我寫過：<a href="/posts/13e107b/">當你的 AI 供應商被政府列為國安威脅</a>。）</p>
+<h2 id="你以為在用最強模型，其實它被偷偷調笨了"><a href="#你以為在用最強模型，其實它被偷偷調笨了" class="headerlink" title="你以為在用最強模型，其實它被偷偷調笨了"></a>你以為在用最強模型，其實它被偷偷調笨了</h2><p>第二個後果更陰，就是 6/10 那場「靜默降級」。這件事的真相，比新聞標題寫的還難看一層。</p>
+<p>Fable 5 公開版對敏感請求有兩種處理方式，差別在你看不看得到。</p>
+<p>第一種是看得到的。當分類器判定你的請求碰到網路安全、生化、或模型蒸餾，在 Claude 的產品介面上它會把回答切換給前一代的 Opus 4.8、並通知你（走 API 的話則是回傳一個「拒絕」狀態，要不要自己接手降級由你的程式決定）。問題是這個分類器又粗又敏感：Gates 基金會做疾病建模的研究員 Mike Famulare 回報，他幾乎每個 session 第一句就被擋，連一句「hello」都觸發；Jackson 實驗室的免疫學家 Derya Unutmaz 說「『cancer』這個字被 Fable 5 當成生物安全風險」；The Register 的報導標題乾脆下〈它在我們說 hello 就攔下我們〉。粗歸粗，至少你看得到自己被切走了。</p>
+<p>真正讓 Anthropic 道歉的是另一種，那種你看不到。如果它判定你在做「前沿 LLM 開發」——預訓練管線、分散式訓練、ML 加速器設計這類——它不切模型、也不拒絕你，而是在同一個 Fable 5 上動手腳，把回答偷偷弄差。官方說用的「可能」是改寫你的提示、在推論當下調整模型的內部狀態（steering vectors），或預先用 PEFT 訓一個「調弱版」配接器、需要時套上去——具體哪一種、有沒有混用，沒公開。重點是：你拿到的還是掛著 Fable 5 名字的答案，只是它被刻意調笨了，而你完全不知道。一位開發者的形容很精準：「沒有拒絕，沒有通知。」</p>
+<p>對寫 code 的人，這比「被切到弱模型」更毛。被切到 Opus 4.8，你至少知道是哪個模型在答；被偷偷調笨，你連「我現在拿到的，是不是這個模型的真實水準」都無從判斷。Anthropic 在 6/11 為這件事道歉，發言算坦白：「我們做了錯誤的取捨，沒能拿捏好平衡，我們為此道歉。」現在這類請求也改成看得到的處理，API 會回傳被擋下的理由。但要講清楚：被收回的只是「偷偷來」這個做法，限制本身沒取消——它只是從藏起來變成攤開做。</p>
+<p>這正是上一節說「未必管用」的那種降級——它不換模型、不留痕跡，除非你的 eval 剛好涵蓋到會觸發它的那類請求，否則自動化監控很容易放它過去。最後一道防線常常是人：PR review 這種高風險場景，一感覺到回答水準不對，就該停手重跑，而不是把一個可能被動過手腳的回應當成正常結果收下。</p>
+<p>順帶一提，這場降級風波跟 Pliny 的越獄宣稱是兩件事，常被混為一談：對靜默降級，Anthropic 是道歉；對越獄，Anthropic 是反駁。立場相反。Anthropic 說 Pliny 那份貼文「並未展示出對 Fable 5 安全系統的越獄」，還說裡頭部分輸出根本不是 Fable 5 產生的、真正屬實的部分只含公開可得的資訊。這跟 5 月那次資安團隊靠 Mythos 五天打穿 Apple M5 內核的案例不同——那次有具名團隊、成果影片和方法摘要（完整技術報告要等 Apple 修補後才公開），這次 Pliny 貼的危險輸出截圖到現在沒有第三方驗證過。（M5 那篇我也拆過：<a href="/posts/daa5dc39/">Mythos 5 天攻破 Apple M5 內核</a>。）</p>
+<h2 id="我也想把它寫成爽快的因果，但查下去不對"><a href="#我也想把它寫成爽快的因果，但查下去不對" class="headerlink" title="我也想把它寫成爽快的因果，但查下去不對"></a>我也想把它寫成爽快的因果，但查下去不對</h2><p>寫到這我得承認一件事。我一開始很想把這串事件接成一條乾淨的因果線：模型被越獄了 → 太危險 → 所以政府出手關掉。順、爽、好寫。但查下去，這條線沒那麼乾淨。</p>
+<p>觸發政府出手的說法，目前只有 Axios 一家報導，引述一名匿名的行政官員，說是「另一家公司宣稱破解了 Mythos」。那家公司是誰，到現在沒人知道，從沒被點名。其他媒體全是轉引 Axios，沒有第二個獨立來源。更麻煩的是，Anthropic 官方版本跟這個說法對不上：他們說被繞過的是 Fable 5 不是 Mythos，政府只給了口頭證據，而且那是一個「窄、非通用的越獄」——方法是叫模型去讀一段特定的程式碼、找出裡面的 bug，挖出來的還是早就公開、已知的小漏洞，這種能力別家模型也有。一邊說 Mythos、一邊說 Fable，連被破解的是哪個都各執一詞。</p>
+<p>至於這是不是政治報復——我不腦補。2 到 3 月那次（五角大廈把 Anthropic 列供應鏈風險、聯邦機構奉令停用）有聯邦法官核發初步禁制令，措辭用了「典型違法的第一修正案報復」，那是有司法份量的認定。但 6 月這次，法源連媒體都講不清楚（出口管制信函至今未公開，外界主要靠 Anthropic 聲明和 Axios 報導），沒有任何證據顯示它是報復。時間點巧、背景有舊帳，是合理的懷疑，但懷疑不是證據。</p>
+<p>估值有沒有因此崩？我原本以為「沒有分析師下修」就代表沒事，這也是個陷阱。沒有正式下修，多半只是因為 Anthropic 還沒上市、根本沒有券商在覆蓋它。能看到的市場訊號反而是負的：它在加密平台上一種流動性和代表性都很有限的 pre-IPO 合成合約，6/13 當天跌了大約 3.7%。這個數字當不得真正的股價，但它至少說明，連旁邊看戲的投機者，都把這件事當利空在定價——印證了同一件事：這家公司的可用性，綁在政治風險上。</p>
+<h2 id="我會把這一欄補進選型清單"><a href="#我會把這一欄補進選型清單" class="headerlink" title="我會把這一欄補進選型清單"></a>我會把這一欄補進選型清單</h2><p>寫到這裡，我手上這個 Claude Code 跑的，還是降級後的 Opus 4.8。</p>
+<p>老實說它也很好用——Opus 這條線我跟了大半年，4.8 還是它五月底才上的最新一版。但用過 Fable 5 那三天再回來，落差是真的存在。最讓我清醒的不是「我會想念一個工具」，而是我居然會去想念一個三天前還不存在、現在又消失的東西——這說明我上癮得有多快，也說明我把多少東西，悄悄地、毫無防備地，押在了一個別人一封信就能關掉的黑盒上。</p>
+<p>下次做技術選型，benchmark 分數我還是會看。但有兩欄我會補上去：一欄是「這東西哪天會不會突然不見」，另一欄是「我餵進去的東西它留多久」——Mythos 級模型的流量 Anthropic 要求保留 30 天，雖然聲明說不拿去訓練、只做安全用途，但你用它處理私有 codebase 之前，這條值得讓公司法務先看一眼。Fable 5 這三天，至少把這幾課，用最貴的方式教給我了。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kyosora.github.io">kyosora</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://kyosora.github.io/posts/31661a41/">https://kyosora.github.io/posts/31661a41/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 授權協議。轉載請註明來源 <a href="https://kyosora.github.io" target="_blank">kyosora 筆記</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Anthropic/">Anthropic</a><a class="post-meta__tags" href="/tags/Claude-Fable-5/">Claude Fable 5</a><a class="post-meta__tags" href="/tags/AI-%E7%9B%A3%E7%AE%A1/">AI 監管</a><a class="post-meta__tags" href="/tags/%E5%87%BA%E5%8F%A3%E7%AE%A1%E5%88%B6/">出口管制</a><a class="post-meta__tags" href="/tags/%E4%BE%9B%E6%87%89%E9%8F%88%E9%A2%A8%E9%9A%AA/">供應鏈風險</a></div><div class="post-share"><div class="social-share" data-image="/images/posts/fable5-summoner-sacrifice-cover.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-fb+5w+4e-db+86" data-ad-client="ca-pub-8919908724705274" data-ad-slot="5978969231"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/1d7fcb0e/" title="Sitemap 卡「無法擷取」三個月？修了四輪 XML 都沒用，最後把它搬到 Cloudflare Worker 才過關"><img class="cover" src="/images/posts/github-pages-sitemap-couldnt-fetch-cloudflare-worker-fix-cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Sitemap 卡「無法擷取」三個月？修了四輪 XML 都沒用，最後把它搬到 Cloudflare Worker 才過關</div></div><div class="info-2"><div class="info-item-1">今天打開 Search Console，看到這一行： 1/sitemap.xml   2026年6月8日   2026年6月11日   成功   612  狀態「成功」，系統探索到的網頁 612。我盯著它看了幾秒，因為從三月建站到現在，這一欄一直是紅色的「無法擷取」。整整三個月，Google 連我的 sitemap 都不願意讀，全站 600 多篇文章只有首頁被索引。 最後解決問題的那一步，跟 sitemap 的內容一點關係都沒有。這篇把整個排查過程寫下來，包含三次「修對了東西但沒解決問題」的彎路——如果你的 GitHub Pages 部落格也卡在這個狀態，也許可以少走幾步。 問題長什麼樣我的部落格是 Hexo 生成、部署在 GitHub Pages（kyosora.github.io）。三月中建站時把 sitemap.xml 提交到 Search Console，狀態顯示「無法擷取」（Couldn&#39;t fetch）。 當時想說剛建站，Google 需要時間。結果這個狀態凍結了快三個月，期間「已送出」日期一直停在 3 月 17 日，系統探索到的網頁是 0。 詭異的是，sit...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/13e107b/" title="當你的AI供應商被政府列為國安威脅：Anthropic起訴五角大廈事件的三個技術啟示"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-12</div><div class="info-item-2">當你的AI供應商被政府列為國安威脅：Anthropic起訴五角大廈事件的三個技術啟示</div></div><div class="info-2"><div class="info-item-1">3 月 9 號，Anthropic 做了一件 AI 產業前所未見的事：同時起訴美國政府、發布新產品、簽下微軟合作。三件事同一天。 這不是科技八卦。如果你在用 Claude API 寫程式、用 Claude Code 做開發，這件事直接影響你的技術棧穩定性。 發生了什麼事五角大廈要求 Anthropic 開放 Claude 用於「所有合法用途」。Anthropic 設了兩條紅線：不做完全自主武器，不做大規模國內監控。談判在 2 月 27 日破裂。 Trump 政府的回應很硬：下令所有聯邦機構停用 Anthropic 技術。國防部長 Hegseth 把 Anthropic 標記為「供應鏈風險」——這個標籤歷史上只用在華為、卡巴斯基這類外國實體身上。 Anthropic CFO 說這可能砍掉 2026 年數十億美元營收。 公司在加州聯邦地院和 DC 巡迴上訴法院同時開戰。 啟示一：你的 AI 供應商風險模型該更新了大部分技術團隊評估 AI 供應商，看的是模型能力、API 穩定性、定價。政治風險？不在 checklist 上。 這件事改變了遊戲規則。 「供應鏈風險」標籤不只影響政府合約。...</div></div></div></a><a class="pagination-related" href="/posts/69899638/" title="Apple花10億選Google不選Claude：Siri重生背後的AI權力遊戲"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-10</div><div class="info-item-2">Apple花10億選Google不選Claude：Siri重生背後的AI權力遊戲</div></div><div class="info-2"><div class="info-item-1">Apple 內部工程師最愛用的 AI 是 Claude。但 Siri 的大腦，最後給了 Google Gemini。 這不是技術選型的問題。這是一場價格談判的失敗，一次商業策略的博弈，以及一個讓 12 億 iPhone 用戶的 AI 體驗徹底改變的決定。 10 億美元 vs. 數十億美元2026 年 1 月 12 日，Apple 正式宣布與 Google 簽訂多年合作協議，用 Gemini 模型驅動新一代 Siri。價碼：每年約 10 億美元。 但在這之前，Apple 找的第一個對象其實是 Anthropic。 Bloomberg 記者 Mark Gurman 報導，Apple 內部已經大量使用 Claude 做產品開發和內部工具。工程團隊對 Claude 的表現相當滿意。自然而然，他們想把 Claude 放進 Siri。 談判破裂的原因很直接：Anthropic 開價「數十億美元」一年，而且金額逐年翻倍。三年下來，Apple 要付出的錢可能超過 100 億。 Apple 說不。 轉頭跟 Google 簽了一份 10 億的合約。對 Apple 來說，這個選擇的邏輯很清楚：Gemi...</div></div></div></a><a class="pagination-related" href="/posts/3e49e530/" title="Sora 之死不是敗給誰——是 OpenAI 在 IPO 前算了一筆帳"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-25</div><div class="info-item-2">Sora 之死不是敗給誰——是 OpenAI 在 IPO 前算了一筆帳</div></div><div class="info-2"><div class="info-item-1">3 月 24 日，OpenAI 宣布全面關閉 Sora——app 砍了、API 砍了、ChatGPT 裡的影片生成也砍了。Disney 那筆 10 億美元的投資？胎死腹中，一毛錢都沒付出去。 群組裡在喊「Sora 已死」，不少人第一反應是「被 Seedance 打爆了吧？」 沒那麼簡單。Sora 的死因不是單一競爭對手，而是一連串產品、商業和戰略層面的連環失誤，最後由 OpenAI 自己拔掉了插頭。 960 萬次下載，140 萬美元營收先看數字。 去年九月 Sora 2 以獨立社群 app 的形式上線，五天內衝破百萬下載，比 ChatGPT 當初還快。十一月達到高峰——單月 330 萬次下載。所有人都覺得這是下一個殺手級應用。 然後就開始崩了。    時間 月下載量 變化    2025 年 11 月 330 萬 高峰   2025 年 12 月 224 萬 -32%   2026 年 1 月 120 萬 -45%   2026 年 2 月 110 萬 -8%   整個產品生命週期，消費者總共花了 140 萬美元。高峰月營收 54 萬美元，到三月只剩 36.7 萬。 一個需要天文...</div></div></div></a><a class="pagination-related" href="/posts/78c0d8a7/" title="當 OpenAI 搶下五角大廈合約：一場讓 250 萬用戶出走的豪賭"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-09</div><div class="info-item-2">當 OpenAI 搶下五角大廈合約：一場讓 250 萬用戶出走的豪賭</div></div><div class="info-2"><div class="info-item-1">Anthropic 拒絕五角大廈、被列入黑名單、卻反而衝上 App Store 第一名——這個故事的上半場，我們已經講過了。 但故事還有下半場。 當 Anthropic 離開談判桌的那個週五晚上，OpenAI 的 CEO Sam Altman 宣布簽下了五角大廈的合約。時間差不到 24 小時。 接下來發生的事，大概連 Altman 自己都沒預料到。 搶合約的速度，快到像是早就準備好了2 月 27 日，Trump 簽署行政命令封殺 Anthropic。同一天晚些時候，Altman 在 X 上宣布：OpenAI 已與國防部（在 Trump 政府下已改名為「戰爭部」Department of War）達成協議，將 GPT 系列模型部署到軍方的機密系統中。 這個時間點太巧了。 Anthropic 花了數月跟五角大廈談判紅線，最後因為拒絕開放「所有合法用途」而破裂。OpenAI 幾乎是在 Anthropic 被踢出門的同一天就簽了約。 外界的解讀很直接：OpenAI 願意做 Anthropic 不願意做的事。 不管這個解讀是否完全公平，它點燃了一場風暴。 295% 的憤怒數字不會說謊。 根...</div></div></div></a><a class="pagination-related" href="/posts/fefd29b9/" title="從 10 萬到 9700 萬下載：MCP 如何在 14 個月內變成 AI 工具連接的 USB"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-16</div><div class="info-item-2">從 10 萬到 9700 萬下載：MCP 如何在 14 個月內變成 AI 工具連接的 USB</div></div><div class="info-2"><div class="info-item-1">2024 年 11 月，Anthropic 發了一篇不起眼的公告，介紹一個叫 Model Context Protocol 的東西。SDK 月下載量大約 10 萬。 14 個月後的今天，MCP 月下載量 9,700 萬。970 倍。OpenAI、Google、Microsoft、AWS 全部原生支援。治理權捐給了 Linux Foundation 底下的 Agentic AI Foundation。 10 萬到 9,700 萬，一年多一點。我想聊聊這件事為什麼值得開發者認真看待。 問題不是技術，是膠水2024 年底的 AI 開發長這樣：你的 LLM 需要讀 GitHub issue，你寫一個 function call。需要查 Slack 訊息，再寫一個。需要讀資料庫，再來一個。每個整合都是客製化的，每換一個 LLM 供應商就要重寫一遍。 這跟 USB 出現之前的電腦周邊一模一樣。印表機用 parallel port，滑鼠用 serial port，鍵盤用 PS/2。每種設備一種接口，每種接口一個驅動程式。 MCP 做的事情就是定義一個統一接口：LLM（client）透過標準化的...</div></div></div></a><a class="pagination-related" href="/posts/4b08e7bb/" title="當AI公司對五角大廈說不：Anthropic被封殺卻逆襲App Store的荒謬劇"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-09</div><div class="info-item-2">當AI公司對五角大廈說不：Anthropic被封殺卻逆襲App Store的荒謬劇</div></div><div class="info-2"><div class="info-item-1">2 月 27 日晚上，Trump 簽署行政命令，禁止所有聯邦機構使用 Anthropic 的產品。國防部長 Hegseth 把 Anthropic 列為「供應鏈風險」——一個通常保留給中國和俄羅斯企業的標籤。 72 小時後，Claude 衝上美國 App Store 第一名，超越 ChatGPT 和 Gemini。每天有超過一百萬人註冊。 這不是電影劇情，這是 2026 年 3 月正在發生的事。 Anthropic 的兩條紅線整件事的核心，其實就兩句話。 Anthropic 告訴五角大廈：你可以用 Claude 做幾乎所有事情，但有兩個例外——不能用於大規模監控美國公民，不能用於全自主致命武器。 五角大廈的回應是：我們要「所有合法用途」的授權。 談判破裂。 CEO Dario Amodei 事後說：「我們要求的限制只涉及高層級的使用領域，不干涉具體的操作決策。」換句話說，Anthropic 沒有要求審查每一次模型調用，他們只是不想讓自己的技術出現在「用 AI 自動決定要不要開火」或「用 AI 監聽所有美國人通訊」的場景裡。 聽起來合理？五角大廈不這麼認為。 連鎖反應比預期更猛Tr...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">200</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">406</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E7%82%BA%E4%BB%80%E9%BA%BC%E4%B8%89%E5%A4%A9%E5%B0%B1%E7%87%92%E6%8E%89%E4%B8%83%E6%88%90%E9%80%B1%E9%99%90%E5%88%B6"><span class="toc-number">1.</span> <span class="toc-text">我為什麼三天就燒掉七成週限制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E5%A4%A9%EF%BC%8C%E5%BE%9E%E6%9C%80%E5%BC%B7%E5%88%B0%E4%B8%8B%E7%B7%9A"><span class="toc-number">2.</span> <span class="toc-text">三天，從最強到下線</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%96%E5%85%A9%E5%A4%A9%E5%89%8D%E6%89%8D%E8%AA%AA%EF%BC%8C%E5%8D%B1%E9%9A%AA%E7%9A%84-AI-%E8%A9%B2%E8%A2%AB%E6%93%8B%E4%B8%8B%E4%BE%86"><span class="toc-number">3.</span> <span class="toc-text">他兩天前才說，危險的 AI 該被擋下來</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%B0%81%E4%BF%A1%E5%B0%B1%E8%83%BD%E8%AE%93%E4%BD%A0%E7%9A%84%E5%B7%A5%E5%85%B7%E8%92%B8%E7%99%BC"><span class="toc-number">4.</span> <span class="toc-text">一封信就能讓你的工具蒸發</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%A0%E4%BB%A5%E7%82%BA%E5%9C%A8%E7%94%A8%E6%9C%80%E5%BC%B7%E6%A8%A1%E5%9E%8B%EF%BC%8C%E5%85%B6%E5%AF%A6%E5%AE%83%E8%A2%AB%E5%81%B7%E5%81%B7%E8%AA%BF%E7%AC%A8%E4%BA%86"><span class="toc-number">5.</span> <span class="toc-text">你以為在用最強模型，其實它被偷偷調笨了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E4%B9%9F%E6%83%B3%E6%8A%8A%E5%AE%83%E5%AF%AB%E6%88%90%E7%88%BD%E5%BF%AB%E7%9A%84%E5%9B%A0%E6%9E%9C%EF%BC%8C%E4%BD%86%E6%9F%A5%E4%B8%8B%E5%8E%BB%E4%B8%8D%E5%B0%8D"><span class="toc-number">6.</span> <span class="toc-text">我也想把它寫成爽快的因果，但查下去不對</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E6%9C%83%E6%8A%8A%E9%80%99%E4%B8%80%E6%AC%84%E8%A3%9C%E9%80%B2%E9%81%B8%E5%9E%8B%E6%B8%85%E5%96%AE"><span class="toc-number">7.</span> <span class="toc-text">我會把這一欄補進選型清單</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/31661a41/" title="我的 Claude Code 一夜被降級：鼓吹 AI 管制最力的公司，被自己要的刀砍中"><img src="/images/posts/fable5-summoner-sacrifice-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="我的 Claude Code 一夜被降級：鼓吹 AI 管制最力的公司，被自己要的刀砍中"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/31661a41/" title="我的 Claude Code 一夜被降級：鼓吹 AI 管制最力的公司，被自己要的刀砍中">我的 Claude Code 一夜被降級：鼓吹 AI 管制最力的公司，被自己要的刀砍中</a><time datetime="2026-06-13T10:38:00.000Z" title="發表於 2026-06-13 18:38:00">2026-06-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/1d7fcb0e/" title="Sitemap 卡「無法擷取」三個月？修了四輪 XML 都沒用，最後把它搬到 Cloudflare Worker 才過關"><img src="/images/posts/github-pages-sitemap-couldnt-fetch-cloudflare-worker-fix-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Sitemap 卡「無法擷取」三個月？修了四輪 XML 都沒用，最後把它搬到 Cloudflare Worker 才過關"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/1d7fcb0e/" title="Sitemap 卡「無法擷取」三個月？修了四輪 XML 都沒用，最後把它搬到 Cloudflare Worker 才過關">Sitemap 卡「無法擷取」三個月？修了四輪 XML 都沒用，最後把它搬到 Cloudflare Worker 才過關</a><time datetime="2026-06-11T13:30:00.000Z" title="發表於 2026-06-11 21:30:00">2026-06-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/1a0df97b/" title="Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字"><img src="/images/posts/claude-code-session-hallucination-fox-emoji-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/1a0df97b/" title="Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字">Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字</a><time datetime="2026-06-08T04:00:00.000Z" title="發表於 2026-06-08 12:00:00">2026-06-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/6d803eef/" title="Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告"><img src="/images/posts/her-claude-code-session-analysis-observability-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/6d803eef/" title="Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告">Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告</a><time datetime="2026-06-08T04:00:00.000Z" title="發表於 2026-06-08 12:00:00">2026-06-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/41ca610c/" title="OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事"><img src="/images/posts/openai-chat-is-dead-super-app-financial-truth-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/41ca610c/" title="OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事">OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事</a><time datetime="2026-06-08T03:30:00.000Z" title="發表於 2026-06-08 11:30:00">2026-06-08</time></div></div></div></div><div class="card-widget ads-wrap"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8919908724705274" data-ad-slot="8108145410" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({})</script></div></div></div></main><footer id="footer" style="background-image: url(/images/posts/fable5-summoner-sacrifice-cover.png);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By kyosora</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/utils.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/main.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/tw_cn.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const applyThemeDefaultsConfig = theme => {
+    if (theme === 'dark-mode') {
+      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
+      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    } else {
+      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
+      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    }
+  }
+
+  // Recursively traverse the config object and automatically apply theme-specific color schemes
+  const applyThemeConfig = (obj, theme) => {
+    if (typeof obj !== 'object' || obj === null) return
+
+    Object.keys(obj).forEach(key => {
+      const value = obj[key]
+      // If the property is an object and has theme-specific options, apply them
+      if (typeof value === 'object' && value !== null) {
+        if (value[theme]) {
+          obj[key] = value[theme] // Apply the value for the current theme
+        } else {
+          // Recursively process child objects
+          applyThemeConfig(value, theme)
+        }
+      }
+    })
+  }
+
+  const runChartJS = ele => {
+    window.loadChartJS = true
+
+    Array.from(ele).forEach((item, index) => {
+      const chartSrc = item.firstElementChild
+      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
+      const width = item.getAttribute('data-width')
+      const existingCanvas = document.getElementById(chartID)
+
+      // If a canvas already exists, remove it to avoid rendering duplicates
+      if (existingCanvas) {
+          existingCanvas.parentNode.remove()
+      }
+
+      const chartDefinition = chartSrc.textContent
+      const canvas = document.createElement('canvas')
+      canvas.id = chartID
+
+      const div = document.createElement('div')
+      div.className = 'chartjs-wrap'
+
+      if (width) {
+        div.style.width = width
+      }
+
+      div.appendChild(canvas)
+      chartSrc.insertAdjacentElement('afterend', div)
+
+      const ctx = document.getElementById(chartID).getContext('2d')
+
+      const config = JSON.parse(chartDefinition)
+
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
+
+      // Set default styles (initial setup)
+      applyThemeDefaultsConfig(theme)
+
+      // Automatically traverse the config and apply dual-mode color schemes
+      applyThemeConfig(config, theme)
+
+      new Chart(ctx, config)
+    })
+  }
+
+  const loadChartJS = () => {
+    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
+    if (chartJSEle.length === 0) return
+
+    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
+  }
+
+  // Listen for theme change events
+  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
+  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
+
+  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = {"mapping":"pathname","inputPosition":"top","lang":"zh-TW","reactionsEnabled":1}
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'kyosora/kyosora.github.io',
+      'data-repo-id': 'R_kgDOLJYL_w',
+      'data-category-id': 'DIC_kwDOLJYL_84C516C',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !true) {
+    if (true) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script src="/js/about-cards.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","meta[property=\"og:description\"]","link[rel=\"canonical\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: true,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/404')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/search/local-search.min.js"></script></div></div></body></html>
