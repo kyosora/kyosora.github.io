@@ -1,0 +1,22 @@
+/* Cross-document View Transition (Chrome 126+ / Safari 18+)
+ * 需 PJAX 關閉才會觸發（_config.butterfly.yml: pjax.enable false）
+ * Firefox 不支援 → graceful degradation，無過場但不會壞
+ * 筆記：tech-notes/2026-06-22-CSS-View-Transition-API-跨頁面.md
+ */
+
+/* 兩頁都 opt-in，瀏覽器原生 navigation 自動觸發過場 */
+@view-transition {
+  navigation: auto;
+}
+
+/* 全頁 cross-fade 的 timing */
+::view-transition-group(*) {
+  animation-duration: 0.4s;
+}
+
+/* 尊重無障礙設定：使用者要求減少動態時關掉過場 */
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
