@@ -7,7 +7,7 @@
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://kyosora.github.io/images/posts/glm-5-1-highspeed-400tps-engineering-watershed-cover.png">
 <meta property="article:published_time" content="2026-05-22T08:30:00.000Z">
-<meta property="article:modified_time" content="2026-06-04T13:13:17.000Z">
+<meta property="article:modified_time" content="2026-06-22T02:52:46.000Z">
 <meta property="article:author" content="kyosora">
 <meta property="article:tag" content="智譜">
 <meta property="article:tag" content="GLM">
@@ -22,7 +22,7 @@
   "url": "https://kyosora.github.io/posts/326effc8/",
   "image": "https://kyosora.github.io/images/posts/glm-5-1-highspeed-400tps-engineering-watershed-cover.png",
   "datePublished": "2026-05-22T08:30:00.000Z",
-  "dateModified": "2026-06-04T13:13:17.000Z",
+  "dateModified": "2026-06-22T02:52:46.000Z",
   "author": [
     {
       "@type": "Person",
@@ -270,10 +270,10 @@ btf.addGlobalFn('pjaxComplete', () => {
 <p>多卡 Warp Specialization。GPU 的 warp（32 個 thread 一組）原本所有 thread 做一樣的事。Warp Specialization 是 H100 Hopper 架構支援的新模式——一部分 warp 專做 memory load、一部分專做 compute、一部分專做 store，三者並行流水化。等於把工廠裝配線的概念帶到 GPU thread 層級。</p>
 <h2 id="為什麼這次跟過去的「壓榨速度」不同"><a href="#為什麼這次跟過去的「壓榨速度」不同" class="headerlink" title="為什麼這次跟過去的「壓榨速度」不同"></a>為什麼這次跟過去的「壓榨速度」不同</h2><p>前三條路（量化、spec decoding、客製硬體）每條都有各自的品質保證取捨——具體掉多少要逐案核對 benchmark，不能一概而論。例如 Groq 的 spec-decoding 端點自己宣稱無精度損失、但社群實測 benchmark 略有差異；量化路線從 FP8 到 INT4 跌幅也不一樣。沒有「壓榨速度一定掉品質」這種簡單結論。</p>
 <p>TileRT 走的是第四條——沒動權重、沒換精度、沒做 draft model。純粹是「同樣的計算過程，安排得更聰明」。</p>
-<p>這是 GLM-5.1 高速版這個發布跟其他「某廠商跑某 70B 又破紀錄」最大的差別。如果智譜的說法成立，這代表旗艦級大模型可以不犧牲品質、純靠工程走到 400 tps。</p>
+<p>這是 GLM-5.1 高速版這個發佈跟其他「某廠商跑某 70B 又破紀錄」最大的差別。如果智譜的說法成立，這代表旗艦級大模型可以不犧牲品質、純靠工程走到 400 tps。</p>
 <p>關鍵是「如果成立」。</p>
 <h2 id="一個沒回答的問題"><a href="#一個沒回答的問題" class="headerlink" title="一個沒回答的問題"></a>一個沒回答的問題</h2><p>智譜這篇 PR 沒給 benchmark 對比。</p>
-<p>「旗艦級能力 + 400 tps」是並列陳述，沒有實驗數據支撐——沒放 GLM-5.1 vs GLM-5.1-highspeed 在 MMLU / HumanEval / GSM8K 的對比表，沒放跟其他旗艦模型的同題對比。</p>
+<p>「旗艦級能力 + 400 tps」是並列陳述，沒有實驗資料支撐——沒放 GLM-5.1 vs GLM-5.1-highspeed 在 MMLU / HumanEval / GSM8K 的對比表，沒放跟其他旗艦模型的同題對比。</p>
 <p>純編譯器優化理論上不掉品質，但實際上：</p>
 <ul>
 <li>多卡 Warp Specialization 在某些 attention pattern 下可能踩到 race condition</li>
