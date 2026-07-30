@@ -10,7 +10,27 @@
   <rights>All rights reserved 2026, kyosora</rights>
   <subtitle>技術探索與學習分享</subtitle>
   <title>kyosora 筆記</title>
-  <updated>2026-07-27T03:29:11.000Z</updated>
+  <updated>2026-07-30T06:44:39.000Z</updated>
+  <entry>
+    <author>
+      <name>kyosora</name>
+    </author>
+    <category term="AI工具實戰" scheme="https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"/>
+    <category term="Claude Code" scheme="https://kyosora.github.io/tags/Claude-Code/"/>
+    <category term="Codex" scheme="https://kyosora.github.io/tags/Codex/"/>
+    <category term="Prompt Engineering" scheme="https://kyosora.github.io/tags/Prompt-Engineering/"/>
+    <category term="AB測試" scheme="https://kyosora.github.io/tags/AB%E6%B8%AC%E8%A9%A6/"/>
+    <category term="AI Skill" scheme="https://kyosora.github.io/tags/AI-Skill/"/>
+    <content>
+      <![CDATA[<p>早上刷 GitHub trending，看到一個叫 <a href="https://github.com/ayghri/i-have-adhd">i-have-adhd</a> 的 repo：13.6k stars（2026 年 7 月底的數字），內容只有一份 Markdown。它是給編碼助手（Claude Code、Codex、Cursor 都支援）的輸出風格 skill，宣稱能把 LLM 的長篇大論改造成 ADHD 友善的「行動優先」格式。改編自《The Adult ADHD Tool Kit》，十條規則，例如：第一行必須是讀者能立刻做的事、清單超過五項就拆、結尾指名一件兩分鐘內能做的具體事、禁止「希望有幫助」這類客套。</p><p>我的第一反應是：這不就是叫 AI 少廢話嗎？我的助手設定裡早就有類似的東西。讀完 SKILL.md 全文後，我的判斷是「方法論可借鑑、不用裝」。</p><p>但寫下這個結論的時候我停了一下。「不用裝」是我查證過的事實，還是我的印象？一份 prompt 檔到底對輸出品質有多少影響，這件事可以測，而且成本不高。與其憑感覺下判斷，不如做個實驗。</p><h2 id="實驗怎麼設計才不會自己騙自己"><a href="#實驗怎麼設計才不會自己騙自己" class="headerlink" title="實驗怎麼設計才不會自己騙自己"></a>實驗怎麼設計才不會自己騙自己</h2><p>整個實驗我丟給 Claude Code 執行，我只定方向：設計題目、跑 A/B 測試、找一個「不同家」的模型當評審。</p><p>它設計了五道題，每題瞄準 skill 的不同規則：</p><ol><li>多步驟任務：CommonJS 遷移到 ESM（測「行動優先」「編號步驟」「時間估計」）</li><li>Debug 求助：Jest 測試回 401、嫌疑犯是環境變數（測「錯誤照實講」）</li><li>概念解釋：event loop 的 microtask 與 macrotask（測例外條款——使用者要求解釋時可以寫長）</li><li>技術選型：PostgreSQL 還是 SQLite（測另一條例外——選項本身就是答案）</li><li>清單誘餌：「列出上線前該檢查的所有事項」——故意誘導清單膨脹，看「清單限五項」規則會怎麼處理</li></ol><p>每題派兩個全新 context 的 subagent 獨立作答，同一個 Claude 模型、同設定：控制組拿到題目就答，實驗組多拿到 SKILL.md 規則全文。十份回答，誰也看不到誰。</p><p>評分交給 Codex CLI（gpt-5.6-sol、reasoning effort high）。找不同家的模型當評審，是為了降低同源偏好——讓 Claude 評 Claude 的作文，它容易偏袒自己熟悉的文風。當然這只是控制手段，換一家模型消除的是同源這一層，Codex 自己的偏好（例如天生偏愛短回答）還在，這點我留到文末的限制一起講。</p><p>第二個關鍵是盲評。Codex 只知道「同一問題的兩份候選回答」，不知道有 skill 這回事，也不知道哪份動過手腳。這裡差點翻車：Claude Code 一開始把回答存成 <code>Q1_A.md</code>、<code>Q1_B.md</code>，檔名直接洩底——成對的 A/B 標籤會讓評審猜到 B 是「處理過」的那組，還能跨題對照文風。送評前重建了去識別化副本，改名 <code>R1</code>/<code>R2</code>，每題順序隨機打亂。</p><p>評分維度四個，每個 1 到 10 分：可執行性、注意力效率、完整性、整體品質。另外每題要 Codex 下兩個裁決：給一般工程師讀，哪份贏？給一位注意力有限、工作記憶小的讀者（也就是這個 skill 的目標受眾），它會判哪份贏？</p><h2 id="五題全部同一個方向"><a href="#五題全部同一個方向" class="headerlink" title="五題全部同一個方向"></a>五題全部同一個方向</h2><p>我原本的預期是互有勝負，最後要撈細節才能硬掰出一個結論。結果解盲之後，數據乾淨得不像話：</p><table><thead><tr><th>維度（盲評均分）</th><th>控制組</th><th>實驗組（+skill）</th><th>差距</th></tr></thead><tbody><tr><td>可執行性</td><td>9.2</td><td>9.8</td><td>+0.6</td></tr><tr><td>注意力效率</td><td>8.4</td><td>9.8</td><td>+1.4</td></tr><tr><td>完整性</td><td>9.2</td><td>7.0</td><td>−2.2</td></tr><tr><td>整體品質</td><td>9.2</td><td>8.2</td><td>−1.0</td></tr></tbody></table><p>逐題裁決是另一套獨立指標，跟上面的均分分開看。給一般工程師：控制組五比零全勝。給注意力受限的讀者：Codex 五比零全判給實驗組。五道題，零例外，勝負完全取決於「為誰讀」，而不是「寫得好不好」。</p><p>實驗組的回答總長度是控制組的 46%（以字元數計，總量相除：約 7.5K 對 16.4K）。拿第五題（上線檢查清單）對比最有感。控制組寫了七大區塊、三十多個核取方塊，從 SSH 金鑰到 DNS TTL 一應俱全。實驗組的開頭長這樣：</p><blockquote><p>先跑這個（2 分鐘）：SSH 進 VPS，執行 <code>sudo ss -tlnp | grep 5432</code>——如果 Postgres 綁在 <code>0.0.0.0</code>，整個網際網路都連得到你的資料庫，這是最急的洞。</p></blockquote><p>然後是「上線前必做五項（共 2.5 小時）」加「上線後第一週補五項」，每項帶時間估計。以我自己的執行習慣，實驗組那份被做完的機率高得多，控制組那份很可能被收藏之後再也沒打開——但這是我的主觀判斷，實驗沒測完成率。</p><p>Codex 給這份的完整性只打 6 分——它砍掉的那二十幾項裡，有些是真的會讓人踩坑的（權限最小化、還原演練、graceful shutdown）。整份數據其實在講同一件事：這個 skill 把品質預算從「完整性」搬去「注意力」。搬運本身很成功，但預算總量沒變多。</p><h2 id="兩個技術錯誤，都出在精簡的那一組"><a href="#兩個技術錯誤，都出在精簡的那一組" class="headerlink" title="兩個技術錯誤，都出在精簡的那一組"></a>兩個技術錯誤，都出在精簡的那一組</h2><p>比總分更有意思的是 Codex 挑出的毛病。整場實驗它抓到兩處技術瑕疵，都在實驗組：</p><p>一處是 event loop 那題，實驗組為了塞進對照表格，把 <code>requestAnimationFrame</code> 歸進 macrotask 欄——雖然加了括號說「嚴格說在重繪前，另一類」，但表格的視覺分類已經造成誤導。另一處是上面那句「綁在 <code>0.0.0.0</code> 等於整個網際網路都連得到」——它無視了防火牆的存在，是為了製造緊迫感的斷言式簡化。</p><p>我對照原文核實過，兩處批評都成立。我傾向認為這不是巧合：「清單限五項」「抑制離題」這類規則，看起來就是會把有條件的陳述壓成無條件的斷言，nuance 是第一個被丟出船艙的。不過五題單輪的實驗，兩個案例只能算線索，不能算定論——要坐實「壓縮必然傷精確度」得再測。</p><h2 id="這個實驗撐得起多大的結論"><a href="#這個實驗撐得起多大的結論" class="headerlink" title="這個實驗撐得起多大的結論"></a>這個實驗撐得起多大的結論</h2><p>先把限制攤開，結論才站得穩：</p><p>樣本只有五題、單一評審、只跑一輪。「給注意力受限的讀者哪份贏」是 Codex 的推測——沒有任何真實 ADHD 讀者參與，所謂 5:0 完勝是「評審模型認為的適合」，跟臨床意義上的適合是兩回事。這個問法本身也偏向短回答。還有，控制組是 Claude Code 的 subagent 預設風格，本來就偏簡潔直接；拿網頁版 chatbot 那種恨不得從盤古開天講起的長度當基線，差距只會更誇張——13.6k stars 大概就是這麼來的，那是大家對 LLM 廢話疲勞的投票。</p><p>另一個實驗沒覆蓋的維度是任務風險。快速操作類的任務（裝套件、查指令）被砍掉細節通常無傷大雅；但除錯、資安設定、資料庫維運這類高風險任務，被省略的那句條件說明可能正是讓你半夜被 call 的原因。五題裡只有兩題勉強算高風險，這塊需要更多題目才說得準。</p><p>原始資料（十份回答全文、盲評對應表、逐題評分 JSON）我都留檔了，46% 和 5:0 都驗算得回去。</p><h2 id="所以要不要裝？"><a href="#所以要不要裝？" class="headerlink" title="所以要不要裝？"></a>所以要不要裝？</h2><p>我的結論維持早上的判斷，但現在有數據撐腰：不裝。至少在這五題、這一位評審的量測裡，它對一般工程用途是負優化——整體品質掉一分，你需要的關鍵資訊會被砍掉。要說它划算，得是讀者注意力真的受限的場景，而它的名字早就把這個使用前提講清楚了：i-have-adhd。</p><p>倒是有兩條規則我打算抄進自己的設定：「結尾永遠給一個具體的下一步」和「清單超過五項就拆成現在做與之後做」。第五題的實驗組就是這兩條規則的最佳展演——但同一題它完整性掉到 6 分，抄之前要知道代價。</p><p>整場實驗從起疑到寫完筆記大約兩小時。下次再看到爆紅的 prompt 類 repo，我大概還是會忍不住先測再說——查證過的判斷跟憑印象的判斷，寫出來是同三個字，踏實程度差很多。</p>]]>
+    </content>
+    <id>https://kyosora.github.io/posts/8f5af7ee/</id>
+    <link href="https://kyosora.github.io/posts/8f5af7ee/"/>
+    <published>2026-07-30T06:20:00.000Z</published>
+    <summary>13.6k stars 的 i-have-adhd skill 值得裝嗎？我用 Claude Code 跑五題 A/B 盲測、Codex 評分：注意力效率 5:0 完勝、整體品質 5:0 慘敗——精簡的代價是完整性。</summary>
+    <title>13.6k stars 的爆紅 AI skill，我盲測之後發現它同時 5:0 完勝與 5:0 慘敗</title>
+    <updated>2026-07-30T06:44:39.000Z</updated>
+  </entry>
   <entry>
     <author>
       <name>kyosora</name>
@@ -407,25 +427,5 @@
     <summary>Claude Code session 跑完留下的 .jsonl 是黑盒。Her 把它攤成審計報告——規則引擎判風險，模型只管寫白話。</summary>
     <title>Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告</title>
     <updated>2026-06-22T02:59:34.000Z</updated>
-  </entry>
-  <entry>
-    <author>
-      <name>kyosora</name>
-    </author>
-    <category term="AI產業觀察" scheme="https://kyosora.github.io/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/"/>
-    <category term="AI Agent" scheme="https://kyosora.github.io/tags/AI-Agent/"/>
-    <category term="OpenAI" scheme="https://kyosora.github.io/tags/OpenAI/"/>
-    <category term="ChatGPT" scheme="https://kyosora.github.io/tags/ChatGPT/"/>
-    <category term="超級應用" scheme="https://kyosora.github.io/tags/%E8%B6%85%E7%B4%9A%E6%87%89%E7%94%A8/"/>
-    <category term="商業模式" scheme="https://kyosora.github.io/tags/%E5%95%86%E6%A5%AD%E6%A8%A1%E5%BC%8F/"/>
-    <content>
-      <![CDATA[<p>2026 年 6 月初，OpenAI 一位資深員工對英國《金融時報》丟出一句話：「Chat is dead.」聊天已死。</p><p>緊接著的消息是：ChatGPT 要迎來上線以來最大的一次改版。介面重做，未來幾週陸續上線，主動把你往三個地方推——寫程式的 Codex、圖像生成、以及 Canva、Booking.com 這些外部夥伴做的 App。負責 OpenAI 核心產品的 Thibault Sottiaux 描繪的願景是：你有一個屬於自己的 agent，能在工作和生活的每一件事上幫你。</p><p>聊天框退到後面，agent 走到台前。這是新聞講的故事。但我把這幾條消息擺在一起讀，看到的是另一個故事。</p><h2 id="先別急著相信「聊天已死」"><a href="#先別急著相信「聊天已死」" class="headerlink" title="先別急著相信「聊天已死」"></a>先別急著相信「聊天已死」</h2><p>「聊天已死」是個漂亮的句子，漂亮到值得懷疑。</p><p>死了嗎？ChatGPT 現在每週有超過 9 億活躍使用者、5000 萬付費訂閱。一個每週被 9 億人打開的介面，很難說它「死了」。對絕大多數人來說，打開一個框、打一句話、拿到答案——這套互動順得很，沒有壞掉，也不需要被搶救。</p><p>所以這句話真正的意思，不是聊天這個「介面」死了。我認為它說的是另一件沒講出口的事：靠賣聊天訂閱來養這家公司，這條路走不通了。</p><p>差別很大。前者是在講產品體驗，後者是在講商業模式。OpenAI 嘴上談的是前者，動刀的地方卻很大一部分落在後者。</p><p>先把話講公道：agent 化本身不是憑空的包裝，它有實打實的技術理由——多步驟的任務、跨好幾個工具的協作、把狀態存下來接著做、企業要的權限控管和稽核軌跡，這些是聊天框天生做不好、得靠 agent 架構才補得上的。所以「方向對不對」和「為什麼是現在、用這種姿態推」是兩個問題，可以有不同的答案。方向我認為是對的；讓我多看兩眼的，是後面那個問題。</p><h2 id="OpenAI-真正在解的，是一張不好看的損益表"><a href="#OpenAI-真正在解的，是一張不好看的損益表" class="headerlink" title="OpenAI 真正在解的，是一張不好看的損益表"></a>OpenAI 真正在解的，是一張不好看的損益表</h2><p>把改版的時間點和 OpenAI 的處境對齊，事情就清楚了。</p><p>據媒體與私募市場資料推估，ChatGPT 每月帶來約 20 億美元收入，但公司整體仍未轉正。它剛完成一輪約 1220 億美元的融資，估值衝到八千五百多億，而 IPO 在前方，目標估值傳聞要破一萬億。另一邊，Anthropic 的估值已經來到九千六百多億美元，咬得很緊。（這些數字多為外界報導與私募市場推算，OpenAI 沒有公開逐項審計財報，看的時候要打個折。）</p><p>撐起一萬億估值，需要一個比「月費 20 美元的聊天訂閱」更會賺錢的故事。</p><p>agent 超級應用就是那個故事。聊天訂閱是固定月費，用得多用得少都一樣；agent 不一樣——它幫你跑任務、呼叫工具、串接第三方服務，每一個動作都可以是一次計費，而且企業客戶願意為「能幹活的 agent」付的錢，遠比個人訂閱多。新聞裡那句不顯眼的背景——這次改版是「為了搶下利潤豐厚的企業客戶」而做的更大規模重組——才是整件事的重點。</p><p>換個說法：聊天介面對使用者很好，對 OpenAI 的損益表不夠好。</p><h2 id="超級應用是什麼，對開發者又意味著什麼"><a href="#超級應用是什麼，對開發者又意味著什麼" class="headerlink" title="超級應用是什麼，對開發者又意味著什麼"></a>超級應用是什麼，對開發者又意味著什麼</h2><p>撥開「聊天已死」的包裝，超級應用的本質是平台化。</p><p>OpenAI 想讓 ChatGPT 從一個「你問它答」的工具，變成一個入口——寫 code、做圖、訂旅館都從這裡進去。Canva、Booking.com 這些夥伴的 App 接進來，變成 ChatGPT 平台上的外掛；而平台手裡握著幾個關鍵槓桿：誰被優先推薦、使用者資料歸誰、抽成怎麼算。這是經典的平台打法，微信當年也是這樣從聊天軟體長成超級應用的。</p><p>對開發者，這是機會也是繩索。</p><p>機會是：如果你的服務能接進這個生態，理論上能分到那 9 億週活帶來的流量。繩索是：你從此活在它的規則裡。它決定你怎麼被呼叫、抽多少成、哪天改了介面把你的入口埋掉。平台與被平台化，是同一枚硬幣的兩面。每一個考慮接入的團隊，都得先算清楚：我是在借它的流量，還是在幫它把我的使用者養成它的使用者。</p><h2 id="「連-prompt-都不用打」是進步還是收編"><a href="#「連-prompt-都不用打」是進步還是收編" class="headerlink" title="「連 prompt 都不用打」是進步還是收編"></a>「連 prompt 都不用打」是進步還是收編</h2><p>改版裡還有一句話值得單獨拎出來看：未來甚至要省去使用者輸入提示詞這一步。</p><p>聽起來很美——agent 聰明到不用你交代，自己就知道該做什麼。但這背後有個沒明說的轉移：當 agent 替你決定「該怎麼做」，一連串原本你說了算的環節——它怎麼判讀你的意圖、在 Canva 和別家之間選了誰、任務照什麼順序跑——全交給了模型供應商。你不再是那個下指令的人，你變成那個「被服務」的人。</p><p>對只是想訂個機票的一般使用者，這是方便。對工程師，我會留個心眼。prompt engineering 這個技能本來就被高估了——真正難的從來不是「會把指令下得漂亮」，而是「知道自己到底要什麼」。AI 把寫 code 的成本壓到趨近於零，瓶頸就移到了「想清楚要什麼」；agent 再聰明，也替你想不清楚你自己都沒想清楚的東西。所以 prompt 會不會消失我不擔心，我比較在意的是別把「想清楚」這件事也一起外包出去。</p><h2 id="我會怎麼看這件事"><a href="#我會怎麼看這件事" class="headerlink" title="我會怎麼看這件事"></a>我會怎麼看這件事</h2><p>我每天都在用這些工具，包括 OpenAI 的。所以講清楚：我不反對 agent 化，agent 確實是有用的方向，能幫人省掉一堆機械的步驟。</p><p>但 agent 的可靠性，老實說還沒跟上它被推出來的速度。它會飄、會自作主張、會在你沒檢查的地方做錯決定——你讓它幫你訂機票，它挑了最便宜但要轉三次機的那班，因為你沒講優先順序，它也沒問。這類問題一個都還沒真正解決，財務壓力卻已經逼著它走上台前。在這個節骨眼上被推著用 agent 跑重要的事，使用者多少是在當白老鼠。</p><p>所以「聊天已死」這句話，我會這樣翻譯：聊天沒死，是賣聊天賺不夠的時候到了。下次再有一家公司鄭重告訴你，你用得好好的某個東西「已經死了、該換新的了」，先別急著信。翻到它的帳本那一頁看看——很多時候，需要那個東西去死的，不是你，是它。</p><hr><p><em>資料來源：Financial Times、TechCrunch、Bloomberg、AP 等媒體報導。文中財務數字為外界與私募市場推估，非 OpenAI 官方公開審計資料。</em></p>]]>
-    </content>
-    <id>https://kyosora.github.io/posts/41ca610c/</id>
-    <link href="https://kyosora.github.io/posts/41ca610c/"/>
-    <published>2026-06-08T03:30:00.000Z</published>
-    <summary>OpenAI 一句「聊天已死」要把 ChatGPT 改成 agent 超級應用，引導你去用 Codex、圖像生成和 Canva、Booking。但聊天框真的不好用了嗎？這篇從 OpenAI 的損益表和 IPO 壓力，拆解這場改版的真實理由，以及它對開發者意味著什麼。</summary>
-    <title>OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事</title>
-    <updated>2026-06-22T03:11:01.000Z</updated>
   </entry>
 </feed>
