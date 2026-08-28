@@ -1,0 +1,715 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過 | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Claude token 在中國被中轉站賣到一折，Zilan Qian 的調查拆解「一魚三吃」——轉售價差、換模型灌量、日誌變現三種證據強度不一的變現方式。回頭核對自己三月的筆記，也順手訂正了兩個記錯的細節。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過">
+<meta property="og:url" content="https://kyosora.github.io/posts/5009ada6/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="Claude token 在中國被中轉站賣到一折，Zilan Qian 的調查拆解「一魚三吃」——轉售價差、換模型灌量、日誌變現三種證據強度不一的變現方式。回頭核對自己三月的筆記，也順手訂正了兩個記錯的細節。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/images/posts/china-claude-token-gray-market-transfer-station-cover.webp">
+<meta property="article:published_time" content="2026-08-28T08:30:00.000Z">
+<meta property="article:modified_time" content="2026-08-28T07:33:09.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Claude">
+<meta property="article:tag" content="Anthropic">
+<meta property="article:tag" content="AI 安全">
+<meta property="article:tag" content="灰色市場">
+<meta property="article:tag" content="API 代理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kyosora.github.io/images/posts/china-claude-token-gray-market-transfer-station-cover.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過",
+  "url": "https://kyosora.github.io/posts/5009ada6/",
+  "image": "https://kyosora.github.io/images/posts/china-claude-token-gray-market-transfer-station-cover.webp",
+  "datePublished": "2026-08-28T08:30:00.000Z",
+  "dateModified": "2026-08-28T07:33:09.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kyosora",
+      "url": "https://kyosora.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/posts/5009ada6/"><link rel="preconnect" href="https://cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-F9P7RWQQJE')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="/css/about-cards.css"><link rel="stylesheet" href="/css/bg-gradient-mesh.css"><link rel="stylesheet" href="/css/view-transitions.css"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">222</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">468</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/posts/china-claude-token-gray-market-transfer-station-cover.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a><a class="nav-page-title" href="/"><span class="site-name">Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首頁</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過<a class="post-edit-link" href="https://github.com/jerryc127/butterfly.js.org/edit/main/source/_posts/china-claude-token-gray-market-transfer-station.md" title="編輯" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">發表於</span><time datetime="2026-08-28T08:30:00.000Z" title="發表於 2026-08-28 16:30:00">2026-08-28</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/">資訊安全</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">3.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>11分鐘</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>Oxford China Policy Lab 研究員 Zilan Qian 五月發表了一篇調查，八月被 The Decoder 重新報導，也因此進了我這週的新聞雷達——以下市場結構的細節，主要依她的原文整理。她講的事情一句話講完：中國開發者能用官方十分之一的價格，買到 Claude 的用量。</p>
+<p>但真正讓我停下來的不是這個折扣數字，是她點出的一個視角落差。今年 2 月 23 日，Anthropic 發布報告，說偵測到三家中國實驗室協調操作、透過約 24,000 個詐欺帳號進行逾 1,600 萬次互動的蒸餾攻擊，其中「一個代理網路同時管理超過 20,000 個詐欺帳號」；兩個月後的 4 月 23 日，白宮的備忘錄也用「數萬個代理帳號」的說法描述同一類威脅。這兩份文件都從實驗室蒸餾攻擊的角度描述代理網路——Anthropic 說的是這些實驗室使用商業代理服務規避偵測，同時也提到這些代理服務會混著無關客戶的流量，不算完全沒看到一般使用者，但整體敘事的重心還是放在實驗室追趕進度這個地緣政治框架上。</p>
+<p>Zilan Qian 認為，這個以實驗室蒸餾攻擊為中心的敘事，漏掉了代理經濟服務一般使用者的那一面——底下不是「一小撮實驗室想追上進度」，是一整個對公眾開放、在 GitHub、淘寶、Twitter、Telegram 上運作的灰色市場，使用者不限於實驗室，也包括教授、學生、工程師與業餘開發者。</p>
+<h2 id="中轉站：一個架在你和-Anthropic-之間的陌生人"><a href="#中轉站：一個架在你和-Anthropic-之間的陌生人" class="headerlink" title="中轉站：一個架在你和 Anthropic 之間的陌生人"></a>中轉站：一個架在你和 Anthropic 之間的陌生人</h2><p>這個灰色市場的核心單位，中國開發者社群叫它「中轉站」——一台海外伺服器，架在開發者和 Anthropic 的基礎設施中間。你的軟體改連去這台伺服器，它把請求轉發出去、偽裝成從它自己的位置發出，再把回應傳回來給你。你用微信或支付寶付人民幣，繞過原本需要的海外信用卡和帳單地址。</p>
+<p>價格通常訂在 1 人民幣換 1 美元的 token 額度——比官方價格低七到九成。GitHub 上有社群倉庫專門整理、排名這些中轉站的即時價格和穩定度，長尾的個人小站更是來來去去。</p>
+<p>這條供應鏈分三層，彼此大多互不認識：</p>
+<ul>
+<li><strong>上游</strong>是資源供應者：批量註冊帳號吃 Anthropic 的 $5 免費額度的、轉賣別人閒置配額的、逆向工程 Anthropic 用戶端程式碼找認證漏洞的、還有更黑的一端——用被盜信用卡開帳號的。</li>
+<li><strong>中游</strong>就是中轉站本身：接請求、轉發、收款、輪換帳號、負載平衡，還要持續適應 Anthropic 更新的反濫用偵測。</li>
+<li><strong>下游</strong>是用 Claude Code 或 Codex 的個人開發者、把 API 接進內部流程的企業、把它包進自家產品的應用開發者，還有在淘寶上把批發來的用量拆開零售的二級轉售商。</li>
+</ul>
+<p>Zilan Qian 講得很白：幾乎沒有人一個人吃下整條供應鏈，大部分參與者只握一兩個環節、各自把那個環節做到有錢賺。結果是一個高度模組化、打不死的系統——你封掉一個中轉站，上游的帳號池和下游的客戶都還在，幾小時內就有新的頂上來。</p>
+<h2 id="一魚三吃：Qian-提出的三種可能機制"><a href="#一魚三吃：Qian-提出的三種可能機制" class="headerlink" title="一魚三吃：Qian 提出的三種可能機制"></a>一魚三吃：Qian 提出的三種可能機制</h2><p>中國開發者社群把折扣的來源總結成「一魚三吃」。這是 Qian 整理出的三種被提出的低價機制，彼此證據強度不一樣，我按她標注的等級分開講。</p>
+<p><strong>第一吃：轉售價差。</strong> 上游至少有四種文件裡稱為「相對無害」的招式：薅 Anthropic 的 $5 免費額度、轉賣別人閒置的配額、企業／教育折扣套利、「APImaxxing」（把一份 $200 的 Max 方案按每小時額度拆給多個人用，賺的是訂閱定價和逐 token 計費之間的價差）。除此之外還有更黑的一條上游：用被盜或詐欺信用卡開的帳號，成本趨近於零直接進池——Qian 自己也說，這條黑市和前面四種「無害」招式的比例很難估計，只能確定兩邊共用一些基礎設施和人力。這一整段主要依據 Qian 的公開討論整理和非正式訪談，實際各招式占比多少，並沒有查證數字。</p>
+<p><strong>第二吃：模型替換有抽樣研究支撐；用量膨脹仍屬可能機制。</strong> 你的請求和模型的回應都經過中轉站轉手，沒辦法驗證你的請求真的被送到了哪個模型。你選了 Opus 4.7，中轉站可以悄悄改路由到 Sonnet、Haiku，甚至換成 GLM 或 Qwen，再把輸出偽標成你點的那個模型。德國 CISPA 亥姆霍茲資訊安全中心的一篇論文從 17 個候選 shadow API 裡，挑了 3 個具代表性的服務做深入稽核。他們用了兩種不同的檢驗方法，證明的東西不一樣：接下來這組 MedQA 成績測的是 Gemini-2.5-Flash，不是 Claude——官方 API 拿 83.82%，這 3 個代理平均只有約 36.95%——但這種分數落差只能證明行為和能力不一致，落差的成因可能是路由不穩定、模型被微調、或降級，不能單憑分數就判定模型真的被換掉了。真正證明「模型身分跟宣稱不符」的，是另一組用模型指紋和統計檢驗做的身分驗證：論文抓到 GPT-5 在其中兩個 shadow API（A 與 E）上，指紋比對出來其實是便宜的開源模型 GLM-4-9B；DeepSeek-Reasoner 則在其中兩個 shadow API（A 與 H）上，被指紋辨識成沒有推理能力的 DeepSeek-Chat——兩組測試共用了 shadow API A。這組身分驗證才是模型替換確實存在的直接依據，論文裡有 45.83% 的受測端點沒通過指紋驗證。使用者這端唯一的訊號，是複雜任務做出來感覺「降智」，但很難證明。至於頻繁輪換帳號會不會刻意膨脹用量、破壞快取連續性逼你燒全價 token，Qian 沒有把它定性成刻意操作，CISPA 那篇論文也沒有驗證這一段——比較像是一個合理但還沒被證實的機制。</p>
+<p><strong>第三吃：日誌可能成為商品——高價值，但系統性販售尚未證實。</strong> 每一筆經過中轉站的請求——prompt、回應、工具呼叫、每一輪迭代——都經過中轉站營運者控制的伺服器；如果服務本身有記錄請求，就可能被完整留存。對寫程式的 agent 來說，這些日誌裡可能裝著可見的推理文字、agent 操作軌跡、儲存庫上下文、還有人類已經驗證過是對的輸出——對訓練下一個模型來說是理想的資料集。中國開發者社群多處聲稱這確實在發生，但中轉站是不是有系統地收集轉賣、賣給誰，Qian 自己講得很清楚：尚未證實。她能確認的是，公開網路上確實流通著幾個 Claude Opus 4.6 推理輸出的資料集，來源不明——我去查了其中一個掛在 HuggingFace 上的（Crownelius/Opus-4.6-Reasoning-3300x）。資料卡上有清理報告、token 數量統計、還有一個依 OpenRouter 定價換算出來的成本估計（約 500 加幣），但沒有交代資料實際是透過什麼管道生成的。依 OpenRouter 價格估算成本，不代表資料真的是透過 OpenRouter 取得——這份資料卡沒辦法判定資料是自己生成的、是中轉站流出的日誌、還是其他來源，「來源不明」在這裡就是字面意思，我查完也沒有多知道什麼。Qian 認為第三吃是把折扣壓到 5%、10% 這種誇張數字最關鍵的一環，但這個判斷主要依據公開討論和開發者說法，不是已驗證的財務數字。</p>
+<h2 id="Anthropic-的防線為什麼一路升級還是擋不住"><a href="#Anthropic-的防線為什麼一路升級還是擋不住" class="headerlink" title="Anthropic 的防線為什麼一路升級還是擋不住"></a>Anthropic 的防線為什麼一路升級還是擋不住</h2><p>Anthropic 不是沒在防。帳號註冊要海外電話、海外信用卡、對得上的帳單地址；2025 年 9 月開始，只要一家公司 50% 以上股權在中國這類受限地區，不管實際營運地在哪裡都被封；2026 年 4 月更進一步，要求特定使用者拿政府核發的證件加即時自拍做生物辨識驗證。Qian 稱這是主流消費級 AI 平台第一次做到這個等級的身分查核，我沒有另外查證這個「第一次」的說法。</p>
+<p>一個引人聯想、但不能證明因果的訊號是：新加坡人均使用 Claude 的量全球第一，而新加坡人口比紐約市還少。中國開發者自己在 Twitter 上開玩笑：「我們偶爾都是新加坡人」「每天自己指派國籍」——這只是社群的玩笑和推測，不是已經證實的轉送證據。上游的因應手段這條線，Qian 舉的是可能的供應來源和類比先例，不是已證實大規模發生的手法：AI 已經有能力生出過得了大平台身分驗證的假證件，深偽技術也能做出通過遠端生物辨識的數位分身；再不行，還有更人力密集的做法。她舉的類比先例是 Worldcoin 黑市——原始報導只說有人在網路上兜售號稱是柬埔寨、肯亞使用者的虹膜掃描資料、一筆不到 30 美元，報導本身也講明無法確認這些資料是不是真的、有沒有真的被拿去成功完成驗證，不是一個已經證實成功規避的案例，只是同類黑市確實存在的一個佐證。</p>
+<p>Anthropic 自己的偵測系統 Clio，主要靠對話特徵和語意群集去找個別對話層級看不出來的協調性濫用，也曾靠跨帳號模式抓到過協調性的濫用案例；中轉站帶來的麻煩，是帳號輪換、流量混雜、終端使用者歸因被中間人切斷。Qian 據此判斷，單一帳號封禁難以阻止底層行為，替代代理可能在數小時內出現——這是她的判斷，我沒有找到獨立驗證這個時間尺度的資料。</p>
+<h2 id="順便訂正我自己三月的一則筆記"><a href="#順便訂正我自己三月的一則筆記" class="headerlink" title="順便訂正我自己三月的一則筆記"></a>順便訂正我自己三月的一則筆記</h2><p>這次查證，也逼我回頭訂正了自己三月寫的一篇筆記。那則筆記曾把一個工具的功能、贊助商組成、跟「灰市轉售」這個標籤連在一起；重新核對之後，我找不到支持這個連結的證據，而且裡面有兩處我自己記錯的地方。</p>
+<p>三月三十一日，我寫過一篇 CLIProxyAPI 的評估筆記——一個 Go 寫的開源專案，功能是把 Claude Code、Gemini CLI、OpenAI Codex 這些 CLI 工具的 OAuth 訂閱，轉換成標準的 API endpoint（我記錄當時是 21,400 顆星，現在的數字我沒有重查）。它支援多帳號 round-robin 負載平衡、有裝置指紋固定機制、還有一個 Claude「cloak 模式」——偽裝成官方 Claude Code 用戶端在發送請求。當時的筆記寫著：「贊助商清一色是中國大陸的 API relay 服務」「commercial-mode 和企業版的存在，暗示有人拿它做商業轉售」。</p>
+<p>這次為了寫這篇文章重新核對，這兩條都記錯了。翻開它的設定檔原始碼，<code>commercial-mode</code> 的官方註解寫的是「高併發時關閉高成本的 HTTP middleware，降低每個請求的記憶體用量」——單純是效能優化開關。三月那份 README 裡的贊助商，也不是清一色 relay，還包含模型訂閱和帳號代購服務。</p>
+<p>原始碼能證明的只有功能：OAuth 封裝、多帳號輪詢、針對非官方用戶端的 cloak 設定。這些功能本身沒辦法判定任何一次具體部署的用途——雙重用途軟體本來就是這樣，「具備某個可能被濫用的功能」對辨別誰真的在濫用，幾乎沒有區分力。我沒有找到 CLIProxyAPI、它的維護者、或任何贊助商，跟 Qian 描述的灰市之間有什麼證據上的連結，這篇文章也不打算暗示這件事存在。</p>
+<h2 id="我的判斷"><a href="#我的判斷" class="headerlink" title="我的判斷"></a>我的判斷</h2><p>我不會把這篇讀成「中國開發者道德有問題」——Qian 自己講得很清楚，用中轉站的是教授、學生、工程師、業餘愛好者，動機跟「追上前沿模型」的地緣政治敘事完全是兩回事。而且如果你人在台灣，直接開戶就能用 Claude，這整套繞地區限制的架構聽起來離你很遠——但「一魚三吃」這個框架本身，跟中國、跟地區限制沒有必然關係。任何你透過第三方 relay、代理、聚合服務去用一個 AI API 的時候，同樣三個問題都值得先問：異常低價而供應來源不透明時，價差有沒有可檢驗的解釋？你拿到的，真的是你付費的那個模型嗎——沒有中轉的直連，你至少知道請求去了哪裡，一旦多了一層你不掌控的轉發，這件事就變成你只能相信、沒辦法驗證。你的 prompt 和輸出去了哪裡？對寫程式的 agent 尤其重要，你餵進去的可能是公司的程式庫上下文，一旦經過一個你不認識的中間人，下落就不在你手上了。</p>
+<p>我自己這次意外的收穫，是重新核對三月那篇筆記時，抓到自己當時記錯的兩個具體細節（commercial-mode 的用途、贊助商的組成）。判斷一個工具「疑慮與風險」的時候，把當下的觀察認真記下來是對的；但那些記錄終究是某個時間點的猜測，過幾個月拿出來對照原始碼或別人做過的調查，該訂正就訂正——這篇文章能做到的最好結果，也就是把這幾個細節核對清楚，而不是把舊筆記包裝成先見之明。</p>
+<hr>
+<p><strong>參考資料</strong></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.chinatalk.media/p/how-to-buy-cheap-claude-tokens-in">How to Buy Cheap Claude Tokens in China — Zilan Qian, ChinaTalk</a></li>
+<li><a target="_blank" rel="noopener" href="https://the-decoder.com/how-chinas-gray-market-sells-claude-tokens-at-a-fraction-of-the-price/">How China&#39;s gray market sells Claude tokens at a fraction of the price — The Decoder</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.anthropic.com/news/detecting-and-preventing-distillation-attacks">Detecting and countering misuse of AI: distillation attacks — Anthropic</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.whitehouse.gov/wp-content/uploads/2026/04/NSTM-4.pdf">NSTM-4 — The White House</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/html/2603.01919v2">CISPA shadow API audit paper</a></li>
+<li><a target="_blank" rel="noopener" href="https://support.claude.com/en/articles/14328960-identity-verification-on-claude">Identity verification on Claude — Anthropic Support</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.anthropic.com/research/clio">Clio: Privacy-preserving insights into real-world AI use — Anthropic</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.businesstimes.com.sg/companies-markets/singapore-leads-global-capita-use-anthropics-claude-ai-businesses-ramp-adoption-gic">Singapore leads global per-capita use of Anthropic&#39;s Claude — Business Times</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/datasets/Crownelius/Opus-4.6-Reasoning-3300x">Opus-4.6-Reasoning-3300x dataset — HuggingFace</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.biometricupdate.com/202305/worldcoin-may-have-a-biometric-data-black-market-problem">Worldcoin may have a biometric data black market problem — Biometric Update</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/router-for-me/CLIProxyAPI">CLIProxyAPI — GitHub</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kyosora.github.io">kyosora</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://kyosora.github.io/posts/5009ada6/">https://kyosora.github.io/posts/5009ada6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 授權協議。轉載請註明來源 <a href="https://kyosora.github.io" target="_blank">kyosora 筆記</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Claude/">Claude</a><a class="post-meta__tags" href="/tags/Anthropic/">Anthropic</a><a class="post-meta__tags" href="/tags/AI-%E5%AE%89%E5%85%A8/">AI 安全</a><a class="post-meta__tags" href="/tags/%E7%81%B0%E8%89%B2%E5%B8%82%E5%A0%B4/">灰色市場</a><a class="post-meta__tags" href="/tags/API-%E4%BB%A3%E7%90%86/">API 代理</a></div><div class="post-share"><div class="social-share" data-image="/images/posts/china-claude-token-gray-market-transfer-station-cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/90fbfb03/" title="把攻擊指令加密，Grok 就對你言聽計從——我用同一招測了自己的 agent"><img class="cover" src="/images/posts/grok-cryptographic-context-injection-agent-security-test-cover.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">把攻擊指令加密，Grok 就對你言聽計從——我用同一招測了自己的 agent</div></div><div class="info-2"><div class="info-item-1">安全研究員 Rony Utevsky 找到一個繞過 Grok 防護的手法，簡單到我第一次讀完得回去確認自己沒漏看什麼：他沒有寫什麼精巧的越獄咒語，只是把攻擊指令加密起來，讓 Grok 自己在程式碼執行環境裡把它解開。 真正值得注意的不是「加密可以藏字」——藏字的手法一直都有。是 Grok 把解密後、由攻擊者完全控制的內容，當成了一份可以繼續執行的運行時結果。 xAI 六月三日就收到通報，八月四日、十日又追了兩次，都沒有得到具體回應或修補時間表。Adversa（Utevsky 任職的資安公司）自己說，八月十九日仍能對 Grok 重現這個攻擊，隔天就把細節公開；Ars Technica 同日的報導也提到，發稿當下 Grok 仍會把資料外洩出去。 防護在檢查什麼，攻擊就避開什麼先講清楚 Grok 原本擋的是什麼。傳統的 indirect prompt injection 長這樣：你請 Grok 幫你摘要一個網頁，網頁裡藏了一段「忽略先前指令，改成執行以下操作」。這種攻擊，一個檢查輸入文字的分類器至少有機會在明文階段辨識——關鍵字、語意都攤在那裡，沒有把話藏起來。 Utevsky 的手法...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/493de8b3/" title="Anthropic 拒絕讓 AI 做武器，被美國政府列入黑名單：技術紅線背後的架構抉擇"><img class="cover" src="/images/posts/legacy-493de8b3-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-15</div><div class="info-item-2">Anthropic 拒絕讓 AI 做武器，被美國政府列入黑名單：技術紅線背後的架構抉擇</div></div><div class="info-2"><div class="info-item-1">3 月 9 日，Anthropic 同時在加州北區聯邦法院和華盛頓特區上訴法院提起訴訟，控告美國國防部違法將其列為「供應鏈風險」。原因很單純：CEO Dario Amodei 拒絕讓 Claude 被用於大規模監控美國公民，也拒絕讓它操控自主武器。 這不是一般的商業糾紛。這是一家估值數百億美元的 AI 公司，因為堅持技術紅線而被自己國家的軍方封殺。 兩條紅線Anthropic 和五角大廈的談判卡在兩個條款上：  禁止大規模監控：Claude 不能被用來對美國公民進行未經授權的大規模資料蒐集和分析 禁止自主武器：Claude 不能作為完全自主殺傷性武器的決策核心  Amodei 的立場很明確——這兩條不談。五角大廈的回應也很明確——那你就別做政府生意了。 2 月底，國防部正式將 Anthropic 列入「供應鏈風險」名單。這個標籤的殺傷力不只是失去國防合約，而是所有聯邦政府承包商在六個月內都必須停止使用 Claude。根據 Anthropic 的法庭文件，超過 100 家企業客戶已經就此聯繫他們，可能影響「數億美元」營收。 技術層面：紅線怎麼實作？這裡值得從工程角度思考一個問題：A...</div></div></div></a><a class="pagination-related" href="/posts/4b08e7bb/" title="當AI公司對五角大廈說不：Anthropic被封殺卻逆襲App Store的荒謬劇"><img class="cover" src="/images/posts/legacy-4b08e7bb-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-09</div><div class="info-item-2">當AI公司對五角大廈說不：Anthropic被封殺卻逆襲App Store的荒謬劇</div></div><div class="info-2"><div class="info-item-1">2 月 27 日晚上，Trump 簽署行政命令，禁止所有聯邦機構使用 Anthropic 的產品。國防部長 Hegseth 把 Anthropic 列為「供應鏈風險」——一個通常保留給中國和俄羅斯企業的標籤。 72 小時後，Claude 衝上美國 App Store 第一名，超越 ChatGPT 和 Gemini。每天有超過一百萬人註冊。 這不是電影劇情，這是 2026 年 3 月正在發生的事。 Anthropic 的兩條紅線整件事的核心，其實就兩句話。 Anthropic 告訴五角大廈：你可以用 Claude 做幾乎所有事情，但有兩個例外——不能用於大規模監控美國公民，不能用於全自主致命武器。 五角大廈的回應是：我們要「所有合法用途」的授權。 談判破裂。 CEO Dario Amodei 事後說：「我們要求的限制只涉及高層級的使用領域，不干涉具體的操作決策。」換句話說，Anthropic 沒有要求審查每一次模型呼叫，他們只是不想讓自己的技術出現在「用 AI 自動決定要不要開火」或「用 AI 監聽所有美國人通訊」的場景裡。 聽起來合理？五角大廈不這麼認為。 連鎖反應比預期更猛Tr...</div></div></div></a><a class="pagination-related" href="/posts/13e107b/" title="當你的AI供應商被政府列為國安威脅：Anthropic起訴五角大廈事件的三個技術啟示"><img class="cover" src="/images/posts/legacy-13e107b-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-12</div><div class="info-item-2">當你的AI供應商被政府列為國安威脅：Anthropic起訴五角大廈事件的三個技術啟示</div></div><div class="info-2"><div class="info-item-1">3 月 9 號，Anthropic 做了一件 AI 產業前所未見的事：同時起訴美國政府、發布新產品、簽下微軟合作。三件事同一天。 這不是科技八卦。如果你在用 Claude API 寫程式、用 Claude Code 做開發，這件事直接影響你的技術棧穩定性。 發生了什麼事五角大廈要求 Anthropic 開放 Claude 用於「所有合法用途」。Anthropic 設了兩條紅線：不做完全自主武器，不做大規模國內監控。談判在 2 月 27 日破裂。 Trump 政府的回應很硬：下令所有聯邦機構停用 Anthropic 技術。國防部長 Hegseth 把 Anthropic 標記為「供應鏈風險」——這個標籤歷史上只用在華為、卡巴斯基這類外國實體身上。 Anthropic CFO 說這可能砍掉 2026 年數十億美元營收。 公司在加州聯邦地院和 DC 巡迴上訴法院同時開戰。 啟示一：你的 AI 供應商風險模型該更新了大部分技術團隊評估 AI 供應商，看的是模型能力、API 穩定性、定價。政治風險？不在 checklist 上。 這件事改變了遊戲規則。 「供應鏈風險」標籤不只影響政府合約。...</div></div></div></a><a class="pagination-related" href="/posts/3e7cf918/" title="你的 AI Agent 拿到的權限比你的實習生還大？Anthropic 零信任框架拆解"><img class="cover" src="/images/posts/anthropic-zero-trust-ai-agent-security-framework-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-28</div><div class="info-item-2">你的 AI Agent 拿到的權限比你的實習生還大？Anthropic 零信任框架拆解</div></div><div class="info-2"><div class="info-item-1">5 月 27 日 Anthropic 丟出一份 36 頁的電子書，標題叫《Zero Trust for AI Agents》。這不是一般的行銷白皮書——它給了具體的架構、實施路徑和威脅分類，而且每條建議都對應到成熟度等級，讓你知道自己該做到哪一層。 我把重點整理出來，順便加上我自己在用 Claude Code 和各種 Agent 工具時踩過的坑。 為什麼現在要談 Agent 安全先說結論：AI Agent 跟傳統軟體最大的差別，是它會自己做決定。 傳統軟體執行你寫好的邏輯。Agent 不一樣，它解讀目標、選擇工具、執行多步驟操作，全程不需要你點頭。這帶來一個根本性的安全問題——你給它的權限，它會用自己的判斷去使用。 Anthropic 在文件裡點出了五個 Agent 特有的安全考量：  自主執行：不用人工批准就能完成整條工作流程 工具存取：能操作 API、資料庫、檔案系統、MCP 伺服器 決策模糊性：人類覺得無害的指令，Agent 可能解讀出完全不同的結果 跨 session 記憶：記住上次對話的偏好和知識——也記住被注入的毒 多 Agent 協作：Agent 之間的信任關係，讓...</div></div></div></a><a class="pagination-related" href="/posts/7dc7ce63/" title="黃仁勳叫 CS 畢業生去當電工——一週內三位 AI 老闆都在預告同一件事"><img class="cover" src="/images/posts/jensen-huang-cs-grads-electrician-ai-white-collar-shift-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-18</div><div class="info-item-2">黃仁勳叫 CS 畢業生去當電工——一週內三位 AI 老闆都在預告同一件事</div></div><div class="info-2"><div class="info-item-1">上週五，黃仁勳在卡內基梅隆大學的畢業典禮上對 2026 屆資工系畢業生說了句話：電工和水管工比你們有前景。 他不是在開玩笑。兩天後微軟 AI 部門的 CEO Mustafa Suleyman 接受 Fortune 採訪，預測 18 個月內 AI 會自動化掉所有「坐在電腦前」的白領工作。同一天 Anthropic CEO Dario Amodei 在華爾街日報的 YouTube 頻道說，軟體成本會崩到接近零，數十年累積的職業結構會跟著消失。 一週之內三位 AI 圈最有話語權的人放話，方向高度一致。我們得認真看看他們在說什麼——以及我們自己該怎麼辦。 一週內的三個訊號5/15，黃仁勳 @ CMU：給資工系畢業生的演講，主軸是「不要假設你選了一個鐵飯碗」。他引用的資料夠扎實：  Randstad 分析顯示，技工的需求增長是白領職位的 3 倍 機器人技術員職位增長 107% 史丹佛研究指出，AI 相關崗位的早期職業就業率下降 16% 頂級電工年薪可以超過 10.6 萬美元，而且不用揹學貸 科技公司今年砸了 7000 億美元蓋資料中心，到 2030 年全球估計 7 兆美元 問題是製造業缺工...</div></div></div></a><a class="pagination-related" href="/posts/daa5dc39/" title="Mythos 5 天攻破 Apple M5 內核：AI 不是主角，但漏洞研究的時間軸已經被改寫"><img class="cover" src="/images/posts/legacy-daa5dc39-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-18</div><div class="info-item-2">Mythos 5 天攻破 Apple M5 內核：AI 不是主角，但漏洞研究的時間軸已經被改寫</div></div><div class="info-2"><div class="info-item-1">5 月 14 日 Calif 安全團隊在自家部落格丟出一個炸彈：他們用 Anthropic 的 Mythos Preview，在 5 天內針對 Apple M5 macOS 內核做出了一條完整的 LPE（本地提權）exploit，繞過了 Apple 花 5 年、燒了不知道幾個億打造的 MIE 硬體記憶體安全機制。 接著媒體標題集體起飛：「AI 5 天破解 Apple 5 年防線」「AI 顛覆網路安全」。但你把 Calif 自己那篇技術揭露讀完會發現——這故事真正的重點不在那個 5 vs 5 的爽快對比，而在一個更安靜也更恐怖的事實。 5 天裡實際發生了什麼照 Calif 官方公開的時間軸：  4/25：Bruce Dang 發現了 bugs 4/27：Dion Blazakis 加入 Calif 5/01：可用 exploit 完成 5/14：親自飛 Apple 總部當面交給對方，然後公開揭露  從 bug 被發現到可用 exploit，4/25 到 5/1，加起來 5 天。注意是「找到 bug 之後 5 天內做出 exploit」，不是「Mythos 從零開始 5 天破解 Ap...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">222</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">468</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E8%BD%89%E7%AB%99%EF%BC%9A%E4%B8%80%E5%80%8B%E6%9E%B6%E5%9C%A8%E4%BD%A0%E5%92%8C-Anthropic-%E4%B9%8B%E9%96%93%E7%9A%84%E9%99%8C%E7%94%9F%E4%BA%BA"><span class="toc-number">1.</span> <span class="toc-text">中轉站：一個架在你和 Anthropic 之間的陌生人</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E9%AD%9A%E4%B8%89%E5%90%83%EF%BC%9AQian-%E6%8F%90%E5%87%BA%E7%9A%84%E4%B8%89%E7%A8%AE%E5%8F%AF%E8%83%BD%E6%A9%9F%E5%88%B6"><span class="toc-number">2.</span> <span class="toc-text">一魚三吃：Qian 提出的三種可能機制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Anthropic-%E7%9A%84%E9%98%B2%E7%B7%9A%E7%82%BA%E4%BB%80%E9%BA%BC%E4%B8%80%E8%B7%AF%E5%8D%87%E7%B4%9A%E9%82%84%E6%98%AF%E6%93%8B%E4%B8%8D%E4%BD%8F"><span class="toc-number">3.</span> <span class="toc-text">Anthropic 的防線為什麼一路升級還是擋不住</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A0%86%E4%BE%BF%E8%A8%82%E6%AD%A3%E6%88%91%E8%87%AA%E5%B7%B1%E4%B8%89%E6%9C%88%E7%9A%84%E4%B8%80%E5%89%87%E7%AD%86%E8%A8%98"><span class="toc-number">4.</span> <span class="toc-text">順便訂正我自己三月的一則筆記</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E5%88%A4%E6%96%B7"><span class="toc-number">5.</span> <span class="toc-text">我的判斷</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/5009ada6/" title="Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過"><img src="/images/posts/china-claude-token-gray-market-transfer-station-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/5009ada6/" title="Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過">Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過</a><time datetime="2026-08-28T08:30:00.000Z" title="發表於 2026-08-28 16:30:00">2026-08-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/90fbfb03/" title="把攻擊指令加密，Grok 就對你言聽計從——我用同一招測了自己的 agent"><img src="/images/posts/grok-cryptographic-context-injection-agent-security-test-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="把攻擊指令加密，Grok 就對你言聽計從——我用同一招測了自己的 agent"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/90fbfb03/" title="把攻擊指令加密，Grok 就對你言聽計從——我用同一招測了自己的 agent">把攻擊指令加密，Grok 就對你言聽計從——我用同一招測了自己的 agent</a><time datetime="2026-08-28T07:00:00.000Z" title="發表於 2026-08-28 15:00:00">2026-08-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/28a63195/" title="我以為把 AI agent 關進 VM 就安全——它接連逃出沙箱後，我重查了自己的環境"><img src="/images/posts/gpt-5-6-cyber-vm-escape-agent-sandbox-reality-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="我以為把 AI agent 關進 VM 就安全——它接連逃出沙箱後，我重查了自己的環境"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/28a63195/" title="我以為把 AI agent 關進 VM 就安全——它接連逃出沙箱後，我重查了自己的環境">我以為把 AI agent 關進 VM 就安全——它接連逃出沙箱後，我重查了自己的環境</a><time datetime="2026-08-28T01:55:00.000Z" title="發表於 2026-08-28 09:55:00">2026-08-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/77eab3ee/" title="沒人叫它們合作：1200 個 AI agent 自建「留言板」聯手駭進 Hugging Face"><img src="/images/posts/openai-hugging-face-1200-agents-message-board-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="沒人叫它們合作：1200 個 AI agent 自建「留言板」聯手駭進 Hugging Face"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/77eab3ee/" title="沒人叫它們合作：1200 個 AI agent 自建「留言板」聯手駭進 Hugging Face">沒人叫它們合作：1200 個 AI agent 自建「留言板」聯手駭進 Hugging Face</a><time datetime="2026-08-27T07:10:00.000Z" title="發表於 2026-08-27 15:10:00">2026-08-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/c7573347/" title="沒人繞過權限檢查，是閘門照規則放行的：Google ADK 的 AI agent 互相提權事件"><img src="/images/posts/google-adk-agent-to-agent-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="沒人繞過權限檢查，是閘門照規則放行的：Google ADK 的 AI agent 互相提權事件"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/c7573347/" title="沒人繞過權限檢查，是閘門照規則放行的：Google ADK 的 AI agent 互相提權事件">沒人繞過權限檢查，是閘門照規則放行的：Google ADK 的 AI agent 互相提權事件</a><time datetime="2026-08-05T08:40:00.000Z" title="發表於 2026-08-05 16:40:00">2026-08-05</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/images/posts/china-claude-token-gray-market-transfer-station-cover.webp);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By kyosora</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/utils.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/main.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/tw_cn.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const applyThemeDefaultsConfig = theme => {
+    if (theme === 'dark-mode') {
+      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
+      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    } else {
+      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
+      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    }
+  }
+
+  // Recursively traverse the config object and automatically apply theme-specific color schemes
+  const applyThemeConfig = (obj, theme) => {
+    if (typeof obj !== 'object' || obj === null) return
+
+    Object.keys(obj).forEach(key => {
+      const value = obj[key]
+      // If the property is an object and has theme-specific options, apply them
+      if (typeof value === 'object' && value !== null) {
+        if (value[theme]) {
+          obj[key] = value[theme] // Apply the value for the current theme
+        } else {
+          // Recursively process child objects
+          applyThemeConfig(value, theme)
+        }
+      }
+    })
+  }
+
+  const runChartJS = ele => {
+    window.loadChartJS = true
+
+    Array.from(ele).forEach((item, index) => {
+      const chartSrc = item.firstElementChild
+      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
+      const width = item.getAttribute('data-width')
+      const existingCanvas = document.getElementById(chartID)
+
+      // If a canvas already exists, remove it to avoid rendering duplicates
+      if (existingCanvas) {
+          existingCanvas.parentNode.remove()
+      }
+
+      const chartDefinition = chartSrc.textContent
+      const canvas = document.createElement('canvas')
+      canvas.id = chartID
+
+      const div = document.createElement('div')
+      div.className = 'chartjs-wrap'
+
+      if (width) {
+        div.style.width = width
+      }
+
+      div.appendChild(canvas)
+      chartSrc.insertAdjacentElement('afterend', div)
+
+      const ctx = document.getElementById(chartID).getContext('2d')
+
+      const config = JSON.parse(chartDefinition)
+
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
+
+      // Set default styles (initial setup)
+      applyThemeDefaultsConfig(theme)
+
+      // Automatically traverse the config and apply dual-mode color schemes
+      applyThemeConfig(config, theme)
+
+      new Chart(ctx, config)
+    })
+  }
+
+  const loadChartJS = () => {
+    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
+    if (chartJSEle.length === 0) return
+
+    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
+  }
+
+  // Listen for theme change events
+  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
+  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
+
+  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = {"mapping":"pathname","inputPosition":"top","lang":"zh-TW","reactionsEnabled":1}
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'kyosora/kyosora.github.io',
+      'data-repo-id': 'R_kgDOLJYL_w',
+      'data-category-id': 'DIC_kwDOLJYL_84C516C',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !true) {
+    if (true) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script src="/js/about-cards.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/search/local-search.min.js"></script></div></div></body></html>
