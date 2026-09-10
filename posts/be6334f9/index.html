@@ -1,0 +1,826 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>底圖突然整片空白、重開主機也沒用：國土測繪中心 WMS 最低要求 TLS 1.2，舊 .NET 程式怎麼修 | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="PDF 底圖突然整片空白、防火牆通、重開主機也沒用？國土測繪中心 WMS 最低要求 TLS 1.2，舊 .NET Framework 元件握手失敗又吞掉例外。記錄用 openssl 與獨立 console 定位根因、修四支匯出，以及 SecurityProtocol 靜態狀態造成時好時壞的坑。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="底圖突然整片空白、重開主機也沒用：國土測繪中心 WMS 最低要求 TLS 1.2，舊 .NET 程式怎麼修">
+<meta property="og:url" content="https://kyosora.github.io/posts/be6334f9/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="PDF 底圖突然整片空白、防火牆通、重開主機也沒用？國土測繪中心 WMS 最低要求 TLS 1.2，舊 .NET Framework 元件握手失敗又吞掉例外。記錄用 openssl 與獨立 console 定位根因、修四支匯出，以及 SecurityProtocol 靜態狀態造成時好時壞的坑。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/images/posts/nlsc-wms-tls12-dotnet-blank-basemap-cover.webp">
+<meta property="article:published_time" content="2026-09-10T03:50:00.000Z">
+<meta property="article:modified_time" content="2026-09-10T04:24:49.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="踩坑">
+<meta property="article:tag" content="TLS 1.2">
+<meta property="article:tag" content=".NET Framework">
+<meta property="article:tag" content="WMS">
+<meta property="article:tag" content="國土測繪中心">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kyosora.github.io/images/posts/nlsc-wms-tls12-dotnet-blank-basemap-cover.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "底圖突然整片空白、重開主機也沒用：國土測繪中心 WMS 最低要求 TLS 1.2，舊 .NET 程式怎麼修",
+  "url": "https://kyosora.github.io/posts/be6334f9/",
+  "image": "https://kyosora.github.io/images/posts/nlsc-wms-tls12-dotnet-blank-basemap-cover.webp",
+  "datePublished": "2026-09-10T03:50:00.000Z",
+  "dateModified": "2026-09-10T04:24:49.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kyosora",
+      "url": "https://kyosora.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/posts/be6334f9/"><link rel="preconnect" href="https://cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-F9P7RWQQJE')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '底圖突然整片空白、重開主機也沒用：國土測繪中心 WMS 最低要求 TLS 1.2，舊 .NET 程式怎麼修',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="/css/about-cards.css"><link rel="stylesheet" href="/css/bg-gradient-mesh.css"><link rel="stylesheet" href="/css/view-transitions.css"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">224</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">475</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/posts/nlsc-wms-tls12-dotnet-blank-basemap-cover.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a><a class="nav-page-title" href="/"><span class="site-name">底圖突然整片空白、重開主機也沒用：國土測繪中心 WMS 最低要求 TLS 1.2，舊 .NET 程式怎麼修</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首頁</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">底圖突然整片空白、重開主機也沒用：國土測繪中心 WMS 最低要求 TLS 1.2，舊 .NET 程式怎麼修<a class="post-edit-link" href="https://github.com/jerryc127/butterfly.js.org/edit/main/source/_posts/nlsc-wms-tls12-dotnet-blank-basemap.md" title="編輯" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">發表於</span><time datetime="2026-09-10T03:50:00.000Z" title="發表於 2026-09-10 11:50:00">2026-09-10</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/">資訊安全</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%B3%BB%E7%B5%B1%E8%88%87%E7%B6%AD%E9%81%8B/">系統與維運</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">3.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>12分鐘</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>八月中使用者傳來一張截圖：系統產出的 PDF 裡那頁地圖，只剩幾個地點標籤孤零零浮在一片白上，底圖整個不見。</p>
+<p>同一個症狀我七月才修過一次。當時的結論是防火牆，所以這次第一反應是「白名單又被誰收掉了」，第二反應是「圖台主機要不要重開」。兩個都錯，而且錯得很有教育意義：國土測繪中心的底圖服務現在最低要求 TLS 1.2，一段十幾年前寫的 .NET 元件只會講 TLS 1.0，握手被拒、例外被吞，於是整個系統沒有任何一行錯誤，只有一張白圖。</p>
+<p>這篇把兩次修的過程都寫下來，重點放在「為什麼會靜默失敗」跟「為什麼症狀會時好時壞」。後者害我多繞了一圈。</p>
+<h2 id="背景：兩條產圖路徑，長得一樣、走的路完全不同"><a href="#背景：兩條產圖路徑，長得一樣、走的路完全不同" class="headerlink" title="背景：兩條產圖路徑，長得一樣、走的路完全不同"></a>背景：兩條產圖路徑，長得一樣、走的路完全不同</h2><p>這是一套政府機關的線上申請系統，.NET Framework 加 ASP.NET MVC，地圖用國內一家 GIS 廠商的元件，下面就叫它 GIS 元件。民眾線上送件，承辦審過後系統產出 PDF，裡面附一張地圖：國土測繪中心的通用版電子地圖當底圖，上面疊申請的位置點位。</p>
+<p>網站前端看地圖走的是圖台，網頁地圖早就改用 <code>https://wmts.nlsc.gov.tw/wmts/EMAP5/...</code>，走的是瀏覽器的 TLS。回報問題的人也補了一句「圖台上底圖是正常的」，這句話差點把我的方向帶偏。</p>
+<p>因為 PDF 裡那張圖根本不經過圖台。後端在網站自己的 process 裡用 GIS 元件的繪圖工具直接畫，讀的是另一份圖層設定檔，走的是 .NET Framework 的 TLS。那份設定檔只有兩層：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">report-map.pml</span><br><span class="line">├─ VectorLayer 申請點位   ← 讀本機 SQL Server，所以點位畫得出來</span><br><span class="line">└─ ImageLayer  WMS        ← http://maps.nlsc.gov.tw/S_Maps/wms?  ← 白的就是這層</span><br></pre></td></tr></table></figure>
+
+<p>同一個系統、同一家底圖供應商、兩個端點、兩套 TLS 協商。畫面上看得到，不代表伺服器端取得到；重開圖台主機對這個症狀也完全無效。這件事我七月就知道了，八月還是先想到重開，可見直覺這種東西不太會學習。</p>
+<h2 id="七月那次：真的是防火牆"><a href="#七月那次：真的是防火牆" class="headerlink" title="七月那次：真的是防火牆"></a>七月那次：真的是防火牆</h2><p>七月的回報是另一種 PDF（申請書）的底圖白掉。在正式機上跑一行就抓到了：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Test-NetConnection</span> wms.nlsc.gov.tw <span class="literal">-Port</span> <span class="number">443</span></span><br></pre></td></tr></table></figure>
+
+<p>TCP 443 不通。正式機的 outbound HTTPS 被防火牆擋住，程式連對方的門都敲不到。請機房把 <code>wms.nlsc.gov.tw:443</code> 加進白名單，重新下載，底圖回來了。</p>
+<p>那次順手在申請書的產圖流程裡加了一段直接打官方 WMS 的程式，取圖時把 BBOX、HTTP 狀態、回傳 bytes、非白像素比例都寫進 log，想說下次再白掉至少能分辨是網路、服務還是繪圖的問題。這段程式從一開始就明確開了 TLS 1.2，後面會講到這件事的副作用。</p>
+<p>（旁支：也是那時候發現這個 GIS 元件預設把圖徵畫到前景畫布，而 PDF 流程只初始化了背景畫布，前景是 null 時畫標籤會丟 <code>ArgumentNullException</code>。要明確把繪圖目標指到背景畫布。跟 TLS 無關，但同一條路徑上的坑。）</p>
+<p>當時以為結案了。</p>
+<h2 id="八月：另一支匯出白掉，防火牆是通的"><a href="#八月：另一支匯出白掉，防火牆是通的" class="headerlink" title="八月：另一支匯出白掉，防火牆是通的"></a>八月：另一支匯出白掉，防火牆是通的</h2><p>八月回報的是核定文件的 PDF。同一個系統、同一張底圖、同一個症狀，但這次 <code>Test-NetConnection</code> 是通的，log 也沒有東西。因為七月加的診斷 log 只加在申請書那支，核定文件是另一支方法，走的是 GIS 元件原生的 WMS provider。</p>
+<p>這個系統有四支會產地圖 PDF 的方法，七月修的只是其中一支：</p>
+<table>
+<thead>
+<tr>
+<th>匯出</th>
+<th>用途</th>
+<th>八月狀態</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td>申請書（後台）</td>
+<td>七月已修</td>
+</tr>
+<tr>
+<td>B</td>
+<td>核定文件（民眾端）</td>
+<td>白，本次回報</td>
+</tr>
+<tr>
+<td>C</td>
+<td>另一類案件的核定文件（民眾端）</td>
+<td>白</td>
+</tr>
+<tr>
+<td>D</td>
+<td>另一類案件的申請書（後台）</td>
+<td>白</td>
+</tr>
+</tbody></table>
+<p>另外三支照舊讓 GIS 元件的 provider 自己去抓設定檔裡那個 <code>http://maps.nlsc.gov.tw</code> 的 WMS。既然 TCP 連得上、程式碼也沒改，我把懷疑移到對方端點跟這邊執行環境之間的協商差異。</p>
+<h2 id="對方現在最低要-TLS-1-2"><a href="#對方現在最低要-TLS-1-2" class="headerlink" title="對方現在最低要 TLS 1.2"></a>對方現在最低要 TLS 1.2</h2><p>從我自己的機器（Git Bash 有 openssl，版本 3.2.4）直接探國土測繪中心的服務：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># http 會被 302 導去 https</span></span><br><span class="line">curl -sI <span class="string">&quot;http://maps.nlsc.gov.tw/S_Maps/wms?&quot;</span> | <span class="built_in">head</span> -3</span><br><span class="line"></span><br><span class="line"><span class="comment"># 逐一強制用單一 TLS 版本握手，看對方收不收；-servername 是補 SNI</span></span><br><span class="line"><span class="comment"># OpenSSL 3.x 預設安全等級不肯發 TLS 1.0/1.1，會先報 &quot;no protocols available&quot;，</span></span><br><span class="line"><span class="comment"># 要加 @SECLEVEL=0 才會真的把握手送出去、看到對方的回應</span></span><br><span class="line">H=maps.nlsc.gov.tw</span><br><span class="line">openssl s_client -connect <span class="variable">$H</span>:443 -servername <span class="variable">$H</span> -tls1   -cipher <span class="string">&#x27;DEFAULT:@SECLEVEL=0&#x27;</span> &lt;/dev/null 2&gt;&amp;1 | grep -E <span class="string">&#x27;alert|Protocol  *:&#x27;</span></span><br><span class="line">openssl s_client -connect <span class="variable">$H</span>:443 -servername <span class="variable">$H</span> -tls1_1 -cipher <span class="string">&#x27;DEFAULT:@SECLEVEL=0&#x27;</span> &lt;/dev/null 2&gt;&amp;1 | grep -E <span class="string">&#x27;alert|Protocol  *:&#x27;</span></span><br><span class="line">openssl s_client -connect <span class="variable">$H</span>:443 -servername <span class="variable">$H</span> -tls1_2 &lt;/dev/null 2&gt;&amp;1 | grep -E <span class="string">&#x27;alert|Protocol  *:&#x27;</span></span><br><span class="line">openssl s_client -connect <span class="variable">$H</span>:443 -servername <span class="variable">$H</span> -tls1_3 &lt;/dev/null 2&gt;&amp;1 | grep -E <span class="string">&#x27;alert|Protocol  *:&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>（第一次跑我少了 <code>@SECLEVEL=0</code>，看到 <code>no protocols available</code> 還以為是對方擋的，其實是我自己這端的 OpenSSL 3 不肯講 TLS 1.0。錯一次就記住了。）</p>
+<p>結果（2026-08-20 實測，2026-09-10 寫這篇時重跑一次相同）：</p>
+<table>
+<thead>
+<tr>
+<th>檢查</th>
+<th>結果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>http://maps.nlsc.gov.tw/S_Maps/wms</code></td>
+<td>302，Location 是同一路徑的 https</td>
+</tr>
+<tr>
+<td>TLS 1.0 / 1.1</td>
+<td>拒絕，<code>tlsv1 alert protocol version</code>（alert 70）</td>
+</tr>
+<tr>
+<td>TLS 1.2</td>
+<td>接受，<code>ECDHE-RSA-AES128-GCM-SHA256</code></td>
+</tr>
+<tr>
+<td>TLS 1.3</td>
+<td>接受，<code>TLS_AES_256_GCM_SHA384</code></td>
+</tr>
+<tr>
+<td>圖層 EMAP5_OPENDATA、SRS 3826</td>
+<td>都還在，服務本身正常</td>
+</tr>
+</tbody></table>
+<p>服務沒壞，只是門檻抬高了。老實說我只能證明 8/20 那天它不收 TLS 1.0，不能證明它是七月到八月之間改的：七月時正式機連 443 都不通，根本沒機會看見這件事，而七月修好的那支從第一天就是開著 TLS 1.2 打的。這個服務有沒有可能更早就不收 TLS 1.0，我不知道。對修法沒差，但寫出來免得你拿這篇當變更日期的證據。</p>
+<p>再看自己這端。GIS 元件的 WMS provider 從頭到尾沒碰過 <code>ServicePointManager.SecurityProtocol</code>，在這個環境下實際值是 <code>Ssl3 | Tls</code>（旗標列舉，兩個同時開），最高只能協商到 TLS 1.0。對方拒絕握手，provider 拿到例外、吞掉、回一張空圖。逾時還寫死 8 秒。</p>
+<p>（沒有額外登錄檔或 AppContext 開關的情況下，<code>SecurityProtocol</code> 的預設值由專案的 target framework 決定，跟機器上裝的 runtime 版本無關：以 4.7 以上為 target 的專案預設才是 <code>SystemDefault</code>、交給作業系統決定；target 較舊的專案就算跑在新 runtime 上，為了相容仍是 <code>Ssl3 | Tls</code>。這套系統實測就是 <code>Ssl3 | Tls</code>，至於是 target、登錄檔還是哪一層造成的，我沒有再追，因為修法都一樣。）</p>
+<h2 id="本機重現：四組實驗，只有一個變數有用"><a href="#本機重現：四組實驗，只有一個變數有用" class="headerlink" title="本機重現：四組實驗，只有一個變數有用"></a>本機重現：四組實驗，只有一個變數有用</h2><p>我不想在正式機上改程式碼賭猜測，所以拿專案 bin 底下的 GIS 元件 DLL，用 <code>csc.exe</code> 編了一支小 console，照匯出 B 的繪圖流程跑一遍，輸出 PNG。下面這支是整理過的骨架，元件的類別名稱我換成通用的寫法，載入設定檔那段照抄你專案原本的寫法就好，我實際用的版本更醜：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// csc -r:bin\GisCore.dll test.cs   不用開 IIS 就能重跑繪圖流程</span></span><br><span class="line"><span class="keyword">using</span> System.Net;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Test</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="built_in">string</span>[] <span class="keyword">args</span></span>)</span> &#123;</span><br><span class="line">        <span class="comment">// 實驗變數 1：要不要開 TLS 1.2</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">args</span>.Length &gt; <span class="number">0</span> &amp;&amp; <span class="keyword">args</span>[<span class="number">0</span>] == <span class="string">&quot;tls12&quot;</span>)</span><br><span class="line">            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 實驗變數 2：設定檔裡的 WMS URL 寫 http 還是 https（準備兩份換著載）</span></span><br><span class="line">        <span class="keyword">var</span> project = LoadProject(<span class="keyword">args</span>.Length &gt; <span class="number">1</span> ? <span class="keyword">args</span>[<span class="number">1</span>] : <span class="string">&quot;report-map.pml&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> canvas = <span class="keyword">new</span> DrawTool(<span class="number">800</span>, <span class="number">600</span>);</span><br><span class="line">        canvas.DrawToBackground = <span class="literal">true</span>;               <span class="comment">// 不設會畫到沒初始化的前景畫布</span></span><br><span class="line">        project.DrawAllLayers(canvas, project.FullExtent);</span><br><span class="line">        canvas.Background.Save(<span class="string">&quot;out.png&quot;</span>);            <span class="comment">// 看檔案大小就知道有沒有底圖</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>四種組合跑下來：</p>
+<table>
+<thead>
+<tr>
+<th>SecurityProtocol</th>
+<th>設定檔的 URL</th>
+<th>PNG 大小</th>
+<th>底圖</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>預設（Ssl3, Tls）</td>
+<td>http://</td>
+<td>22,655 bytes</td>
+<td>白</td>
+</tr>
+<tr>
+<td>預設（Ssl3, Tls）</td>
+<td>https://</td>
+<td>22,655 bytes</td>
+<td>白</td>
+</tr>
+<tr>
+<td>加 Tls12</td>
+<td>https://</td>
+<td>447,224 bytes</td>
+<td>有</td>
+</tr>
+<tr>
+<td>加 Tls12</td>
+<td>http://</td>
+<td>447,224 bytes</td>
+<td>有</td>
+</tr>
+</tbody></table>
+<p>在這個元件底下，URL 寫 http 還是 https 沒有差別：<code>HttpWebRequest</code> 預設會跟著 302 走，轉到 https 之後一樣受 <code>SecurityProtocol</code> 管。唯一有差的是 TLS 1.2。我一開始想偷懶只改設定檔把 http 換成 https，這張表直接否決。</p>
+<p>正式機我也做了端對端的量化：打那支核定文件的匯出 API，從回傳的 PDF 抽出 800×600 的地圖影像，算非白像素比例。修前 3.7%，就是那幾個點位；修後 72.4%。門檻我抓得很寬鬆（陸地為主的範圍，正常底圖遠高於 30%），純海域或淡色底圖這招會誤判，這裡的案件範圍不會遇到。這個數字比「肉眼看起來有底圖」可靠，之後驗另外兩支的時候不用再一張張開 PDF。</p>
+<h2 id="先講清楚-SecurityProtocol-是什麼性質的東西，再貼修法"><a href="#先講清楚-SecurityProtocol-是什麼性質的東西，再貼修法" class="headerlink" title="先講清楚 SecurityProtocol 是什麼性質的東西，再貼修法"></a>先講清楚 SecurityProtocol 是什麼性質的東西，再貼修法</h2><p><code>ServicePointManager.SecurityProtocol</code> 是一個靜態屬性，範圍是整個 AppDomain。這套部署裡整個 ASP.NET 應用程式就是一個 AppDomain，所以四支匯出共用同一份設定。改了它只影響之後新建立的連線，已經握手完的連線不受影響。</p>
+<p>另外兩個相容性取捨也要說在前面：</p>
+<ul>
+<li>這裡用 <code>|=</code> 是因為要保留舊元件可能依賴的其他協定，這是舊系統的妥協，不是通則。如果你的專案 target 4.7 以上、初始值是 <code>SystemDefault</code>（數值 0），<code>|= Tls12</code> 反而等於把協定鎖死成只有 TLS 1.2，讓作業系統失去挑更新版本的空間。新專案別碰這個屬性，交給 OS。</li>
+<li><code>request.Proxy = null</code> 是因為這台正式機的 Global.asax 會塞系統預設 Proxy，而它的 outbound 其實是防火牆白名單直連，Proxy 設定是舊殘留。如果你的環境 outbound 必須走 Proxy 做稽核，這行不能照抄。</li>
+</ul>
+<h2 id="修法：把七月的做法套到剩下三支"><a href="#修法：把七月的做法套到剩下三支" class="headerlink" title="修法：把七月的做法套到剩下三支"></a>修法：把七月的做法套到剩下三支</h2><p>七月那支申請書已經有一個自己取底圖的方法，這裡叫它 <code>TryDrawBasemap</code>，做的事就三件：打 <code>https://wms.nlsc.gov.tw/wms</code>（國土測繪中心較新的端點，舊的 <code>maps.nlsc.gov.tw/S_Maps/wms</code> 經 302 轉 https 後也還能用）、開 TLS 1.2、把 <code>request.Proxy</code> 設成 null。直接抓不到底圖時才退回讓 GIS 元件自己畫。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">canvas.DrawToBackground = <span class="literal">true</span>;   <span class="comment">// 不設的話元件會去畫沒初始化的前景畫布</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">string</span> diag;</span><br><span class="line"><span class="keyword">var</span> ok = TryDrawBasemap(canvas.Background, extent, <span class="keyword">out</span> diag)</span><br><span class="line">         &amp;&amp; HasVisibleMapContent(canvas.Background);   <span class="comment">// 非白像素比例門檻</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!ok) &#123;</span><br><span class="line">    <span class="comment">// 退路：暫時把圖徵層藏起來，讓 GIS 元件只畫底圖</span></span><br><span class="line">    <span class="keyword">var</span> visible = pointLayer.Visible;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        pointLayer.Visible = <span class="literal">false</span>;</span><br><span class="line">        project.DrawAllLayers(canvas, extent);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        pointLayer.Visible = visible;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">pointLayer.DrawFeatures(canvas, extent, features);   <span class="comment">// 再把點位疊上去</span></span><br><span class="line">canvas.DrawLabels();</span><br></pre></td></tr></table></figure>
+
+<p><code>TryDrawBasemap</code> 裡面關鍵就這一行：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 舊系統相容性取捨才用 |=，理由見上一節</span></span><br><span class="line">ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;</span><br></pre></td></tr></table></figure>
+
+<p>把這段套進另外三支，編譯後用反射直接呼叫 <code>TryDrawBasemap</code> 驗，非白像素 72.4%，底圖完整。老實交代驗證範圍：端對端跑過的只有匯出 B（就是這次回報的那支），C 和 D 只驗了共用的取圖方法，完整的疊圖、標籤、輸出路徑留給下次回歸。</p>
+<h2 id="最陰的地方：症狀會時好時壞"><a href="#最陰的地方：症狀會時好時壞" class="headerlink" title="最陰的地方：症狀會時好時壞"></a>最陰的地方：症狀會時好時壞</h2><p>追這條的時候我發現一個會讓人抓狂的性質，值得單獨講。</p>
+<p>七月修好的申請書那支，只要有人下載過一次，就把整個 AppDomain 的 TLS 1.2 打開了；在那之後，其他三支透過元件 provider 去抓 WMS 也會跟著成功。App pool 回收、機器重開、改 web.config 或任何會讓 AppDomain 重啟的動作之後，狀態歸零，核定文件又白，直到下一次有人下載申請書。</p>
+<p>所以「昨天還好好的」在這個問題上是零資訊。結果取決於呼叫順序，不取決於程式碼有沒有改。這也是為什麼我堅持用獨立 console 重現：在 IIS 裡試，你永遠不確定現在的狀態是誰留下的。</p>
+<h2 id="下次任何「圖突然白掉」我會先做的事"><a href="#下次任何「圖突然白掉」我會先做的事" class="headerlink" title="下次任何「圖突然白掉」我會先做的事"></a>下次任何「圖突然白掉」我會先做的事</h2><p>這次學到的東西其實一句話：舊 .NET 元件遇到外部服務升 TLS，典型症狀是靜默空白，不是報錯。</p>
+<p>以前我會先怪自己的程式、模板、圖層設定，最後才想到對方。順序應該倒過來：先確認 TCP 通不通（七月那次就是這層），通了就分開看兩件事，對方收哪些 TLS 版本、自己的程式出得了哪些版本。前者花三十秒，以舊 .NET 最常卡的 TLS 1.0 為例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl s_client -connect &lt;對方主機&gt;:443 -servername &lt;對方主機&gt; -tls1 -cipher <span class="string">&#x27;DEFAULT:@SECLEVEL=0&#x27;</span> &lt;/dev/null 2&gt;&amp;1 | grep alert</span><br></pre></td></tr></table></figure>
+
+<p>看到 <code>protocol version</code> 的 alert，至少可以確定你打到的這個端點不收 TLS 1.0，接下來要查的是自己的程式出得了什麼版本，而不是繼續翻模板和設定檔。（如果對方前面有 WAF 或反向代理，拒絕你的可能是那一層，但對你的修法來說結論一樣。）</p>
+<p>另外兩件事我也會照做：</p>
+<ol>
+<li>同一個外部服務被幾支方法用到，一次列出來全部修，不要修一支就結案。七月只修一支，八月就回來還債。</li>
+<li><code>SecurityProtocol</code> 這種靜態設定放進 <code>Application_Start</code> 一次做完，別散在各方法裡靠呼叫順序碰運氣。這次我沒動 Global.asax，能動但不漂亮；連同四條路徑統一記錄 HTTP 狀態和 WMS 例外，是下次改版要還的債。</li>
+</ol>
+<p>IIS 這一端的 TLS 設定我之前寫過兩篇：<a href="/posts/db2127fd/">別急著關掉 TLS 1.2</a> 講的是自己當 server 時要注意什麼，<a href="/posts/8a3be9f2/">IISCrypto</a> 是弱掃整改的工具。這篇剛好是反過來的視角：你是 client，對方把門檻抬高了，而你的程式一聲不吭。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kyosora.github.io">kyosora</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://kyosora.github.io/posts/be6334f9/">https://kyosora.github.io/posts/be6334f9/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 授權協議。轉載請註明來源 <a href="https://kyosora.github.io" target="_blank">kyosora 筆記</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%B8%A9%E5%9D%91/">踩坑</a><a class="post-meta__tags" href="/tags/TLS-1-2/">TLS 1.2</a><a class="post-meta__tags" href="/tags/NET-Framework/">.NET Framework</a><a class="post-meta__tags" href="/tags/WMS/">WMS</a><a class="post-meta__tags" href="/tags/%E5%9C%8B%E5%9C%9F%E6%B8%AC%E7%B9%AA%E4%B8%AD%E5%BF%83/">國土測繪中心</a></div><div class="post-share"><div class="social-share" data-image="/images/posts/nlsc-wms-tls12-dotnet-blank-basemap-cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/c0ce374e/" title="廠商文件裡一個沒人註冊的套件名，讓 AI agent 四分鐘內在 Fortune 500 跑了別人的程式碼"><img class="cover" src="/images/posts/llms-txt-phantom-packages-cover.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">廠商文件裡一個沒人註冊的套件名，讓 AI agent 四分鐘內在 Fortune 500 跑了別人的程式碼</div></div><div class="info-2"><div class="info-item-1">八月底 Ars Technica 報了一個實驗，我讀完第一件事是去翻自己網站根目錄那份 llms.txt。 實驗是以色列一個還沒公開的資安團隊做的，帶頭的叫 Alon Hertz，前 Unit 8200。他們花一個週末掃了約 15,000 家公司的網站，在 6,214 個 domain 上抓到 8,565 份 llms.txt 和 llms-full.txt，然後做了一件很簡單的事：把檔案裡每一行 pip install、npm install 後面的名字拿去 PyPI 和 npm 查，看是誰註冊的。 答案是：很多名字沒人註冊。研究者自己的統計是 237 個以上「沒人認領的東西」，算的是項目數，套件名、domain、子網域都有，跨 PyPI、npm、RubyGems、NuGet、crates.io、Packagist。Ars Technica 報導裡另一組數字是 120 份檔案、227 條指令，算的是指令筆數；Ars 寫的檔案總數也是 8,265 而不是研究者原文的 8,565，哪邊誤植我查不到。兩組數字單位不同，我沒辦法從公開資料核對它們的包含關係，這裡照原文引用。 他們挑了幾...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/2a032167/" title="以為是 App Pool 的鍋，結果 IUSR 被 Windows 偷走了"><img class="cover" src="/images/posts/legacy-2a032167-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-04-23</div><div class="info-item-2">以為是 App Pool 的鍋，結果 IUSR 被 Windows 偷走了</div></div><div class="info-2"><div class="info-item-1">上週為了讓同事拉一份檔案，我在測試機上把 IIS 專案資料夾開了個進階共用。東西傳完後我把共用關掉，繼續回頭改別的東西。 十分鐘後測試站同事回訊息：整個網站 HTTP 401，連 /favicon.ico 都打不開。 我第一個念頭是「我剛剛根本沒動 web.config 啊？」然後花了半小時繞遠路——這篇就是想分享這個坑，因為症狀跟原因之間的距離遠到不合理。 症狀 瀏覽器吃到 401 Unauthorized 連 CSS、圖片這類靜態檔都 401 IIS 沒有動過站點設定 專案程式碼沒動過 App Pool 跑得好好的，沒當機、沒停 重啟 IIS 沒用  翻開 IIS 記錄（C:\inetpub\logs\LogFiles\W3SVC...），關鍵那行： 12sc-status: 401sc-substatus: 3  401.3 的官方說明是 「Access is denied due to an ACL set on the requested resource」——翻譯：這不是 IIS 驗證設定的問題，是 NTFS 層級擋下來的。 我第一個走錯的方向本能反應是去翻 App ...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">224</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">475</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF%EF%BC%9A%E5%85%A9%E6%A2%9D%E7%94%A2%E5%9C%96%E8%B7%AF%E5%BE%91%EF%BC%8C%E9%95%B7%E5%BE%97%E4%B8%80%E6%A8%A3%E3%80%81%E8%B5%B0%E7%9A%84%E8%B7%AF%E5%AE%8C%E5%85%A8%E4%B8%8D%E5%90%8C"><span class="toc-number">1.</span> <span class="toc-text">背景：兩條產圖路徑，長得一樣、走的路完全不同</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E6%9C%88%E9%82%A3%E6%AC%A1%EF%BC%9A%E7%9C%9F%E7%9A%84%E6%98%AF%E9%98%B2%E7%81%AB%E7%89%86"><span class="toc-number">2.</span> <span class="toc-text">七月那次：真的是防火牆</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E6%9C%88%EF%BC%9A%E5%8F%A6%E4%B8%80%E6%94%AF%E5%8C%AF%E5%87%BA%E7%99%BD%E6%8E%89%EF%BC%8C%E9%98%B2%E7%81%AB%E7%89%86%E6%98%AF%E9%80%9A%E7%9A%84"><span class="toc-number">3.</span> <span class="toc-text">八月：另一支匯出白掉，防火牆是通的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8D%E6%96%B9%E7%8F%BE%E5%9C%A8%E6%9C%80%E4%BD%8E%E8%A6%81-TLS-1-2"><span class="toc-number">4.</span> <span class="toc-text">對方現在最低要 TLS 1.2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E6%A9%9F%E9%87%8D%E7%8F%BE%EF%BC%9A%E5%9B%9B%E7%B5%84%E5%AF%A6%E9%A9%97%EF%BC%8C%E5%8F%AA%E6%9C%89%E4%B8%80%E5%80%8B%E8%AE%8A%E6%95%B8%E6%9C%89%E7%94%A8"><span class="toc-number">5.</span> <span class="toc-text">本機重現：四組實驗，只有一個變數有用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E8%AC%9B%E6%B8%85%E6%A5%9A-SecurityProtocol-%E6%98%AF%E4%BB%80%E9%BA%BC%E6%80%A7%E8%B3%AA%E7%9A%84%E6%9D%B1%E8%A5%BF%EF%BC%8C%E5%86%8D%E8%B2%BC%E4%BF%AE%E6%B3%95"><span class="toc-number">6.</span> <span class="toc-text">先講清楚 SecurityProtocol 是什麼性質的東西，再貼修法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%B3%95%EF%BC%9A%E6%8A%8A%E4%B8%83%E6%9C%88%E7%9A%84%E5%81%9A%E6%B3%95%E5%A5%97%E5%88%B0%E5%89%A9%E4%B8%8B%E4%B8%89%E6%94%AF"><span class="toc-number">7.</span> <span class="toc-text">修法：把七月的做法套到剩下三支</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E9%99%B0%E7%9A%84%E5%9C%B0%E6%96%B9%EF%BC%9A%E7%97%87%E7%8B%80%E6%9C%83%E6%99%82%E5%A5%BD%E6%99%82%E5%A3%9E"><span class="toc-number">8.</span> <span class="toc-text">最陰的地方：症狀會時好時壞</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E6%AC%A1%E4%BB%BB%E4%BD%95%E3%80%8C%E5%9C%96%E7%AA%81%E7%84%B6%E7%99%BD%E6%8E%89%E3%80%8D%E6%88%91%E6%9C%83%E5%85%88%E5%81%9A%E7%9A%84%E4%BA%8B"><span class="toc-number">9.</span> <span class="toc-text">下次任何「圖突然白掉」我會先做的事</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/be6334f9/" title="底圖突然整片空白、重開主機也沒用：國土測繪中心 WMS 最低要求 TLS 1.2，舊 .NET 程式怎麼修"><img src="/images/posts/nlsc-wms-tls12-dotnet-blank-basemap-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="底圖突然整片空白、重開主機也沒用：國土測繪中心 WMS 最低要求 TLS 1.2，舊 .NET 程式怎麼修"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/be6334f9/" title="底圖突然整片空白、重開主機也沒用：國土測繪中心 WMS 最低要求 TLS 1.2，舊 .NET 程式怎麼修">底圖突然整片空白、重開主機也沒用：國土測繪中心 WMS 最低要求 TLS 1.2，舊 .NET 程式怎麼修</a><time datetime="2026-09-10T03:50:00.000Z" title="發表於 2026-09-10 11:50:00">2026-09-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/c0ce374e/" title="廠商文件裡一個沒人註冊的套件名，讓 AI agent 四分鐘內在 Fortune 500 跑了別人的程式碼"><img src="/images/posts/llms-txt-phantom-packages-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="廠商文件裡一個沒人註冊的套件名，讓 AI agent 四分鐘內在 Fortune 500 跑了別人的程式碼"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/c0ce374e/" title="廠商文件裡一個沒人註冊的套件名，讓 AI agent 四分鐘內在 Fortune 500 跑了別人的程式碼">廠商文件裡一個沒人註冊的套件名，讓 AI agent 四分鐘內在 Fortune 500 跑了別人的程式碼</a><time datetime="2026-09-02T06:30:00.000Z" title="發表於 2026-09-02 14:30:00">2026-09-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/5009ada6/" title="Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過"><img src="/images/posts/china-claude-token-gray-market-transfer-station-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/5009ada6/" title="Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過">Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過</a><time datetime="2026-08-28T08:30:00.000Z" title="發表於 2026-08-28 16:30:00">2026-08-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/90fbfb03/" title="把攻擊指令加密，Grok 就對你言聽計從——我用同一招測了自己的 agent"><img src="/images/posts/grok-cryptographic-context-injection-agent-security-test-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="把攻擊指令加密，Grok 就對你言聽計從——我用同一招測了自己的 agent"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/90fbfb03/" title="把攻擊指令加密，Grok 就對你言聽計從——我用同一招測了自己的 agent">把攻擊指令加密，Grok 就對你言聽計從——我用同一招測了自己的 agent</a><time datetime="2026-08-28T07:00:00.000Z" title="發表於 2026-08-28 15:00:00">2026-08-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/28a63195/" title="我以為把 AI agent 關進 VM 就安全——它接連逃出沙箱後，我重查了自己的環境"><img src="/images/posts/gpt-5-6-cyber-vm-escape-agent-sandbox-reality-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="我以為把 AI agent 關進 VM 就安全——它接連逃出沙箱後，我重查了自己的環境"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/28a63195/" title="我以為把 AI agent 關進 VM 就安全——它接連逃出沙箱後，我重查了自己的環境">我以為把 AI agent 關進 VM 就安全——它接連逃出沙箱後，我重查了自己的環境</a><time datetime="2026-08-28T01:55:00.000Z" title="發表於 2026-08-28 09:55:00">2026-08-28</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/images/posts/nlsc-wms-tls12-dotnet-blank-basemap-cover.webp);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By kyosora</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/utils.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/main.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/tw_cn.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const applyThemeDefaultsConfig = theme => {
+    if (theme === 'dark-mode') {
+      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
+      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    } else {
+      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
+      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    }
+  }
+
+  // Recursively traverse the config object and automatically apply theme-specific color schemes
+  const applyThemeConfig = (obj, theme) => {
+    if (typeof obj !== 'object' || obj === null) return
+
+    Object.keys(obj).forEach(key => {
+      const value = obj[key]
+      // If the property is an object and has theme-specific options, apply them
+      if (typeof value === 'object' && value !== null) {
+        if (value[theme]) {
+          obj[key] = value[theme] // Apply the value for the current theme
+        } else {
+          // Recursively process child objects
+          applyThemeConfig(value, theme)
+        }
+      }
+    })
+  }
+
+  const runChartJS = ele => {
+    window.loadChartJS = true
+
+    Array.from(ele).forEach((item, index) => {
+      const chartSrc = item.firstElementChild
+      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
+      const width = item.getAttribute('data-width')
+      const existingCanvas = document.getElementById(chartID)
+
+      // If a canvas already exists, remove it to avoid rendering duplicates
+      if (existingCanvas) {
+          existingCanvas.parentNode.remove()
+      }
+
+      const chartDefinition = chartSrc.textContent
+      const canvas = document.createElement('canvas')
+      canvas.id = chartID
+
+      const div = document.createElement('div')
+      div.className = 'chartjs-wrap'
+
+      if (width) {
+        div.style.width = width
+      }
+
+      div.appendChild(canvas)
+      chartSrc.insertAdjacentElement('afterend', div)
+
+      const ctx = document.getElementById(chartID).getContext('2d')
+
+      const config = JSON.parse(chartDefinition)
+
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
+
+      // Set default styles (initial setup)
+      applyThemeDefaultsConfig(theme)
+
+      // Automatically traverse the config and apply dual-mode color schemes
+      applyThemeConfig(config, theme)
+
+      new Chart(ctx, config)
+    })
+  }
+
+  const loadChartJS = () => {
+    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
+    if (chartJSEle.length === 0) return
+
+    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
+  }
+
+  // Listen for theme change events
+  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
+  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
+
+  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = {"mapping":"pathname","inputPosition":"top","lang":"zh-TW","reactionsEnabled":1}
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'kyosora/kyosora.github.io',
+      'data-repo-id': 'R_kgDOLJYL_w',
+      'data-category-id': 'DIC_kwDOLJYL_84C516C',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !true) {
+    if (true) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script src="/js/about-cards.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/search/local-search.min.js"></script></div></div></body></html>
