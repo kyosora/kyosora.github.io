@@ -1,0 +1,745 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>SQL Server 日期轉換失敗？先查 DATEFORMAT | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="SQL Server 日期轉換失敗，本機卻正常？實測 DATEFORMAT 的日期誤讀，整理連線設定查法、帶 T 格式與參數化查詢，幫舊系統找出環境差異。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL Server 日期轉換失敗？先查 DATEFORMAT">
+<meta property="og:url" content="https://kyosora.github.io/posts/11879e22/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="SQL Server 日期轉換失敗，本機卻正常？實測 DATEFORMAT 的日期誤讀，整理連線設定查法、帶 T 格式與參數化查詢，幫舊系統找出環境差異。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/images/posts/sql-server-datetime-dateformat-trap-cover.webp">
+<meta property="article:published_time" content="2026-09-18T04:15:00.000Z">
+<meta property="article:modified_time" content="2026-09-18T04:20:16.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="SQL Server">
+<meta property="article:tag" content="除錯">
+<meta property="article:tag" content=".NET">
+<meta property="article:tag" content="datetime">
+<meta property="article:tag" content="DATEFORMAT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kyosora.github.io/images/posts/sql-server-datetime-dateformat-trap-cover.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "SQL Server 日期轉換失敗？先查 DATEFORMAT",
+  "url": "https://kyosora.github.io/posts/11879e22/",
+  "image": "https://kyosora.github.io/images/posts/sql-server-datetime-dateformat-trap-cover.webp",
+  "datePublished": "2026-09-18T04:15:00.000Z",
+  "dateModified": "2026-09-18T04:20:16.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kyosora",
+      "url": "https://kyosora.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/posts/11879e22/"><link rel="preconnect" href="https://cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-F9P7RWQQJE')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'SQL Server 日期轉換失敗？先查 DATEFORMAT',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="/css/about-cards.css"><link rel="stylesheet" href="/css/bg-gradient-mesh.css"><link rel="stylesheet" href="/css/view-transitions.css"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">226</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">479</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/posts/sql-server-datetime-dateformat-trap-cover.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a><a class="nav-page-title" href="/"><span class="site-name">SQL Server 日期轉換失敗？先查 DATEFORMAT</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首頁</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">SQL Server 日期轉換失敗？先查 DATEFORMAT<a class="post-edit-link" href="https://github.com/jerryc127/butterfly.js.org/edit/main/source/_posts/sql-server-datetime-dateformat-trap.md" title="編輯" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">發表於</span><time datetime="2026-09-18T04:15:00.000Z" title="發表於 2026-09-18 12:15:00">2026-09-18</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%89%8D%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/">前後端開發</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB/">資料庫</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">1.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>6分鐘</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>9 月 17 日修派工單列表，本機開得好好的，測試機一進頁面就報「查詢派工單失敗」。連日期都還沒選。</p>
+<p>翻後端紀錄，真正的錯誤是這句：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">將 varchar 資料類型轉換成 datetime 資料類型時，產生超出範圍的值。</span><br></pre></td></tr></table></figure>
+
+<p>沒選日期也會碰到日期轉換，因為前端會自動補當年度的查詢區間。其中一段條件長這樣：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OccurTime <span class="operator">&lt;=</span> <span class="string">&#x27;2026/12/31 23:59:59&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>OccurTime</code> 欄位是 <code>datetime</code>，比較時 SQL Server 需要把右邊的字串轉成日期。12 月 31 日這個值沒問題，解析規則卻會讓轉換失敗。</p>
+<h2 id="換成連字號，一樣失敗"><a href="#換成連字號，一樣失敗" class="headerlink" title="換成連字號，一樣失敗"></a>換成連字號，一樣失敗</h2><p>排查紀錄裡最值得留下的是這組對照：把斜線換成連字號，甚至拿掉時間，都沒過。最後差別落在日期與時間中間那個 <code>T</code>。</p>
+<p>當時開發環境的連線使用 <code>ymd</code>，測試環境卻是 <code>dmy</code>。對這次的 <code>datetime</code> 轉換來說，同一串年月日會得到不同結果。</p>
+<p>下面是整理文章時重跑的測試。只處理常數，不需要建立資料表。請用一條獨立的測試連線執行，跑完關閉；<code>SET DATEFORMAT</code> 會影響這條連線後續的敘述。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> DATEFORMAT dmy;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    s <span class="keyword">AS</span> input,</span><br><span class="line">    ISDATE(s) <span class="keyword">AS</span> valid_datetime,</span><br><span class="line">    <span class="keyword">CASE</span> <span class="keyword">WHEN</span> ISDATE(s) <span class="operator">=</span> <span class="number">1</span></span><br><span class="line">         <span class="keyword">THEN</span> <span class="keyword">CONVERT</span>(<span class="type">varchar</span>(<span class="number">23</span>), <span class="keyword">CONVERT</span>(datetime, s), <span class="number">121</span>)</span><br><span class="line">         <span class="keyword">ELSE</span> <span class="keyword">NULL</span></span><br><span class="line">    <span class="keyword">END</span> <span class="keyword">AS</span> parsed</span><br><span class="line"><span class="keyword">FROM</span> (<span class="keyword">VALUES</span></span><br><span class="line">    (<span class="string">&#x27;2026/12/31 23:59:59&#x27;</span>),</span><br><span class="line">    (<span class="string">&#x27;2026-12-31 23:59:59&#x27;</span>),</span><br><span class="line">    (<span class="string">&#x27;2026-12-31&#x27;</span>),</span><br><span class="line">    (<span class="string">&#x27;2026-12-31T23:59:59&#x27;</span>),</span><br><span class="line">    (<span class="string">&#x27;20261231 23:59:59&#x27;</span>),</span><br><span class="line">    (<span class="string">&#x27;2026-01-02&#x27;</span>)</span><br><span class="line">) <span class="keyword">AS</span> v(s);</span><br></pre></td></tr></table></figure>
+
+<p>這裡用 <code>ISDATE</code> 判斷這幾個字串能不能轉成 <code>datetime</code>，讓失敗項目顯示 <code>NULL</code>，方便放在同一張表比較。它不適合拿來當所有日期型別的通用驗證器。</p>
+<p>實測引擎版本是 SQL Server 2022（16.0.1000.6），結果如下：</p>
+<table>
+<thead>
+<tr>
+<th>輸入字串</th>
+<th><code>datetime</code> 轉換結果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>2026/12/31 23:59:59</code></td>
+<td>無法轉換</td>
+</tr>
+<tr>
+<td><code>2026-12-31 23:59:59</code></td>
+<td>無法轉換</td>
+</tr>
+<tr>
+<td><code>2026-12-31</code></td>
+<td>無法轉換</td>
+</tr>
+<tr>
+<td><code>2026-12-31T23:59:59</code></td>
+<td>2026-12-31 23:59:59.000</td>
+</tr>
+<tr>
+<td><code>20261231 23:59:59</code></td>
+<td>2026-12-31 23:59:59.000</td>
+</tr>
+<tr>
+<td><code>2026-01-02</code></td>
+<td><strong>2026-02-01 00:00:00.000</strong></td>
+</tr>
+</tbody></table>
+<p>最後一列比報錯還麻煩。我想查 1 月 2 日，它會讀成 2 月 1 日，整條 SQL 照樣執行。只拿月、日都小於 13 的日期做測試，還可能以為修好了。</p>
+<p>Microsoft 的 <a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/sql/t-sql/data-types/datetime-transact-sql?view=sql-server-ver17#iso-8601-format">datetime 文件</a> 有明列不受 <code>SET DATEFORMAT</code> 與 <code>SET LANGUAGE</code> 影響的字串格式，包括 <code>yyyy-MM-ddTHH:mm:ss[.mmm]</code>。這次統一採用帶 <code>T</code> 的寫法；<code>yyyyMMdd</code> 也是可用的選擇。</p>
+<p>這張表的目標型別是 <code>datetime</code>。同樣在 <code>dmy</code> 下，我重跑 <code>CONVERT(date, &#39;2026-12-31&#39;)</code> 與 <code>CONVERT(datetime2, &#39;2026-12-31&#39;)</code> 都成功。這只能說明這個字串在這兩種型別的結果，不能推成「換成 datetime2 就不受 DATEFORMAT 影響」。斜線格式或其他輸入仍要確認解析規則。</p>
+<h2 id="要查出錯的那條連線"><a href="#要查出錯的那條連線" class="headerlink" title="要查出錯的那條連線"></a>要查出錯的那條連線</h2><p>遇到本機正常、測試機失敗，很容易開始比資料或比程式版本。這次需要多比一項：連線的日期解析設定。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> @<span class="variable">@LANGUAGE</span> <span class="keyword">AS</span> session_language;</span><br><span class="line">DBCC USEROPTIONS <span class="keyword">WITH</span> NO_INFOMSGS;</span><br></pre></td></tr></table></figure>
+
+<p>看結果裡的 <code>language</code> 與 <code>dateformat</code>。如果在 SSMS 開新連線查，只能證明那條 SSMS 連線的設定。要確認應用程式的狀態，得讓診斷敘述在實際出錯的連線上執行，或重現它的登入與初始化設定。<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/sql/t-sql/database-console-commands/dbcc-useroptions-transact-sql?view=sql-server-ver17">DBCC USEROPTIONS 回傳的是目前連線啟用的選項</a>。</p>
+<p>登入的預設語言會影響初始日期格式，但連線還能執行 <code>SET LANGUAGE</code> 或 <code>SET DATEFORMAT</code>。後者會覆寫語言帶入的日期順序，所以只看帳號預設語言不夠。<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/sql/t-sql/statements/set-dateformat-transact-sql?view=sql-server-ver17">Microsoft 的 SET DATEFORMAT 說明</a> 也特別區分：它改的是字串轉日期的解析方式，不會改資料庫裡日期的儲存格式。</p>
+<p>這次還有一層干擾。既有資料存取元件會先用 .NET 的 <code>DataTable.Select(filter)</code> 檢查篩選條件。依當時的排查紀錄，這關接受了原本的日期字串，送到 SQL Server 才失敗。</p>
+<p>同一份 filter，經過兩套解析規則。前一道檢查通過，沒有替後一道保證什麼。</p>
+<h2 id="這次先修共用的日期輸出"><a href="#這次先修共用的日期輸出" class="headerlink" title="這次先修共用的日期輸出"></a>這次先修共用的日期輸出</h2><p>既有介面接收的是 filter 字串，這次修正在共用的 <code>sqlDateTime</code>／<code>safeDateRange</code>：把日期與時間之間統一改成 <code>T</code>。筆記記錄了 10 處自行組日期條件的修改，App 端也同步處理。</p>
+<p>以下摘錄修正後 helper 的呼叫結果，保留原本介面的行為，包括秒級的迄日上限。<code>23:59:59</code> 仍有漏掉小數秒資料的限制，下一節會處理：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">sqlDateTime</span>(<span class="string">&#x27;2026/12/31 23:59:59&#x27;</span>)</span><br><span class="line"><span class="comment">// &#x27;2026-12-31T23:59:59&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="title function_">sqlDateTime</span>(<span class="string">&#x27;2026-1-5&#x27;</span>)</span><br><span class="line"><span class="comment">// &#x27;2026-01-05T00:00:00&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="title function_">safeDateRange</span>(<span class="string">&#x27;OccurTime&#x27;</span>, <span class="string">&#x27;2026-01-01&#x27;</span>, <span class="string">&#x27;2026-12-31&#x27;</span>)</span><br><span class="line"><span class="comment">// &quot;OccurTime &gt;= &#x27;2026-01-01T00:00:00&#x27; AND OccurTime &lt;= &#x27;2026-12-31T23:59:59&#x27;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>這段需搭配專案原本的 helper 才能執行，功能限於整理字串；日期驗證與後端參數化查詢仍要另外處理。</p>
+<p>原始碼裡也補了一支回歸 scenario，檢查 helper 的輸出、掃描仍自行拼接的日期字面，並呼叫 API 驗證帶 <code>T</code> 的區間能通過 filter 檢查與資料庫查詢。整理本文時，我另用上面的常數查詢重驗 SQL Server 的解析結果；這不等於重跑整個系統的驗收。</p>
+<h2 id="能改後端時，直接傳日期參數"><a href="#能改後端時，直接傳日期參數" class="headerlink" title="能改後端時，直接傳日期參數"></a>能改後端時，直接傳日期參數</h2><p>如果能調整查詢介面，我會讓前端只送起訖日期，由後端解析、驗證，再以日期型別參數交給 SQL Server。這樣就不用讓資料庫猜日期字串的順序。</p>
+<p>例如舊欄位仍是 <code>datetime</code>，可以明確指定 <code>SqlDbType.DateTime</code>。下面是整理過的 .NET Framework 示範，假設已有開啟的 <code>SqlConnection</code>；資料表名稱是示意，並非這次部署的程式碼。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Data;</span><br><span class="line"><span class="keyword">using</span> System.Data.SqlClient;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">DispatchQueries</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">int</span> <span class="title">CountForYear</span>(<span class="params">SqlConnection connection, <span class="built_in">int</span> year</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (year &lt; <span class="number">1753</span> || year &gt; <span class="number">9998</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentOutOfRangeException(<span class="string">&quot;year&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> start = <span class="keyword">new</span> DateTime(year, <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">var</span> endExclusive = start.AddYears(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> command = connection.CreateCommand())</span><br><span class="line">        &#123;</span><br><span class="line">            command.CommandText = <span class="string">@&quot;</span></span><br><span class="line"><span class="string">                SELECT COUNT(*) FROM dbo.DispatchData</span></span><br><span class="line"><span class="string">                WHERE OccurTime &gt;= @start</span></span><br><span class="line"><span class="string">                  AND OccurTime &lt; @endExclusive&quot;</span>;</span><br><span class="line"></span><br><span class="line">            command.Parameters.Add(<span class="string">&quot;@start&quot;</span>, SqlDbType.DateTime).Value = start;</span><br><span class="line">            command.Parameters.Add(<span class="string">&quot;@endExclusive&quot;</span>, SqlDbType.DateTime).Value = endExclusive;</span><br><span class="line">            <span class="keyword">return</span> (<span class="built_in">int</span>)command.ExecuteScalar();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>參數的值是 <code>DateTime</code> 物件；如果仍把日期字串塞進字串型別參數，轉換問題可能還在。型別要和欄位及需求配合，<code>datetime2</code> 欄位則可使用 <code>SqlDbType.DateTime2</code>。<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/configuring-parameters-and-parameter-data-types">ADO.NET 參數文件</a> 有列出指定型別與型別推斷的規則。</p>
+<p>範例也順手避開原本的另一個邊界：<code>&lt;= 23:59:59</code> 會漏掉當天最後一秒內帶小數秒的資料。查整年用「大於等於今年年初、小於明年年初」，就不用猜最後一刻應該補多少個 9。這是後續改造的建議，和這次已完成的日期格式修正分開看。</p>
+<p>這次最容易漏掉的地方，是畫面還沒選日期，程式就已經替我組好一段日期 SQL。本機又剛好讀得懂，錯誤一直藏到測試機才出現。下次再碰到同樣的環境差異，我會早一點把實際送出的 filter 和連線設定一起攤開。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kyosora.github.io">kyosora</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://kyosora.github.io/posts/11879e22/">https://kyosora.github.io/posts/11879e22/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 授權協議。轉載請註明來源 <a href="https://kyosora.github.io" target="_blank">kyosora 筆記</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/SQL-Server/">SQL Server</a><a class="post-meta__tags" href="/tags/%E9%99%A4%E9%8C%AF/">除錯</a><a class="post-meta__tags" href="/tags/NET/">.NET</a><a class="post-meta__tags" href="/tags/datetime/">datetime</a><a class="post-meta__tags" href="/tags/DATEFORMAT/">DATEFORMAT</a></div><div class="post-share"><div class="social-share" data-image="/images/posts/sql-server-datetime-dateformat-trap-cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/f906d15/" title="台灣長老教會被寫進每日情報報表：Anthropic 154 頁報告裡的四個中國案例"><img class="cover" src="/images/posts/china-prc-surveillance-claude-taiwan-church-cover.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">台灣長老教會被寫進每日情報報表：Anthropic 154 頁報告裡的四個中國案例</div></div><div class="info-2"><div class="info-item-1">Anthropic 九月發了新的威脅情報報告，我原本只想掃一下有什麼好寫的題材。網頁版讀完覺得還好——俄羅斯 APT、馬來西亞選舉操縱，離台灣工程師的日常有點遠。 後來發現網頁版根本不是全文，只是章節摘要。真正的報告是一份 154 頁的 PDF，藏在頁面底下的連結裡。抓下來翻完，在監控操作那一章看到了「Presbyterian Church in Taiwan」。 台灣基督長老教會。被列在一個中國情報單位的日常監控工作表裡，頻率標註是 Daily。 這篇整理報告裡跟中國有關的四個案例，順序從遠到近——最後一個用的工具，跟我寫這篇文章用的是同一個。 先從一個離台灣還很遠的案例說起報告編號 GTG-10007，一個持續性的間諜行動。操作者講中文，Anthropic 判斷人在湖南長沙。 有意思的是身分。兩名操作者被識別為湖南某大學計算機與通信工程學院的大學部學生，其中一人先前在深信服（Sangfor）實習過，而且當時正在面試奇安信（QiAnXin）的攻擊性網路作戰職缺。 不是什麼神祕的國家級駭客組織，是兩個還沒畢業、正在投履歷的學生。 他們拿 Claude 當整個攻擊程式的工程與編排層...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/db2127fd/" title="別急著關掉 TLS 1.2：升級 TLS 1.3 前該懂的 Windows 相容性真相"><img class="cover" src="/images/posts/legacy-db2127fd-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-09</div><div class="info-item-2">別急著關掉 TLS 1.2：升級 TLS 1.3 前該懂的 Windows 相容性真相</div></div><div class="info-2"><div class="info-item-1">資安弱掃跑完，報告上一條紅字：偵測到過時的 SSL/TLS 協定。很多人看到就把 TLS 1.0、1.1、1.2 全關掉，只留 TLS 1.3——想說版本越新越安全。 問題就出在這：弱掃從來沒叫你關 TLS 1.2。把 1.2 一起關掉、只留 1.3，在 Windows 伺服器環境幾乎一定出事——網站連不上、SQL Server 連不上、舊的內部系統全掛。下面拆解為什麼，以及正確的做法。 先搞清楚：弱掃到底要你關什麼弱掃報告寫「過時的 SSL/TLS 協定」，指的幾乎都是 SSL 2.0/3.0 和 TLS 1.0、1.1。這幾個有已知的結構性弱點（POODLE、BEAST 那一掛），該關。 TLS 1.2 不在這個清單裡。它到現在仍然安全、主流、被廣泛支援。常見的合規型弱掃通常不會要你停用 TLS 1.2。 合規也不能只看版本號。PCI DSS 的核心措辭是使用「強式密碼學」，PCI SSC 已明確把 SSL／early TLS 排除在外，並長期建議遷移到 TLS 1.2 以上；它沒有普遍要求所有環境只能使用 TLS 1.3。實際是否合規仍要一起看 cipher suite、系...</div></div></div></a><a class="pagination-related" href="/posts/726c8317/" title="SQL Server 備份檔莫名暴增？別急著 SHRINK，先查這幾個真因"><img class="cover" src="/images/posts/legacy-726c8317-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-22</div><div class="info-item-2">SQL Server 備份檔莫名暴增？別急著 SHRINK，先查這幾個真因</div></div><div class="info-2"><div class="info-item-1">SQL Server 的備份檔，這個月又比上個月大了好幾 GB。打開資料庫一看，資料表筆數沒什麼變，那這些空間是哪來的？ 很多人第一反應是「資料庫膨脹了」，然後跑去 DBCC SHRINKDATABASE 想把它壓回來。先停手——SHRINK 是 SQL Server 裡最容易幫倒忙的指令之一，後面會講為什麼。先搞懂備份檔為什麼會長大。 完整備份複製的是資料庫裡「已配置的資料頁」加上一小段交易記錄，不是 mdf 檔的實體大小。一個 100 GB 的 mdf，裡面只有 40 GB 的頁真有資料，備份檔大約就是 40 GB 出頭。所以備份檔變大，意思是已配置的頁變多了——或者，根本不是資料庫的問題，是備份檔本身在累積。順這條線，由最常見往下查。 真因一：你每天往同一個檔案疊備份（最常見）頭號元兇，也最容易被忽略。BACKUP DATABASE 不指定 WITH INIT 時，預設是 NOINIT——把這次備份附加到既有檔案，不是覆蓋。 如果排程固定備份到 D:\Backup\MyDB.bak、每天跑又沒寫 INIT，這個檔案裡其實疊了一份又一份完整備份，當然每天長大。 要確認是不是這...</div></div></div></a><a class="pagination-related" href="/posts/690f008/" title="SQL Server管理員必學：SQLCMD完整應用指南"><img class="cover" src="/images/posts/legacy-690f008-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-14</div><div class="info-item-2">SQL Server管理員必學：SQLCMD完整應用指南</div></div><div class="info-2"><div class="info-item-1">前言SQLCMD 是隨 SQL Server 一起安裝的命令列工具，日常用途涵蓋執行維護腳本、匯入匯出資料、串接 Windows 排程器自動跑批次作業。比起 SSMS 的 GUI，它的優勢在於可以寫成批次檔、進版控、在沒有桌面環境的伺服器上執行。    SQLCMD 功能概觀      SQLCMD             資料匯入匯出               執行SQL指令               資料庫備份               自動化排程           SQLCMD 基本語法常用旗標一覽： 1234567891011sqlcmd  -S &lt;伺服器名稱&gt;    -- 指定 SQL Server 執行個體（可含 \InstanceName 或 ,Port）  -U &lt;使用者名稱&gt;    -- SQL Server 登入帳號  -P &lt;密碼&gt;          -- 對應密碼  -E                 -- 使用 Windows 整合驗證（省略 -U/-P，優先選此）  -d &lt;資料庫名稱&gt;    ...</div></div></div></a><a class="pagination-related" href="/posts/3d8daab7/" title="使用 SQL Server Resource Governor 限制特定應用程式的資料庫工作負載"><img class="cover" src="/images/posts/legacy-3d8daab7-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-08-08</div><div class="info-item-2">使用 SQL Server Resource Governor 限制特定應用程式的資料庫工作負載</div></div><div class="info-2"><div class="info-item-1">1. 背景某次正式環境使用者抱怨網頁速度極慢，卡了好幾分鐘，我連上 SSMS 查詢也一樣卡。追查後發現另一個專案的排程在跑，CPU 衝高，大型 sort／hash 查詢也在搶 query memory grant，把整台 SQL Server 拖慢。理想解法是切獨立主機，但沒有資源時，Resource Governor 是次佳選項——不需重建環境，先限制那支排程所使用的登入帳號。 版本限制（重要）： SQL Server 2022（16.x）及更舊版本只有 Enterprise 與 Developer Edition 支援 Resource Governor；SQL Server 2025（17.x）起才加入 Standard 與 Standard Developer Edition。請先查 SELECT SERVERPROPERTY(&#39;ProductMajorVersion&#39;), SERVERPROPERTY(&#39;Edition&#39;)，再依實際版本確認功能可用性。 2. Resource Governor 的核心概念Resource Governor...</div></div></div></a><a class="pagination-related" href="/posts/1a0df97b/" title="Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字"><img class="cover" src="/images/posts/claude-code-session-hallucination-fox-emoji-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-08</div><div class="info-item-2">Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字</div></div><div class="info-2"><div class="info-item-1">那天晚上我在 Claude Code（v2.1.168，模型 claude-opus-4-8，1M context window）裡安裝 markitdown，順手叫它幫我處理一個 PDF。過程不太順：工具呼叫一直撞到串流 parse error，session 斷了又接、接了又斷。 然後 Claude Code 突然說了一句讓我停下來的話：  我故意不用 🦊 開頭——先說為什麼。這則訊息綁了三個東西：一個強制回覆標記（「always start with 🦊」）⋯⋯  我盯著螢幕看了三秒。 🦊？always start with 🦊？我從來沒打過這個字。  2026-07-27 更新：GitHub issue #64774 有多名使用者回報 Opus 4.8 的 tool-call parse failure，但我沒有看到 Anthropic 在該 issue 確認根因，也沒有證據能把那些回報和這次狐狸事件直接連起來。以下會把 transcript 能確認的事與我的推測分開寫。  第一反應：被注入了？我的直覺是 prompt injection。有人在某個地方塞了一條「...</div></div></div></a><a class="pagination-related" href="/posts/8688d8e/" title="資料庫連線池爆掉救火秘笈！如何優雅地處理 SQL Server 連線危機"><img class="cover" src="/images/posts/legacy-8688d8e-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-27</div><div class="info-item-2">資料庫連線池爆掉救火秘笈！如何優雅地處理 SQL Server 連線危機</div></div><div class="info-2"><div class="info-item-1">前言身為後端工程師，你是否遇過這樣的情況：  系統突然變得超級慢 網頁一直轉圈圈 收到「已超過連線逾時的設定」錯誤訊息  如果有，很可能就是連線池爆掉了。以下分享一個真實案例，從診斷、緊急處理到根治。 問題診斷當你遇到以下錯誤訊息時，很可能是連線池出問題了： 1System.InvalidOperationException: &#x27;已超過連線逾時的設定。在取得集區連線之前超過逾時等待的時間，可能的原因為所有的共用連線已在使用中，並已達共用集區大小的最大值。&#x27;  先看 SQL Server session，再回應用程式確認 pool首先，用以下 SQL 查看 SQL Server 目前的 session 狀況。這只能協助排除阻塞、慢查詢與異常連線來源，不能單靠它證明某個 ADO.NET pool 已耗盡；後面還要對照應用程式的 pool timeout、程序、完整連線字串與併發監控。sys.sysprocesses 是已棄用的相容性視圖，這裡改用 DMV： 123456789101112-- 各資料庫連線數摘要（依登入帳號、狀態分組）SELECT     DB_N...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">226</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">479</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%9B%E6%88%90%E9%80%A3%E5%AD%97%E8%99%9F%EF%BC%8C%E4%B8%80%E6%A8%A3%E5%A4%B1%E6%95%97"><span class="toc-number">1.</span> <span class="toc-text">換成連字號，一樣失敗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A6%81%E6%9F%A5%E5%87%BA%E9%8C%AF%E7%9A%84%E9%82%A3%E6%A2%9D%E9%80%A3%E7%B7%9A"><span class="toc-number">2.</span> <span class="toc-text">要查出錯的那條連線</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%99%E6%AC%A1%E5%85%88%E4%BF%AE%E5%85%B1%E7%94%A8%E7%9A%84%E6%97%A5%E6%9C%9F%E8%BC%B8%E5%87%BA"><span class="toc-number">3.</span> <span class="toc-text">這次先修共用的日期輸出</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%BD%E6%94%B9%E5%BE%8C%E7%AB%AF%E6%99%82%EF%BC%8C%E7%9B%B4%E6%8E%A5%E5%82%B3%E6%97%A5%E6%9C%9F%E5%8F%83%E6%95%B8"><span class="toc-number">4.</span> <span class="toc-text">能改後端時，直接傳日期參數</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/11879e22/" title="SQL Server 日期轉換失敗？先查 DATEFORMAT"><img src="/images/posts/sql-server-datetime-dateformat-trap-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SQL Server 日期轉換失敗？先查 DATEFORMAT"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/11879e22/" title="SQL Server 日期轉換失敗？先查 DATEFORMAT">SQL Server 日期轉換失敗？先查 DATEFORMAT</a><time datetime="2026-09-18T04:15:00.000Z" title="發表於 2026-09-18 12:15:00">2026-09-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/f906d15/" title="台灣長老教會被寫進每日情報報表：Anthropic 154 頁報告裡的四個中國案例"><img src="/images/posts/china-prc-surveillance-claude-taiwan-church-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="台灣長老教會被寫進每日情報報表：Anthropic 154 頁報告裡的四個中國案例"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/f906d15/" title="台灣長老教會被寫進每日情報報表：Anthropic 154 頁報告裡的四個中國案例">台灣長老教會被寫進每日情報報表：Anthropic 154 頁報告裡的四個中國案例</a><time datetime="2026-09-11T07:30:00.000Z" title="發表於 2026-09-11 15:30:00">2026-09-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/be6334f9/" title="底圖突然整片空白、重開主機也沒用：國土測繪中心 WMS 最低要求 TLS 1.2，舊 .NET 程式怎麼修"><img src="/images/posts/nlsc-wms-tls12-dotnet-blank-basemap-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="底圖突然整片空白、重開主機也沒用：國土測繪中心 WMS 最低要求 TLS 1.2，舊 .NET 程式怎麼修"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/be6334f9/" title="底圖突然整片空白、重開主機也沒用：國土測繪中心 WMS 最低要求 TLS 1.2，舊 .NET 程式怎麼修">底圖突然整片空白、重開主機也沒用：國土測繪中心 WMS 最低要求 TLS 1.2，舊 .NET 程式怎麼修</a><time datetime="2026-09-10T03:50:00.000Z" title="發表於 2026-09-10 11:50:00">2026-09-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/c0ce374e/" title="廠商文件裡一個沒人註冊的套件名，讓 AI agent 四分鐘內在 Fortune 500 跑了別人的程式碼"><img src="/images/posts/llms-txt-phantom-packages-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="廠商文件裡一個沒人註冊的套件名，讓 AI agent 四分鐘內在 Fortune 500 跑了別人的程式碼"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/c0ce374e/" title="廠商文件裡一個沒人註冊的套件名，讓 AI agent 四分鐘內在 Fortune 500 跑了別人的程式碼">廠商文件裡一個沒人註冊的套件名，讓 AI agent 四分鐘內在 Fortune 500 跑了別人的程式碼</a><time datetime="2026-09-02T06:30:00.000Z" title="發表於 2026-09-02 14:30:00">2026-09-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/5009ada6/" title="Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過"><img src="/images/posts/china-claude-token-gray-market-transfer-station-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/5009ada6/" title="Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過">Claude token 在中國賣到骨折價——回頭一查，這個破口我三月就見過</a><time datetime="2026-08-28T08:30:00.000Z" title="發表於 2026-08-28 16:30:00">2026-08-28</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/images/posts/sql-server-datetime-dateformat-trap-cover.webp);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By kyosora</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/utils.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/main.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/tw_cn.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const applyThemeDefaultsConfig = theme => {
+    if (theme === 'dark-mode') {
+      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
+      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    } else {
+      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
+      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    }
+  }
+
+  // Recursively traverse the config object and automatically apply theme-specific color schemes
+  const applyThemeConfig = (obj, theme) => {
+    if (typeof obj !== 'object' || obj === null) return
+
+    Object.keys(obj).forEach(key => {
+      const value = obj[key]
+      // If the property is an object and has theme-specific options, apply them
+      if (typeof value === 'object' && value !== null) {
+        if (value[theme]) {
+          obj[key] = value[theme] // Apply the value for the current theme
+        } else {
+          // Recursively process child objects
+          applyThemeConfig(value, theme)
+        }
+      }
+    })
+  }
+
+  const runChartJS = ele => {
+    window.loadChartJS = true
+
+    Array.from(ele).forEach((item, index) => {
+      const chartSrc = item.firstElementChild
+      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
+      const width = item.getAttribute('data-width')
+      const existingCanvas = document.getElementById(chartID)
+
+      // If a canvas already exists, remove it to avoid rendering duplicates
+      if (existingCanvas) {
+          existingCanvas.parentNode.remove()
+      }
+
+      const chartDefinition = chartSrc.textContent
+      const canvas = document.createElement('canvas')
+      canvas.id = chartID
+
+      const div = document.createElement('div')
+      div.className = 'chartjs-wrap'
+
+      if (width) {
+        div.style.width = width
+      }
+
+      div.appendChild(canvas)
+      chartSrc.insertAdjacentElement('afterend', div)
+
+      const ctx = document.getElementById(chartID).getContext('2d')
+
+      const config = JSON.parse(chartDefinition)
+
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
+
+      // Set default styles (initial setup)
+      applyThemeDefaultsConfig(theme)
+
+      // Automatically traverse the config and apply dual-mode color schemes
+      applyThemeConfig(config, theme)
+
+      new Chart(ctx, config)
+    })
+  }
+
+  const loadChartJS = () => {
+    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
+    if (chartJSEle.length === 0) return
+
+    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
+  }
+
+  // Listen for theme change events
+  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
+  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
+
+  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = {"mapping":"pathname","inputPosition":"top","lang":"zh-TW","reactionsEnabled":1}
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'kyosora/kyosora.github.io',
+      'data-repo-id': 'R_kgDOLJYL_w',
+      'data-category-id': 'DIC_kwDOLJYL_84C516C',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !true) {
+    if (true) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script src="/js/about-cards.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/search/local-search.min.js"></script></div></div></body></html>
