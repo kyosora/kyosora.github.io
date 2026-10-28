@@ -1,0 +1,763 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>指數時間假說是什麼？OpenAI 和 Claude 宣稱推翻它，為什麼這是大事 | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="指數時間假說是什麼？OpenAI 與 Anthropic 宣稱 AI 推翻了這條撐了二十多年的複雜度假設。用排班例子看懂 3-SAT 與 ETH，拆解它為何重要、為何不影響實務，以及 Lean 驗證到底驗了什麼。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="指數時間假說是什麼？OpenAI 和 Claude 宣稱推翻它，為什麼這是大事">
+<meta property="og:url" content="https://kyosora.github.io/posts/4d323b4a/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="指數時間假說是什麼？OpenAI 與 Anthropic 宣稱 AI 推翻了這條撐了二十多年的複雜度假設。用排班例子看懂 3-SAT 與 ETH，拆解它為何重要、為何不影響實務，以及 Lean 驗證到底驗了什麼。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/images/posts/exponential-time-hypothesis-ai-refutation-cover.webp">
+<meta property="article:published_time" content="2026-10-28T06:02:00.000Z">
+<meta property="article:modified_time" content="2026-10-28T06:02:22.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Claude">
+<meta property="article:tag" content="OpenAI">
+<meta property="article:tag" content="指數時間假說">
+<meta property="article:tag" content="3-SAT">
+<meta property="article:tag" content="Lean">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kyosora.github.io/images/posts/exponential-time-hypothesis-ai-refutation-cover.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "指數時間假說是什麼？OpenAI 和 Claude 宣稱推翻它，為什麼這是大事",
+  "url": "https://kyosora.github.io/posts/4d323b4a/",
+  "image": "https://kyosora.github.io/images/posts/exponential-time-hypothesis-ai-refutation-cover.webp",
+  "datePublished": "2026-10-28T06:02:00.000Z",
+  "dateModified": "2026-10-28T06:02:22.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kyosora",
+      "url": "https://kyosora.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/posts/4d323b4a/"><link rel="preconnect" href="https://cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-F9P7RWQQJE')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '指數時間假說是什麼？OpenAI 和 Claude 宣稱推翻它，為什麼這是大事',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="/css/about-cards.css"><link rel="stylesheet" href="/css/bg-gradient-mesh.css"><link rel="stylesheet" href="/css/view-transitions.css"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">240</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">523</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/posts/exponential-time-hypothesis-ai-refutation-cover.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a><a class="nav-page-title" href="/"><span class="site-name">指數時間假說是什麼？OpenAI 和 Claude 宣稱推翻它，為什麼這是大事</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首頁</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">指數時間假說是什麼？OpenAI 和 Claude 宣稱推翻它，為什麼這是大事<a class="post-edit-link" href="https://github.com/jerryc127/butterfly.js.org/edit/main/source/_posts/exponential-time-hypothesis-ai-refutation.md" title="編輯" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">發表於</span><time datetime="2026-10-28T06:02:00.000Z" title="發表於 2026-10-28 14:02:00">2026-10-28</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">3.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>11分鐘</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>10 月 26 日（美國時間），OpenAI 在 <a target="_blank" rel="noopener" href="https://github.com/openai/math">openai/math</a> 放出一份手稿，標題只有一句話：〈The Exponential Time Hypothesis is False〉。幾個小時後，Anthropic 在 <a target="_blank" rel="noopener" href="https://github.com/anthropics/formal-math/tree/main/eth">anthropics/formal-math</a> 放出一篇 Claude 署名的論文〈A 2^o(n) Time Algorithm for 3-SAT〉，宣稱的是同一件事。兩家都附了 Lean 4 形式證明，由學界組成的獨立審查還在進行。</p>
+<p>幣圈先炸了一輪。ETH 在他們眼裡是以太坊，<a target="_blank" rel="noopener" href="https://decrypt.co/381956/opena-eth-false-crypto-twitter-has-questions">Decrypt 的標題</a>直接寫「OpenAI Proves ETH Is False, and Crypto Twitter Has Questions」。</p>
+<p>這裡的 ETH 是 Exponential Time Hypothesis，指數時間假說。它跟以太坊無關，是理論電腦科學裡一條撐了二十多年的基礎假設。如果這次的反證成立，影響的是一整批理論結果；對你寫的程式，則幾乎沒有影響。下面從頭講。</p>
+<h2 id="先從-3-SAT-講起"><a href="#先從-3-SAT-講起" class="headerlink" title="先從 3-SAT 講起"></a>先從 3-SAT 講起</h2><p>想像你在排班。每條規則長這樣：「小明值班、小華不值班、小美值班，三個條件至少要成立一個」。規則有幾百條，問：有沒有一種排法能讓所有規則同時成立？</p>
+<p>這就是 3-SAT。每條規則叫一個子句，裡面有三個「文字」（某個變數，或它的否定），至少一個要成立。它是最經典的 NP-complete 問題，很多排程、驗證、規劃問題最後都能轉成它。</p>
+<p>最直覺的解法是全部試一遍。下面這段順便把解的數量也數出來，數量大於零就代表有解（這次兩家的演算法做的也是「數解」）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> itertools <span class="keyword">import</span> product</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">count_3sat</span>(<span class="params">n, clauses</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;clauses 例：[(1, -2, 3)]，正數是變數本身，負數是它的否定&quot;&quot;&quot;</span></span><br><span class="line">    count = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> bits <span class="keyword">in</span> product([<span class="literal">False</span>, <span class="literal">True</span>], repeat=n):   <span class="comment"># 2^n 種組合全試一遍</span></span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">all</span>(<span class="built_in">any</span>(bits[<span class="built_in">abs</span>(l) - <span class="number">1</span>] == (l &gt; <span class="number">0</span>) <span class="keyword">for</span> l <span class="keyword">in</span> c) <span class="keyword">for</span> c <span class="keyword">in</span> clauses):</span><br><span class="line">            count += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> count</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(count_3sat(<span class="number">3</span>, [(<span class="number">1</span>, -<span class="number">2</span>, <span class="number">3</span>), (-<span class="number">1</span>, <span class="number">2</span>, -<span class="number">3</span>)]))  <span class="comment"># 6</span></span><br></pre></td></tr></table></figure>
+
+<p>n 個變數有 2^n 種組合。20 個變數要試 100 萬次，40 個就變成 1 兆次，每多一個變數，工作量翻倍。</p>
+<p>幾十年來，研究者一直在把這個 2 壓小。判斷「有沒有解」的最佳已知演算法約在 1.3^n 量級（略去多項式因子）；「數出有幾組解」，Anthropic 論文引用的前一個紀錄是 1.6423^n。底數一直在降，但時間始終跟 c^n 同一個級別：指數部分跟 n 成固定比例。</p>
+<h2 id="ETH-說的是：這個比例壓不到零"><a href="#ETH-說的是：這個比例壓不到零" class="headerlink" title="ETH 說的是：這個比例壓不到零"></a>ETH 說的是：這個比例壓不到零</h2><p>1999 年，Impagliazzo 和 Paturi 把這個觀察寫成假說：存在某個固定的正數 δ，使得沒有任何演算法能在最壞情況下用 O(2^(δn)) 的時間解完 3-SAT（略去跟輸入長度有關的多項式因子）。</p>
+<p>白話一點：底數可以一直壓，但壓不到「指數跟 n 的比例趨近於零」的地步。最壞情況下，時間至少會像 2^(δn) 那樣成長。</p>
+<p>它還有個更強的兄弟 SETH（強指數時間假說），大意是：子句允許的文字越多，k-SAT 的最佳底數就越逼近 2，最後怎樣都壓不下去。SETH 成立的話 ETH 一定成立。</p>
+<p>ETH 也比 P ≠ NP 更強。P ≠ NP 只說 3-SAT 沒有多項式時間解法；ETH 說它連次指數時間都做不到。正因為它比較強，用起來也比較順手：很多「這個問題不可能比 X 更快」的結論，都是先假設 ETH 才推得出來。</p>
+<h2 id="什麼樣的時間上界能推翻-ETH"><a href="#什麼樣的時間上界能推翻-ETH" class="headerlink" title="什麼樣的時間上界能推翻 ETH"></a>什麼樣的時間上界能推翻 ETH</h2><p>Anthropic 證出的時間上界是 2^O(n·log log n／√log n)。這是固定 k = 3、只看變數數量 n 的版本，O 裡藏著常數，而且常數乘在指數裡面。OpenAI 在 Lean 裡證的版本多一個平方，是 2^O(n·(log log n)²／√log n)，同樣足以推翻 ETH。本文只談這個上界代表什麼，演算法怎麼做到它，需要另一篇（和比我更懂的人）來講。</p>
+<p>拿 Anthropic 的版本跟 2^(δn) 比，差別在 n 被乘上了 log log n／√log n。這個係數會隨 n 變大而趨近 0，所以不管 δ 挑多小，n 夠大時這個上界都會落在 2^(δn) 以下。如果證明成立，ETH 就倒了。</p>
+<p>但這個「趨近 0」慢得驚人。下表只算那個係數，不代表實際速度：</p>
+<table>
+<thead>
+<tr>
+<th>變數數量 n</th>
+<th align="right">log₂ n</th>
+<th align="right">係數 log log n／√log n</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>100</td>
+<td align="right">6.6</td>
+<td align="right">1.06</td>
+</tr>
+<tr>
+<td>100 萬</td>
+<td align="right">19.9</td>
+<td align="right">0.97</td>
+</tr>
+<tr>
+<td>1 兆</td>
+<td align="right">39.9</td>
+<td align="right">0.84</td>
+</tr>
+<tr>
+<td>10^100</td>
+<td align="right">332.2</td>
+<td align="right">0.46</td>
+</tr>
+</tbody></table>
+<p>n 到了 10^100，比可觀測宇宙的原子數還多，這個係數也才降到一半左右，指數裡還藏著常數。</p>
+<h2 id="如果成立，為什麼是大事"><a href="#如果成立，為什麼是大事" class="headerlink" title="如果成立，為什麼是大事"></a>如果成立，為什麼是大事</h2><p>ETH 在理論電腦科學裡像一面承重牆。Anthropic 的論文寫，他們讓 Claude 做文獻搜尋，找到 800 多篇論文，至少有一個結果只在 ETH 或更強的假設（SETH、Gap-ETH）下成立。</p>
+<p>這不代表 800 篇論文都錯了。那些結果的形式是「如果 ETH 成立，那麼某問題不可能比 X 更快」。前提倒了，「不可能更快」這個保證就沒了，原本的問題到底有多難，得重新判斷。</p>
+<p>論文列出的直接後果裡，有三個特別值得一提：</p>
+<ul>
+<li><strong>SETH 一起倒。</strong> SETH 能推出 ETH，ETH 不成立，SETH 也就不成立。</li>
+<li><strong>一批圖論經典問題跟著變快。</strong> 獨立集、團、頂點覆蓋、支配集，在 n 個頂點的圖上都能做到 O(2^(δn))，δ 想要多小都可以。</li>
+<li><strong>更快的演算法，反過來證出新的下界。</strong> Ryan Williams 從 2010 年左右開始建立一套方法：對某些電路類別的 SAT 問題，只要找到比窮舉快一點點的演算法，就能推出這類電路做不到某些事。這次的結果套進 Williams 等人的既有定理，得到「E^NP 沒有線性大小的布林電路」，意思是 E^NP 這個複雜度類別裡，有某個問題無法用大小只隨輸入長度線性成長的電路來計算。演算法變強，讓「某些東西做不到」的證明前進了一步。</li>
+</ul>
+<p>也有東西留了下來。fine-grained complexity 裡很多下界靠的是 Orthogonal Vectors（OV）假說。SETH 能推出 OV 假說，但 SETH 倒了不會反過來推翻 OV，論文也註明這項結果沒有推翻它。</p>
+<p>另外，這項結果沒有給出多項式時間演算法，也沒有解決 P 與 NP 的問題。</p>
+<h2 id="短期實務影響：幾乎沒有"><a href="#短期實務影響：幾乎沒有" class="headerlink" title="短期實務影響：幾乎沒有"></a>短期實務影響：幾乎沒有</h2><p>Anthropic 自己算過門檻：子句數是變數 5 倍的 3-CNF，要變數超過 10^10000 個，他們證出的時間上界才會比 2^n 的暴力法好；只看變數數量的版本，門檻是 10^(10^8)。作者的判斷是，這套方法不管怎麼實作，n 小於 10^7 都不太可能帶來改善，而暴力法在 n = 100 就已經不實用。論文的原話：</p>
+<blockquote>
+<p>Thus our result says nothing about solving formulas in practice.</p>
+</blockquote>
+<p>所以你的 SAT solver、排程器、約束求解器都不用改。這項結果沒有提供破解現行加密系統的實用方法，也沒有直接推翻它們依賴的安全假設。以太坊更不用說，名字撞到而已。</p>
+<h2 id="那-AI-公司做這個，意義在哪"><a href="#那-AI-公司做這個，意義在哪" class="headerlink" title="那 AI 公司做這個，意義在哪"></a>那 AI 公司做這個，意義在哪</h2><p>既然實務上用不到，為什麼這會是新聞？因為找到它的是 AI。今年 5 月，三家公司的模型才在同一週推翻 Erdős 的單位距離猜想（<a href="/posts/abbd888d/">我當時整理過</a>）；這次換成理論電腦科學的基礎假說。</p>
+<p>Anthropic 的論文寫，核心演算法是 10 月 16 日由一個內部 Claude 研究模型找到的，用了 1,400 萬個輸出 token，發現過程沒有人類參與；研究員之後才跟 Claude 一起改善論文的呈現。論文也寫明，OpenAI 的內部模型「independently and concurrently」宣稱證出了類似結果。</p>
+<p>OpenAI 則把 ETH 放在一項更大範圍的數學研究評測裡。repo 的 README 寫，他們原本的數學評測已經被模型做到飽和，於是擴大用開放研究問題來評測。他們讓內部模型嘗試了大約 4,000 個問題，平均每個結果用掉三小時的 ChatGPT Pro 思考算力，最後整理出 721 份手稿，ETH 是其中一份。OpenAI 自己把這些手稿定位成「raw research data」，跟正式論文分開看待。</p>
+<p>我認為重點在於，AI 的數學已經從題庫走到研究前沿，碰的是專家普遍相信的假說。如果這項結果成立，它證明了「做得到」；但還說明不了成功率和成本。721 份手稿也不等於 721 個經確認的解答，這要等 OpenAI 公開原始資料、外界逐份檢查之後才知道。</p>
+<p>產出變多，檢查的負擔也跟著變重。OpenAI 10 月 7 日才因為一個符號錯誤撤回三份手稿。這也讓 Lean 證明在這次事件裡格外重要。</p>
+<h2 id="Lean-驗過，代表什麼"><a href="#Lean-驗過，代表什麼" class="headerlink" title="Lean 驗過，代表什麼"></a>Lean 驗過，代表什麼</h2><p>Lean 是一種證明輔助工具。每一步推理都得寫成機器能檢查的程式碼，kernel 不接受就過不了。</p>
+<p>驗證的結構分兩半。Challenge 是一個短檔案，只寫定理「說了什麼」，不寫證明；Solution 是 AI 寫的證明本體，Anthropic 這份約 1,050 個模組。官方工具 <a target="_blank" rel="noopener" href="https://github.com/leanprover/comparator">comparator</a> 負責確認三件事：Solution 證的定理跟 Challenge 的形式陳述相符、沒用到設定之外的公理、而且被 Lean kernel 接受。Anthropic 還多用了一個獨立實作的 kernel（nanoda）再檢查一次，<a target="_blank" rel="noopener" href="https://github.com/anthropics/formal-math/actions/runs/40442388505">公開的 CI 紀錄</a>最後印出 <code>Your solution is okay!</code>。</p>
+<p>「推理有沒有出錯」這一層，現在由機器把關。</p>
+<p>機器管不到的是另一層：Challenge 裡的定義，是不是真的在說「ETH 是假的」？Anthropic 的陳述檔 <a target="_blank" rel="noopener" href="https://github.com/anthropics/formal-math/blob/main/eth/MainResults.lean"><code>MainResults.lean</code></a> 只有 182 行，只依賴 Mathlib，刻意寫短讓人讀得完。ETH 在裡面長這樣：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">/-- s_k：所有能讓某台確定性機器在 c·2^&#123;δn&#125; 步內判定 k-SAT 的 δ 的下確界 -/</span><br><span class="line">noncomputable def s (k : ℕ) : ℝ≥0∞ := ⨅ (δ : ℝ≥0) (_ : InTime k δ), (δ : ℝ≥0∞)</span><br><span class="line"></span><br><span class="line">/-- ETH：s₃ &gt; 0 -/</span><br><span class="line">def ETH : Prop := 0 &lt; s 3</span><br><span class="line"></span><br><span class="line">def ETHIsFalse : Prop := ¬ ETH</span><br></pre></td></tr></table></figure>
+
+<p>看起來只有三行，但「機器」是 Mathlib 的多堆疊圖靈機，「時間」是這台機器的步數，「輸入」是作者定義的位元編碼。每一個定義都要對上教科書的意思，<code>ETHIsFalse</code> 才真的等於「ETH 是假的」。從這種機器推到「一般意義的演算法」那一步，檔案註解寫明那是標準事實，不在 Lean 的陳述和證明裡。</p>
+<p>Anthropic 在論文 Appendix E 講得很直接：</p>
+<blockquote>
+<p>Whether the two definitions say what they are meant to say, that the Exponential Time Hypothesis is false and the Main Theorem, no machine can check; that is for the reader of the listing to judge.</p>
+</blockquote>
+<p>同一段還寫，這份 Lean 證明是 AI 寫的，由同款模型的其他實例審查，截至發表時沒有已知的人類檢查過這份 Lean 程式碼（「no person is known to have checked it」）。</p>
+<p>OpenAI 的陳述檔 <a target="_blank" rel="noopener" href="https://github.com/openai/math/blob/main/lean/ComparatorChallenges/SubexponentialSAT.lean"><code>SubexponentialSAT.lean</code></a> 有 220 行，寫法不一樣。它在 Mathlib 的紙帶和指令之上，自己定義了一種多紙帶機器，證明「存在一台這種機器，能在某個時間上限內數出解的數量」。ETH 本身沒有寫成 Lean 命題，從這個時間上限推到「ETH 是假的」，由讀者自己確認。</p>
+<p>兩種寫法都說得通。Lean 把需要人審的範圍，從上千個證明檔縮到一份定義檔。但那份定義檔要讀懂，得先懂它引用的機器模型、編碼方式和步數怎麼計算，再加上沒寫進 Lean 的模擬論證。行數短，工作不一定輕。</p>
+<p>審 AI 寫的 PR 也會碰到類似的問題，只是保證強度差很多。形式證明通過，代表形式命題在採用的公理下成立；測試通過，只代表被跑到的案例沒有失敗。兩者共通的地方在於：規格或測試本身有沒有寫對，都要另外有人看。</p>
+<h2 id="接下來看誰"><a href="#接下來看誰" class="headerlink" title="接下來看誰"></a>接下來看誰</h2><p>ETH 的兩位提出者 Impagliazzo、Paturi，加上 MIT 的 Ryan Williams，正在組織公開的獨立審查。三人的公開信寫：</p>
+<blockquote>
+<p>Our involvement should not be taken as certification of the claim.</p>
+</blockquote>
+<p>Williams 說他們沒簽保密協議、也不收錢，並要求 OpenAI 公開這個結果的全部原始資料、出資辦一場研討會，OpenAI 都答應了。至於「OpenAI 出 500 萬美元審查」的說法並不準確：依 <a target="_blank" rel="noopener" href="https://openai.com/index/building-scientific-understanding-with-academic-communities/">OpenAI 的說明</a>，那筆錢捐給 Simons Foundation，用在 AI 產出成果相關的工作坊和研討會，審查小組本身無償。</p>
+<p>有個巧合我很喜歡。Williams 那套「更快的演算法推出電路下界」的方法，讓這次的結果多推出了一個新定理；現在換他來檢查這個結果站不站得住。如果審查過關，E^NP 那個新下界，會是這次反證裡我最想記住的副產品。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kyosora.github.io">kyosora</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://kyosora.github.io/posts/4d323b4a/">https://kyosora.github.io/posts/4d323b4a/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 授權協議。轉載請註明來源 <a href="https://kyosora.github.io" target="_blank">kyosora 筆記</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Claude/">Claude</a><a class="post-meta__tags" href="/tags/OpenAI/">OpenAI</a><a class="post-meta__tags" href="/tags/%E6%8C%87%E6%95%B8%E6%99%82%E9%96%93%E5%81%87%E8%AA%AA/">指數時間假說</a><a class="post-meta__tags" href="/tags/3-SAT/">3-SAT</a><a class="post-meta__tags" href="/tags/Lean/">Lean</a></div><div class="post-share"><div class="social-share" data-image="/images/posts/exponential-time-hypothesis-ai-refutation-cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/aee4a987/" title="Zeabur、Railway 環境變數外洩之後：先換哪把金鑰，換完怎麼確認舊的真的失效"><img class="cover" src="/images/posts/paas-secret-rotation-cover.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Zeabur、Railway 環境變數外洩之後：先換哪把金鑰，換完怎麼確認舊的真的失效</div></div><div class="info-2"><div class="info-item-1">Railway 在台灣時間 10 月 22 日清晨貼出資安公告。處置清單裡有一行我看了兩遍：存在服務 registry 設定裡的 GitHub token，Railway 已經「移除」。往下翻到給用戶的處置指南，才寫清楚是怎麼回事：  Those registry tokens still work on GitHub until you revoke them.  Railway 刪掉的是它自己存的那一份，token 在 GitHub 上照樣能用，要你自己去撤銷。 一週前（10-14～15）Zeabur 也被入侵，它 10-19 發布的十月事件報告寫的是 3,218,965 筆服務環境變數。兩起事件都涉及用戶填在環境變數欄位裡的東西：OpenAI key、資料庫密碼、AWS access key、GitHub token。 我自己沒有這兩家的帳號，部落格放在 GitHub Pages。會寫這篇，一是 Zeabur 有台北機房，十月報告的影響範圍就列了台北的區域；二是「平台上的環境變數整包外洩」這種事，換成 Vercel、Render、Fly.io 或公司自己的 CI，處理步驟幾...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/4b08e7bb/" title="當AI公司對五角大廈說不：Anthropic被封殺卻逆襲App Store的荒謬劇"><img class="cover" src="/images/posts/legacy-4b08e7bb-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-09</div><div class="info-item-2">當AI公司對五角大廈說不：Anthropic被封殺卻逆襲App Store的荒謬劇</div></div><div class="info-2"><div class="info-item-1">2 月 27 日晚上，Trump 簽署行政命令，禁止所有聯邦機構使用 Anthropic 的產品。國防部長 Hegseth 把 Anthropic 列為「供應鏈風險」——一個通常保留給中國和俄羅斯企業的標籤。 72 小時後，Claude 衝上美國 App Store 第一名，超越 ChatGPT 和 Gemini。每天有超過一百萬人註冊。 這不是電影劇情，這是 2026 年 3 月正在發生的事。 Anthropic 的兩條紅線整件事的核心，其實就兩句話。 Anthropic 告訴五角大廈：你可以用 Claude 做幾乎所有事情，但有兩個例外——不能用於大規模監控美國公民，不能用於全自主致命武器。 五角大廈的回應是：我們要「所有合法用途」的授權。 談判破裂。 CEO Dario Amodei 事後說：「我們要求的限制只涉及高層級的使用領域，不干涉具體的操作決策。」換句話說，Anthropic 沒有要求審查每一次模型呼叫，他們只是不想讓自己的技術出現在「用 AI 自動決定要不要開火」或「用 AI 監聽所有美國人通訊」的場景裡。 聽起來合理？五角大廈不這麼認為。 連鎖反應比預期更猛Tr...</div></div></div></a><a class="pagination-related" href="/posts/6a7b2e15/" title="Notion MCP 使用教學：用 OAuth 讓 Claude Code 直接操作工作區"><img class="cover" src="/images/posts/legacy-6a7b2e15-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-23</div><div class="info-item-2">Notion MCP 使用教學：用 OAuth 讓 Claude Code 直接操作工作區</div></div><div class="info-2"><div class="info-item-1"> 2026-07 更新： Notion 現在建議使用官方託管的 MCP Server，透過 OAuth 授權。舊版 @notionhq/notion-mcp-server 仍可自架，但官方已停止積極維護，不該再當一般使用者的預設方案。  在 Notion 和 Claude Code 之間來回複製貼上，很快就會變成一件純手工工作。接上 Notion MCP（Model Context Protocol）後，Claude Code 可以搜尋頁面、建立內容、更新資料庫項目；每次寫入前仍應該先確認目標頁面和修改範圍。 什麼是 Notion MCP？Notion MCP 是 Notion 官方提供的遠端 MCP Server，端點是 https://mcp.notion.com/mcp。它把 Notion 的搜尋、讀取與寫入能力提供給支援 MCP 的工具。 這裡要分清楚兩件事：MCP 負責連接工具；真正能看到哪些內容，仍取決於完成 OAuth 授權的 Notion 使用者本來就有的權限。接上 MCP 不會自動繞過工作區權限。 開始前的準備需要準備的東西：  Claude Code，或其他支...</div></div></div></a><a class="pagination-related" href="/posts/dae68e3b/" title="100 兆 tokens 告訴你：為什麼降價 10% 也救不了你的 LLM 產品"><img class="cover" src="/images/posts/legacy-dae68e3b-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-09</div><div class="info-item-2">100 兆 tokens 告訴你：為什麼降價 10% 也救不了你的 LLM 產品</div></div><div class="info-2"><div class="info-item-1">你以為 AI 模型競爭就是打價格戰？ OpenRouter 剛發佈的報告分析了 100 兆 tokens 的真實使用資料，發現一個驚人事實：**降價 10%，使用量只增加 0.5-0.7%**。 更扯的是，Claude 價格最貴，卻占了編程市場 60%。 到底發生什麼事？   為什麼這份報告值得關注？這不是又一份「AI 趨勢預測」報告。 OpenRouter 是全球最大的 LLM API 聚合平台：  支援 300+ 模型 60+ 供應商（OpenAI、Anthropic、Google、DeepSeek...） 100 兆 tokens 真實使用資料（2024/11 - 2025/11）  這份報告揭露了三個開發者必須知道的反直覺發現。  發現 1：價格戰是假議題資料打臉時刻   策略 實際結果    降價 10% 使用量 ↑ 0.5-0.7%   Claude（最貴） 編程市場占 60%   DeepSeek（便宜） 使用者流失後又回流   報告原話：  &quot;需求缺乏價格彈性，使用者優先考慮品質和可靠性而非價格。&quot;  為什麼會這樣？工程師選模型的真實決策流程：...</div></div></div></a><a class="pagination-related" href="/posts/d2eaf73a/" title="三月AI模型大亂鬥：GPT-5.4、Gemini 3.1 Pro、Claude Opus 4.6 到底誰贏了"><img class="cover" src="/images/posts/legacy-d2eaf73a-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-08</div><div class="info-item-2">三月AI模型大亂鬥：GPT-5.4、Gemini 3.1 Pro、Claude Opus 4.6 到底誰贏了</div></div><div class="info-2"><div class="info-item-1">3 月 5 日，OpenAI 丟出 GPT-5.4。兩週前，Google 才發了 Gemini 3.1 Pro。Anthropic 的 Claude Opus 4.6 也在持續迭代。三家模型同時站在擂台上，跑分互有勝負，開發者選擇困難症大爆發。 我花了幾天把三家的 benchmark 資料、定價和實際使用場景整理了一遍。結論先說：沒有全能冠軍，但各有各的殺手鐧。 GPT-5.4：第一個真正會用電腦的 AIOpenAI 這次最大的賣點不是跑分——是 Computer Use。 GPT-5.4 能直接操作桌面應用程式：看螢幕截圖、移動滑鼠、敲鍵盤。在 OSWorld 測試中，它拿到 75% 的成功率，超越人類的 72.4%。這不是小數字的進步，GPT-5.2 在同一個測試只有 47.3%。 另一個重點是「統合模型」架構。OpenAI 把之前分散在不同模型的能力——Codex 的寫程式、推理模型的思考鏈、Agent 的自主操作——塞進同一個模型裡。不用再煩惱「這個任務該叫哪個模型」。 硬指標   項目 GPT-5.4 跟 GPT-5.2 相比    GDPval（知識工作） 83% 7...</div></div></div></a><a class="pagination-related" href="/posts/3e7cf918/" title="你的 AI Agent 拿到的權限比你的實習生還大？Anthropic 零信任框架拆解"><img class="cover" src="/images/posts/anthropic-zero-trust-ai-agent-security-framework-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-28</div><div class="info-item-2">你的 AI Agent 拿到的權限比你的實習生還大？Anthropic 零信任框架拆解</div></div><div class="info-2"><div class="info-item-1">5 月 27 日 Anthropic 丟出一份 36 頁的電子書，標題叫《Zero Trust for AI Agents》。這不是一般的行銷白皮書——它給了具體的架構、實施路徑和威脅分類，而且每條建議都對應到成熟度等級，讓你知道自己該做到哪一層。 我把重點整理出來，順便加上我自己在用 Claude Code 和各種 Agent 工具時踩過的坑。 為什麼現在要談 Agent 安全先說結論：AI Agent 跟傳統軟體最大的差別，是它會自己做決定。 傳統軟體執行你寫好的邏輯。Agent 不一樣，它解讀目標、選擇工具、執行多步驟操作，全程不需要你點頭。這帶來一個根本性的安全問題——你給它的權限，它會用自己的判斷去使用。 Anthropic 在文件裡點出了五個 Agent 特有的安全考量：  自主執行：不用人工批准就能完成整條工作流程 工具存取：能操作 API、資料庫、檔案系統、MCP 伺服器 決策模糊性：人類覺得無害的指令，Agent 可能解讀出完全不同的結果 跨 session 記憶：記住上次對話的偏好和知識——也記住被注入的毒 多 Agent 協作：Agent 之間的信任關係，讓...</div></div></div></a><a class="pagination-related" href="/posts/493de8b3/" title="Anthropic 拒絕讓 AI 做武器，被美國政府列入黑名單：技術紅線背後的架構抉擇"><img class="cover" src="/images/posts/legacy-493de8b3-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-15</div><div class="info-item-2">Anthropic 拒絕讓 AI 做武器，被美國政府列入黑名單：技術紅線背後的架構抉擇</div></div><div class="info-2"><div class="info-item-1">3 月 9 日，Anthropic 同時在加州北區聯邦法院和華盛頓特區上訴法院提起訴訟，控告美國國防部違法將其列為「供應鏈風險」。原因很單純：CEO Dario Amodei 拒絕讓 Claude 被用於大規模監控美國公民，也拒絕讓它操控自主武器。 這不是一般的商業糾紛。這是一家估值數百億美元的 AI 公司，因為堅持技術紅線而被自己國家的軍方封殺。 兩條紅線Anthropic 和五角大廈的談判卡在兩個條款上：  禁止大規模監控：Claude 不能被用來對美國公民進行未經授權的大規模資料蒐集和分析 禁止自主武器：Claude 不能作為完全自主殺傷性武器的決策核心  Amodei 的立場很明確——這兩條不談。五角大廈的回應也很明確——那你就別做政府生意了。 2 月底，國防部正式將 Anthropic 列入「供應鏈風險」名單。這個標籤的殺傷力不只是失去國防合約，而是所有聯邦政府承包商在六個月內都必須停止使用 Claude。根據 Anthropic 的法庭文件，超過 100 家企業客戶已經就此聯繫他們，可能影響「數億美元」營收。 技術層面：紅線怎麼實作？這裡值得從工程角度思考一個問題：A...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">240</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">523</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E5%BE%9E-3-SAT-%E8%AC%9B%E8%B5%B7"><span class="toc-number">1.</span> <span class="toc-text">先從 3-SAT 講起</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ETH-%E8%AA%AA%E7%9A%84%E6%98%AF%EF%BC%9A%E9%80%99%E5%80%8B%E6%AF%94%E4%BE%8B%E5%A3%93%E4%B8%8D%E5%88%B0%E9%9B%B6"><span class="toc-number">2.</span> <span class="toc-text">ETH 說的是：這個比例壓不到零</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E9%BA%BC%E6%A8%A3%E7%9A%84%E6%99%82%E9%96%93%E4%B8%8A%E7%95%8C%E8%83%BD%E6%8E%A8%E7%BF%BB-ETH"><span class="toc-number">3.</span> <span class="toc-text">什麼樣的時間上界能推翻 ETH</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E6%9E%9C%E6%88%90%E7%AB%8B%EF%BC%8C%E7%82%BA%E4%BB%80%E9%BA%BC%E6%98%AF%E5%A4%A7%E4%BA%8B"><span class="toc-number">4.</span> <span class="toc-text">如果成立，為什麼是大事</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9F%AD%E6%9C%9F%E5%AF%A6%E5%8B%99%E5%BD%B1%E9%9F%BF%EF%BC%9A%E5%B9%BE%E4%B9%8E%E6%B2%92%E6%9C%89"><span class="toc-number">5.</span> <span class="toc-text">短期實務影響：幾乎沒有</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%82%A3-AI-%E5%85%AC%E5%8F%B8%E5%81%9A%E9%80%99%E5%80%8B%EF%BC%8C%E6%84%8F%E7%BE%A9%E5%9C%A8%E5%93%AA"><span class="toc-number">6.</span> <span class="toc-text">那 AI 公司做這個，意義在哪</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lean-%E9%A9%97%E9%81%8E%EF%BC%8C%E4%BB%A3%E8%A1%A8%E4%BB%80%E9%BA%BC"><span class="toc-number">7.</span> <span class="toc-text">Lean 驗過，代表什麼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A5%E4%B8%8B%E4%BE%86%E7%9C%8B%E8%AA%B0"><span class="toc-number">8.</span> <span class="toc-text">接下來看誰</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/4d323b4a/" title="指數時間假說是什麼？OpenAI 和 Claude 宣稱推翻它，為什麼這是大事"><img src="/images/posts/exponential-time-hypothesis-ai-refutation-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="指數時間假說是什麼？OpenAI 和 Claude 宣稱推翻它，為什麼這是大事"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/4d323b4a/" title="指數時間假說是什麼？OpenAI 和 Claude 宣稱推翻它，為什麼這是大事">指數時間假說是什麼？OpenAI 和 Claude 宣稱推翻它，為什麼這是大事</a><time datetime="2026-10-28T06:02:00.000Z" title="發表於 2026-10-28 14:02:00">2026-10-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/aee4a987/" title="Zeabur、Railway 環境變數外洩之後：先換哪把金鑰，換完怎麼確認舊的真的失效"><img src="/images/posts/paas-secret-rotation-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Zeabur、Railway 環境變數外洩之後：先換哪把金鑰，換完怎麼確認舊的真的失效"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/aee4a987/" title="Zeabur、Railway 環境變數外洩之後：先換哪把金鑰，換完怎麼確認舊的真的失效">Zeabur、Railway 環境變數外洩之後：先換哪把金鑰，換完怎麼確認舊的真的失效</a><time datetime="2026-10-22T07:45:00.000Z" title="發表於 2026-10-22 15:45:00">2026-10-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/5ba8c54d/" title="eMudhra 憑證外洩：Windows 擋了，Java、Node 照樣放行"><img src="/images/posts/emudhra-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="eMudhra 憑證外洩：Windows 擋了，Java、Node 照樣放行"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/5ba8c54d/" title="eMudhra 憑證外洩：Windows 擋了，Java、Node 照樣放行">eMudhra 憑證外洩：Windows 擋了，Java、Node 照樣放行</a><time datetime="2026-10-22T05:45:00.000Z" title="發表於 2026-10-22 13:45:00">2026-10-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/a4e5a5ec/" title="PHP2Shell 是什麼？緩解設定寫錯地方，一個 .htaccess 就蓋回去"><img src="/images/posts/php2shell-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="PHP2Shell 是什麼？緩解設定寫錯地方，一個 .htaccess 就蓋回去"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/a4e5a5ec/" title="PHP2Shell 是什麼？緩解設定寫錯地方，一個 .htaccess 就蓋回去">PHP2Shell 是什麼？緩解設定寫錯地方，一個 .htaccess 就蓋回去</a><time datetime="2026-10-22T03:50:00.000Z" title="發表於 2026-10-22 11:50:00">2026-10-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/dc759226/" title="Anthropic 用 Scion 換掉 Git：版本控制繞回中央式，但回不去 SVN"><img src="/images/posts/anthropic-scion-git-svn-tfvc-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Anthropic 用 Scion 換掉 Git：版本控制繞回中央式，但回不去 SVN"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/dc759226/" title="Anthropic 用 Scion 換掉 Git：版本控制繞回中央式，但回不去 SVN">Anthropic 用 Scion 換掉 Git：版本控制繞回中央式，但回不去 SVN</a><time datetime="2026-10-15T06:00:00.000Z" title="發表於 2026-10-15 14:00:00">2026-10-15</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/images/posts/exponential-time-hypothesis-ai-refutation-cover.webp);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By kyosora</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/utils.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/main.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/tw_cn.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const applyThemeDefaultsConfig = theme => {
+    if (theme === 'dark-mode') {
+      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
+      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    } else {
+      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
+      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    }
+  }
+
+  // Recursively traverse the config object and automatically apply theme-specific color schemes
+  const applyThemeConfig = (obj, theme) => {
+    if (typeof obj !== 'object' || obj === null) return
+
+    Object.keys(obj).forEach(key => {
+      const value = obj[key]
+      // If the property is an object and has theme-specific options, apply them
+      if (typeof value === 'object' && value !== null) {
+        if (value[theme]) {
+          obj[key] = value[theme] // Apply the value for the current theme
+        } else {
+          // Recursively process child objects
+          applyThemeConfig(value, theme)
+        }
+      }
+    })
+  }
+
+  const runChartJS = ele => {
+    window.loadChartJS = true
+
+    Array.from(ele).forEach((item, index) => {
+      const chartSrc = item.firstElementChild
+      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
+      const width = item.getAttribute('data-width')
+      const existingCanvas = document.getElementById(chartID)
+
+      // If a canvas already exists, remove it to avoid rendering duplicates
+      if (existingCanvas) {
+          existingCanvas.parentNode.remove()
+      }
+
+      const chartDefinition = chartSrc.textContent
+      const canvas = document.createElement('canvas')
+      canvas.id = chartID
+
+      const div = document.createElement('div')
+      div.className = 'chartjs-wrap'
+
+      if (width) {
+        div.style.width = width
+      }
+
+      div.appendChild(canvas)
+      chartSrc.insertAdjacentElement('afterend', div)
+
+      const ctx = document.getElementById(chartID).getContext('2d')
+
+      const config = JSON.parse(chartDefinition)
+
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
+
+      // Set default styles (initial setup)
+      applyThemeDefaultsConfig(theme)
+
+      // Automatically traverse the config and apply dual-mode color schemes
+      applyThemeConfig(config, theme)
+
+      new Chart(ctx, config)
+    })
+  }
+
+  const loadChartJS = () => {
+    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
+    if (chartJSEle.length === 0) return
+
+    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
+  }
+
+  // Listen for theme change events
+  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
+  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
+
+  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = {"mapping":"pathname","inputPosition":"top","lang":"zh-TW","reactionsEnabled":1}
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'kyosora/kyosora.github.io',
+      'data-repo-id': 'R_kgDOLJYL_w',
+      'data-category-id': 'DIC_kwDOLJYL_84C516C',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !true) {
+    if (true) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script src="/js/about-cards.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/hexo-theme-butterfly@5.5.4/source/js/search/local-search.min.js"></script></div></div></body></html>
