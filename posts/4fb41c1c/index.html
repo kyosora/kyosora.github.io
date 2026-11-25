@@ -1,0 +1,740 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它 | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="黎曼猜想是什麼？Alpöge 與 Claude 合作的證明，公開隔天就獲 Lean 社群認證，人類卻還在讀懂它。從質數與零點講起，看這次確認了什麼、還差什麼。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它">
+<meta property="og:url" content="https://kyosora.github.io/posts/4fb41c1c/">
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:description" content="黎曼猜想是什麼？Alpöge 與 Claude 合作的證明，公開隔天就獲 Lean 社群認證，人類卻還在讀懂它。從質數與零點講起，看這次確認了什麼、還差什麼。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/images/posts/riemann-hypothesis-claude-lean-proof-cover.webp">
+<meta property="article:published_time" content="2026-11-25T02:40:00.000Z">
+<meta property="article:modified_time" content="2026-11-25T02:34:13.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:tag" content="Claude">
+<meta property="article:tag" content="Lean">
+<meta property="article:tag" content="黎曼猜想">
+<meta property="article:tag" content="質數">
+<meta property="article:tag" content="數學證明">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kyosora.github.io/images/posts/riemann-hypothesis-claude-lean-proof-cover.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它",
+  "url": "https://kyosora.github.io/posts/4fb41c1c/",
+  "image": "https://kyosora.github.io/images/posts/riemann-hypothesis-claude-lean-proof-cover.webp",
+  "datePublished": "2026-11-25T02:40:00.000Z",
+  "dateModified": "2026-11-25T02:34:13.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kyosora",
+      "url": "https://kyosora.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/posts/4fb41c1c/"><link rel="preconnect" href="https://cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css" integrity="sha384-YgSbYtJcfPnMV/aJ0UdQk84ctht/ckX0MrfQwxOhw43RMBw2WSaDSMVh4gQwLdE4" crossorigin="anonymous"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.css" media="print" onload="this.media='all'" integrity="sha384-SwTfv/7YAtLOqjuOIVOyBHrBSW9ismFkXd7MZSJZmL20kcTygh/Rm3PHXJPY2taV" crossorigin="anonymous"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-F9P7RWQQJE')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="/css/about-cards.css"><link rel="stylesheet" href="/css/bg-gradient-mesh.css"><link rel="stylesheet" href="/css/view-transitions.css"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
+<script data-sri-getscript>(function(){var m={"https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js":"sha384-YrKBdCikMPThdp9YNMsmtzHOQ9yH4Ip+glZK2weyS2R3+jMLYsucIs5b5T6ptbqe","https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js":"sha384-1ggI9FC3CkghppRD/XCR4aD+jp4DxwXlJIW0wxhyTLNKuiZEW3c4BwcjKXl0iVAJ","https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js":"sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ"};var b=window.btf;if(!b||typeof b.getScript!=='function')return;var g=b.getScript;b.getScript=function(u,a){var h=m[u];if(!h)return g.call(b,u,a);var o={};if(a)for(var k in a)o[k]=a[k];o.integrity=h;o.crossorigin='anonymous';return g.call(b,u,o)}})();</script></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">245</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">540</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/posts/riemann-hypothesis-claude-lean-proof-cover.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a><a class="nav-page-title" href="/"><span class="site-name">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首頁</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它<a class="post-edit-link" href="https://github.com/jerryc127/butterfly.js.org/edit/main/source/_posts/riemann-hypothesis-claude-lean-proof.md" title="編輯" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">發表於</span><time datetime="2026-11-25T02:40:00.000Z" title="發表於 2026-11-25 10:40:00">2026-11-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">3.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>12分鐘</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>11 月 20 日週五，Anthropic 的數學家 Levent Alpöge 在個人網站放了一份四頁的說明，裡面寫：</p>
+<blockquote>
+<p>I believe I have, working with Claude, discovered a proof of the Riemann Hypothesis.</p>
+</blockquote>
+<p>隔天，Lean 程式語言背後的 Lean FRO 和 Mathlib Initiative 發出聯合聲明：「We hereby certify that both the statement and the proof of the Riemann Hypothesis are correct.」</p>
+<p>一個 1859 年提出、列在希爾伯特 23 個問題裡、克雷研究所懸賞一百萬美元的猜想，從公開證明到 Lean 社群發出認證，只隔了一天。</p>
+<p>但目前公開的完整證明，只有大約 1,700 萬行的 Lean 程式碼。人類可讀的版本，還在整理中。</p>
+<h2 id="黎曼猜想在問什麼">黎曼猜想在問什麼</h2>
+<p>從質數講起。2、3、5、7、11、13⋯⋯質數越往後，整體上越稀疏；但相鄰質數的間隔忽大忽小，很難只看前幾個就猜出下一個。</p>
+<p>數學家退一步問：不求每一個，只問「x 以內大約有幾個質數」。1896 年證明的質數定理給了答案：大約是 x／ln x。</p>
+<p>問題在「大約」：這個估計離實際個數有多遠？數學家通常改拿一個更精確的估計來比，叫對數積分 li(x)。實際的質數個數會在 li(x) 附近擺動，擺動幅度有多大，就是黎曼猜想要回答的問題。</p>
+<p>1859 年，黎曼寫了一篇論文，把這個擺動跟一個函數的零點綁在一起，這個函數就是 zeta 函數 ζ(s)。它有一批容易找到的「平凡零點」（-2、-4、-6⋯⋯），其他的「非平凡零點」都落在複數平面上一條寬度為 1 的帶狀區域裡。</p>
+<p>黎曼猜想說：**所有非平凡零點，實部都剛好等於 1/2。**它們全部排在同一條直線上，這條線叫臨界線。</p>
+<p>用 mpmath 可以把前幾個零點的位置算出來看看：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> mpmath <span class="keyword">import</span> mp, zetazero</span><br><span class="line"></span><br><span class="line">mp.dps = <span class="number">15</span></span><br><span class="line"><span class="keyword">for</span> n <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="number">6</span>):</span><br><span class="line">    z = zetazero(n)                 <span class="comment"># 第 n 個非平凡零點（虛部為正的那一側）</span></span><br><span class="line">    <span class="built_in">print</span>(n, z.real, z.imag)</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1 0.5 14.1347251417347</span><br><span class="line">2 0.5 21.0220396387716</span><br><span class="line">3 0.5 25.0108575801457</span><br><span class="line">4 0.5 30.4248761258595</span><br><span class="line">5 0.5 32.9350615877392</span><br></pre></td></tr></table></figure>
+<p>這只是把已知零點的位置印出來，稱不上驗證。真正的電腦驗證做得遠比這多：Platt 和 Trudgian 2021 年<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2004.09765">確認了前 12 兆多個非平凡零點</a>都在這條線上。但零點有無窮多個，算再多個也證明不了「所有」，要涵蓋全部，得有一個對它們都適用的論證。</p>
+<p>翻成質數的語言，黎曼猜想等於說：當 x 夠大時，實際質數個數和 li(x) 的差距，不超過某個固定常數乘上 √x·ln x。誤差被壓到接近平方根的尺度，就 x 的次方來說，這已經是能期待的最好結果。Alpöge 在說明裡的形容是，它要的是「optimal control on the count of prime numbers」。</p>
+<h2 id="為什麼數學家這麼在意">為什麼數學家這麼在意</h2>
+<p>因為太多結果都建在它上面。數論文獻裡有大量定理的開頭是「假設黎曼猜想成立」。如果它被證明，那些只差這個假設的結果，就全部升級成無條件成立。</p>
+<p>這次的範圍還更大。Alpöge 宣稱證明也涵蓋 Dirichlet L-function 的廣義黎曼猜想（GRH），它管的是「等差數列裡的質數」分布得多均勻。例如個位數是 1、3、7、9 的質數，長遠來看各占四分之一，這早就證明了；GRH 進一步約束的是：同樣數到 x，各組的質數個數能偏離預期多少。</p>
+<p>這對寫程式的人有個很具體的例子：質數測試。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">is_prime</span>(<span class="params">n: <span class="built_in">int</span></span>) -&gt; <span class="built_in">bool</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;確定性 Miller 測試：只試 a &lt;= 2(ln n)^2 的底數。</span></span><br><span class="line"><span class="string">    這個上限的保證來自 Bach 1990 的界，原本要假設 Dirichlet GRH。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> n &lt; <span class="number">2</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    <span class="keyword">if</span> n % <span class="number">2</span> == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">return</span> n == <span class="number">2</span></span><br><span class="line">    d, s = n - <span class="number">1</span>, <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> d % <span class="number">2</span> == <span class="number">0</span>:</span><br><span class="line">        d //= <span class="number">2</span></span><br><span class="line">        s += <span class="number">1</span></span><br><span class="line">    <span class="keyword">for</span> a <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>, <span class="built_in">min</span>(n - <span class="number">1</span>, <span class="built_in">int</span>(<span class="number">2</span> * math.log(n) ** <span class="number">2</span>)) + <span class="number">1</span>):</span><br><span class="line">        x = <span class="built_in">pow</span>(a, d, n)</span><br><span class="line">        <span class="keyword">if</span> x <span class="keyword">in</span> (<span class="number">1</span>, n - <span class="number">1</span>):</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(s - <span class="number">1</span>):</span><br><span class="line">            x = x * x % n</span><br><span class="line">            <span class="keyword">if</span> x == n - <span class="number">1</span>:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">False</span>            <span class="comment"># a 證明 n 是合數</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(is_prime(<span class="number">561</span>), is_prime(<span class="number">2047</span>), is_prime(<span class="number">2</span>**<span class="number">61</span> - <span class="number">1</span>))  <span class="comment"># False False True</span></span><br></pre></td></tr></table></figure>
+<p>只要 Dirichlet L-function 的 GRH 成立，「試到 2(ln n)² 為止都找不到反例」就足以保證 n 是質數。過去這個保證一直掛著「假設 GRH」的但書；如果這次 Dirichlet GRH 的證明站得住，它就變成無條件的定理。（這段程式是示範用的教學版本，上限用浮點數計算，要拿來當正式工具還得處理數值誤差。）</p>
+<p>實務上倒不會有什麼改變。產生 RSA-2048 金鑰時，通常要找兩個 1024 位元的質數；光是確認其中一個候選數是質數，照這個界就得試大約 100 萬個底數。實務上常用的，還是隨機底數跑多輪的 Miller–Rabin，它的誤判機率上限本來就不依賴 GRH。前面那個確定性版本就算拿掉 GRH 的但書，要試的底數還是一樣多。</p>
+<h2 id="會不會影響加密">會不會影響加密</h2>
+<p>簡短的答案是：單憑黎曼猜想或 GRH 被證明，推不出 RSA 或橢圓曲線簽章被破解。</p>
+<p>RSA 的安全性跟「大整數很難分解」密切相關，比特幣、以太坊用的橢圓曲線簽章則依賴另一類計算難題。黎曼猜想講的是質數整體上怎麼分布，這些難題不會因為一個誤差界被證明，就自動變得容易。</p>
+<h2 id="這次是怎麼被確認的">這次是怎麼被確認的</h2>
+<p>上個月 OpenAI 和 Anthropic 宣稱推翻指數時間假說時，<a href="/posts/4d323b4a/">我寫過一篇</a>，重點是 Lean 驗證的極限：機器可以確認證明符合「陳述檔」，但陳述檔有沒有忠實表達原本的數學問題，最後仍要懂這個問題的人來判斷。那次的陳述檔是 AI 寫的。</p>
+<p>這次不一樣。被證明的，是 Lean 的數學函式庫 Mathlib 裡本來就有的定義：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">def RiemannHypothesis : Prop :=</span><br><span class="line">  ∀ (s : ℂ) (_ : riemannZeta s = 0) (_ : ¬∃ n : ℕ, s = -2 * (n + 1)) (_ : s ≠ 1), s.re = 1 / 2</span><br></pre></td></tr></table></figure>
+<p>讀法是：對每一個複數 s，如果 ζ(s) = 0、s 不是 -2、-4、-6 這些平凡零點、而且 s ≠ 1，那麼 s 的實部就是 1/2。<code>s ≠ 1</code> 那個條件，是因為 Mathlib 在 ζ 的極點 s = 1 給了一個約定值，要先排除掉。</p>
+<p>早在 2024 年 5 月 31 日建檔時，這兩行就跟今天一字不差；這次證明公布前，11 月 17 日的版本也是同樣的寫法。當時的註解還半開玩笑地寫著「constructing a term of this type is worth a million dollars」：在 Lean 裡造出這個型別的值，就等於證明了黎曼猜想，克雷研究所的獎金正好是一百萬美元。11 月 22 日，這行註解改成指向這份證明的 repo。</p>
+<p>Lean FRO 的聲明說，這個陳述「has been carefully vetted by experts in Lean and number theory」。上次「陳述檔要靠人讀」的那層疑慮，這次小得多。</p>
+<p>11 月 21 日的聯合聲明交代了兩件事。第一，用兩套獨立的比對工具（comparator 和 con-leche），確認 Alpöge 證出的定理就是 Mathlib 這個定義。第二，Lean 官方 kernel 和好幾個用不同程式語言獨立實作的檢查器，各自重新檢查了整份證明；其中 con-leche 和 con-ron 還各有一份形式證明：在集合論的前提下，它們不會接受錯誤的證明。這是用來回應「Lean 的邏輯本身會不會有漏洞，被證明鑽了空子」這類疑慮。聲明特別提到，這些檢查讀的是證明匯出的靜態資料（inert export），「out of reach of hypothetical malicious code in the Lean proof sources」，不必執行 Lean 原始檔裡可能夾帶的程式碼。</p>
+<p>MIT 的 Andrew Sutherland 另外公開了自己的驗證紀錄：用 Lean v4.33.1 和 Mathlib v4.33.1 從原始碼編譯，175,187 個模組全部成功；主要定理只用到 Lean 的三個標準公理；nanoda、con-leche 等檢查器也都接受完整的匯出檔。</p>
+<p>有兩點要分清楚。Lean 社群聯合聲明認證的，是經典黎曼猜想；Dirichlet L-function 的 GRH，是 Sutherland 公開的檢查紀錄涵蓋的。另外，到 Sutherland 頁面最後更新的 11 月 24 日 05:25（UTC）為止，還有一次用 Lean v4.36.0 從匯出檔跑的端到端比對（lake comparator）沒跑完：前兩個階段已通過，最後一個階段正在用 Lean 的預設 kernel 檢查。這個階段以單執行緒執行，先前單獨跑時花了 48 小時。</p>
+<h2 id="確認了它對，還在理解它為什麼對">確認了它對，還在理解它為什麼對</h2>
+<p>Alpöge 自己在說明裡寫得很坦白：公開證明時，這套論證牽涉的大片數學，他還沒有充分掌握。他也說，要產出一份「huge, unreadable document」很容易，但他選擇只公開 Lean，之後會盡力理解、找出更短的寫法，再好好寫成論文。</p>
+<p>Terence Tao 當天在部落格談到 Alpöge 的 GRH 證明，說從初步分析看，它「appears to use the full power of modern developments on the Langlands program and arithmetic geometry」，動用了 Langlands 綱領與算術幾何的重型工具。滑鐵盧大學的 Michael Rubinstein 已經整理出一份 265 頁的閱讀導引，但他也註明，導引把關鍵不等式 (M) 化約成 13 項假設，導引本身還沒有逐項證明它們（「none of which is proved outright」），「It is a work in progress」。這是說導引還沒寫完，Lean 證明本身並沒有另外假設這 13 項。</p>
+<p>受訪的數學家各有側重。牛津的 James Maynard（2022 年菲爾茲獎）認為證明很可能是對的，但光是檢查 Lean 驗證就要花時間，要真正理解它，「it looks like it will require quite a lot of work」。黎曼猜想專家 Brian Conrey 說這是「the biggest thing I think that’s ever happened in mathematics」，也直說他不認為有哪個人已經快找到這個證明，並相信之後會出現更簡單的證法。</p>
+<p>洛林大學的 Youness Lamzouri 說得最簡短：</p>
+<blockquote>
+<p>Mathematics is mainly about understanding why something is true.</p>
+</blockquote>
+<p>這大概就是接下來幾年數學界要做的事。</p>
+<h2 id="AI-和人怎麼分工">AI 和人怎麼分工</h2>
+<p>Alpöge 在說明裡描述的分工是這樣：他先找出這個問題跟先前一個比較簡單的模型相似的地方，據此定下方向；接著在終點線前，「Claude far outpaced me near the finish line. No, Claude flew, and danced, and sparkled near that finish line」。他舉了一個例子：論證裡需要串接一串 theta lift，鏈要多長，是 Claude 提出的答案，√X。他也坦承，自己對高秩群上的自守形式掌握有限（「little mastery」）。</p>
+<p>說明裡沒有寫是哪一個 Claude 模型。</p>
+<p>今年 8 月，Alpöge 和 Ralph Furman 證明，超過三分之二的非平凡零點既是單零點（重數為 1，不是重根），也落在臨界線上。三個月後，Alpöge 宣稱已證明所有非平凡零點都在臨界線上；至於零點的重數是不是全都等於 1，黎曼猜想本身並不回答。</p>
+<p>發布時機也容易被拿來做文章：Anthropic 11 月 19 日在 Nasdaq 掛牌，隔天 Alpöge 就在個人網站公布說明。他在說明裡先自己講了：「The precise timing is horrible」，並說「There is an obvious cynical view, to do with the timing, but it is false」。不過證明對不對，跟時機無關；驗證是 Lean 社群獨立完成的，不需要相信 Anthropic 的說法。</p>
+<h2 id="同一天的-Navier–Stokes-結果">同一天的 Navier–Stokes 結果</h2>
+<p>Alpöge 和 NYU 的 Tristan Buckmaster 放出了 Navier–Stokes 方程的證明，宣稱存在某些光滑的初始狀態，讓三維不可壓縮流體在<strong>不需要外力</strong>的情況下，於有限時間內失去光滑性（數學上叫爆破）。他們同時還放了 Euler 方程的同類結果（加上 Matei Coiculescu）。兩份都附 Lean 形式化。</p>
+<p>我自己的感覺是，這件事的討論度小很多。NS 在 9 月已經上過一輪新聞：當時 OpenAI 宣稱證明了 NS 的解會爆破，克雷研究所 9 月 11 日發聲明，說這個問題「has apparently been settled」。據報導，9 月那個版本需要外力推動，這次的新結果把它推進到不需要外力。我猜讀過 9 月新聞的人，很容易把這次看成前一則新聞的後續。</p>
+<p>有意思的是，Tao 把同一天的三個結果，照「消化程度」排序。Euler 有人類可讀的證明；NS 的論文「technically human-readable」，證明策略也清楚；Alpöge 的廣義黎曼猜想證明則只有 Lean 版本，而且非常龐大。在我看到的報導裡，比較能讀的 Euler 和 NS 很少被提起，最難讀的黎曼猜想反而成了頭條。</p>
+<h2 id="離克雷獎還有多遠">離克雷獎還有多遠</h2>
+<p>證明通過形式檢查，跟符合克雷獎的審議條件，是兩件事。千禧年獎要同時滿足三個條件：</p>
+<blockquote>
+<p>(i) the proposed solution must be published in a Qualifying Outlet, and (ii) at least two years must have passed since publication, and (iii) the proposed solution must have received general acceptance in the global mathematics community</p>
+</blockquote>
+<p>目前公開的完整論證是 Lean 形式。截至 11 月 25 日，克雷研究所的新聞頁還沒有這次黎曼猜想的公告。依克雷的規則，至少要從符合資格的發表日起等兩年；目前的公開資訊，還不足以判定這次的兩年等待期該從哪一天算起。</p>
+<h2 id="最後">最後</h2>
+<p>經典黎曼猜想這次直接對上 Mathlib 既有的定義，又有好幾套獨立比對和檢查。接下來要做的，是把 1,700 萬行的形式證明，整理成數學家能掌握、討論、繼續往下發展的論證。</p>
+<p>確認它成立，和理解它為什麼成立，這次走出了完全不同的速度。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kyosora.github.io">kyosora</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://kyosora.github.io/posts/4fb41c1c/">https://kyosora.github.io/posts/4fb41c1c/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 授權協議。轉載請註明來源 <a href="https://kyosora.github.io" target="_blank">kyosora 筆記</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Claude/">Claude</a><a class="post-meta__tags" href="/tags/Lean/">Lean</a><a class="post-meta__tags" href="/tags/%E9%BB%8E%E6%9B%BC%E7%8C%9C%E6%83%B3/">黎曼猜想</a><a class="post-meta__tags" href="/tags/%E8%B3%AA%E6%95%B8/">質數</a><a class="post-meta__tags" href="/tags/%E6%95%B8%E5%AD%B8%E8%AD%89%E6%98%8E/">數學證明</a></div><div class="post-share"><div class="social-share" data-image="/images/posts/riemann-hypothesis-claude-lean-proof-cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'" integrity="sha384-pHP5Gsph8nDYa2Wj0frFT8K63FVU7zVae69H6kGfTbqR7A7DzAMSqKXk1iUB9/6G" crossorigin="anonymous"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer integrity="sha384-CvrrTalky/rRVwzG52LyKTddyiATRqUS5VTzYUhO9/f0W2+VNbyNuZi1FKxniL5E" crossorigin="anonymous"></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/7463bf4c/" title="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法"><img class="cover" src="/images/posts/windows-openssh-key-only-four-machines-cover.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</div></div><div class="info-2"><div class="info-item-1">十月底，我要從公司的筆電 SSH 進兩台客戶的 Windows Server。十一月初又多了兩台放在現場的 Windows 電腦。 需求很單純：裝 OpenSSH Server，只准金鑰登入，密碼一律不收。我讓 Claude Code 在筆電上產一組 ed25519 金鑰，再寫一支 PowerShell 腳本，拿到對方機器上用系統管理員跑一次：裝 sshd、開防火牆、寫公鑰、把登入後的 shell 換成 PowerShell。 四台機器，各卡在不同地方：    機器 系統 卡在哪 結果     伺服器 A Windows Server 2016 沒有 OpenSSH 選用功能 改裝 MSI，金鑰登入完成   伺服器 B Windows Server 2019 sshd 在聽，外面連 22 逾時 放棄 SSH，改用別的方式遠端   現場機一號 Windows 桌機 只關了 PasswordAuthentication 補關 keyboard-interactive   現場機二號 Windows 桌機 連不到 Windows Update；MSI 自帶防火牆規則 改裝 MSI，22...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/4d323b4a/" title="指數時間假說是什麼？OpenAI 和 Claude 宣稱推翻它，為什麼這是大事"><img class="cover" src="/images/posts/exponential-time-hypothesis-ai-refutation-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-28</div><div class="info-item-2">指數時間假說是什麼？OpenAI 和 Claude 宣稱推翻它，為什麼這是大事</div></div><div class="info-2"><div class="info-item-1">10 月 26 日（美國時間），OpenAI 在 openai/math 放出一份手稿，標題只有一句話：〈The Exponential Time Hypothesis is False〉。幾個小時後，Anthropic 在 anthropics/formal-math 放出一篇 Claude 署名的論文〈A 2^o(n) Time Algorithm for 3-SAT〉，宣稱的是同一件事。兩家都附了 Lean 4 形式證明，由學界組成的獨立審查還在進行。 幣圈先炸了一輪。ETH 在他們眼裡是以太坊，Decrypt 的標題直接寫「OpenAI Proves ETH Is False, and Crypto Twitter Has Questions」。 這裡的 ETH 是 Exponential Time Hypothesis，指數時間假說。它跟以太坊無關，是理論電腦科學裡一條撐了二十多年的基礎假設。如果這次的反證成立，影響的是一整批理論結果；對你寫的程式，則幾乎沒有影響。下面從頭講。 先從 3-SAT 講起 想像你在排班。每條規則長這樣：「小明值班、小華不值班、小美值班，三個...</div></div></div></a><a class="pagination-related" href="/posts/4b08e7bb/" title="當AI公司對五角大廈說不：Anthropic被封殺卻逆襲App Store的荒謬劇"><img class="cover" src="/images/posts/legacy-4b08e7bb-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-09</div><div class="info-item-2">當AI公司對五角大廈說不：Anthropic被封殺卻逆襲App Store的荒謬劇</div></div><div class="info-2"><div class="info-item-1">2 月 27 日晚上，Trump 簽署行政命令，禁止所有聯邦機構使用 Anthropic 的產品。國防部長 Hegseth 把 Anthropic 列為「供應鏈風險」——一個通常保留給中國和俄羅斯企業的標籤。 72 小時後，Claude 衝上美國 App Store 第一名，超越 ChatGPT 和 Gemini。每天有超過一百萬人註冊。 這不是電影劇情，這是 2026 年 3 月正在發生的事。 Anthropic 的兩條紅線 整件事的核心，其實就兩句話。 Anthropic 告訴五角大廈：你可以用 Claude 做幾乎所有事情，但有兩個例外——不能用於大規模監控美國公民，不能用於全自主致命武器。 五角大廈的回應是：我們要「所有合法用途」的授權。 談判破裂。 CEO Dario Amodei 事後說：「我們要求的限制只涉及高層級的使用領域，不干涉具體的操作決策。」換句話說，Anthropic 沒有要求審查每一次模型呼叫，他們只是不想讓自己的技術出現在「用 AI 自動決定要不要開火」或「用 AI 監聽所有美國人通訊」的場景裡。 聽起來合理？五角大廈不這麼認為。 連鎖反應比預期更猛 ...</div></div></div></a><a class="pagination-related" href="/posts/6115ba58/" title="一張 $500 的顯卡跑贏 Claude Sonnet？ATLAS 專案的 benchmark 數字背後"><img class="cover" src="/images/posts/legacy-6115ba58-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-27</div><div class="info-item-2">一張 $500 的顯卡跑贏 Claude Sonnet？ATLAS 專案的 benchmark 數字背後</div></div><div class="info-2"><div class="info-item-1">「$500 GPU outperforms Claude Sonnet on coding benchmarks」——這個標題在 Hacker News 上拿了 370 分，208 則討論。一個叫 ATLAS 的開源專案，用一張 RTX 5060 Ti 16GB 跑 Qwen3-14B 量化模型，在 LiveCodeBench 上拿到 74.6%，超過 Claude 4.5 Sonnet 的 71.4%。 聽起來像是本地派的勝利號角。但數字不說謊，數字只是不說完整的故事。 ATLAS 做了什麼 ATLAS 全名是 Adaptive Test-time Learning and Autonomous Specialization。核心思路：不微調模型，不呼叫 API，而是在推理時用「智慧基礎設施」包裝一個凍結的小模型，讓它表現得像大模型。 具體來說，它有三個階段： Phase 1：生成。 用 PlanSearch 從題目中提取約束條件，生成多樣化的解題計畫，然後控制 thinking token 的 budget，產出 k=3 個候選答案。 Phase 2：篩選。 用 Geomet...</div></div></div></a><a class="pagination-related" href="/posts/d2eaf73a/" title="三月AI模型大亂鬥：GPT-5.4、Gemini 3.1 Pro、Claude Opus 4.6 到底誰贏了"><img class="cover" src="/images/posts/legacy-d2eaf73a-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-08</div><div class="info-item-2">三月AI模型大亂鬥：GPT-5.4、Gemini 3.1 Pro、Claude Opus 4.6 到底誰贏了</div></div><div class="info-2"><div class="info-item-1">3 月 5 日，OpenAI 丟出 GPT-5.4。兩週前，Google 才發了 Gemini 3.1 Pro。Anthropic 的 Claude Opus 4.6 也在持續迭代。三家模型同時站在擂台上，跑分互有勝負，開發者選擇困難症大爆發。 我花了幾天把三家的 benchmark 資料、定價和實際使用場景整理了一遍。結論先說：沒有全能冠軍，但各有各的殺手鐧。 GPT-5.4：第一個真正會用電腦的 AI OpenAI 這次最大的賣點不是跑分——是 Computer Use。 GPT-5.4 能直接操作桌面應用程式：看螢幕截圖、移動滑鼠、敲鍵盤。在 OSWorld 測試中，它拿到 75% 的成功率，超越人類的 72.4%。這不是小數字的進步，GPT-5.2 在同一個測試只有 47.3%。 另一個重點是「統合模型」架構。OpenAI 把之前分散在不同模型的能力——Codex 的寫程式、推理模型的思考鏈、Agent 的自主操作——塞進同一個模型裡。不用再煩惱「這個任務該叫哪個模型」。 硬指標    項目 GPT-5.4 跟 GPT-5.2 相比     GDPval（知識工作） 83...</div></div></div></a><a class="pagination-related" href="/posts/6a7b2e15/" title="Notion MCP 使用教學：用 OAuth 讓 Claude Code 直接操作工作區"><img class="cover" src="/images/posts/legacy-6a7b2e15-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-23</div><div class="info-item-2">Notion MCP 使用教學：用 OAuth 讓 Claude Code 直接操作工作區</div></div><div class="info-2"><div class="info-item-1"> 2026-07 更新： Notion 現在建議使用官方託管的 MCP Server，透過 OAuth 授權。舊版 @notionhq/notion-mcp-server 仍可自架，但官方已停止積極維護，不該再當一般使用者的預設方案。  在 Notion 和 Claude Code 之間來回複製貼上，很快就會變成一件純手工工作。接上 Notion MCP（Model Context Protocol）後，Claude Code 可以搜尋頁面、建立內容、更新資料庫項目；每次寫入前仍應該先確認目標頁面和修改範圍。 什麼是 Notion MCP？ Notion MCP 是 Notion 官方提供的遠端 MCP Server，端點是 https://mcp.notion.com/mcp。它把 Notion 的搜尋、讀取與寫入能力提供給支援 MCP 的工具。 這裡要分清楚兩件事：MCP 負責連接工具；真正能看到哪些內容，仍取決於完成 OAuth 授權的 Notion 使用者本來就有的權限。接上 MCP 不會自動繞過工作區權限。 開始前的準備 需要準備的東西：  Claude Code，或其...</div></div></div></a><a class="pagination-related" href="/posts/3e7cf918/" title="你的 AI Agent 拿到的權限比你的實習生還大？Anthropic 零信任框架拆解"><img class="cover" src="/images/posts/anthropic-zero-trust-ai-agent-security-framework-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-28</div><div class="info-item-2">你的 AI Agent 拿到的權限比你的實習生還大？Anthropic 零信任框架拆解</div></div><div class="info-2"><div class="info-item-1">5 月 27 日 Anthropic 丟出一份 36 頁的電子書，標題叫《Zero Trust for AI Agents》。這不是一般的行銷白皮書——它給了具體的架構、實施路徑和威脅分類，而且每條建議都對應到成熟度等級，讓你知道自己該做到哪一層。 我把重點整理出來，順便加上我自己在用 Claude Code 和各種 Agent 工具時踩過的坑。 為什麼現在要談 Agent 安全 先說結論：AI Agent 跟傳統軟體最大的差別，是它會自己做決定。 傳統軟體執行你寫好的邏輯。Agent 不一樣，它解讀目標、選擇工具、執行多步驟操作，全程不需要你點頭。這帶來一個根本性的安全問題——你給它的權限，它會用自己的判斷去使用。 Anthropic 在文件裡點出了五個 Agent 特有的安全考量：  自主執行：不用人工批准就能完成整條工作流程 工具存取：能操作 API、資料庫、檔案系統、MCP 伺服器 決策模糊性：人類覺得無害的指令，Agent 可能解讀出完全不同的結果 跨 session 記憶：記住上次對話的偏好和知識——也記住被注入的毒 多 Agent 協作：Agent 之間的信任關係，...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">245</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">540</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%BB%8E%E6%9B%BC%E7%8C%9C%E6%83%B3%E5%9C%A8%E5%95%8F%E4%BB%80%E9%BA%BC"><span class="toc-number">1.</span> <span class="toc-text">黎曼猜想在問什麼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E6%95%B8%E5%AD%B8%E5%AE%B6%E9%80%99%E9%BA%BC%E5%9C%A8%E6%84%8F"><span class="toc-number">2.</span> <span class="toc-text">為什麼數學家這麼在意</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%83%E4%B8%8D%E6%9C%83%E5%BD%B1%E9%9F%BF%E5%8A%A0%E5%AF%86"><span class="toc-number">3.</span> <span class="toc-text">會不會影響加密</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%99%E6%AC%A1%E6%98%AF%E6%80%8E%E9%BA%BC%E8%A2%AB%E7%A2%BA%E8%AA%8D%E7%9A%84"><span class="toc-number">4.</span> <span class="toc-text">這次是怎麼被確認的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A2%BA%E8%AA%8D%E4%BA%86%E5%AE%83%E5%B0%8D%EF%BC%8C%E9%82%84%E5%9C%A8%E7%90%86%E8%A7%A3%E5%AE%83%E7%82%BA%E4%BB%80%E9%BA%BC%E5%B0%8D"><span class="toc-number">5.</span> <span class="toc-text">確認了它對，還在理解它為什麼對</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AI-%E5%92%8C%E4%BA%BA%E6%80%8E%E9%BA%BC%E5%88%86%E5%B7%A5"><span class="toc-number">6.</span> <span class="toc-text">AI 和人怎麼分工</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8C%E4%B8%80%E5%A4%A9%E7%9A%84-Navier%E2%80%93Stokes-%E7%B5%90%E6%9E%9C"><span class="toc-number">7.</span> <span class="toc-text">同一天的 Navier–Stokes 結果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%A2%E5%85%8B%E9%9B%B7%E7%8D%8E%E9%82%84%E6%9C%89%E5%A4%9A%E9%81%A0"><span class="toc-number">8.</span> <span class="toc-text">離克雷獎還有多遠</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%BE%8C"><span class="toc-number">9.</span> <span class="toc-text">最後</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/4fb41c1c/" title="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它"><img src="/images/posts/riemann-hypothesis-claude-lean-proof-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/4fb41c1c/" title="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z" title="發表於 2026-11-25 10:40:00">2026-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7463bf4c/" title="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法"><img src="/images/posts/windows-openssh-key-only-four-machines-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/7463bf4c/" title="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z" title="發表於 2026-11-12 11:30:00">2026-11-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3c89a868/" title="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊"><img src="/images/posts/aspnet-session-lock-request-queue-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/3c89a868/" title="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z" title="發表於 2026-11-12 11:00:00">2026-11-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7cf056d5/" title="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI"><img src="/images/posts/nikke-launcher-cdn-sri-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/7cf056d5/" title="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z" title="發表於 2026-11-05 13:00:00">2026-11-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/34c467cd/" title="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法"><img src="/images/posts/twca-cyber-root-iis-iphone-untrusted-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/34c467cd/" title="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法">TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法</a><time datetime="2026-11-02T06:45:00.000Z" title="發表於 2026-11-02 14:45:00">2026-11-02</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/images/posts/riemann-hypothesis-claude-lean-proof-cover.webp);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By kyosora</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><script src="/js/tw_cn.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.js" integrity="sha384-gxImbXBiSbxiZ81MBKincxlzfmdjvLfzyAvwe2hUA/rhcWB88+gfX+uzi8K/rw84" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.js" type="module" integrity="sha384-+oVCYEOCpcTbL4CsQ1hK+6Prt7+Kx2+ER1RSn5iQ0Ua0B1sBuGONp1jKt8dkcd5n" crossorigin="anonymous"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const applyThemeDefaultsConfig = theme => {
+    if (theme === 'dark-mode') {
+      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
+      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    } else {
+      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
+      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
+      Chart.defaults.scale.ticks.backdropColor = "transparent"
+    }
+  }
+
+  // Recursively traverse the config object and automatically apply theme-specific color schemes
+  const applyThemeConfig = (obj, theme) => {
+    if (typeof obj !== 'object' || obj === null) return
+
+    Object.keys(obj).forEach(key => {
+      const value = obj[key]
+      // If the property is an object and has theme-specific options, apply them
+      if (typeof value === 'object' && value !== null) {
+        if (value[theme]) {
+          obj[key] = value[theme] // Apply the value for the current theme
+        } else {
+          // Recursively process child objects
+          applyThemeConfig(value, theme)
+        }
+      }
+    })
+  }
+
+  const runChartJS = ele => {
+    window.loadChartJS = true
+
+    Array.from(ele).forEach((item, index) => {
+      const chartSrc = item.firstElementChild
+      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
+      const width = item.getAttribute('data-width')
+      const existingCanvas = document.getElementById(chartID)
+
+      // If a canvas already exists, remove it to avoid rendering duplicates
+      if (existingCanvas) {
+          existingCanvas.parentNode.remove()
+      }
+
+      const chartDefinition = chartSrc.textContent
+      const canvas = document.createElement('canvas')
+      canvas.id = chartID
+
+      const div = document.createElement('div')
+      div.className = 'chartjs-wrap'
+
+      if (width) {
+        div.style.width = width
+      }
+
+      div.appendChild(canvas)
+      chartSrc.insertAdjacentElement('afterend', div)
+
+      const ctx = document.getElementById(chartID).getContext('2d')
+
+      const config = JSON.parse(chartDefinition)
+
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
+
+      // Set default styles (initial setup)
+      applyThemeDefaultsConfig(theme)
+
+      // Automatically traverse the config and apply dual-mode color schemes
+      applyThemeConfig(config, theme)
+
+      new Chart(ctx, config)
+    })
+  }
+
+  const loadChartJS = () => {
+    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
+    if (chartJSEle.length === 0) return
+
+    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
+  }
+
+  // Listen for theme change events
+  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
+  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
+
+  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = {"mapping":"pathname","inputPosition":"top","lang":"zh-TW","reactionsEnabled":1}
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'kyosora/kyosora.github.io',
+      'data-repo-id': 'R_kgDOLJYL_w',
+      'data-category-id': 'DIC_kwDOLJYL_84C516C',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !true) {
+    if (true) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script src="/js/about-cards.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>
