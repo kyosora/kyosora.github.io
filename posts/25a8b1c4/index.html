@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久 | kyosora 筆記</title>
+<meta name="description" content="改版上線、伺服器檔案也對，使用者卻還在跑舊版？IIS 靜態檔預設不送 Cache-Control，瀏覽器會依 Last-Modified 自己快取好幾週。附實測重現、web.config 修法，與補 header 後舊快取的處理。">
+<link rel="canonical" href="https://kyosora.github.io/posts/25a8b1c4/">
+
+<meta name="author" content="kyosora">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f4f6f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1820" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久">
+<meta property="og:description" content="改版上線、伺服器檔案也對，使用者卻還在跑舊版？IIS 靜態檔預設不送 Cache-Control，瀏覽器會依 Last-Modified 自己快取好幾週。附實測重現、web.config 修法，與補 header 後舊快取的處理。">
+<meta property="og:url" content="https://kyosora.github.io/posts/25a8b1c4/">
+
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/images/posts/iis-heuristic-cache-control-cover.webp">
+<meta name="twitter:image" content="https://kyosora.github.io/images/posts/iis-heuristic-cache-control-cover.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="article:published_time" content="2026-11-26T07:20:00.000Z">
+<meta property="article:modified_time" content="2026-11-26T07:20:00.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:section" content="前後端開發">
+<meta property="article:tag" content="IIS">
+<meta property="article:tag" content="Vue">
+<meta property="article:tag" content="除錯">
+<meta property="article:tag" content="Cache-Control">
+<meta property="article:tag" content="瀏覽器快取">
+<meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k">
+<meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E">
+<meta name="baidu-site-verification" content="code-pE5rnuxcfD">
+<link rel="icon" href="/images/favicon.png">
+<link rel="alternate" type="application/atom+xml" title="kyosora 筆記" href="/atom.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&amp;display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/css/kyosora.css?v=4bf38b40">
+
+<script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久","description":"改版上線、伺服器檔案也對，使用者卻還在跑舊版？IIS 靜態檔預設不送 Cache-Control，瀏覽器會依 Last-Modified 自己快取好幾週。附實測重現、web.config 修法，與補 header 後舊快取的處理。","url":"https://kyosora.github.io/posts/25a8b1c4/","mainEntityOfPage":"https://kyosora.github.io/posts/25a8b1c4/","image":"https://kyosora.github.io/images/posts/iis-heuristic-cache-control-cover.webp","datePublished":"2026-11-26T07:20:00.000Z","dateModified":"2026-11-26T07:20:00.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"前後端開發","keywords":"IIS, Vue, 除錯, Cache-Control, 瀏覽器快取"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"前後端開發","item":"https://kyosora.github.io/categories/%E5%89%8D%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/"},{"@type":"ListItem","position":3,"name":"修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久","item":"https://kyosora.github.io/posts/25a8b1c4/"}]}]}</script>
+
+</head>
+<body class="kind-post">
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
+<symbol id="i-rss" viewBox="0 0 24 24"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.2"/></symbol>
+</svg>
+
+<a class="skip" href="#main">跳到內文</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/">kyosora 筆記</a>
+    <nav class="nav" aria-label="主要選單">
+      
+      <a href="/">首頁</a>
+      
+      <a href="/archives/">歸檔</a>
+      
+      <a href="/categories/">分類</a>
+      
+      <a href="/tags/">標籤</a>
+      
+      <a href="/about/">關於</a>
+      
+    </nav>
+    <div class="tools">
+      <button class="tool" type="button" data-action="search" aria-label="搜尋文章（快捷鍵 /）" title="搜尋（/）"><svg class="icon"><use href="#i-search"/></svg></button>
+      <button class="tool tool--text" type="button" data-action="translate" aria-label="切換成簡體中文" title="繁簡切換">簡</button>
+      <button class="tool" type="button" data-action="theme" aria-label="切換深色模式" title="深淺色切換"><svg class="icon icon-moon"><use href="#i-moon"/></svg><svg class="icon icon-sun"><use href="#i-sun"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<article class="post">
+  <header class="post-head">
+    
+    <figure class="post-banner"><img src="/images/posts/iis-heuristic-cache-control-cover.webp" alt="" width="1536" height="1024" fetchpriority="high" decoding="async"></figure>
+    
+    <div class="wrap post-head-inner">
+      
+<nav class="crumbs" aria-label="目前位置">
+  <ol>
+  
+    <li><a href="/">首頁</a></li>
+  
+    <li><a href="/categories/%E5%89%8D%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/">前後端開發</a></li>
+  
+  </ol>
+</nav>
+
+
+      <h1 class="post-title">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</h1>
+      <p class="post-meta">
+        <span>發布於 <time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></span>
+        
+        <span>約 10 分鐘讀完</span>
+        <span class="views" data-views hidden></span>
+      </p>
+    </div>
+  </header>
+
+  <div class="wrap post-layout">
+    
+    <aside class="post-aside">
+      <details class="toc-box" open>
+        <summary>目錄</summary>
+        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%BA%E6%9C%8D%E5%99%A8%E6%98%AF%E5%B0%8D%E7%9A%84%EF%BC%8C%E9%80%99%E4%BB%B6%E4%BA%8B%E8%AD%89%E6%98%8E%E4%B8%8D%E4%BA%86%E4%BB%80%E9%BA%BC"><span class="toc-text">伺服器是對的，這件事證明不了什麼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B2%92%E6%9C%89-Cache-Control%EF%BC%8C%E7%80%8F%E8%A6%BD%E5%99%A8%E8%87%AA%E5%B7%B1%E4%BC%B0%E8%83%BD%E7%94%A8%E5%A4%9A%E4%B9%85"><span class="toc-text">沒有 Cache-Control，瀏覽器自己估能用多久</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%89%E4%BA%86-F5%EF%BC%8C%E7%82%BA%E4%BB%80%E9%BA%BC-list-vue-%E9%82%84%E6%98%AF%E8%88%8A%E7%9A%84"><span class="toc-text">按了 F5，為什麼 list.vue 還是舊的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%B3%95%EF%BC%9A%E5%8F%AA%E5%B0%8D%E6%94%BE-vue-%E7%9A%84%E8%B3%87%E6%96%99%E5%A4%BE%E9%97%9C%E6%8E%89"><span class="toc-text">修法：只對放 .vue 的資料夾關掉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A3%9C%E4%BA%86-header%EF%BC%8C%E5%B7%B2%E7%B6%93%E4%B8%AD%E6%8B%9B%E7%9A%84%E4%BA%BA%E9%82%84%E6%98%AF%E8%88%8A%E7%9A%84"><span class="toc-text">補了 header，已經中招的人還是舊的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A2%AB%E8%88%8A%E7%A8%8B%E5%BC%8F%E5%AF%AB%E5%A3%9E%E7%9A%84-9-%E7%AD%86"><span class="toc-text">被舊程式寫壞的 9 筆</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%9C%E6%85%8B%E6%AA%94%E7%9A%84-Cache-Control-%E6%80%8E%E9%BA%BC%E9%81%B8"><span class="toc-text">靜態檔的 Cache-Control 怎麼選</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%99%E6%AC%A1%E8%A8%98%E4%BD%8F%E7%9A%84%E4%BA%8B"><span class="toc-text">這次記住的事</span></a></li></ol></nav>
+      </details>
+    </aside>
+    
+
+    <div class="post-main">
+      <div class="prose" id="article">
+        <p>上週修了一個巡查表單的 bug，修正上了正式機。我比過伺服器上的檔案 MD5，再用沒有快取的乾淨瀏覽器打開，看到的也是新版。</p>
+<p>接著 PM 傳來一張 App 截圖，列表還在顯示時分秒。新版的列表只顯示日期。</p>
+<p>更糟的在 log 裡。這次修正的另一半是存檔：新版網頁會把完整時間送給 API，舊版只送日期。有人從網頁存檔，送出的卻是只有日期的舊格式，又把 9 筆巡查時間存成 00:00:00。修正明明上去了，使用者手上跑的還是舊程式。</p>
+<p>這是一套 Vue 2 的舊系統，沒有打包流程，頁面用 httpVueLoader 在執行期發 XHR 去抓 <code>.vue</code> 原始檔。檔名沒有 hash，載入時也不帶版本號。IIS 回 <code>.vue</code> 只附 <code>Last-Modified</code> 和 <code>ETag</code>，沒有 <code>Cache-Control</code>。</p>
+<p>我很快就猜到是快取。要證明、要修，中間還有一個補完設定才會碰到的坑：<strong>只補 header，已經快取舊檔的人仍可能一路用到新鮮期結束。</strong></p>
+<h2 id="伺服器是對的，這件事證明不了什麼"><a href="#伺服器是對的，這件事證明不了什麼" class="headerlink" title="伺服器是對的，這件事證明不了什麼"></a>伺服器是對的，這件事證明不了什麼</h2><p>MD5 對、乾淨瀏覽器正常，證明的都是伺服器上的檔案。使用者的瀏覽器跑哪一版，要看使用者送上來的東西。</p>
+<p>這個系統的寫入 API 每次都把整筆 JSON 記進當天的 log。網頁送的 payload 裡夾著一段只有網頁版才有的 <code>Action</code> 按鈕 HTML，App 送的沒有；舊版的巡查時間只有日期（像 <code>&quot;2026-11-18&quot;</code>），新版會帶上時間。</p>
+<p>那 9 筆全都帶著 <code>Action</code>，巡查時間也只有日期。從 log 可以確定，送出它們的是舊版網頁。</p>
+<p>舊版網頁怎麼還在？log 回答不了。一個部署前就開著、一直沒關的分頁，也送得出這種資料。讓我先往快取查的，是 <code>.vue</code> 的回應裡少了 <code>Cache-Control</code>。</p>
+<h2 id="沒有-Cache-Control，瀏覽器自己估能用多久"><a href="#沒有-Cache-Control，瀏覽器自己估能用多久" class="headerlink" title="沒有 Cache-Control，瀏覽器自己估能用多久"></a>沒有 Cache-Control，瀏覽器自己估能用多久</h2><p>IIS 的 <code>&lt;clientCache&gt;</code> 預設值是 <code>NoControl</code>，靜態檔不加 <code>Cache-Control</code>，也不加 <code>Expires</code>。我在本機用 IIS Express 開了一個最小站台，<code>.vue</code> 的回應長這樣：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Content-Length: 2</span><br><span class="line">Content-Type: text/plain</span><br><span class="line">Last-Modified: Thu, 26 Nov 2026 06:55:06 GMT</span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">ETag: &quot;1515bd11737ddd1:0&quot;</span><br><span class="line">Server: Microsoft-IIS/10.0</span><br><span class="line">X-Powered-By: ASP.NET</span><br><span class="line">Date: Thu, 26 Nov 2026 06:55:56 GMT</span><br></pre></td></tr></table></figure>
+
+<p>伺服器沒說這份檔案能用多久，HTTP 規範就讓瀏覽器自己估。RFC 9111 第 4.2.2 節允許快取在沒有明確期限時，自行指定一個「啟發式新鮮期」。回應帶 <code>Last-Modified</code> 的話，建議新鮮期不要超過「距上次修改」這段時間的某個比例，文中舉的典型值是 10%。</p>
+<p>我翻了三個引擎目前的原始碼：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Chromium：net/http/http_response_headers.cc</span></span><br><span class="line">lifetimes.freshness = (date_value - last_modified_value.<span class="built_in">value</span>()) / <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// WebKit：Source/WebCore/platform/network/CacheValidation.cpp</span></span><br><span class="line"><span class="keyword">return</span> (effectiveDate - *lastModified) * <span class="number">0.1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Firefox：netwerk/protocol/http/nsHttpResponseHead.cpp</span></span><br><span class="line">*result = (date - date2) / <span class="number">10</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">uint32_t</span> kOneWeek = <span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span> * <span class="number">7</span>;</span><br><span class="line">*result = std::<span class="built_in">min</span>(kOneWeek, *result);</span><br></pre></td></tr></table></figure>
+
+<p>以這種帶 <code>Last-Modified</code>、沒有明確期限的 <code>200</code> 靜態回應來說，三個引擎都取 10%。Chromium 和 WebKit 在這段計算沒有設天數上限，Firefox 最多 7 天。前兩個涵蓋了 Chrome、Edge、Safari，還有 Android 和 iOS 的 WebView。新鮮期內，瀏覽器直接用快取，不會回伺服器確認。</p>
+<p>算的是瀏覽器收到那份回應的當下：用回應裡的 <code>Date</code> 減 <code>Last-Modified</code>，再取 10%。</p>
+<table>
+<thead>
+<tr>
+<th>收到回應時，檔案距上次修改多久</th>
+<th>Chrome／Safari 的新鮮期</th>
+<th>Firefox 的新鮮期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>30 天</td>
+<td>3 天</td>
+<td>3 天</td>
+</tr>
+<tr>
+<td>180 天</td>
+<td>18 天</td>
+<td>7 天</td>
+</tr>
+<tr>
+<td>1 年</td>
+<td>約 36 天</td>
+<td>7 天</td>
+</tr>
+<tr>
+<td>3 年</td>
+<td>約 110 天</td>
+<td>7 天</td>
+</tr>
+</tbody></table>
+<p>這是從收到回應那一刻起算的總長度，使用者還要卡多久，得再扣掉已經過去的時間。</p>
+<p>舊系統最容易在這裡中招。那些 <code>.vue</code> 好幾個月沒人動過，等於讓瀏覽器自己決定可以好幾週不回來問。而你要修 bug，改的偏偏就是這種放了很久的檔案。</p>
+<h2 id="按了-F5，為什麼-list-vue-還是舊的"><a href="#按了-F5，為什麼-list-vue-還是舊的" class="headerlink" title="按了 F5，為什麼 list.vue 還是舊的"></a>按了 F5，為什麼 list.vue 還是舊的</h2><p>Chrome 團隊 2017 年在官方部落格說明過重新整理的行為：一般重新整理只重新確認主文件，其餘資源照一般載入的規則走快取。httpVueLoader 抓的 <code>.vue</code> 不是主文件，還在新鮮期內，就直接從磁碟快取拿。</p>
+<p>寫這篇時，我請 Claude Code 用 IIS Express 加 Playwright 重現了一次。先放 v1、把修改時間設成 180 天前，開頁；再換成 v2（修改時間是現在），按 F5，再重新開一次頁面：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1 first load            -&gt; 200 v1</span><br><span class="line">2 F5 after deploying v2 -&gt; 200 v1</span><br><span class="line">3 navigate again        -&gt; 200 v1</span><br></pre></td></tr></table></figure>
+
+<p>Chrome DevTools Protocol 回報後兩次的 <code>.vue</code> 都是 <code>fromDiskCache: true</code>。IIS Express 的 log 裡，<code>list.vue</code> 從頭到尾只收到第一次那個 GET。v2 已經在伺服器上，瀏覽器沒有來拿。</p>
+<p>（IIS 預設不認得 <code>.vue</code> 副檔名，會回 404.3。重現時要先在 <code>web.config</code> 補一行 <code>&lt;mimeMap fileExtension=&quot;.vue&quot; mimeType=&quot;text/plain&quot; /&gt;</code>。）</p>
+<h2 id="修法：只對放-vue-的資料夾關掉"><a href="#修法：只對放-vue-的資料夾關掉" class="headerlink" title="修法：只對放 .vue 的資料夾關掉"></a>修法：只對放 .vue 的資料夾關掉</h2><p>我不想動整個站台的快取行為，圖片和第三方套件沒必要每次都回來問。<code>web.config</code> 用 <code>&lt;location&gt;</code> 只罩住放 <code>.vue</code> 的資料夾：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 只影響 Survey 資料夾，站台其他靜態檔維持原樣 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">location</span> <span class="attr">path</span>=<span class="string">&quot;Survey&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">staticContent</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">clientCache</span> <span class="attr">cacheControlMode</span>=<span class="string">&quot;DisableCache&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">staticContent</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">location</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>DisableCache</code> 送出的是 <code>Cache-Control: no-cache</code>。這個名字很容易誤會：<code>no-cache</code> 允許瀏覽器存，只是每次用之前都要先回伺服器確認。檔案沒變，IIS 回 304，只傳 header。真的不准存的是 <code>no-store</code>，那樣每次都要整份重新下載，這裡用不到。</p>
+<p>補上之後跑同一支重現腳本：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1 first load            -&gt; 200 v1</span><br><span class="line">2 F5 after deploying v2 -&gt; 200 v2</span><br><span class="line">3 navigate again        -&gt; 200 v2</span><br></pre></td></tr></table></figure>
+
+<p>IIS Express 的 log 依序是 200、200、304。最後一次 IIS 回 304，沒有重傳內容；瀏覽器確認快取還能用，沿用本機那份 v2，所以腳本看到的是 <code>200 v2</code>。站台根目錄的 <code>index.html</code> 還是沒有 <code>Cache-Control</code>，<code>&lt;location&gt;</code> 只管它包住的路徑。</p>
+<p>當時上正式機前，我也是先用 IIS Express 驗過 header。上線後確認時，狀態碼和 header 要一起看：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl.exe <span class="literal">-sI</span> https://your<span class="literal">-site</span>/YourApp/Survey/list.vue | findstr /i <span class="string">&quot;HTTP/ Cache-Control&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>本機驗證結果：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Cache-Control: no-cache</span><br></pre></td></tr></table></figure>
+
+<p>我會核對同一份回應的兩行：目標 <code>.vue</code> 回 <code>200</code>，而且 <code>Cache-Control</code> 的值是 <code>no-cache</code>。本機故意打錯路徑時也有這個欄位，只是回的是 <code>404</code> 和 <code>private</code>。只盯著有沒有 <code>Cache-Control</code>，網址打錯或被導去登入頁都可能看漏。</p>
+<h2 id="補了-header，已經中招的人還是舊的"><a href="#補了-header，已經中招的人還是舊的" class="headerlink" title="補了 header，已經中招的人還是舊的"></a>補了 header，已經中招的人還是舊的</h2><p>header 補上去，只解決了一半。</p>
+<p><code>no-cache</code> 是跟著新的回應送出去的。已經把舊檔存起來的瀏覽器，在啟發式新鮮期內根本不發請求，也就收不到這個 header。把重現的順序換一下：先讓瀏覽器在沒有 header 的狀態下快取 v1，再補上 <code>DisableCache</code>、部署 v2：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1 first load, no Cache-Control          -&gt; 200 v1</span><br><span class="line">2 F5 after deploying DisableCache + v2  -&gt; 200 v1</span><br><span class="line">3 navigate again                        -&gt; 200 v1</span><br><span class="line">4 hard reload (Ctrl+Shift+R)            -&gt; 200 v2</span><br><span class="line">5 normal F5 afterwards                  -&gt; 200 v2</span><br></pre></td></tr></table></figure>
+
+<p>第 2、3 步，IIS Express 都沒收到 <code>list.vue</code> 的請求。到第 4 步按 Ctrl+Shift+R（不讀快取的強制重新整理），IIS Express 才收到新的 <code>list.vue</code> 請求，回傳帶 <code>no-cache</code> 的 v2。第 5 步按一般 F5，IIS 回 304。</p>
+<p>所以當時兩件事一起做：</p>
+<ol>
+<li>換掉 <code>.vue</code> 的網址（加版本號）。舊快取對不上新網址，等於作廢。</li>
+<li>請使用者清快取或強制重新整理。桌面瀏覽器可以按 Ctrl+Shift+R；App 沒有這個按鍵，就請巡查員清快取。</li>
+</ol>
+<p>版本號也有它的前提。寫這篇時又在本機驗了一次：入口 HTML 本身也沒有 <code>Cache-Control</code>，一樣會被啟發式快取。把 HTML 改成引用 <code>list.vue?v=2</code> 之後：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1 first load                              -&gt; 200 v1</span><br><span class="line">2 deploy ?v=2, open in a new tab          -&gt; 200 v1</span><br><span class="line">3 F5 on that tab                          -&gt; 200 v2</span><br></pre></td></tr></table></figure>
+
+<p>開新分頁（就像隔天從書籤點進來），瀏覽器連 HTML 都拿快取，裡面還是舊的引用。按 F5 會重新確認主文件，讀到新的引用，才換成 v2。<strong>瀏覽器要先讀到新版 HTML，才會去抓 <code>list.vue?v=2</code>。</strong> 這種網址固定的入口頁，我會設 <code>no-cache</code>，讓使用者從書籤進來時也會先確認一次。</p>
+<h2 id="被舊程式寫壞的-9-筆"><a href="#被舊程式寫壞的-9-筆" class="headerlink" title="被舊程式寫壞的 9 筆"></a>被舊程式寫壞的 9 筆</h2><p>資料用 log 還原。log 留著每筆建立當下的原始值，照著寫回去，守三條規矩：</p>
+<ul>
+<li>只送 <code>&#123;id, 欄位&#125;</code>，不送整筆，避免蓋掉其他欄位後來的修改</li>
+<li>寫之前先讀現值，確認還是被寫壞的那個值</li>
+<li>寫完讀回整列比對</li>
+</ul>
+<h2 id="靜態檔的-Cache-Control-怎麼選"><a href="#靜態檔的-Cache-Control-怎麼選" class="headerlink" title="靜態檔的 Cache-Control 怎麼選"></a>靜態檔的 Cache-Control 怎麼選</h2><p>什麼都不設，就是把決定權交給瀏覽器。我現在的建議是分三種：</p>
+<table>
+<thead>
+<tr>
+<th>檔案</th>
+<th>策略</th>
+<th>IIS 設定</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>入口 HTML</td>
+<td>每次確認</td>
+<td><code>DisableCache</code></td>
+</tr>
+<tr>
+<td>網址固定、執行期才載入（httpVueLoader 的 <code>.vue</code>、舊系統的 <code>.js</code>）</td>
+<td>每次確認</td>
+<td><code>DisableCache</code></td>
+</tr>
+<tr>
+<td>內容一改網址就換（檔名帶 hash，或每次改版都換版本號）</td>
+<td>長期快取</td>
+<td><code>UseMaxAge</code> 加大 <code>cacheControlMaxAge</code></td>
+</tr>
+</tbody></table>
+<p><strong>內容會改、網址卻不會跟著換的檔案，別給長 <code>max-age</code>。</strong> 那等於把啟發式快取的問題自己寫死，期限還由你指定，連 Firefox 的一週上限都沒了。</p>
+<h2 id="這次記住的事"><a href="#這次記住的事" class="headerlink" title="這次記住的事"></a>這次記住的事</h2><p>「改版沒生效」先看回應 header 有沒有 <code>Cache-Control</code>。沒有的話，先假設使用者在跑舊檔，別急著懷疑程式。</p>
+<p>下次接手這種沒有打包流程的舊站，我會在第一次部署前，同時查入口 HTML 和一支實際載入的 <code>.vue</code>。這次新版已經上線，舊版網頁還是把 9 筆巡查時間寫成了午夜，最後得靠 log 還原。</p>
+
+      </div>
+      
+<footer class="post-end">
+  
+  <ul class="post-tags" aria-label="標籤">
+    <li><a href="/tags/IIS/">IIS</a></li><li><a href="/tags/Vue/">Vue</a></li><li><a href="/tags/%E9%99%A4%E9%8C%AF/">除錯</a></li><li><a href="/tags/Cache-Control/">Cache-Control</a></li><li><a href="/tags/%E7%80%8F%E8%A6%BD%E5%99%A8%E5%BF%AB%E5%8F%96/">瀏覽器快取</a></li>
+  </ul>
+  
+
+  <section class="license" aria-label="版權資訊">
+    <p>作者 <a href="/about/">kyosora</a>。本文網址 <a href="https://kyosora.github.io/posts/25a8b1c4/">https://kyosora.github.io/posts/25a8b1c4/</a></p>
+    <p>以 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license noopener" target="_blank">CC BY-NC-SA 4.0</a> 授權，轉載請註明出處。</p>
+  </section>
+
+  <div class="share" aria-label="分享這篇文章">
+    <span class="share-label">分享</span>
+    
+    <a class="chip" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fkyosora.github.io%2Fposts%2F25a8b1c4%2F" target="_blank" rel="noopener nofollow">Facebook</a>
+    
+    <a class="chip" href="https://x.com/intent/post?url=https%3A%2F%2Fkyosora.github.io%2Fposts%2F25a8b1c4%2F&amp;text=%E4%BF%AE%E5%A5%BD%E4%B8%8A%E7%B7%9A%E4%BA%86%EF%BC%8C%E4%BD%BF%E7%94%A8%E8%80%85%E9%82%84%E5%9C%A8%E8%B7%91%E8%88%8A%E7%89%88%EF%BC%9FIIS%20%E6%B2%92%E9%80%81%20Cache-Control%EF%BC%8C%E7%80%8F%E8%A6%BD%E5%99%A8%E8%87%AA%E5%B7%B1%E6%B1%BA%E5%AE%9A%E5%BF%AB%E5%8F%96%E5%A4%9A%E4%B9%85" target="_blank" rel="noopener nofollow">X</a>
+    
+    <a class="chip" href="https://social-plugins.line.me/lineit/share?url=https%3A%2F%2Fkyosora.github.io%2Fposts%2F25a8b1c4%2F" target="_blank" rel="noopener nofollow">LINE</a>
+    
+    <button class="chip" type="button" data-action="copy-link" data-url="https://kyosora.github.io/posts/25a8b1c4/">複製連結</button>
+    <button class="chip" type="button" data-action="native-share" data-url="https://kyosora.github.io/posts/25a8b1c4/" data-title="修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久" hidden>更多分享方式</button>
+  </div>
+
+  
+  <nav class="neighbours" aria-label="前後篇">
+    
+    <a class="neighbour neighbour--older" href="/posts/4fb41c1c/">
+      <span class="neighbour-label">前一篇</span>
+      <span class="neighbour-title">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</span>
+    </a>
+    
+  </nav>
+  
+
+  
+  <section class="related" aria-labelledby="related-title">
+    <h2 id="related-title">相關文章</h2>
+    <ul class="related-list">
+    
+      <li>
+        <a href="/posts/11879e22/">
+          <img src="/images/posts/sql-server-datetime-dateformat-trap-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">SQL Server 日期轉換失敗？先查 DATEFORMAT</span>
+          <span class="related-date">2026-09-18</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/645f2b01/">
+          <img src="/images/posts/legacy-645f2b01-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">curl 能下載、Node.js 卻 fetch failed——在 WSL2 + Docker 裡修好 OpenClaw Telegram Bot 圖片上傳的全過程</span>
+          <span class="related-date">2026-03-11</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/9b217823/">
+          <img src="/images/posts/legacy-9b217823-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">當 IIS 遇到代理伺服器：如何在複雜網路環境下實現真實 IP 白名單控制</span>
+          <span class="related-date">2025-07-01</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/25b31ce7/">
+          <img src="/images/posts/legacy-25b31ce7-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">React 與 Vue 共存：Module Federation 怎麼切邊界</span>
+          <span class="related-date">2025-06-11</span>
+        </a>
+      </li>
+    
+    </ul>
+  </section>
+  
+
+  
+  <section class="recent" aria-labelledby="recent-title">
+    <h2 id="recent-title">最近寫的</h2>
+    <ul>
+    
+      <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
+    
+      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
+    
+      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
+    
+      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
+    
+      <li><a href="/posts/34c467cd/">TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法</a><time datetime="2026-11-02T06:45:00.000Z">2026-11-02</time></li>
+    
+    </ul>
+  </section>
+  
+
+  
+<section class="comments" id="comments" aria-labelledby="comments-title">
+  <h2 id="comments-title">留言</h2>
+  <div class="giscus-slot" data-giscus><p class="comments-note">往下捲到這裡才會載入留言區（使用 GitHub 帳號留言）。</p></div>
+</section>
+
+
+</footer>
+
+    </div>
+  </div>
+</article>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>© 2024–2026 kyosora。文章以 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license noopener" target="_blank">CC BY-NC-SA 4.0</a> 授權。</p>
+    <p class="footer-links"><a href="/atom.xml">RSS 訂閱</a><a href="https://github.com/kyosora" rel="noopener" target="_blank">GitHub</a><a href="/about/">關於我</a></p>
+  </div>
+</footer>
+
+<dialog class="search" id="search" aria-label="搜尋文章">
+  <form class="search-bar" role="search">
+    <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+    <input type="search" name="q" placeholder="搜尋標題與內文" aria-label="搜尋關鍵字" autocomplete="off" enterkeyhint="search">
+    <button class="tool" type="button" data-close aria-label="關閉搜尋"><svg class="icon"><use href="#i-close"/></svg></button>
+  </form>
+  <p class="search-status" role="status" aria-live="polite"></p>
+  <ol class="search-results"></ol>
+</dialog>
+
+<script>window.KY={"search":"/search.json","twcn":"/js/ky-twcn.js?v=eba49651","codeHeight":400,"mermaid":null,"giscus":{"data-repo":"kyosora/kyosora.github.io","data-repo-id":"R_kgDOLJYL_w","data-category-id":"DIC_kwDOLJYL_84C516C","data-mapping":"pathname","data-input-position":"top","data-lang":"zh-TW","data-reactions-enabled":"1","light":"light","dark":"dark"},"views":{"endpoint":"https://kyosora-views.coasta98381.workers.dev","minSeconds":15,"since":"2026-11","path":"/posts/25a8b1c4/"}}</script>
+<script src="/js/kyosora.js?v=0f20e8d5" defer></script>
+
+</body>
+</html>

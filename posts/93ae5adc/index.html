@@ -27,10 +27,10 @@
 <meta property="article:section" content="資料庫">
 <meta property="article:tag" content="SQL Server">
 <meta property="article:tag" content="SQLCMD">
+<meta property="article:tag" content="效能優化">
 <meta property="article:tag" content="BCP">
 <meta property="article:tag" content="SSIS">
 <meta property="article:tag" content="CSV匯出">
-<meta property="article:tag" content="效能優化">
 <meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k">
 <meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E">
 <meta name="baidu-site-verification" content="code-pE5rnuxcfD">
@@ -44,7 +44,7 @@
 <script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"SQL Server CSV 匯出實戰：SQLCMD、BCP、SSIS 怎麼選怎麼調","description":"幾千萬筆資料要匯出成 CSV，工具選錯就等到天荒地老。這篇拆解 SQLCMD、BCP、SSIS 三者的真實定位、可直接跑的指令範例，以及大型資料分批匯出的正確做法，幫你依任務挑對工具。","url":"https://kyosora.github.io/posts/93ae5adc/","mainEntityOfPage":"https://kyosora.github.io/posts/93ae5adc/","image":"https://kyosora.github.io/images/posts/legacy-93ae5adc-cover.webp","datePublished":"2024-12-17T10:10:09.000Z","dateModified":"2026-07-31T08:29:33.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"資料庫","keywords":"SQL Server, SQLCMD, BCP, SSIS, CSV匯出, 效能優化"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"資料庫","item":"https://kyosora.github.io/categories/%E8%B3%87%E6%96%99%E5%BA%AB/"},{"@type":"ListItem","position":3,"name":"SQL Server CSV 匯出實戰：SQLCMD、BCP、SSIS 怎麼選怎麼調","item":"https://kyosora.github.io/posts/93ae5adc/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"SQL Server CSV 匯出實戰：SQLCMD、BCP、SSIS 怎麼選怎麼調","description":"幾千萬筆資料要匯出成 CSV，工具選錯就等到天荒地老。這篇拆解 SQLCMD、BCP、SSIS 三者的真實定位、可直接跑的指令範例，以及大型資料分批匯出的正確做法，幫你依任務挑對工具。","url":"https://kyosora.github.io/posts/93ae5adc/","mainEntityOfPage":"https://kyosora.github.io/posts/93ae5adc/","image":"https://kyosora.github.io/images/posts/legacy-93ae5adc-cover.webp","datePublished":"2024-12-17T10:10:09.000Z","dateModified":"2026-07-31T08:29:33.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"資料庫","keywords":"SQL Server, SQLCMD, 效能優化, BCP, SSIS, CSV匯出"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"資料庫","item":"https://kyosora.github.io/categories/%E8%B3%87%E6%96%99%E5%BA%AB/"},{"@type":"ListItem","position":3,"name":"SQL Server CSV 匯出實戰：SQLCMD、BCP、SSIS 怎麼選怎麼調","item":"https://kyosora.github.io/posts/93ae5adc/"}]}]}</script>
 
 </head>
 <body class="kind-post">
@@ -264,7 +264,7 @@
 <footer class="post-end">
   
   <ul class="post-tags" aria-label="標籤">
-    <li><a href="/tags/SQL-Server/">SQL Server</a></li><li><a href="/tags/SQLCMD/">SQLCMD</a></li><li><a href="/tags/BCP/">BCP</a></li><li><a href="/tags/SSIS/">SSIS</a></li><li><a href="/tags/CSV%E5%8C%AF%E5%87%BA/">CSV匯出</a></li><li><a href="/tags/%E6%95%88%E8%83%BD%E5%84%AA%E5%8C%96/">效能優化</a></li>
+    <li><a href="/tags/SQL-Server/">SQL Server</a></li><li><a href="/tags/SQLCMD/">SQLCMD</a></li><li><a href="/tags/%E6%95%88%E8%83%BD%E5%84%AA%E5%8C%96/">效能優化</a></li><li><a href="/tags/BCP/">BCP</a></li><li><a href="/tags/SSIS/">SSIS</a></li><li><a href="/tags/CSV%E5%8C%AF%E5%87%BA/">CSV匯出</a></li>
   </ul>
   
 
@@ -348,6 +348,8 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
     
       <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
@@ -355,8 +357,6 @@
       <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
       <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
-    
-      <li><a href="/posts/34c467cd/">TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法</a><time datetime="2026-11-02T06:45:00.000Z">2026-11-02</time></li>
     
     </ul>
   </section>

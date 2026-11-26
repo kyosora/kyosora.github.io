@@ -27,9 +27,9 @@
 <meta property="article:section" content="AI工具實戰">
 <meta property="article:tag" content="Claude Code">
 <meta property="article:tag" content="Codex">
+<meta property="article:tag" content="PowerShell">
 <meta property="article:tag" content="GPT-6 Astra">
 <meta property="article:tag" content="Claude Code Router">
-<meta property="article:tag" content="PowerShell">
 <meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k">
 <meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E">
 <meta name="baidu-site-verification" content="code-pE5rnuxcfD">
@@ -43,7 +43,7 @@
 <script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Claude Code 接上 GPT-6：沿用 Codex 登入與 ccx 啟動","description":"Claude Code 接 GPT-6 Astra 的 Windows 實測：用 CCR 匯入 Codex 登入，驗證工具呼叫並加入 ccx 快捷命令，附兩個故障排查。","url":"https://kyosora.github.io/posts/68d76447/","mainEntityOfPage":"https://kyosora.github.io/posts/68d76447/","image":"https://kyosora.github.io/images/posts/claude-code-gpt-6-astra-codex-oauth-ccr-windows-cover.webp","datePublished":"2026-09-23T02:10:11.000Z","dateModified":"2026-09-23T02:33:39.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI工具實戰","keywords":"Claude Code, Codex, GPT-6 Astra, Claude Code Router, PowerShell"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI工具實戰","item":"https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"},{"@type":"ListItem","position":3,"name":"Claude Code 接上 GPT-6：沿用 Codex 登入與 ccx 啟動","item":"https://kyosora.github.io/posts/68d76447/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Claude Code 接上 GPT-6：沿用 Codex 登入與 ccx 啟動","description":"Claude Code 接 GPT-6 Astra 的 Windows 實測：用 CCR 匯入 Codex 登入，驗證工具呼叫並加入 ccx 快捷命令，附兩個故障排查。","url":"https://kyosora.github.io/posts/68d76447/","mainEntityOfPage":"https://kyosora.github.io/posts/68d76447/","image":"https://kyosora.github.io/images/posts/claude-code-gpt-6-astra-codex-oauth-ccr-windows-cover.webp","datePublished":"2026-09-23T02:10:11.000Z","dateModified":"2026-09-23T02:33:39.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI工具實戰","keywords":"Claude Code, Codex, PowerShell, GPT-6 Astra, Claude Code Router"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI工具實戰","item":"https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"},{"@type":"ListItem","position":3,"name":"Claude Code 接上 GPT-6：沿用 Codex 登入與 ccx 啟動","item":"https://kyosora.github.io/posts/68d76447/"}]}]}</script>
 
 </head>
 <body class="kind-post">
@@ -274,7 +274,7 @@
 <footer class="post-end">
   
   <ul class="post-tags" aria-label="標籤">
-    <li><a href="/tags/Claude-Code/">Claude Code</a></li><li><a href="/tags/Codex/">Codex</a></li><li><a href="/tags/GPT-6-Astra/">GPT-6 Astra</a></li><li><a href="/tags/Claude-Code-Router/">Claude Code Router</a></li><li><a href="/tags/PowerShell/">PowerShell</a></li>
+    <li><a href="/tags/Claude-Code/">Claude Code</a></li><li><a href="/tags/Codex/">Codex</a></li><li><a href="/tags/PowerShell/">PowerShell</a></li><li><a href="/tags/GPT-6-Astra/">GPT-6 Astra</a></li><li><a href="/tags/Claude-Code-Router/">Claude Code Router</a></li>
   </ul>
   
 
@@ -358,6 +358,8 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
     
       <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
@@ -365,8 +367,6 @@
       <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
       <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
-    
-      <li><a href="/posts/34c467cd/">TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法</a><time datetime="2026-11-02T06:45:00.000Z">2026-11-02</time></li>
     
     </ul>
   </section>
