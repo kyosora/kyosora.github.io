@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://kyosora.github.io/images/posts/riemann-hypothesis-claude-lean-proof-cover.webp">
 <meta name="twitter:card" content="summary_large_image">
 <meta property="article:published_time" content="2026-11-25T02:40:00.000Z">
-<meta property="article:modified_time" content="2026-11-25T02:40:00.000Z">
+<meta property="article:modified_time" content="2026-11-26T07:10:00.000Z">
 <meta property="article:author" content="kyosora">
 <meta property="article:section" content="程式設計">
 <meta property="article:tag" content="Claude">
@@ -43,7 +43,7 @@
 <script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它","description":"黎曼猜想是什麼？Alpöge 與 Claude 合作的證明，公開隔天就獲 Lean 社群認證，人類卻還在讀懂它。從質數與零點講起，看這次確認了什麼、還差什麼。","url":"https://kyosora.github.io/posts/4fb41c1c/","mainEntityOfPage":"https://kyosora.github.io/posts/4fb41c1c/","image":"https://kyosora.github.io/images/posts/riemann-hypothesis-claude-lean-proof-cover.webp","datePublished":"2026-11-25T02:40:00.000Z","dateModified":"2026-11-25T02:40:00.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"程式設計","keywords":"Claude, Lean, 黎曼猜想, 質數, 數學證明"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"程式設計","item":"https://kyosora.github.io/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/"},{"@type":"ListItem","position":3,"name":"黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它","item":"https://kyosora.github.io/posts/4fb41c1c/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它","description":"黎曼猜想是什麼？Alpöge 與 Claude 合作的證明，公開隔天就獲 Lean 社群認證，人類卻還在讀懂它。從質數與零點講起，看這次確認了什麼、還差什麼。","url":"https://kyosora.github.io/posts/4fb41c1c/","mainEntityOfPage":"https://kyosora.github.io/posts/4fb41c1c/","image":"https://kyosora.github.io/images/posts/riemann-hypothesis-claude-lean-proof-cover.webp","datePublished":"2026-11-25T02:40:00.000Z","dateModified":"2026-11-26T07:10:00.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"程式設計","keywords":"Claude, Lean, 黎曼猜想, 質數, 數學證明"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"程式設計","item":"https://kyosora.github.io/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/"},{"@type":"ListItem","position":3,"name":"黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它","item":"https://kyosora.github.io/posts/4fb41c1c/"}]}]}</script>
 
 </head>
 <body class="kind-post">
@@ -103,8 +103,8 @@
       <h1 class="post-title">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</h1>
       <p class="post-meta">
         <span>發布於 <time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></span>
-        
-        <span>約 14 分鐘讀完</span>
+        <span>更新於 <time datetime="2026-11-26T07:10:00.000Z">2026-11-26</time></span>
+        <span>約 19 分鐘讀完</span>
         <span class="views" data-views hidden></span>
       </p>
     </div>
@@ -115,7 +115,7 @@
     <aside class="post-aside">
       <details class="toc-box" open>
         <summary>目錄</summary>
-        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%BB%8E%E6%9B%BC%E7%8C%9C%E6%83%B3%E5%9C%A8%E5%95%8F%E4%BB%80%E9%BA%BC"><span class="toc-text">黎曼猜想在問什麼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E6%95%B8%E5%AD%B8%E5%AE%B6%E9%80%99%E9%BA%BC%E5%9C%A8%E6%84%8F"><span class="toc-text">為什麼數學家這麼在意</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%83%E4%B8%8D%E6%9C%83%E5%BD%B1%E9%9F%BF%E5%8A%A0%E5%AF%86"><span class="toc-text">會不會影響加密</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%99%E6%AC%A1%E6%98%AF%E6%80%8E%E9%BA%BC%E8%A2%AB%E7%A2%BA%E8%AA%8D%E7%9A%84"><span class="toc-text">這次是怎麼被確認的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A2%BA%E8%AA%8D%E4%BA%86%E5%AE%83%E5%B0%8D%EF%BC%8C%E9%82%84%E5%9C%A8%E7%90%86%E8%A7%A3%E5%AE%83%E7%82%BA%E4%BB%80%E9%BA%BC%E5%B0%8D"><span class="toc-text">確認了它對，還在理解它為什麼對</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AI-%E5%92%8C%E4%BA%BA%E6%80%8E%E9%BA%BC%E5%88%86%E5%B7%A5"><span class="toc-text">AI 和人怎麼分工</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8C%E4%B8%80%E5%A4%A9%E7%9A%84-Navier%E2%80%93Stokes-%E7%B5%90%E6%9E%9C"><span class="toc-text">同一天的 Navier–Stokes 結果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%A2%E5%85%8B%E9%9B%B7%E7%8D%8E%E9%82%84%E6%9C%89%E5%A4%9A%E9%81%A0"><span class="toc-text">離克雷獎還有多遠</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%BE%8C"><span class="toc-text">最後</span></a></li></ol></nav>
+        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%BB%8E%E6%9B%BC%E7%8C%9C%E6%83%B3%E5%9C%A8%E5%95%8F%E4%BB%80%E9%BA%BC"><span class="toc-text">黎曼猜想在問什麼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E6%95%B8%E5%AD%B8%E5%AE%B6%E9%80%99%E9%BA%BC%E5%9C%A8%E6%84%8F"><span class="toc-text">為什麼數學家這麼在意</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%83%E4%B8%8D%E6%9C%83%E5%BD%B1%E9%9F%BF%E5%8A%A0%E5%AF%86"><span class="toc-text">會不會影響加密</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%99%E6%AC%A1%E6%98%AF%E6%80%8E%E9%BA%BC%E8%A2%AB%E7%A2%BA%E8%AA%8D%E7%9A%84"><span class="toc-text">這次是怎麼被確認的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A2%BA%E8%AA%8D%E4%BA%86%E5%AE%83%E5%B0%8D%EF%BC%8C%E9%82%84%E5%9C%A8%E7%90%86%E8%A7%A3%E5%AE%83%E7%82%BA%E4%BB%80%E9%BA%BC%E5%B0%8D"><span class="toc-text">確認了它對，還在理解它為什麼對</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E5%A4%A9%E5%BE%8C%EF%BC%9A30-%E8%90%AC%E8%A1%8C%E7%9A%84%E6%94%B9%E5%AF%AB%E7%89%88"><span class="toc-text">五天後：30 萬行的改寫版</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AI-%E5%92%8C%E4%BA%BA%E6%80%8E%E9%BA%BC%E5%88%86%E5%B7%A5"><span class="toc-text">AI 和人怎麼分工</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E5%8B%9E%E8%A9%B2%E7%AE%97%E8%AA%B0%E7%9A%84"><span class="toc-text">功勞該算誰的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E6%9C%88-20-%E6%97%A5%E7%9A%84-Navier%E2%80%93Stokes-%E7%B5%90%E6%9E%9C"><span class="toc-text">11 月 20 日的 Navier–Stokes 結果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%A2%E5%85%8B%E9%9B%B7%E7%8D%8E%E9%82%84%E6%9C%89%E5%A4%9A%E9%81%A0"><span class="toc-text">離克雷獎還有多遠</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%BE%8C"><span class="toc-text">最後</span></a></li></ol></nav>
       </details>
     </aside>
     
@@ -128,7 +128,8 @@
 </blockquote>
 <p>隔天，Lean 程式語言背後的 Lean FRO 和 Mathlib Initiative 發出聯合聲明：「We hereby certify that both the statement and the proof of the Riemann Hypothesis are correct.」</p>
 <p>一個 1859 年提出、列在希爾伯特 23 個問題裡、克雷研究所懸賞一百萬美元的猜想，從公開證明到 Lean 社群發出認證，只隔了一天。</p>
-<p>但目前公開的完整證明，只有大約 1,700 萬行的 Lean 程式碼。人類可讀的版本，還在整理中。</p>
+<p>但最初公開的完整證明，只有大約 1,700 萬行的 Lean 程式碼。五天後出現了一份短得多的 Lean 改寫版，但人類讀得懂的論文，Alpöge 還沒有寫出來。</p>
+<p>（11 月 26 日更新：補上原版端到端比對的結果、11 月 25 日釋出的短版 Lean 證明、11 月 20 日當天另一份號稱全由人完成的證明手稿，以及功勞該算誰的爭議。）</p>
 <h2 id="黎曼猜想在問什麼"><a href="#黎曼猜想在問什麼" class="headerlink" title="黎曼猜想在問什麼"></a>黎曼猜想在問什麼</h2><p>從質數講起。2、3、5、7、11、13⋯⋯質數越往後，整體上越稀疏；但相鄰質數的間隔忽大忽小，很難只看前幾個就猜出下一個。</p>
 <p>數學家退一步問：不求每一個，只問「x 以內大約有幾個質數」。1896 年證明的質數定理給了答案：大約是 x／ln x。</p>
 <p>問題在「大約」：這個估計離實際個數有多遠？數學家通常改拿一個更精確的估計來比，叫對數積分 li(x)。實際的質數個數會在 li(x) 附近擺動，擺動幅度有多大，就是黎曼猜想要回答的問題。</p>
@@ -159,7 +160,7 @@
 <p>Lean FRO 的聲明說，這個陳述「has been carefully vetted by experts in Lean and number theory」。上次「陳述檔要靠人讀」的那層疑慮，這次小得多。</p>
 <p>11 月 21 日的聯合聲明交代了兩件事。第一，用兩套獨立的比對工具（comparator 和 con-leche），確認 Alpöge 證出的定理就是 Mathlib 這個定義。第二，Lean 官方 kernel 和好幾個用不同程式語言獨立實作的檢查器，各自重新檢查了整份證明；其中 con-leche 和 con-ron 還各有一份形式證明：在集合論的前提下，它們不會接受錯誤的證明。這是用來回應「Lean 的邏輯本身會不會有漏洞，被證明鑽了空子」這類疑慮。聲明特別提到，這些檢查讀的是證明匯出的靜態資料（inert export），「out of reach of hypothetical malicious code in the Lean proof sources」，不必執行 Lean 原始檔裡可能夾帶的程式碼。</p>
 <p>MIT 的 Andrew Sutherland 另外公開了自己的驗證紀錄：用 Lean v4.33.1 和 Mathlib v4.33.1 從原始碼編譯，175,187 個模組全部成功；主要定理只用到 Lean 的三個標準公理；nanoda、con-leche 等檢查器也都接受完整的匯出檔。</p>
-<p>有兩點要分清楚。Lean 社群聯合聲明認證的，是經典黎曼猜想；Dirichlet L-function 的 GRH，是 Sutherland 公開的檢查紀錄涵蓋的。另外，到 Sutherland 頁面最後更新的 11 月 24 日 05:25（UTC）為止，還有一次用 Lean v4.36.0 從匯出檔跑的端到端比對（lake comparator）沒跑完：前兩個階段已通過，最後一個階段正在用 Lean 的預設 kernel 檢查。這個階段以單執行緒執行，先前單獨跑時花了 48 小時。</p>
+<p>有兩點要分清楚。Lean 社群聯合聲明認證的，是經典黎曼猜想；Dirichlet L-function 的 GRH，是 Sutherland 公開的檢查紀錄涵蓋的。另外，Sutherland 還用 Lean v4.36.0 從匯出檔跑了一次端到端比對（lake comparator）。它的最後一個階段要用 Lean 的預設 kernel 單執行緒檢查，先前單獨跑時就花了 48 小時。這次比對從 11 月 20 日跑到 11 月 25 日 21:49（UTC）才結束，全部通過，前後約 123 小時。</p>
 <h2 id="確認了它對，還在理解它為什麼對"><a href="#確認了它對，還在理解它為什麼對" class="headerlink" title="確認了它對，還在理解它為什麼對"></a>確認了它對，還在理解它為什麼對</h2><p>Alpöge 自己在說明裡寫得很坦白：公開證明時，這套論證牽涉的大片數學，他還沒有充分掌握。他也說，要產出一份「huge, unreadable document」很容易，但他選擇只公開 Lean，之後會盡力理解、找出更短的寫法，再好好寫成論文。</p>
 <p>Terence Tao 當天在部落格談到 Alpöge 的 GRH 證明，說從初步分析看，它「appears to use the full power of modern developments on the Langlands program and arithmetic geometry」，動用了 Langlands 綱領與算術幾何的重型工具。滑鐵盧大學的 Michael Rubinstein 已經整理出一份 265 頁的閱讀導引，但他也註明，導引把關鍵不等式 (M) 化約成 13 項假設，導引本身還沒有逐項證明它們（「none of which is proved outright」），「It is a work in progress」。這是說導引還沒寫完，Lean 證明本身並沒有另外假設這 13 項。</p>
 <p>受訪的數學家各有側重。牛津的 James Maynard（2022 年菲爾茲獎）認為證明很可能是對的，但光是檢查 Lean 驗證就要花時間，要真正理解它，「it looks like it will require quite a lot of work」。黎曼猜想專家 Brian Conrey 說這是「the biggest thing I think that&#39;s ever happened in mathematics」，也直說他不認為有哪個人已經快找到這個證明，並相信之後會出現更簡單的證法。</p>
@@ -167,20 +168,34 @@
 <blockquote>
 <p>Mathematics is mainly about understanding why something is true.</p>
 </blockquote>
-<p>這大概就是接下來幾年數學界要做的事。</p>
+<h2 id="五天後：30-萬行的改寫版"><a href="#五天後：30-萬行的改寫版" class="headerlink" title="五天後：30 萬行的改寫版"></a>五天後：30 萬行的改寫版</h2><p>11 月 25 日，Anthropic 的研究員 Luke Sernau 在 GitHub 放出 <a target="_blank" rel="noopener" href="https://github.com/lsernau/grh-lean">grh-lean</a>。README 說，這是他和 Anthropic 的同事與 Claude 合作，把 Alpöge 的 Lean 證明重寫成的短版本，Lean 程式碼由 Claude 撰寫。repo 裡有兩個版本，行數都不含註解和空行：</p>
+<ul>
+<li>可讀版約 30 萬行。其中約 17.7 萬行是文獻裡已知、但 Mathlib 還沒有的背景結果，另外約 12.2 萬行放在 <code>src/New</code>，是這份論證本身的設定與推導步驟。</li>
+<li>精簡版約 7.6 萬行，證明同樣五個定理。</li>
+</ul>
+<p>原版的 1,700 萬行，Lean FRO 沒有說明是怎麼算的，不一定跟這裡同一套口徑，但規模差距很明顯。README 寫，Mathlib 的快取先下載好的話，新版在 12 核心、24 GB 記憶體的機器上，一到兩小時就能 build 完，沒有快取要再多約 85 分鐘。一般研究用的工作站就跑得動。</p>
+<p>被證明的題目沒有換。專案的 NOTICE 寫明，陳述檔 <code>Statements.lean</code> 和五個定理的名稱、型別，都原封不動取自 Alpöge 的版本；第一個定理的型別，仍然是前面那個 Mathlib 定義 <code>RiemannHypothesis</code>。</p>
+<p>Sutherland 另開了<a target="_blank" rel="noopener" href="https://math.mit.edu/~drew/shortgrh/">一頁紀錄</a>專門檢查這份 repo，11 月 26 日 02:50（UTC）更新為「All checks have finished」。兩個版本都通過了沙箱裡的 build、公理檢查和 <code>lake comparator --paranoid</code>；逐模組重新檢查也全數通過（可讀版 803 個模組、精簡版 794 個），另有多套獨立實作的檢查器接受證明。可讀版的 <code>--paranoid</code> 比對，是在配備 1.5 TB 記憶體的機器上通過的；另一次在 128 GB 機器上的測試，跑到用了 70 GB 時被停掉，沒有結果。Lean 社群整理這份證明的 repo <a target="_blank" rel="noopener" href="https://github.com/leanprover-community/riemann-hypothesis">leanprover-community/riemann-hypothesis</a>，在 11 月 25 日就把主線換成以可讀版為基礎，之前整理到一半的進度另外留在分支上。</p>
+<p>這是 Alpöge 自己預告過的方向，但要看清楚縮短的是什麼。README 寫明新版「follows that proof&#39;s method」：方法沒變，改的是許多步驟的論證。形式證明能砍掉這麼多，不等於數學想法變簡單了。光是 <code>src/New</code> 就有 12 萬行，對人來說仍然很長；repo 也寫得很直接：「No mathematician has read it through, and no paper comes with it.」</p>
 <h2 id="AI-和人怎麼分工"><a href="#AI-和人怎麼分工" class="headerlink" title="AI 和人怎麼分工"></a>AI 和人怎麼分工</h2><p>Alpöge 在說明裡描述的分工是這樣：他先找出這個問題跟先前一個比較簡單的模型相似的地方，據此定下方向；接著在終點線前，「Claude far outpaced me near the finish line. No, Claude flew, and danced, and sparkled near that finish line」。他舉了一個例子：論證裡需要串接一串 theta lift，鏈要多長，是 Claude 提出的答案，√X。他也坦承，自己對高秩群上的自守形式掌握有限（「little mastery」）。</p>
 <p>說明裡沒有寫是哪一個 Claude 模型。</p>
 <p>今年 8 月，Alpöge 和 Ralph Furman 證明，超過三分之二的非平凡零點既是單零點（重數為 1，不是重根），也落在臨界線上。三個月後，Alpöge 宣稱已證明所有非平凡零點都在臨界線上；至於零點的重數是不是全都等於 1，黎曼猜想本身並不回答。</p>
 <p>發布時機也容易被拿來做文章：Anthropic 11 月 19 日在 Nasdaq 掛牌，隔天 Alpöge 就在個人網站公布說明。他在說明裡先自己講了：「The precise timing is horrible」，並說「There is an obvious cynical view, to do with the timing, but it is false」。不過證明對不對，跟時機無關；驗證是 Lean 社群獨立完成的，不需要相信 Anthropic 的說法。</p>
-<h2 id="同一天的-Navier–Stokes-結果"><a href="#同一天的-Navier–Stokes-結果" class="headerlink" title="同一天的 Navier–Stokes 結果"></a>同一天的 Navier–Stokes 結果</h2><p>Alpöge 和 NYU 的 Tristan Buckmaster 放出了 Navier–Stokes 方程的證明，宣稱存在某些光滑的初始狀態，讓三維不可壓縮流體在<strong>不需要外力</strong>的情況下，於有限時間內失去光滑性（數學上叫爆破）。他們同時還放了 Euler 方程的同類結果（加上 Matei Coiculescu）。兩份都附 Lean 形式化。</p>
+<h2 id="功勞該算誰的"><a href="#功勞該算誰的" class="headerlink" title="功勞該算誰的"></a>功勞該算誰的</h2><p>分工講得這麼坦白，也引來另一種爭議：如果 Claude 在終點前「飛了起來」，功勞還該算 Alpöge 的嗎？</p>
+<p>蒙特婁大學的數論學家 Andrew Granville 批評的是發表方式。他對 <a target="_blank" rel="noopener" href="https://www.nature.com/articles/d41586-026-03812-7">Nature</a> 說，那四頁說明「garbled」，Alpöge 應該先花時間寫清楚再公布，他也把發布時機跟 Anthropic 掛牌後的股價連在一起。談到 Alpöge 在研究裡做了什麼，跟他合作 Navier–Stokes 的 NYU 數學家 Tristan Buckmaster 則說，用大型語言模型做數學的那整套做法，是 Alpöge 自己建起來的：「Levent himself built this amazing set-up to do math.」</p>
+<p>我認為功勞該算 Alpöge 的。他從比較簡單的模型找到切入方向，建起整套工作流程，也具名發表了結果；Claude 提出 √X 的那一步，同樣值得明白記上。1976 年的四色定理靠電腦跑完大量情況檢查，大家照樣說得出 Appel 和 Haken 做了什麼，電腦參與，不妨礙指出人的具體貢獻。說明寫得太單薄、時機選得糟，這些可以批評，但那是發表方式的問題。可讀版的 README，也是把兩者並列：「The proof is Levent Alpöge&#39;s, with Claude.」</p>
+<p>競爭者其實在 11 月 20 日就出現了。Alpöge 公布後幾個小時，美國數學學會會長、Stanford 的 Ravi Vakil 在部落格貼出 Alessandro Maria Masullo 的手稿，自稱是「hurried announcement」，強調這份證明「is all human, with no AI」。Masullo 2020 年在 Stanford 拿到博士，指導教授是數論學家 Brian Conrad。Vakil 說，原本打算讓 Conrad 陪 Masullo 再花一年把文字整理好、給夠多人看過再公布，「Now it seems best to put out the current draft」。</p>
+<p>這份手稿叫《The Music of the Primes》，PDF 有 941 頁，主張的範圍比 Alpöge 還大，涵蓋所有數體上、所有酉 Hecke 特徵的 L-function。但它還是未完成的草稿。作者在致謝裡自己寫，引言還沒寫完，他和 Conrad 也知道文中有「several glitches」。第 13 章原本要從前面的跡公式推出零點的位置：13.1、13.2 兩節只有標題，13.3 重述了跡公式，接下來那條關於零點的定理只列出名稱，沒有寫出敘述，旁邊留著「Insert statement」的註腳。Conrad 對 <a target="_blank" rel="noopener" href="https://www.scientificamerican.com/article/dueling-claims-of-riemann-hypothesis-proofs-emerge/">Scientific American</a> 說，要判斷方法成不成功，得等論文修到更接近定稿：「It&#39;s undergoing major revision.」GitHub 上已經有人開始把它逐章寫成 Lean，也有人公開檢查報告，認為手稿照目前的寫法證不出 GRH；這些檢查本身同樣還沒經過同行審查。</p>
+<p>如果 Masullo 的證明最後也站得住，前例是 1896 年的質數定理：Hadamard 和 de la Vallée Poussin 同一年各自獨立證出，兩人一起留名。我覺得最能說明這次氣氛的，是 Vakil 公布手稿時特地加的那句「all human, with no AI」：連證明是怎麼做出來的，都成了公告裡要交代的事。</p>
+<h2 id="11-月-20-日的-Navier–Stokes-結果"><a href="#11-月-20-日的-Navier–Stokes-結果" class="headerlink" title="11 月 20 日的 Navier–Stokes 結果"></a>11 月 20 日的 Navier–Stokes 結果</h2><p>Alpöge 和 NYU 的 Tristan Buckmaster 放出了 Navier–Stokes 方程的證明，宣稱存在某些光滑的初始狀態，讓三維不可壓縮流體在<strong>不需要外力</strong>的情況下，於有限時間內失去光滑性（數學上叫爆破）。他們同時還放了 Euler 方程的同類結果（加上 Matei Coiculescu）。兩份都附 Lean 形式化。</p>
 <p>我自己的感覺是，這件事的討論度小很多。NS 在 9 月已經上過一輪新聞：當時 OpenAI 宣稱證明了 NS 的解會爆破，克雷研究所 9 月 11 日發聲明，說這個問題「has apparently been settled」。據報導，9 月那個版本需要外力推動，這次的新結果把它推進到不需要外力。我猜讀過 9 月新聞的人，很容易把這次看成前一則新聞的後續。</p>
 <p>有意思的是，Tao 把同一天的三個結果，照「消化程度」排序。Euler 有人類可讀的證明；NS 的論文「technically human-readable」，證明策略也清楚；Alpöge 的廣義黎曼猜想證明則只有 Lean 版本，而且非常龐大。在我看到的報導裡，比較能讀的 Euler 和 NS 很少被提起，最難讀的黎曼猜想反而成了頭條。</p>
 <h2 id="離克雷獎還有多遠"><a href="#離克雷獎還有多遠" class="headerlink" title="離克雷獎還有多遠"></a>離克雷獎還有多遠</h2><p>證明通過形式檢查，跟符合克雷獎的審議條件，是兩件事。千禧年獎要同時滿足三個條件：</p>
 <blockquote>
 <p>(i) the proposed solution must be published in a Qualifying Outlet, and (ii) at least two years must have passed since publication, and (iii) the proposed solution must have received general acceptance in the global mathematics community</p>
 </blockquote>
-<p>目前公開的完整論證是 Lean 形式。截至 11 月 25 日，克雷研究所的新聞頁還沒有這次黎曼猜想的公告。依克雷的規則，至少要從符合資格的發表日起等兩年；目前的公開資訊，還不足以判定這次的兩年等待期該從哪一天算起。</p>
-<h2 id="最後"><a href="#最後" class="headerlink" title="最後"></a>最後</h2><p>經典黎曼猜想這次直接對上 Mathlib 既有的定義，又有好幾套獨立比對和檢查。接下來要做的，是把 1,700 萬行的形式證明，整理成數學家能掌握、討論、繼續往下發展的論證。</p>
+<p>Alpöge 這套論證目前公開的完整版本，仍然是 Lean 形式。截至 11 月 26 日，克雷研究所的新聞頁還沒有這次黎曼猜想的公告。依克雷的規則，至少要從符合資格的發表日起等兩年；目前的公開資訊，還不足以判定這次的兩年等待期該從哪一天算起。</p>
+<h2 id="最後"><a href="#最後" class="headerlink" title="最後"></a>最後</h2><p>經典黎曼猜想這次直接對上 Mathlib 既有的定義，又有好幾套獨立比對和檢查。最初公開的形式證明約 1,700 萬行，五天後已經有約 30 萬行程式碼的改寫版。接下來要做的，是把這套論證整理成數學家能掌握、討論、繼續往下發展的論文。</p>
 <p>確認它成立，和理解它為什麼成立，這次走出了完全不同的速度。</p>
 
       </div>

@@ -26,8 +26,8 @@
 <meta property="article:author" content="kyosora">
 <meta property="article:section" content="前後端開發">
 <meta property="article:tag" content="SQL Server">
-<meta property="article:tag" content="效能優化">
 <meta property="article:tag" content="資料庫管理">
+<meta property="article:tag" content="效能優化">
 <meta property="article:tag" content="連線池">
 <meta property="article:tag" content="程式碼優化">
 <meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k">
@@ -43,7 +43,7 @@
 <script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"資料庫連線池爆掉救火秘笈！如何優雅地處理 SQL Server 連線危機","description":"系統突然變慢、一直跳「已超過連線逾時」？很可能是 SQL Server 連線池爆了。從診斷 SQL 查連線狀況、定位舊 VB 程式碼未釋放連線的根因，到用 Using 區塊、調整 Max Pool Size 與監控警示，分享一套從救火到預防的完整實戰。","url":"https://kyosora.github.io/posts/8688d8e/","mainEntityOfPage":"https://kyosora.github.io/posts/8688d8e/","image":"https://kyosora.github.io/images/posts/legacy-8688d8e-cover.webp","datePublished":"2024-10-27T06:30:00.000Z","dateModified":"2026-11-13T06:15:56.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"前後端開發","keywords":"SQL Server, 效能優化, 資料庫管理, 連線池, 程式碼優化"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"前後端開發","item":"https://kyosora.github.io/categories/%E5%89%8D%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/"},{"@type":"ListItem","position":3,"name":"資料庫連線池爆掉救火秘笈！如何優雅地處理 SQL Server 連線危機","item":"https://kyosora.github.io/posts/8688d8e/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"資料庫連線池爆掉救火秘笈！如何優雅地處理 SQL Server 連線危機","description":"系統突然變慢、一直跳「已超過連線逾時」？很可能是 SQL Server 連線池爆了。從診斷 SQL 查連線狀況、定位舊 VB 程式碼未釋放連線的根因，到用 Using 區塊、調整 Max Pool Size 與監控警示，分享一套從救火到預防的完整實戰。","url":"https://kyosora.github.io/posts/8688d8e/","mainEntityOfPage":"https://kyosora.github.io/posts/8688d8e/","image":"https://kyosora.github.io/images/posts/legacy-8688d8e-cover.webp","datePublished":"2024-10-27T06:30:00.000Z","dateModified":"2026-11-13T06:15:56.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"前後端開發","keywords":"SQL Server, 資料庫管理, 效能優化, 連線池, 程式碼優化"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"前後端開發","item":"https://kyosora.github.io/categories/%E5%89%8D%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/"},{"@type":"ListItem","position":3,"name":"資料庫連線池爆掉救火秘笈！如何優雅地處理 SQL Server 連線危機","item":"https://kyosora.github.io/posts/8688d8e/"}]}]}</script>
 
 </head>
 <body class="kind-post">
@@ -166,7 +166,7 @@
 <footer class="post-end">
   
   <ul class="post-tags" aria-label="標籤">
-    <li><a href="/tags/SQL-Server/">SQL Server</a></li><li><a href="/tags/%E6%95%88%E8%83%BD%E5%84%AA%E5%8C%96/">效能優化</a></li><li><a href="/tags/%E8%B3%87%E6%96%99%E5%BA%AB%E7%AE%A1%E7%90%86/">資料庫管理</a></li><li><a href="/tags/%E9%80%A3%E7%B7%9A%E6%B1%A0/">連線池</a></li><li><a href="/tags/%E7%A8%8B%E5%BC%8F%E7%A2%BC%E5%84%AA%E5%8C%96/">程式碼優化</a></li>
+    <li><a href="/tags/SQL-Server/">SQL Server</a></li><li><a href="/tags/%E8%B3%87%E6%96%99%E5%BA%AB%E7%AE%A1%E7%90%86/">資料庫管理</a></li><li><a href="/tags/%E6%95%88%E8%83%BD%E5%84%AA%E5%8C%96/">效能優化</a></li><li><a href="/tags/%E9%80%A3%E7%B7%9A%E6%B1%A0/">連線池</a></li><li><a href="/tags/%E7%A8%8B%E5%BC%8F%E7%A2%BC%E5%84%AA%E5%8C%96/">程式碼優化</a></li>
   </ul>
   
 
