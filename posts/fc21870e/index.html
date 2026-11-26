@@ -1,199 +1,131 @@
-<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>微軟內部 Claude Code 被停用——同週 GitHub 備忘錄寫下「生存級風險」 | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="微軟同一週取消內部 Claude Code 授權、強推 Copilot CLI，外流備忘錄又警告 GitHub 面臨「生存級風險」。兩則被分開報導的新聞拼起來才是全貌——梳理半年時間線、官方理由與背後因果，看它對非微軟開發者的意義。">
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>微軟內部 Claude Code 被停用——同週 GitHub 備忘錄寫下「生存級風險」 | kyosora 筆記</title>
+<meta name="description" content="微軟同一週取消內部 Claude Code 授權、強推 Copilot CLI，外流備忘錄又警告 GitHub 面臨「生存級風險」。兩則被分開報導的新聞拼起來才是全貌——梳理半年時間線、官方理由與背後因果，看它對非微軟開發者的意義。">
+<link rel="canonical" href="https://kyosora.github.io/posts/fc21870e/">
+
+<meta name="author" content="kyosora">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f4f6f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1820" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="article">
 <meta property="og:title" content="微軟內部 Claude Code 被停用——同週 GitHub 備忘錄寫下「生存級風險」">
-<meta property="og:url" content="https://kyosora.github.io/posts/fc21870e/">
-<meta property="og:site_name" content="kyosora 筆記">
 <meta property="og:description" content="微軟同一週取消內部 Claude Code 授權、強推 Copilot CLI，外流備忘錄又警告 GitHub 面臨「生存級風險」。兩則被分開報導的新聞拼起來才是全貌——梳理半年時間線、官方理由與背後因果，看它對非微軟開發者的意義。">
+<meta property="og:url" content="https://kyosora.github.io/posts/fc21870e/">
+
+<meta property="og:site_name" content="kyosora 筆記">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://kyosora.github.io/images/posts/microsoft-bans-claude-code-github-existential-risk-same-week-cover.webp">
+<meta name="twitter:image" content="https://kyosora.github.io/images/posts/microsoft-bans-claude-code-github-existential-risk-same-week-cover.webp">
+<meta name="twitter:card" content="summary_large_image">
 <meta property="article:published_time" content="2026-05-21T04:00:00.000Z">
 <meta property="article:modified_time" content="2026-06-22T03:07:51.000Z">
 <meta property="article:author" content="kyosora">
+<meta property="article:section" content="AI產業觀察">
 <meta property="article:tag" content="Claude Code">
 <meta property="article:tag" content="開發者工具">
 <meta property="article:tag" content="AI Coding">
 <meta property="article:tag" content="GitHub Copilot">
 <meta property="article:tag" content="Microsoft">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://kyosora.github.io/images/posts/microsoft-bans-claude-code-github-existential-risk-same-week-cover.webp"><script type="application/ld+json">{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "微軟內部 Claude Code 被停用——同週 GitHub 備忘錄寫下「生存級風險」",
-  "url": "https://kyosora.github.io/posts/fc21870e/",
-  "image": "https://kyosora.github.io/images/posts/microsoft-bans-claude-code-github-existential-risk-same-week-cover.webp",
-  "datePublished": "2026-05-21T04:00:00.000Z",
-  "dateModified": "2026-06-22T03:07:51.000Z",
-  "author": [
-    {
-      "@type": "Person",
-      "name": "kyosora",
-      "url": "https://kyosora.github.io"
-    }
-  ]
-}</script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/posts/fc21870e/"><link rel="preconnect" href="https://cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css" integrity="sha384-YgSbYtJcfPnMV/aJ0UdQk84ctht/ckX0MrfQwxOhw43RMBw2WSaDSMVh4gQwLdE4" crossorigin="anonymous"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.css" media="print" onload="this.media='all'" integrity="sha384-SwTfv/7YAtLOqjuOIVOyBHrBSW9ismFkXd7MZSJZmL20kcTygh/Rm3PHXJPY2taV" crossorigin="anonymous"><script>
-    (() => {
+<meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k">
+<meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E">
+<meta name="baidu-site-verification" content="code-pE5rnuxcfD">
+<link rel="icon" href="/images/favicon.png">
+<link rel="alternate" type="application/atom+xml" title="kyosora 筆記" href="/atom.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&amp;display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/css/kyosora.css?v=4bf38b40">
+
+<script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"微軟內部 Claude Code 被停用——同週 GitHub 備忘錄寫下「生存級風險」","description":"微軟同一週取消內部 Claude Code 授權、強推 Copilot CLI，外流備忘錄又警告 GitHub 面臨「生存級風險」。兩則被分開報導的新聞拼起來才是全貌——梳理半年時間線、官方理由與背後因果，看它對非微軟開發者的意義。","url":"https://kyosora.github.io/posts/fc21870e/","mainEntityOfPage":"https://kyosora.github.io/posts/fc21870e/","image":"https://kyosora.github.io/images/posts/microsoft-bans-claude-code-github-existential-risk-same-week-cover.webp","datePublished":"2026-05-21T04:00:00.000Z","dateModified":"2026-06-22T03:07:51.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI產業觀察","keywords":"Claude Code, 開發者工具, AI Coding, GitHub Copilot, Microsoft"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI產業觀察","item":"https://kyosora.github.io/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/"},{"@type":"ListItem","position":3,"name":"微軟內部 Claude Code 被停用——同週 GitHub 備忘錄寫下「生存級風險」","item":"https://kyosora.github.io/posts/fc21870e/"}]}]}</script>
+
+</head>
+<body class="kind-post">
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
+<symbol id="i-rss" viewBox="0 0 24 24"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.2"/></symbol>
+</svg>
+
+<a class="skip" href="#main">跳到內文</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/">kyosora 筆記</a>
+    <nav class="nav" aria-label="主要選單">
       
-    const saveToLocal = {
-      set: (key, value, ttl) => {
-        if (!ttl) return
-        const expiry = Date.now() + ttl * 86400000
-        localStorage.setItem(key, JSON.stringify({ value, expiry }))
-      },
-      get: key => {
-        const itemStr = localStorage.getItem(key)
-        if (!itemStr) return undefined
-        const { value, expiry } = JSON.parse(itemStr)
-        if (Date.now() > expiry) {
-          localStorage.removeItem(key)
-          return undefined
-        }
-        return value
-      }
-    }
-
-    window.btf = {
-      saveToLocal,
-      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = url
-        script.async = true
-        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
-        script.onload = script.onreadystatechange = () => {
-          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
-        }
-        script.onerror = reject
-        document.head.appendChild(script)
-      }),
-      getCSS: (url, id) => new Promise((resolve, reject) => {
-        const link = document.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = url
-        if (id) link.id = id
-        link.onload = link.onreadystatechange = () => {
-          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
-        }
-        link.onerror = reject
-        document.head.appendChild(link)
-      }),
-      addGlobalFn: (key, fn, name = false, parent = window) => {
-        if (!false && key.startsWith('pjax')) return
-        const globalFn = parent.globalFn || {}
-        globalFn[key] = globalFn[key] || {}
-        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
-        parent.globalFn = globalFn
-      }
-    }
-  
+      <a href="/">首頁</a>
       
-      const activateDarkMode = () => {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
-        }
-      }
-      const activateLightMode = () => {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
-        }
-      }
+      <a href="/archives/">歸檔</a>
+      
+      <a href="/categories/">分類</a>
+      
+      <a href="/tags/">標籤</a>
+      
+      <a href="/about/">關於</a>
+      
+    </nav>
+    <div class="tools">
+      <button class="tool" type="button" data-action="search" aria-label="搜尋文章（快捷鍵 /）" title="搜尋（/）"><svg class="icon"><use href="#i-search"/></svg></button>
+      <button class="tool tool--text" type="button" data-action="translate" aria-label="切換成簡體中文" title="繁簡切換">簡</button>
+      <button class="tool" type="button" data-action="theme" aria-label="切換深色模式" title="深淺色切換"><svg class="icon icon-moon"><use href="#i-moon"/></svg><svg class="icon icon-sun"><use href="#i-sun"/></svg></button>
+    </div>
+  </div>
+</header>
 
-      btf.activateDarkMode = activateDarkMode
-      btf.activateLightMode = activateLightMode
-
-      const theme = saveToLocal.get('theme')
+<main id="main">
+<article class="post">
+  <header class="post-head">
     
-          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
-          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+    <figure class="post-banner"><img src="/images/posts/microsoft-bans-claude-code-github-existential-risk-same-week-cover.webp" alt="" width="1536" height="1024" fetchpriority="high" decoding="async"></figure>
+    
+    <div class="wrap post-head-inner">
+      
+<nav class="crumbs" aria-label="目前位置">
+  <ol>
+  
+    <li><a href="/">首頁</a></li>
+  
+    <li><a href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a></li>
+  
+  </ol>
+</nav>
 
-          if (theme === undefined) {
-            if (mediaQueryLight.matches) activateLightMode()
-            else if (mediaQueryDark.matches) activateDarkMode()
-            else {
-              const hour = new Date().getHours()
-              const isNight = hour <= 6 || hour >= 18
-              isNight ? activateDarkMode() : activateLightMode()
-            }
-            mediaQueryDark.addEventListener('change', () => {
-              if (saveToLocal.get('theme') === undefined) {
-                e.matches ? activateDarkMode() : activateLightMode()
-              }
-            })
-          } else {
-            theme === 'light' ? activateLightMode() : activateDarkMode()
-          }
+
+      <h1 class="post-title">微軟內部 Claude Code 被停用——同週 GitHub 備忘錄寫下「生存級風險」</h1>
+      <p class="post-meta">
+        <span>發布於 <time datetime="2026-05-21T04:00:00.000Z">2026-05-21</time></span>
         
-      
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
-      }
+        <span>約 9 分鐘讀完</span>
+        <span class="views" data-views hidden></span>
+      </p>
+    </div>
+  </header>
+
+  <div class="wrap post-layout">
     
-      
-    const detectApple = () => {
-      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
-        document.documentElement.classList.add('apple')
-      }
-    }
-    detectApple()
-  
-    })()
-  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
-function gtag(){dataLayer.push(arguments)}
-gtag('js', new Date())
-gtag('config', 'G-F9P7RWQQJE')
-btf.addGlobalFn('pjaxComplete', () => {
-  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
-}, 'google_analytics')
-</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
-  root: '/',
-  algolia: undefined,
-  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
-  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
-  copy: {
-    success: '複製成功',
-    error: '複製失敗',
-    noSupport: '瀏覽器不支援'
-  },
-  relativeDate: {
-    homepage: true,
-    post: true
-  },
-  runtime: '天',
-  dateSuffix: {
-    just: '剛剛',
-    min: '分鐘前',
-    hour: '小時前',
-    day: '天前',
-    month: '個月前'
-  },
-  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
-  lightbox: 'fancybox',
-  Snackbar: undefined,
-  infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
-    buttonText: '載入更多'
-  },
-  isPhotoFigcaption: false,
-  islazyloadPlugin: false,
-  isAnchor: false,
-  percent: {
-    toc: true,
-    rightside: true,
-  },
-  autoDarkmode: true
-}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: '微軟內部 Claude Code 被停用——同週 GitHub 備忘錄寫下「生存級風險」',
-  isHighlightShrink: false,
-  isToc: true,
-  pageType: 'post'
-}</script><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="/css/about-cards.css"><link rel="stylesheet" href="/css/bg-gradient-mesh.css"><link rel="stylesheet" href="/css/view-transitions.css"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
-<script data-sri-getscript>(function(){var m={"https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js":"sha384-YrKBdCikMPThdp9YNMsmtzHOQ9yH4Ip+glZK2weyS2R3+jMLYsucIs5b5T6ptbqe","https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js":"sha384-1ggI9FC3CkghppRD/XCR4aD+jp4DxwXlJIW0wxhyTLNKuiZEW3c4BwcjKXl0iVAJ","https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js":"sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ"};var b=window.btf;if(!b||typeof b.getScript!=='function')return;var g=b.getScript;b.getScript=function(u,a){var h=m[u];if(!h)return g.call(b,u,a);var o={};if(a)for(var k in a)o[k]=a[k];o.integrity=h;o.crossorigin='anonymous';return g.call(b,u,o)}})();</script></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">245</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">540</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/posts/microsoft-bans-claude-code-github-existential-risk-same-week-cover.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a><a class="nav-page-title" href="/"><span class="site-name">微軟內部 Claude Code 被停用——同週 GitHub 備忘錄寫下「生存級風險」</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首頁</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">微軟內部 Claude Code 被停用——同週 GitHub 備忘錄寫下「生存級風險」<a class="post-edit-link" href="https://github.com/jerryc127/butterfly.js.org/edit/main/source/_posts/microsoft-bans-claude-code-github-existential-risk-same-week.md" title="編輯" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">發表於</span><time datetime="2026-05-21T04:00:00.000Z" title="發表於 2026-05-21 12:00:00">2026-05-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%B7%A5%E5%85%B7%E8%88%87%E7%94%9F%E7%94%A2%E5%8A%9B/">工具與生產力</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">2.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>8分鐘</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>2026 年 5 月 19 日那一週，微軟做了兩件看起來無關、其實是同一件事的事。</p>
+    <aside class="post-aside">
+      <details class="toc-box" open>
+        <summary>目錄</summary>
+        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E5%80%8B%E6%9C%88%E5%85%A7%E5%BE%9E%E8%A9%A6%E7%94%A8%E5%88%B0%E5%BC%B7%E5%88%B6%E4%B8%8B%E7%B7%9A"><span class="toc-text">六個月內從試用到強制下線</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%AE%E8%BB%9F%E7%B5%A6%E7%9A%84%E7%90%86%E7%94%B1%E2%80%94%E2%80%94sandbox-%E6%AF%94-autonomous-%E5%AE%89%E5%85%A8"><span class="toc-text">微軟給的理由——sandbox 比 autonomous 安全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#91-%E5%B7%A5%E7%A8%8B%E5%B8%AB%E5%B7%B2%E7%B6%93%E7%94%A8-Copilot%EF%BC%8C%E5%BE%AE%E8%BB%9F%E9%82%84%E6%98%AF%E8%AE%93%E6%95%B8%E5%8D%83%E4%BA%BA%E8%A9%A6%E7%94%A8-Claude-Code"><span class="toc-text">91% 工程師已經用 Copilot，微軟還是讓數千人試用 Claude Code</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E3%80%8C%E7%94%9F%E5%AD%98%E7%B4%9A%E9%A2%A8%E9%9A%AA%E3%80%8D%E5%88%B0%E5%BA%95%E5%9C%A8%E6%8C%87%E4%BB%80%E9%BA%BC"><span class="toc-text">「生存級風險」到底在指什麼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E9%80%99%E5%85%A9%E4%BB%B6%E4%BA%8B%E6%98%AF%E5%90%8C%E4%B8%80%E4%BB%B6%E4%BA%8B"><span class="toc-text">為什麼這兩件事是同一件事</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8D%E4%B8%8D%E5%9C%A8%E5%BE%AE%E8%BB%9F%E5%B7%A5%E4%BD%9C%E7%9A%84%E6%88%91%E5%80%91%E6%9C%89%E4%BB%80%E9%BA%BC%E6%84%8F%E7%BE%A9"><span class="toc-text">對不在微軟工作的我們有什麼意義</span></a></li></ol></nav>
+      </details>
+    </aside>
+    
+
+    <div class="post-main">
+      <div class="prose" id="article">
+        <p>2026 年 5 月 19 日那一週，微軟做了兩件看起來無關、其實是同一件事的事。</p>
 <p>第一件：The Information 報導微軟 Experiences + Devices 事業群取消大部分內部 Claude Code 授權，要求工程師在 2026 年 6 月 30 日前全面遷移到 GitHub Copilot CLI。第二件：同一週外流的內部備忘錄警告 GitHub 面臨「生存級風險」，因為 Cursor、Anthropic 的 Claude Code、OpenAI 等自主編程工具「削弱了把程式碼持續上傳到 GitHub 倉庫的必要性」。</p>
 <p>兩件事被各家媒體分開報導，但拼起來才看得到全貌。我認為這不是兩個故事，是同一個故事的因和果。</p>
-<h2 id="六個月內從試用到強制下線">六個月內從試用到強制下線</h2>
-<p>先把時間線釘好：</p>
+<h2 id="六個月內從試用到強制下線"><a href="#六個月內從試用到強制下線" class="headerlink" title="六個月內從試用到強制下線"></a>六個月內從試用到強制下線</h2><p>先把時間線釘好：</p>
 <ul>
 <li><strong>2025 年 12 月</strong>：微軟開始邀請「數千名」內部開發者試用 Claude Code</li>
 <li><strong>2026 年 1 月</strong>：試用擴展至 Experiences + Devices 事業群全體，涵蓋 Windows、Microsoft 365、Outlook、Teams、Surface 工程團隊</li>
@@ -203,27 +135,23 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li><strong>2026 年 6 月 30 日</strong>：微軟財年結束日，也是 Claude Code 內部完全停用的硬截止日</li>
 </ul>
 <p>六個月。從「邀請試用」到「強制下線」，時程比一般企業淘汰開發工具快得多。一般情況下大型企業導入新工具的試錯期都用「年」算，這次走完整個 lifecycle 只用了半年，而且不是工具自己掛掉——是被決策層掐掉的。</p>
-<h2 id="微軟給的理由——sandbox-比-autonomous-安全">微軟給的理由——sandbox 比 autonomous 安全</h2>
-<p>微軟的官方說法來自執行副總裁 Rajesh Jha：「Copilot CLI 給了我們特別重要的東西——一個我們可以直接與 GitHub 一起塑造的產品，服務微軟的儲存庫、工作流程、安全預期和工程需求。」</p>
+<h2 id="微軟給的理由——sandbox-比-autonomous-安全"><a href="#微軟給的理由——sandbox-比-autonomous-安全" class="headerlink" title="微軟給的理由——sandbox 比 autonomous 安全"></a>微軟給的理由——sandbox 比 autonomous 安全</h2><p>微軟的官方說法來自執行副總裁 Rajesh Jha：「Copilot CLI 給了我們特別重要的東西——一個我們可以直接與 GitHub 一起塑造的產品，服務微軟的儲存庫、工作流程、安全預期和工程需求。」</p>
 <p>技術上，Copilot CLI 對指定目錄外的寫入設明確確認關卡，治理邊界比 Claude Code 的 autonomous execution model 清楚——Claude Code agent 拿到任務後自己決定要動哪些檔案、跑哪些指令，介入點較少。對企業 IT 來說，這是兩種完全不同的責任歸屬模型。</p>
 <p>這個說法在表面上站得住腳。微軟管著上百個 production codebase，加上 SOX 合規、機密程式碼隔離、供應鏈安全審查，autonomous agent 確實會踩很多既有的安全紅線。我自己在公司導 AI 工具的時候，IT 部門也是第一時間拿 sandbox 邊界當必要條件，這不是微軟特別保守，是企業 IT 的標準直覺。</p>
 <p>平心而論，微軟立場合理的部分是：當你的程式碼觸及作業系統核心、企業帳務、或客戶 PII 的時候，agent 自己決定要動哪些檔案本來就是一條紅線。Copilot CLI 強制每一步寫入都要明確確認，這對審計流程確實比較好接。</p>
 <p>但這個解釋有個盲點：如果 sandbox vs autonomous 真的是核心問題，為什麼是 2025 年 12 月才開始大規模試用、半年後才強制下線？Claude Code 的執行模型從第一天就是 autonomous，這不是 2026 年新出現的特性。如果安全是首要原因，這條紅線在 12 月邀請試用之前就該畫好。</p>
-<h2 id="91-工程師已經用-Copilot，微軟還是讓數千人試用-Claude-Code">91% 工程師已經用 Copilot，微軟還是讓數千人試用 Claude Code</h2>
-<p>我認為真正的轉折在這個數字：根據微軟自己公開的 2025 年資料，91% 的工程團隊使用 GitHub Copilot。這是一個已經接近天花板的內部覆蓋率。</p>
+<h2 id="91-工程師已經用-Copilot，微軟還是讓數千人試用-Claude-Code"><a href="#91-工程師已經用-Copilot，微軟還是讓數千人試用-Claude-Code" class="headerlink" title="91% 工程師已經用 Copilot，微軟還是讓數千人試用 Claude Code"></a>91% 工程師已經用 Copilot，微軟還是讓數千人試用 Claude Code</h2><p>我認為真正的轉折在這個數字：根據微軟自己公開的 2025 年資料，91% 的工程團隊使用 GitHub Copilot。這是一個已經接近天花板的內部覆蓋率。</p>
 <p>然後 Claude Code 進來了——而且微軟自己主動發出邀請，2025/12 起讓數千名 E+D 工程師試用、2026/01 擴展至整個事業群。即使 Copilot 覆蓋率已高，微軟仍願意打開這個試用通道，這本身就代表內部對「現有工具是否夠用」存在懷疑。</p>
 <p>把這兩件事放在一起讀：當你公司已經有 91% 工程師在用自家 AI 工具、卻還是要替數千人開外部競品的試用權限——這不是邊緣使用者偷渡，這是高層認可的內部評測。如果評測結果是「Copilot CLI 完勝」，2026 年 6 月底的硬截止日就不會存在；繼續用就好。</p>
 <p>至少從遷移壓力來看，微軟不希望 Claude Code 繼續成為內部工作流的選項。Rajesh Jha 那句「我們可以直接與 GitHub 一起塑造的產品」要這樣讀：重點不是「塑造」，重點是「我們的」。</p>
-<h2 id="「生存級風險」到底在指什麼">「生存級風險」到底在指什麼</h2>
-<p>同一週洩出的另一份備忘錄就更直白。微軟內部用「生存級風險」（existential risk）形容 GitHub 的處境。這個詞在企業內部備忘錄裡很重——通常只給「業務本身有可能消失」的情境。</p>
+<h2 id="「生存級風險」到底在指什麼"><a href="#「生存級風險」到底在指什麼" class="headerlink" title="「生存級風險」到底在指什麼"></a>「生存級風險」到底在指什麼</h2><p>同一週洩出的另一份備忘錄就更直白。微軟內部用「生存級風險」（existential risk）形容 GitHub 的處境。這個詞在企業內部備忘錄裡很重——通常只給「業務本身有可能消失」的情境。</p>
 <p>GitHub 目前的體量沒有要崩。Microsoft 2026 Q2 財報（2026 年 1 月）透露 GitHub Copilot 付費訂閱數約 470 萬、年增 75%，Copilot 自身 ARR 接近 10 億美元；GitHub 整體註冊使用者超過 1.5 億。這不是會明天消失的業務。所以「生存級風險」指的是什麼？</p>
 <p>備忘錄裡那句話是關鍵：「削弱了把程式碼持續上傳到 GitHub 倉庫的必要性」。</p>
 <p>老實說我第一次讀這句話也愣了一下，因為它的字面意思是「AI 會殺掉 git 託管」，這聽起來像 2025 年某個 Hacker News thread 的科幻假設。但仔細想其實是另一個意思。</p>
 <p>當 AI agent 直接在 IDE 裡從規格寫到 PR、commit message 由 LLM 生成、code review 由另一個 agent 跑——「人類開發者打開 GitHub 網頁去 review 一個 PR」的這個動作，會變得越來越少。不是 git 儲存庫消失，是 GitHub 作為「工作流前端」的價值在被掏空。</p>
 <p>而 GitHub 的商業模式是 per-seat 訂閱。Copilot Enterprise 一個席位 39 美元/月；如果連 GitHub Enterprise Cloud 的 21 美元也算進去，企業採購看到的是一整包席位成本，而不是單一工具費。當 AI agent 變成主要的程式碼編輯者，公司還要為每個人類工程師付這整包嗎？或者 agent 才是真正的使用者，計費單位應該換成 token / API call？</p>
 <p>這就是「生存級風險」的真意——不是 Git 會死，是 per-seat 訂閱模式會死。GitHub 已經宣布 2026 年 6 月 1 日全面改 usage-based billing、每月送固定 AI credits——這個切換不是巧合，是同一個壓力下的提前止血。</p>
-<h2 id="為什麼這兩件事是同一件事">為什麼這兩件事是同一件事</h2>
-<p>把兩條線拼回去：</p>
+<h2 id="為什麼這兩件事是同一件事"><a href="#為什麼這兩件事是同一件事" class="headerlink" title="為什麼這兩件事是同一件事"></a>為什麼這兩件事是同一件事</h2><p>把兩條線拼回去：</p>
 <ol>
 <li>微軟內部最強的 AI coding 工具是 Anthropic 做的，不是自家做的</li>
 <li>GitHub 的訂閱模式被 AI agent 工作流威脅</li>
@@ -231,495 +159,149 @@ btf.addGlobalFn('pjaxComplete', () => {
 </ol>
 <p>如果繼續讓工程師在 Claude Code 裡寫程式、再透過某個外掛或 wrapper 推回 GitHub，那「程式碼到底是在哪個工作流裡產生的」這件事就不歸微軟管了。微軟真正要守住的是程式碼產生發生在自己的工具底下——這樣下一季財報才講得出 GitHub 在 AI coding 鏈條的關鍵位置。</p>
 <p>這是企業政治決策，不是技術決策。承認這一點對微軟一點壞處都沒有——任何上規模的公司面對「員工偏好競爭對手產品」這種狀況，反應都會差不多。差別只是有沒有公開承認。</p>
-<h2 id="對不在微軟工作的我們有什麼意義">對不在微軟工作的我們有什麼意義</h2>
-<p>說回我們這些不在微軟工作的人。這件事的訊號是什麼？</p>
+<h2 id="對不在微軟工作的我們有什麼意義"><a href="#對不在微軟工作的我們有什麼意義" class="headerlink" title="對不在微軟工作的我們有什麼意義"></a>對不在微軟工作的我們有什麼意義</h2><p>說回我們這些不在微軟工作的人。這件事的訊號是什麼？</p>
 <p><strong>第一個訊號：當 AI 編程工具的差距大到內部測試輸給競品時，企業的反應是政治性的，不是技術性的。</strong> 如果你在公司裡推某個工具，準備好被反問「為什麼不用自家有的」。技術優勢有時候不是賣點，是麻煩。</p>
 <p><strong>第二個訊號：per-seat 訂閱會被重新評估。</strong> GitHub 改成使用量計費只是開始。下一波會輪到 IDE 訂閱、CI/CD 訂閱、code review 工具訂閱。如果你在做開發者工具，現在就要想清楚未來的計費單位是「人」還是「token」。</p>
 <p><strong>對你公司導入 AI coding 工具時的實際建議：</strong> 不要只比模型能力。先把這幾題問清楚——權限邊界誰定、agent 動了哪些檔案誰負責 log、PR 來自 agent 還是人類能不能分流 review、計費出問題的時候對 supplier 還是內部 cost center。這些 governance 細節，在工具決定之後再補通常已經來不及。</p>
 <p><strong>第三個訊號：Anthropic 不需要打贏微軟也已經贏了。</strong> Anthropic 模型仍可透過 Copilot CLI、Microsoft 365 Copilot、Azure Foundry 取用。Claude Code 這個產品被微軟內部禁掉，但 Anthropic 的模型一個都沒少賣。微軟禁的是 Anthropic 的 agent UI，不是 Anthropic 的能力。這代表 model 跟 agent UI 是兩個獨立的市場——前者贏家少，後者贏家多。</p>
 <p>我自己用 Claude Code 寫程式快兩年了，過去半年又裝了 ECC（Everything Claude Code）那一整套 skill / plugin / hook 系統，老實說很難回去用任何 sandbox 限制嚴格的 agent——autonomous 跑通的爽感是真的會回不去。微軟工程師六個月內被 Claude Code 圈走，我完全能理解那個過程。被叫回去用 Copilot CLI 那一刻的心情，我大概也猜得到。</p>
 <p>下次有人跟你說「企業選工具看的是安全與整合，不是技術」，把這個故事丟給他看。安全跟整合是真的，但永遠不是唯一的理由。</p>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kyosora.github.io">kyosora</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://kyosora.github.io/posts/fc21870e/">https://kyosora.github.io/posts/fc21870e/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 授權協議。轉載請註明來源 <a href="https://kyosora.github.io" target="_blank">kyosora 筆記</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Claude-Code/">Claude Code</a><a class="post-meta__tags" href="/tags/%E9%96%8B%E7%99%BC%E8%80%85%E5%B7%A5%E5%85%B7/">開發者工具</a><a class="post-meta__tags" href="/tags/AI-Coding/">AI Coding</a><a class="post-meta__tags" href="/tags/GitHub-Copilot/">GitHub Copilot</a><a class="post-meta__tags" href="/tags/Microsoft/">Microsoft</a></div><div class="post-share"><div class="social-share" data-image="/images/posts/microsoft-bans-claude-code-github-existential-risk-same-week-cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'" integrity="sha384-pHP5Gsph8nDYa2Wj0frFT8K63FVU7zVae69H6kGfTbqR7A7DzAMSqKXk1iUB9/6G" crossorigin="anonymous"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer integrity="sha384-CvrrTalky/rRVwzG52LyKTddyiATRqUS5VTzYUhO9/f0W2+VNbyNuZi1FKxniL5E" crossorigin="anonymous"></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/33d38aa3/" title="Gemini 漲 2 倍仍是美系最便宜、GPT 跟著漲、Claude 反而降——2026 年 AI API 三家定價分歧的真實意義"><img class="cover" src="/images/posts/ai-api-pricing-divergence-2026-anthropic-cuts-openai-google-raises-cover.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Gemini 漲 2 倍仍是美系最便宜、GPT 跟著漲、Claude 反而降——2026 年 AI API 三家定價分歧的真實意義</div></div><div class="info-2"><div class="info-item-1">把過去半年三家 LLM 旗艦的價格軌跡攤開看，方向完全不同。 OpenAI 從 GPT-5（2025/08 發佈）的 $1.25/$10，經 GPT-5.4 的 $2.5/$15，到 2026/04/23 GPT-5.5 直接拉到 $5/$30——輸入價漲 4 倍、輸出價漲 3 倍。Google 從 Gemini 2.5 Pro（2025/06）的 $1/$10 漲到 Gemini 3 Pro（2025/11/18）的 $2/$12，再到 2026/05/19 推出 Gemini 3.5 Flash $1.5/$9（比自家 3.1 Pro 還便宜）。Anthropic 從 Claude 3 Opus 的 $15/$75 直接砍到 Opus 4.5（2025/11）的 $5/$25，之後 4.6、4.7（2026/04/16）三代都維持同價。 VC Tomer Tunguz 上週把這幾條曲線畫在同一張圖，下了一個短評：「補貼在現金充裕、市占重要的時候發生；漲價在現金緊、利潤重要的時候發生。」 三家走的方向不同，意思就是他們現在缺的東西不一樣。 對每個月開 API 帳單的人來說，這不...</div></div></div></a><a class="pagination-related" href="/posts/daa5dc39/" title="Mythos 5 天攻破 Apple M5 內核：AI 不是主角，但漏洞研究的時間軸已經被改寫"><img class="cover" src="/images/posts/legacy-daa5dc39-cover.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Mythos 5 天攻破 Apple M5 內核：AI 不是主角，但漏洞研究的時間軸已經被改寫</div></div><div class="info-2"><div class="info-item-1">5 月 14 日 Calif 安全團隊在自家部落格丟出一個炸彈：他們用 Anthropic 的 Mythos Preview，在 5 天內針對 Apple M5 macOS 內核做出了一條完整的 LPE（本地提權）exploit，繞過了 Apple 花 5 年、燒了不知道幾個億打造的 MIE 硬體記憶體安全機制。 接著媒體標題集體起飛：「AI 5 天破解 Apple 5 年防線」「AI 顛覆網路安全」。但你把 Calif 自己那篇技術揭露讀完會發現——這故事真正的重點不在那個 5 vs 5 的爽快對比，而在一個更安靜也更恐怖的事實。 5 天裡實際發生了什麼 照 Calif 官方公開的時間軸：  4/25：Bruce Dang 發現了 bugs 4/27：Dion Blazakis 加入 Calif 5/01：可用 exploit 完成 5/14：親自飛 Apple 總部當面交給對方，然後公開揭露  從 bug 被發現到可用 exploit，4/25 到 5/1，加起來 5 天。注意是「找到 bug 之後 5 天內做出 exploit」，不是「Mythos 從零開始 5 天破解 A...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/51217f8c/" title="Cursor 自建 AI 模型的背後邏輯：當你的 IDE 不想再幫別人打工"><img class="cover" src="/images/posts/legacy-51217f8c-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-20</div><div class="info-item-2">Cursor 自建 AI 模型的背後邏輯：當你的 IDE 不想再幫別人打工</div></div><div class="info-2"><div class="info-item-1">三月十九號，Bloomberg 丟出一顆炸彈：Cursor 正在自建 AI 模型。 不是微調，不是套殼。是從頭訓練一個專門寫程式碼的基礎模型，叫做 Composer 2。同一天，消息傳出 Cursor 正在以約 500 億美元估值募資。 一個 IDE 公司，估值比大多數 SaaS 獨角獸加起來還高，然後決定去做模型。這件事值得認真想一下。 為什麼 Cursor 要自己做模型？ 先看數字：Cursor 現在每天有超過一百萬活躍使用者，五萬家企業客戶——包括 Stripe 和 Figma 這種等級的公司。ARR 已經衝到 20 億美元。 表面上看，一切都很好。但 Cursor 的核心焦慮其實很明確：他們最重要的能力，是別人提供的。 Cursor 背後的模型主要是 Claude 和 GPT。每一次 Anthropic 改了 API 定價、每一次 OpenAI 決定把 Codex 做得更好、每一次這些公司推出自己的 IDE 或 Agent 產品——Cursor 的護城河就窄了一點。 這不是被害妄想。Claude Code 已經在搶 Cursor 的午餐。OpenAI 的 Codex 直接...</div></div></div></a><a class="pagination-related" href="/posts/6bed35e0/" title="61 個 Markdown 檔讓你的 IDE 變成 AI 公司：agency-agents 爆紅背後的技術邏輯"><img class="cover" src="/images/posts/legacy-6bed35e0-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-14</div><div class="info-item-2">61 個 Markdown 檔讓你的 IDE 變成 AI 公司：agency-agents 爆紅背後的技術邏輯</div></div><div class="info-2"><div class="info-item-1">一個 GitHub 專案，沒有任何可執行程式碼，只有 61 個 Markdown 檔案，7 天內拿到 10,000 顆星。截至 3/14 已經衝到 39,300 星。 這不是什麼新框架或新語言。agency-agents 做的事情只有一件：用 Markdown 定義 AI 的專業人格。 聽起來荒謬，但它戳中了一個真實的問題。 你的 AI 助手什麼都會，所以什麼都做不好 用過 Claude Code 或 Cursor 的人都有這個經驗：你請 AI 寫一個 REST API，它給你一個「還行」的版本。能跑，但缺少認證考量、沒有速率限制、錯誤處理敷衍、命名風格前後不一。 問題不在模型能力。GPT-5.4、Claude Opus 4.6、Gemini 3.1 Pro——這些模型的知識量早就超過任何單一工程師。問題在於 context window 裡塞了太多可能性，模型不知道你要哪一種。 你問「幫我設計 API」，模型在 REST、GraphQL、gRPC 之間游移。你問「幫我寫測試」，模型不確定你要 unit test 還是 integration test，最後給你一個不痛不癢的折衷...</div></div></div></a><a class="pagination-related" href="/posts/5bbe1880/" title="Anthropic 自己出手冊警告：AI 不是降低創業失敗率，是放大它"><img class="cover" src="/images/posts/anthropic-founders-playbook-ai-startup-failure-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-18</div><div class="info-item-2">Anthropic 自己出手冊警告：AI 不是降低創業失敗率，是放大它</div></div><div class="info-2"><div class="info-item-1">五月十四日 Anthropic 在自家部落格放出一份叫 Founder’s Playbook 的內部手冊，主題是「怎麼用 AI 從零做一家 startup」。 結論反直覺：AI 會放大你的創業失敗模式，而不是降低失敗率。寫這份手冊的是 Anthropic 自己——賣你 Claude Code 的那家公司——提醒你它賣的工具會放大失敗。 我下載 PDF 那天剛好在抓一個 bug 那天我在改公司專案的下載功能。PM 一直堅持是「SQL 抓不到資料」，花了快兩小時才發現根本不是——伺服器上的 LibreOffice 被 MODA ODF Application Tools 的安裝程式覆寫掉了，舊路徑變成空殼資料夾。 問題本身只是一行硬編碼路徑。難搞的是錯誤被四層補丁吞掉的方式：執行檔不見就拋例外、ConvertFile 沒產出檔還是寫 log 繼續跑、controller 對著不存在路徑 return File()、最外層 catch 把一切包成 Content(&quot;查無資料&quot;)。前端拿到 1,229 bytes 的「ODS 檔」（其實是 HTML 錯誤頁），或一個誤...</div></div></div></a><a class="pagination-related" href="/posts/3a171ac6/" title="AI 刪了我的檔案，到底該怪誰？從 Claude 災難看責任歸屬與自救指南"><img class="cover" src="/images/posts/legacy-3a171ac6-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-08</div><div class="info-item-2">AI 刪了我的檔案，到底該怪誰？從 Claude 災難看責任歸屬與自救指南</div></div><div class="info-2"><div class="info-item-1">「幫我清理一下舊 repo 的 packages」——這句話毀了一個開發者的整個 Mac。 2025 年某個普通的工作日，Reddit 使用者在 r/ClaudeAI 發了一篇求救文：「Claude CLI 刪了我整個家目錄，所有工作都沒了！這能救回來嗎？」 這不是第一起，也不會是最後一起。GitHub Issues 上有超過 10 起類似的嚴重事件回報。當 AI Coding Assistant 變得越來越強大，誰該為這些災難負責？ 災難現場：一個 ~/ 引發的血案 事件經過 使用者的原始請求很簡單：「清理舊 repo 的 packages」。 Claude Code 生成並執行了這個命令： 1rm -rf tests/ patches/ plan/ ~/ 看到問題了嗎？ 最後的 ~/ 不是某個目錄名稱，而是使用者的整個家目錄。 損失清單 這個命令執行後，使用者失去了：  ✅ 整個 Desktop（桌面上的所有檔案） ✅ Documents、Downloads（多年的文件與下載） ✅ Keychain（所有儲存的密碼和憑證） ✅ ~/.claude（Claude 的設定和歷史記...</div></div></div></a><a class="pagination-related" href="/posts/1c00c45/" title="乾淨的 GitHub repo 也能讓 Claude Code 幫你開反向 shell"><img class="cover" src="/images/posts/claude-code-clean-repo-helpful-attack-surface-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-02</div><div class="info-item-2">乾淨的 GitHub repo 也能讓 Claude Code 幫你開反向 shell</div></div><div class="info-2"><div class="info-item-1">上週 Mozilla 的 0DIN 團隊公開了一個 POC。他們準備了一個看起來完全乾淨的 GitHub repo——沒有惡意碼、傳統掃描器看不到訊號、程式碼經得起 code review。然後他們把 repo 交給 Claude Code，請它照 README 跑一遍 setup。 Claude Code 幫他們開了一個反向 shell。 我是 Claude Code 每天在用的人。這個 POC 出來我第一個反應不是想罵 Anthropic，是打開最近三個從別人 repo clone 下來的 side project，把 Claude Code 讓它自動跑的那些 setup 動作全部翻了一遍。有些看不出來、也追不回去了。 這篇要講的更根本：AI coding agent 最危險的不是它會亂寫程式，是它太想幫你。 攻擊拆給你看 先把 0DIN 這個 POC 拆開。它的每一步都很無聊，可怕的是無聊的步驟串起來會發生什麼。 第一步，repo 是真的乾淨的。0DIN 準備了一個叫 axiom 的 Python 套件，附一份看起來合理的 README 和 setup 說明。傳統 secr...</div></div></div></a><a class="pagination-related" href="/posts/15a54ef4/" title=".npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析"><img class="cover" src="/images/posts/claude-code-leak-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-04-02</div><div class="info-item-2">.npmignore 少一行，512K 行原始碼見光——Claude Code 洩漏事件全解析</div></div><div class="info-2"><div class="info-item-1">2026 年 3 月 31 日 UTC 凌晨 4 點，Anthropic 把 Claude Code v2.1.88 推上 npm。23 分鐘後，一位累積 190 萬美元漏洞賞金的安全研究員在 X 上發了一則貼文，引爆了 AI 開發工具史上最大的原始碼洩漏事件。 512,000 行 TypeScript。1,900 個檔案。44 個未開放的 Feature Flags。全部見光。 而最諷刺的是，這家公司的品牌定位是「安全至上」。 一個 .npmignore 的遺漏如何釀成災難 事情的根因簡單到令人難以置信。 Claude Code 用 Bun 做 bundler。Bun 預設會產生 source map 檔案——一個 59.8 MB 的 cli.js.map，用來把打包後的程式碼對應回原始 TypeScript。這個檔案指向 Anthropic 的 Cloudflare R2 儲存桶上一個 zip 壓縮檔，裡面裝著完整的未混淆原始碼。 正常流程下，.npmignore 應該排除這個檔案。但不知道是哪個環節出了問題，它被一起推上了公開的 npm registry。 更慘的是，Bun...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">245</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">540</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E5%80%8B%E6%9C%88%E5%85%A7%E5%BE%9E%E8%A9%A6%E7%94%A8%E5%88%B0%E5%BC%B7%E5%88%B6%E4%B8%8B%E7%B7%9A"><span class="toc-number">1.</span> <span class="toc-text">六個月內從試用到強制下線</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%AE%E8%BB%9F%E7%B5%A6%E7%9A%84%E7%90%86%E7%94%B1%E2%80%94%E2%80%94sandbox-%E6%AF%94-autonomous-%E5%AE%89%E5%85%A8"><span class="toc-number">2.</span> <span class="toc-text">微軟給的理由——sandbox 比 autonomous 安全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#91-%E5%B7%A5%E7%A8%8B%E5%B8%AB%E5%B7%B2%E7%B6%93%E7%94%A8-Copilot%EF%BC%8C%E5%BE%AE%E8%BB%9F%E9%82%84%E6%98%AF%E8%AE%93%E6%95%B8%E5%8D%83%E4%BA%BA%E8%A9%A6%E7%94%A8-Claude-Code"><span class="toc-number">3.</span> <span class="toc-text">91% 工程師已經用 Copilot，微軟還是讓數千人試用 Claude Code</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E3%80%8C%E7%94%9F%E5%AD%98%E7%B4%9A%E9%A2%A8%E9%9A%AA%E3%80%8D%E5%88%B0%E5%BA%95%E5%9C%A8%E6%8C%87%E4%BB%80%E9%BA%BC"><span class="toc-number">4.</span> <span class="toc-text">「生存級風險」到底在指什麼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E9%80%99%E5%85%A9%E4%BB%B6%E4%BA%8B%E6%98%AF%E5%90%8C%E4%B8%80%E4%BB%B6%E4%BA%8B"><span class="toc-number">5.</span> <span class="toc-text">為什麼這兩件事是同一件事</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8D%E4%B8%8D%E5%9C%A8%E5%BE%AE%E8%BB%9F%E5%B7%A5%E4%BD%9C%E7%9A%84%E6%88%91%E5%80%91%E6%9C%89%E4%BB%80%E9%BA%BC%E6%84%8F%E7%BE%A9"><span class="toc-number">6.</span> <span class="toc-text">對不在微軟工作的我們有什麼意義</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/4fb41c1c/" title="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它"><img src="/images/posts/riemann-hypothesis-claude-lean-proof-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/4fb41c1c/" title="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z" title="發表於 2026-11-25 10:40:00">2026-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7463bf4c/" title="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法"><img src="/images/posts/windows-openssh-key-only-four-machines-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/7463bf4c/" title="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z" title="發表於 2026-11-12 11:30:00">2026-11-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3c89a868/" title="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊"><img src="/images/posts/aspnet-session-lock-request-queue-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/3c89a868/" title="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z" title="發表於 2026-11-12 11:00:00">2026-11-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7cf056d5/" title="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI"><img src="/images/posts/nikke-launcher-cdn-sri-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/7cf056d5/" title="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z" title="發表於 2026-11-05 13:00:00">2026-11-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/34c467cd/" title="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法"><img src="/images/posts/twca-cyber-root-iis-iphone-untrusted-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/34c467cd/" title="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法">TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法</a><time datetime="2026-11-02T06:45:00.000Z" title="發表於 2026-11-02 14:45:00">2026-11-02</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/images/posts/microsoft-bans-claude-code-github-existential-risk-same-week-cover.webp);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By kyosora</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><script src="/js/tw_cn.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.js" integrity="sha384-gxImbXBiSbxiZ81MBKincxlzfmdjvLfzyAvwe2hUA/rhcWB88+gfX+uzi8K/rw84" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.js" type="module" integrity="sha384-+oVCYEOCpcTbL4CsQ1hK+6Prt7+Kx2+ER1RSn5iQ0Ua0B1sBuGONp1jKt8dkcd5n" crossorigin="anonymous"></script><div class="js-pjax"><script>(() => {
-  const parseViewBox = viewBox => {
-    if (!viewBox) return null
-    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
-    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
-    return parts
-  }
 
-  const getSvgViewBox = svg => {
-    const attr = parseViewBox(svg.getAttribute('viewBox'))
-    if (attr) return attr
-
-    // Fallback: use bbox to build a viewBox
-    try {
-      const bbox = svg.getBBox()
-      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
-    } catch (e) {
-      // getBBox may fail on some edge cases; ignore
-    }
-
-    const w = Number(svg.getAttribute('width')) || 0
-    const h = Number(svg.getAttribute('height')) || 0
-    if (w > 0 && h > 0) return [0, 0, w, h]
-    return [0, 0, 100, 100]
-  }
-
-  const setSvgViewBox = (svg, vb) => {
-    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
-  }
-
-  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
-
-  const openSvgInNewTab = ({ source, initViewBox }) => {
-    const getClonedSvg = () => {
-      if (typeof source === 'string') {
-        const template = document.createElement('template')
-        template.innerHTML = source.trim()
-        const svg = template.content.querySelector('svg')
-        return svg ? svg.cloneNode(true) : null
-      }
-      if (source && typeof source.cloneNode === 'function') {
-        return source.cloneNode(true)
-      }
-      return null
-    }
-
-    const clone = getClonedSvg()
-    if (!clone) return
-    if (initViewBox && initViewBox.length === 4) {
-      clone.setAttribute('viewBox', initViewBox.join(' '))
-    }
-    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
-    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
-      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-    }
-    // inject background to match current theme
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
-    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
-    if (!clone.style.background) clone.style.background = bg
-
-    const serializer = new XMLSerializer()
-    const svgSource = serializer.serializeToString(clone)
-    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
-      <style>
-        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
-        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
-      </style>
-      </head><body>${svgSource}</body></html>`
-    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    window.open(url, '_blank', 'noopener')
-    setTimeout(() => URL.revokeObjectURL(url), 30000)
-  }
-
-  const attachMermaidViewerButton = wrap => {
-    let btn = wrap.querySelector('.mermaid-open-btn')
-    if (!btn) {
-      btn = document.createElement('button')
-      btn.type = 'button'
-      btn.className = 'mermaid-open-btn'
-      wrap.appendChild(btn)
-    }
-
-    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
-
-    if (!btn.__mermaidViewerBound) {
-      btn.addEventListener('click', e => {
-        e.preventDefault()
-        e.stopPropagation()
-        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
-        if (!svg) return
-        const initViewBox = wrap.__mermaidInitViewBox
-        if (typeof svg === 'string') {
-          openSvgInNewTab({ source: svg, initViewBox })
-          return
-        }
-        openSvgInNewTab({ source: svg, initViewBox })
-      })
-      btn.__mermaidViewerBound = true
-    }
-  }
-
-  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
-  const zoomAtPoint = (vb, factor, px, py) => {
-    const w = vb[2] * factor
-    const h = vb[3] * factor
-    const nx = px - (px - vb[0]) * factor
-    const ny = py - (py - vb[1]) * factor
-    return [nx, ny, w, h]
-  }
-
-  const initMermaidGestures = wrap => {
-    const svg = wrap.querySelector('svg')
-    if (!svg) return
-
-    // Ensure viewBox exists so gestures always work
-    const initVb = getSvgViewBox(svg)
-    wrap.__mermaidInitViewBox = initVb
-    wrap.__mermaidCurViewBox = initVb.slice()
-    setSvgViewBox(svg, initVb)
-
-    // Avoid binding multiple times on themeChange/pjax
-    if (wrap.__mermaidGestureBound) return
-    wrap.__mermaidGestureBound = true
-
-    // Helper: map client (viewport) coordinate -> viewBox coordinate
-    const clientToViewBox = (clientX, clientY) => {
-      const rect = svg.getBoundingClientRect()
-      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
-      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
-      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
-      return { x, y, rect, vb }
-    }
-
-    const state = {
-      pointers: new Map(),
-      startVb: null,
-      startDist: 0,
-      startCenter: null
-    }
-
-    const clampVb = vb => {
-      const init = wrap.__mermaidInitViewBox || vb
-      const minW = init[2] * 0.1
-      const maxW = init[2] * 10
-      const minH = init[3] * 0.1
-      const maxH = init[3] * 10
-      vb[2] = clamp(vb[2], minW, maxW)
-      vb[3] = clamp(vb[3], minH, maxH)
-      return vb
-    }
-
-    const setCurVb = vb => {
-      vb = clampVb(vb)
-      wrap.__mermaidCurViewBox = vb
-      setSvgViewBox(svg, vb)
-    }
-
-    const onPointerDown = e => {
-      // Allow only primary button for mouse
-      if (e.pointerType === 'mouse' && e.button !== 0) return
-      svg.setPointerCapture(e.pointerId)
-      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
-
-      if (state.pointers.size === 1) {
-        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-      } else if (state.pointers.size === 2) {
-        const pts = [...state.pointers.values()]
-        const dx = pts[0].x - pts[1].x
-        const dy = pts[0].y - pts[1].y
-        state.startDist = Math.hypot(dx, dy)
-        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
-      }
-    }
-
-    const onPointerMove = e => {
-      if (!state.pointers.has(e.pointerId)) return
-      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
-
-      // Pan with 1 pointer
-      if (state.pointers.size === 1 && state.startVb) {
-        const p = [...state.pointers.values()][0]
-        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
-        // movementX/Y unreliable on touch, compute from stored last position
-        const last = wrap.__mermaidLastSinglePointer || p
-        const dxClient = p.x - last.x
-        const dyClient = p.y - last.y
-        wrap.__mermaidLastSinglePointer = p
-
-        const { rect } = clientToViewBox(p.x, p.y)
-        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-        const dx = dxClient * (vb[2] / rect.width)
-        const dy = dyClient * (vb[3] / rect.height)
-        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
-        return
-      }
-
-      // Pinch zoom with 2 pointers
-      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
-        const pts = [...state.pointers.values()]
-        const dx = pts[0].x - pts[1].x
-        const dy = pts[0].y - pts[1].y
-        const dist = Math.hypot(dx, dy)
-        if (!dist) return
-        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
-
-        const cx = (pts[0].x + pts[1].x) / 2
-        const cy = (pts[0].y + pts[1].y) / 2
-        const centerClient = { x: cx, y: cy }
-
-        const pxy = clientToViewBox(centerClient.x, centerClient.y)
-        const cpx = pxy.x
-        const cpy = pxy.y
-
-        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
-        setCurVb(vb)
-      }
-    }
-
-    const onPointerUpOrCancel = e => {
-      state.pointers.delete(e.pointerId)
-      if (state.pointers.size === 0) {
-        state.startVb = null
-        state.startDist = 0
-        state.startCenter = null
-        wrap.__mermaidLastSinglePointer = null
-      } else if (state.pointers.size === 1) {
-        // reset single pointer baseline to avoid jump
-        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
-      }
-    }
-
-    // Wheel zoom (mouse/trackpad)
-    const onWheel = e => {
-      // ctrlKey on mac trackpad pinch; we treat both as zoom
-      e.preventDefault()
-      const delta = e.deltaY
-      const zoomFactor = delta > 0 ? 1.1 : 0.9
-      const { x, y } = clientToViewBox(e.clientX, e.clientY)
-      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
-    }
-
-    const onDblClick = () => {
-      const init = wrap.__mermaidInitViewBox
-      if (!init) return
-      wrap.__mermaidCurViewBox = init.slice()
-      setSvgViewBox(svg, init)
-    }
-
-    svg.addEventListener('pointerdown', onPointerDown)
-    svg.addEventListener('pointermove', onPointerMove)
-    svg.addEventListener('pointerup', onPointerUpOrCancel)
-    svg.addEventListener('pointercancel', onPointerUpOrCancel)
-    svg.addEventListener('wheel', onWheel, { passive: false })
-    svg.addEventListener('dblclick', onDblClick)
-  }
-
-  const runMermaid = ele => {
-    window.loadMermaid = true
-    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
-
-    ele.forEach((item, index) => {
-      const mermaidSrc = item.firstElementChild
-
-      // Clear old render (themeChange/pjax will rerun)
-      const oldSvg = item.querySelector('svg')
-      if (oldSvg) oldSvg.remove()
-      item.__mermaidGestureBound = false
-
-      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
-      if (!config.theme) {
-        config.theme = theme
-      }
-      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
-      const mermaidID = `mermaid-${index}`
-      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
-
-      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
-      const renderMermaid = svg => {
-        mermaidSrc.insertAdjacentHTML('afterend', svg)
-        if (true) initMermaidGestures(item)
-        item.__mermaidOriginalSvg = svg
-        if (true) attachMermaidViewerButton(item)
-      }
-
-
-      // mermaid v9 and v10 compatibility
-      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
-    })
-  }
-
-  const codeToMermaid = () => {
-    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
-    if (codeMermaidEle.length === 0) return
-
-    codeMermaidEle.forEach(ele => {
-      const preEle = document.createElement('pre')
-      preEle.className = 'mermaid-src'
-      preEle.hidden = true
-      preEle.textContent = ele.textContent
-      const newEle = document.createElement('div')
-      newEle.className = 'mermaid-wrap'
-      newEle.appendChild(preEle)
-      ele.parentNode.replaceWith(newEle)
-    })
-  }
-
-  const loadMermaid = () => {
-    if (true) codeToMermaid()
-    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
-    if ($mermaid.length === 0) return
-
-    const runMermaidFn = () => runMermaid($mermaid)
-    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
-    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
-  }
-
-  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
-  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
-})()</script><script>(() => {
-  const applyThemeDefaultsConfig = theme => {
-    if (theme === 'dark-mode') {
-      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
-      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
-      Chart.defaults.scale.ticks.backdropColor = "transparent"
-    } else {
-      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
-      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
-      Chart.defaults.scale.ticks.backdropColor = "transparent"
-    }
-  }
-
-  // Recursively traverse the config object and automatically apply theme-specific color schemes
-  const applyThemeConfig = (obj, theme) => {
-    if (typeof obj !== 'object' || obj === null) return
-
-    Object.keys(obj).forEach(key => {
-      const value = obj[key]
-      // If the property is an object and has theme-specific options, apply them
-      if (typeof value === 'object' && value !== null) {
-        if (value[theme]) {
-          obj[key] = value[theme] // Apply the value for the current theme
-        } else {
-          // Recursively process child objects
-          applyThemeConfig(value, theme)
-        }
-      }
-    })
-  }
-
-  const runChartJS = ele => {
-    window.loadChartJS = true
-
-    Array.from(ele).forEach((item, index) => {
-      const chartSrc = item.firstElementChild
-      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
-      const width = item.getAttribute('data-width')
-      const existingCanvas = document.getElementById(chartID)
-
-      // If a canvas already exists, remove it to avoid rendering duplicates
-      if (existingCanvas) {
-          existingCanvas.parentNode.remove()
-      }
-
-      const chartDefinition = chartSrc.textContent
-      const canvas = document.createElement('canvas')
-      canvas.id = chartID
-
-      const div = document.createElement('div')
-      div.className = 'chartjs-wrap'
-
-      if (width) {
-        div.style.width = width
-      }
-
-      div.appendChild(canvas)
-      chartSrc.insertAdjacentElement('afterend', div)
-
-      const ctx = document.getElementById(chartID).getContext('2d')
-
-      const config = JSON.parse(chartDefinition)
-
-      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
-
-      // Set default styles (initial setup)
-      applyThemeDefaultsConfig(theme)
-
-      // Automatically traverse the config and apply dual-mode color schemes
-      applyThemeConfig(config, theme)
-
-      new Chart(ctx, config)
-    })
-  }
-
-  const loadChartJS = () => {
-    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
-    if (chartJSEle.length === 0) return
-
-    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
-  }
-
-  // Listen for theme change events
-  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
-  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
-
-  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
-})()</script><script>(() => {
-  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
-  const option = {"mapping":"pathname","inputPosition":"top","lang":"zh-TW","reactionsEnabled":1}
-
-  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
-
-  const createScriptElement = config => {
-    const ele = document.createElement('script')
-    Object.entries(config).forEach(([key, value]) => {
-      ele.setAttribute(key, value)
-    })
-    return ele
-  }
-
-  const loadGiscus = (el = document, key) => {
-    const mappingConfig = isShuoshuo
-      ? { 'data-mapping': 'specific', 'data-term': key }
-      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
-
-    const giscusConfig = {
-      src: 'https://giscus.app/client.js',
-      'data-repo': 'kyosora/kyosora.github.io',
-      'data-repo-id': 'R_kgDOLJYL_w',
-      'data-category-id': 'DIC_kwDOLJYL_84C516C',
-      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
-      'data-reactions-enabled': '1',
-      crossorigin: 'anonymous',
-      async: true,
-      ...option,
-      ...mappingConfig
-    }
-
-    const scriptElement = createScriptElement(giscusConfig)
-
-    el.querySelector('#giscus-wrap').appendChild(scriptElement)
-
-    if (isShuoshuo) {
-      window.shuoshuoComment.destroyGiscus = () => {
-        if (el.children.length) {
-          el.innerHTML = ''
-          el.classList.add('no-comment')
-        }
-      }
-    }
-  }
-
-  const changeGiscusTheme = theme => {
-    const iframe = document.querySelector('#giscus-wrap iframe')
-    if (iframe) {
-      const message = {
-        giscus: {
-          setConfig: {
-            theme: getGiscusTheme(theme)
-          }
-        }
-      }
-      iframe.contentWindow.postMessage(message, 'https://giscus.app')
-    }
-  }
-
-  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
-
-  if (isShuoshuo) {
-    'Giscus' === 'Giscus'
-      ? window.shuoshuoComment = { loadComment: loadGiscus }
-      : window.loadOtherComment = loadGiscus
-    return
-  }
-
-  if ('Giscus' === 'Giscus' || !true) {
-    if (true) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
-    else loadGiscus()
-  } else {
-    window.loadOtherComment = loadGiscus
-  }
-})()</script></div><script src="/js/about-cards.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>
+      </div>
+      
+<footer class="post-end">
+  
+  <ul class="post-tags" aria-label="標籤">
+    <li><a href="/tags/Claude-Code/">Claude Code</a></li><li><a href="/tags/%E9%96%8B%E7%99%BC%E8%80%85%E5%B7%A5%E5%85%B7/">開發者工具</a></li><li><a href="/tags/AI-Coding/">AI Coding</a></li><li><a href="/tags/GitHub-Copilot/">GitHub Copilot</a></li><li><a href="/tags/Microsoft/">Microsoft</a></li>
+  </ul>
+  
+
+  <section class="license" aria-label="版權資訊">
+    <p>作者 <a href="/about/">kyosora</a>。本文網址 <a href="https://kyosora.github.io/posts/fc21870e/">https://kyosora.github.io/posts/fc21870e/</a></p>
+    <p>以 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license noopener" target="_blank">CC BY-NC-SA 4.0</a> 授權，轉載請註明出處。</p>
+  </section>
+
+  <div class="share" aria-label="分享這篇文章">
+    <span class="share-label">分享</span>
+    
+    <a class="chip" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fkyosora.github.io%2Fposts%2Ffc21870e%2F" target="_blank" rel="noopener nofollow">Facebook</a>
+    
+    <a class="chip" href="https://x.com/intent/post?url=https%3A%2F%2Fkyosora.github.io%2Fposts%2Ffc21870e%2F&amp;text=%E5%BE%AE%E8%BB%9F%E5%85%A7%E9%83%A8%20Claude%20Code%20%E8%A2%AB%E5%81%9C%E7%94%A8%E2%80%94%E2%80%94%E5%90%8C%E9%80%B1%20GitHub%20%E5%82%99%E5%BF%98%E9%8C%84%E5%AF%AB%E4%B8%8B%E3%80%8C%E7%94%9F%E5%AD%98%E7%B4%9A%E9%A2%A8%E9%9A%AA%E3%80%8D" target="_blank" rel="noopener nofollow">X</a>
+    
+    <a class="chip" href="https://social-plugins.line.me/lineit/share?url=https%3A%2F%2Fkyosora.github.io%2Fposts%2Ffc21870e%2F" target="_blank" rel="noopener nofollow">LINE</a>
+    
+    <button class="chip" type="button" data-action="copy-link" data-url="https://kyosora.github.io/posts/fc21870e/">複製連結</button>
+    <button class="chip" type="button" data-action="native-share" data-url="https://kyosora.github.io/posts/fc21870e/" data-title="微軟內部 Claude Code 被停用——同週 GitHub 備忘錄寫下「生存級風險」" hidden>更多分享方式</button>
+  </div>
+
+  
+  <nav class="neighbours" aria-label="前後篇">
+    
+    <a class="neighbour neighbour--older" href="/posts/daa5dc39/">
+      <span class="neighbour-label">前一篇</span>
+      <span class="neighbour-title">Mythos 5 天攻破 Apple M5 內核：AI 不是主角，但漏洞研究的時間軸已經被改寫</span>
+    </a>
+    
+    <a class="neighbour neighbour--newer" href="/posts/33d38aa3/">
+      <span class="neighbour-label">下一篇</span>
+      <span class="neighbour-title">Gemini 漲 2 倍仍是美系最便宜、GPT 跟著漲、Claude 反而降——2026 年 AI API 三家定價分歧的真實意義</span>
+    </a>
+    
+  </nav>
+  
+
+  
+  <section class="related" aria-labelledby="related-title">
+    <h2 id="related-title">相關文章</h2>
+    <ul class="related-list">
+    
+      <li>
+        <a href="/posts/51217f8c/">
+          <img src="/images/posts/legacy-51217f8c-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">Cursor 自建 AI 模型的背後邏輯：當你的 IDE 不想再幫別人打工</span>
+          <span class="related-date">2026-03-20</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/e8a58ea9/">
+          <img src="/images/posts/legacy-e8a58ea9-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">你的 AI 模型不需要永遠在思考：Phi-4-reasoning-vision 的思考開關機制拆解</span>
+          <span class="related-date">2026-03-15</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/25fc61f3/">
+          <img src="/images/posts/swe-bench-pro-reward-hacking-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">Opus 4.7 在 SWE-bench Pro 抽樣中 18% 通過是讀檔來的：那張 AI Coding 排行榜你還信嗎</span>
+          <span class="related-date">2026-06-25</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/624d1bf8/">
+          <img src="/images/posts/legacy-624d1bf8-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">AI Agent 不寫程式了——2026 年 Agent 生態從寫 Code 走向裝 Skill</span>
+          <span class="related-date">2026-03-19</span>
+        </a>
+      </li>
+    
+    </ul>
+  </section>
+  
+
+  
+  <section class="recent" aria-labelledby="recent-title">
+    <h2 id="recent-title">最近寫的</h2>
+    <ul>
+    
+      <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
+    
+      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
+    
+      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
+    
+      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
+    
+      <li><a href="/posts/34c467cd/">TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法</a><time datetime="2026-11-02T06:45:00.000Z">2026-11-02</time></li>
+    
+    </ul>
+  </section>
+  
+
+  
+<section class="comments" id="comments" aria-labelledby="comments-title">
+  <h2 id="comments-title">留言</h2>
+  <div class="giscus-slot" data-giscus><p class="comments-note">往下捲到這裡才會載入留言區（使用 GitHub 帳號留言）。</p></div>
+</section>
+
+
+</footer>
+
+    </div>
+  </div>
+</article>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>© 2024–2026 kyosora。文章以 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license noopener" target="_blank">CC BY-NC-SA 4.0</a> 授權。</p>
+    <p class="footer-links"><a href="/atom.xml">RSS 訂閱</a><a href="https://github.com/kyosora" rel="noopener" target="_blank">GitHub</a><a href="/about/">關於我</a></p>
+  </div>
+</footer>
+
+<dialog class="search" id="search" aria-label="搜尋文章">
+  <form class="search-bar" role="search">
+    <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+    <input type="search" name="q" placeholder="搜尋標題與內文" aria-label="搜尋關鍵字" autocomplete="off" enterkeyhint="search">
+    <button class="tool" type="button" data-close aria-label="關閉搜尋"><svg class="icon"><use href="#i-close"/></svg></button>
+  </form>
+  <p class="search-status" role="status" aria-live="polite"></p>
+  <ol class="search-results"></ol>
+</dialog>
+
+<script>window.KY={"search":"/search.json","twcn":"/js/ky-twcn.js?v=eba49651","codeHeight":400,"mermaid":null,"giscus":{"data-repo":"kyosora/kyosora.github.io","data-repo-id":"R_kgDOLJYL_w","data-category-id":"DIC_kwDOLJYL_84C516C","data-mapping":"pathname","data-input-position":"top","data-lang":"zh-TW","data-reactions-enabled":"1","light":"light","dark":"dark"},"views":{"endpoint":"https://kyosora-views.coasta98381.workers.dev","minSeconds":15,"since":"2026-11","path":"/posts/fc21870e/"}}</script>
+<script src="/js/kyosora.js?v=0f20e8d5" defer></script>
+
+</body>
+</html>

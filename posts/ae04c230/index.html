@@ -1,201 +1,134 @@
-<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>六月 AI 模型大戰前夕：GPT-5.6、Gemini 3.5 Pro、Claude Mythos 同時壓境，開發者怎麼準備？ | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="GPT-5.6、Gemini 3.5 Pro、Claude Mythos 六月可能同時壓境，模型名稱、API 規格、token 單價恐怕一起變動，留給開發者的切換視窗很短。比起比跑分，更該先問自己：架構裡寫死了幾處模型名、錯誤碼與串流格式？提供 adapter 抽象層備戰清單與各家最新情報分析。">
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>六月 AI 模型大戰前夕：GPT-5.6、Gemini 3.5 Pro、Claude Mythos 同時壓境，開發者怎麼準備？ | kyosora 筆記</title>
+<meta name="description" content="GPT-5.6、Gemini 3.5 Pro、Claude Mythos 六月可能同時壓境，模型名稱、API 規格、token 單價恐怕一起變動，留給開發者的切換視窗很短。比起比跑分，更該先問自己：架構裡寫死了幾處模型名、錯誤碼與串流格式？提供 adapter 抽象層備戰清單與各家最新情報分析。">
+<link rel="canonical" href="https://kyosora.github.io/posts/ae04c230/">
+
+<meta name="author" content="kyosora">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f4f6f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1820" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="article">
 <meta property="og:title" content="六月 AI 模型大戰前夕：GPT-5.6、Gemini 3.5 Pro、Claude Mythos 同時壓境，開發者怎麼準備？">
-<meta property="og:url" content="https://kyosora.github.io/posts/ae04c230/">
-<meta property="og:site_name" content="kyosora 筆記">
 <meta property="og:description" content="GPT-5.6、Gemini 3.5 Pro、Claude Mythos 六月可能同時壓境，模型名稱、API 規格、token 單價恐怕一起變動，留給開發者的切換視窗很短。比起比跑分，更該先問自己：架構裡寫死了幾處模型名、錯誤碼與串流格式？提供 adapter 抽象層備戰清單與各家最新情報分析。">
+<meta property="og:url" content="https://kyosora.github.io/posts/ae04c230/">
+
+<meta property="og:site_name" content="kyosora 筆記">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://kyosora.github.io/images/posts/june-2026-ai-model-war-preview-cover.webp">
+<meta name="twitter:image" content="https://kyosora.github.io/images/posts/june-2026-ai-model-war-preview-cover.webp">
+<meta name="twitter:card" content="summary_large_image">
 <meta property="article:published_time" content="2026-05-27T07:00:00.000Z">
 <meta property="article:modified_time" content="2026-06-22T03:03:29.000Z">
 <meta property="article:author" content="kyosora">
+<meta property="article:section" content="AI工具實戰">
 <meta property="article:tag" content="Claude">
 <meta property="article:tag" content="LLM">
 <meta property="article:tag" content="Gemini">
 <meta property="article:tag" content="GPT-5.6">
 <meta property="article:tag" content="AI模型">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://kyosora.github.io/images/posts/june-2026-ai-model-war-preview-cover.webp"><script type="application/ld+json">{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "六月 AI 模型大戰前夕：GPT-5.6、Gemini 3.5 Pro、Claude Mythos 同時壓境，開發者怎麼準備？",
-  "url": "https://kyosora.github.io/posts/ae04c230/",
-  "image": "https://kyosora.github.io/images/posts/june-2026-ai-model-war-preview-cover.webp",
-  "datePublished": "2026-05-27T07:00:00.000Z",
-  "dateModified": "2026-06-22T03:03:29.000Z",
-  "author": [
-    {
-      "@type": "Person",
-      "name": "kyosora",
-      "url": "https://kyosora.github.io"
-    }
-  ]
-}</script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/posts/ae04c230/"><link rel="preconnect" href="https://cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css" integrity="sha384-YgSbYtJcfPnMV/aJ0UdQk84ctht/ckX0MrfQwxOhw43RMBw2WSaDSMVh4gQwLdE4" crossorigin="anonymous"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.css" media="print" onload="this.media='all'" integrity="sha384-SwTfv/7YAtLOqjuOIVOyBHrBSW9ismFkXd7MZSJZmL20kcTygh/Rm3PHXJPY2taV" crossorigin="anonymous"><script>
-    (() => {
+<meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k">
+<meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E">
+<meta name="baidu-site-verification" content="code-pE5rnuxcfD">
+<link rel="icon" href="/images/favicon.png">
+<link rel="alternate" type="application/atom+xml" title="kyosora 筆記" href="/atom.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&amp;display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/css/kyosora.css?v=4bf38b40">
+
+<script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"六月 AI 模型大戰前夕：GPT-5.6、Gemini 3.5 Pro、Claude Mythos 同時壓境，開發者怎麼準備？","description":"GPT-5.6、Gemini 3.5 Pro、Claude Mythos 六月可能同時壓境，模型名稱、API 規格、token 單價恐怕一起變動，留給開發者的切換視窗很短。比起比跑分，更該先問自己：架構裡寫死了幾處模型名、錯誤碼與串流格式？提供 adapter 抽象層備戰清單與各家最新情報分析。","url":"https://kyosora.github.io/posts/ae04c230/","mainEntityOfPage":"https://kyosora.github.io/posts/ae04c230/","image":"https://kyosora.github.io/images/posts/june-2026-ai-model-war-preview-cover.webp","datePublished":"2026-05-27T07:00:00.000Z","dateModified":"2026-06-22T03:03:29.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI工具實戰","keywords":"Claude, LLM, Gemini, GPT-5.6, AI模型"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI工具實戰","item":"https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"},{"@type":"ListItem","position":3,"name":"六月 AI 模型大戰前夕：GPT-5.6、Gemini 3.5 Pro、Claude Mythos 同時壓境，開發者怎麼準備？","item":"https://kyosora.github.io/posts/ae04c230/"}]}]}</script>
+
+</head>
+<body class="kind-post">
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
+<symbol id="i-rss" viewBox="0 0 24 24"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.2"/></symbol>
+</svg>
+
+<a class="skip" href="#main">跳到內文</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/">kyosora 筆記</a>
+    <nav class="nav" aria-label="主要選單">
       
-    const saveToLocal = {
-      set: (key, value, ttl) => {
-        if (!ttl) return
-        const expiry = Date.now() + ttl * 86400000
-        localStorage.setItem(key, JSON.stringify({ value, expiry }))
-      },
-      get: key => {
-        const itemStr = localStorage.getItem(key)
-        if (!itemStr) return undefined
-        const { value, expiry } = JSON.parse(itemStr)
-        if (Date.now() > expiry) {
-          localStorage.removeItem(key)
-          return undefined
-        }
-        return value
-      }
-    }
-
-    window.btf = {
-      saveToLocal,
-      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = url
-        script.async = true
-        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
-        script.onload = script.onreadystatechange = () => {
-          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
-        }
-        script.onerror = reject
-        document.head.appendChild(script)
-      }),
-      getCSS: (url, id) => new Promise((resolve, reject) => {
-        const link = document.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = url
-        if (id) link.id = id
-        link.onload = link.onreadystatechange = () => {
-          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
-        }
-        link.onerror = reject
-        document.head.appendChild(link)
-      }),
-      addGlobalFn: (key, fn, name = false, parent = window) => {
-        if (!false && key.startsWith('pjax')) return
-        const globalFn = parent.globalFn || {}
-        globalFn[key] = globalFn[key] || {}
-        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
-        parent.globalFn = globalFn
-      }
-    }
-  
+      <a href="/">首頁</a>
       
-      const activateDarkMode = () => {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
-        }
-      }
-      const activateLightMode = () => {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
-        }
-      }
+      <a href="/archives/">歸檔</a>
+      
+      <a href="/categories/">分類</a>
+      
+      <a href="/tags/">標籤</a>
+      
+      <a href="/about/">關於</a>
+      
+    </nav>
+    <div class="tools">
+      <button class="tool" type="button" data-action="search" aria-label="搜尋文章（快捷鍵 /）" title="搜尋（/）"><svg class="icon"><use href="#i-search"/></svg></button>
+      <button class="tool tool--text" type="button" data-action="translate" aria-label="切換成簡體中文" title="繁簡切換">簡</button>
+      <button class="tool" type="button" data-action="theme" aria-label="切換深色模式" title="深淺色切換"><svg class="icon icon-moon"><use href="#i-moon"/></svg><svg class="icon icon-sun"><use href="#i-sun"/></svg></button>
+    </div>
+  </div>
+</header>
 
-      btf.activateDarkMode = activateDarkMode
-      btf.activateLightMode = activateLightMode
-
-      const theme = saveToLocal.get('theme')
+<main id="main">
+<article class="post">
+  <header class="post-head">
     
-          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
-          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+    <figure class="post-banner"><img src="/images/posts/june-2026-ai-model-war-preview-cover.webp" alt="" width="1536" height="1024" fetchpriority="high" decoding="async"></figure>
+    
+    <div class="wrap post-head-inner">
+      
+<nav class="crumbs" aria-label="目前位置">
+  <ol>
+  
+    <li><a href="/">首頁</a></li>
+  
+    <li><a href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a></li>
+  
+  </ol>
+</nav>
 
-          if (theme === undefined) {
-            if (mediaQueryLight.matches) activateLightMode()
-            else if (mediaQueryDark.matches) activateDarkMode()
-            else {
-              const hour = new Date().getHours()
-              const isNight = hour <= 6 || hour >= 18
-              isNight ? activateDarkMode() : activateLightMode()
-            }
-            mediaQueryDark.addEventListener('change', () => {
-              if (saveToLocal.get('theme') === undefined) {
-                e.matches ? activateDarkMode() : activateLightMode()
-              }
-            })
-          } else {
-            theme === 'light' ? activateLightMode() : activateDarkMode()
-          }
+
+      <h1 class="post-title">六月 AI 模型大戰前夕：GPT-5.6、Gemini 3.5 Pro、Claude Mythos 同時壓境，開發者怎麼準備？</h1>
+      <p class="post-meta">
+        <span>發布於 <time datetime="2026-05-27T07:00:00.000Z">2026-05-27</time></span>
         
-      
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
-      }
+        <span>約 10 分鐘讀完</span>
+        <span class="views" data-views hidden></span>
+      </p>
+    </div>
+  </header>
+
+  <div class="wrap post-layout">
     
-      
-    const detectApple = () => {
-      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
-        document.documentElement.classList.add('apple')
-      }
-    }
-    detectApple()
-  
-    })()
-  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
-function gtag(){dataLayer.push(arguments)}
-gtag('js', new Date())
-gtag('config', 'G-F9P7RWQQJE')
-btf.addGlobalFn('pjaxComplete', () => {
-  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
-}, 'google_analytics')
-</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
-  root: '/',
-  algolia: undefined,
-  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
-  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
-  copy: {
-    success: '複製成功',
-    error: '複製失敗',
-    noSupport: '瀏覽器不支援'
-  },
-  relativeDate: {
-    homepage: true,
-    post: true
-  },
-  runtime: '天',
-  dateSuffix: {
-    just: '剛剛',
-    min: '分鐘前',
-    hour: '小時前',
-    day: '天前',
-    month: '個月前'
-  },
-  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
-  lightbox: 'fancybox',
-  Snackbar: undefined,
-  infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
-    buttonText: '載入更多'
-  },
-  isPhotoFigcaption: false,
-  islazyloadPlugin: false,
-  isAnchor: false,
-  percent: {
-    toc: true,
-    rightside: true,
-  },
-  autoDarkmode: true
-}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: '六月 AI 模型大戰前夕：GPT-5.6、Gemini 3.5 Pro、Claude Mythos 同時壓境，開發者怎麼準備？',
-  isHighlightShrink: false,
-  isToc: true,
-  pageType: 'post'
-}</script><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="/css/about-cards.css"><link rel="stylesheet" href="/css/bg-gradient-mesh.css"><link rel="stylesheet" href="/css/view-transitions.css"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
-<script data-sri-getscript>(function(){var m={"https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js":"sha384-YrKBdCikMPThdp9YNMsmtzHOQ9yH4Ip+glZK2weyS2R3+jMLYsucIs5b5T6ptbqe","https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js":"sha384-1ggI9FC3CkghppRD/XCR4aD+jp4DxwXlJIW0wxhyTLNKuiZEW3c4BwcjKXl0iVAJ","https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js":"sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ"};var b=window.btf;if(!b||typeof b.getScript!=='function')return;var g=b.getScript;b.getScript=function(u,a){var h=m[u];if(!h)return g.call(b,u,a);var o={};if(a)for(var k in a)o[k]=a[k];o.integrity=h;o.crossorigin='anonymous';return g.call(b,u,o)}})();</script></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">245</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">540</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/posts/june-2026-ai-model-war-preview-cover.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a><a class="nav-page-title" href="/"><span class="site-name">六月 AI 模型大戰前夕：GPT-5.6、Gemini 3.5 Pro、Claude Mythos 同時壓境，開發者怎麼準備？</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首頁</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">六月 AI 模型大戰前夕：GPT-5.6、Gemini 3.5 Pro、Claude Mythos 同時壓境，開發者怎麼準備？<a class="post-edit-link" href="https://github.com/jerryc127/butterfly.js.org/edit/main/source/_posts/june-2026-ai-model-war-preview-developer-guide.md" title="編輯" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">發表於</span><time datetime="2026-05-27T07:00:00.000Z" title="發表於 2026-05-27 15:00:00">2026-05-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">2.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>9分鐘</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>2026 年 5 月最後一週，GPT-5.6 在 Codex 後端日誌裡被挖出來、Anthropic 的 Mythos 推翻了一個近 80 年的數學猜想、WWDC 很可能揭露 Gemini 驅動的新 Siri。如果這些消息有一半成真，六月的模型名稱、API 規格、token 單價會同時變動，留給開發者的切換視窗很短。</p>
+    <aside class="post-aside">
+      <details class="toc-box" open>
+        <summary>目錄</summary>
+        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%96%8B%E7%99%BC%E8%80%85%E5%82%99%E6%88%B0%E6%B8%85%E5%96%AE%EF%BC%88%E5%85%AD%E6%9C%88%E5%89%8D%E5%AE%8C%E6%88%90%EF%BC%89"><span class="toc-text">開發者備戰清單（六月前完成）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OpenAI%EF%BC%9AGPT-5-6-iris-alpha"><span class="toc-text">OpenAI：GPT-5.6 iris-alpha</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Anthropic%EF%BC%9AMythos-%E4%B8%8D%E5%8F%AA%E6%98%AF%E8%A7%A3%E6%95%B8%E5%AD%B8%E9%A1%8C"><span class="toc-text">Anthropic：Mythos 不只是解數學題</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Google-Apple%EF%BC%9AGemini-3-5-Pro-%E5%92%8C-1-2T-%E7%9A%84-Siri-%E5%BC%95%E6%93%8E"><span class="toc-text">Google + Apple：Gemini 3.5 Pro 和 1.2T 的 Siri 引擎</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#xAI%EF%BC%9AGrok-Build-%E5%B7%B2%E7%B6%93%E5%9C%A8%E8%B7%91%E4%BA%86"><span class="toc-text">xAI：Grok Build 已經在跑了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E5%88%B0%E6%B8%85%E5%96%AE"><span class="toc-text">回到清單</span></a></li></ol></nav>
+      </details>
+    </aside>
+    
+
+    <div class="post-main">
+      <div class="prose" id="article">
+        <p>2026 年 5 月最後一週，GPT-5.6 在 Codex 後端日誌裡被挖出來、Anthropic 的 Mythos 推翻了一個近 80 年的數學猜想、WWDC 很可能揭露 Gemini 驅動的新 Siri。如果這些消息有一半成真，六月的模型名稱、API 規格、token 單價會同時變動，留給開發者的切換視窗很短。</p>
 <p>我三月寫過一篇<a href="/posts/d2eaf73a/">模型大亂鬥</a>，當時的結論是「沒有全能冠軍」——這句話到現在還適用。這次要聊的不是跑分比較，而是一個更實際的問題：你的系統架構裡，模型名稱寫死了幾處？錯誤碼寫死了幾處？stream chunk 格式寫死了幾處？</p>
 <p>備戰清單放前面，後面的情報分析都服務這份清單。</p>
-<h2 id="開發者備戰清單（六月前完成）">開發者備戰清單（六月前完成）</h2>
-<p><strong>1. 把 LLM 呼叫抽象出來</strong></p>
+<h2 id="開發者備戰清單（六月前完成）"><a href="#開發者備戰清單（六月前完成）" class="headerlink" title="開發者備戰清單（六月前完成）"></a>開發者備戰清單（六月前完成）</h2><p><strong>1. 把 LLM 呼叫抽象出來</strong></p>
 <p>如果你的程式碼裡直接寫死 <code>openai.chat.completions.create()</code>，六月切模型會很痛苦。不需要複雜框架，一個 adapter 層就夠。核心是把模型選擇和業務邏輯分開。</p>
 <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 這是整理過的示意，實際版本會更簡單</span></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">Message</span> &#123; <span class="attr">role</span>: <span class="built_in">string</span>; <span class="attr">content</span>: <span class="built_in">string</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">PROVIDERS</span> = &#123;</span><br><span class="line">  <span class="attr">coding</span>: &#123; <span class="attr">model</span>: <span class="string">&#x27;claude-sonnet-4-6&#x27;</span>, <span class="attr">maxContext</span>: <span class="number">200_000</span> &#125;,</span><br><span class="line">  <span class="attr">analysis</span>: &#123; <span class="attr">model</span>: <span class="string">&#x27;gpt-5.5&#x27;</span>, <span class="attr">maxContext</span>: <span class="number">1_050_000</span> &#125;,</span><br><span class="line">  <span class="attr">costSensitive</span>: &#123; <span class="attr">model</span>: <span class="string">&#x27;qwen-3.7-max&#x27;</span>, <span class="attr">maxContext</span>: <span class="number">131_072</span> &#125;,</span><br><span class="line">&#125; <span class="keyword">as</span> <span class="keyword">const</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// router 是你選的多模型路由層（OpenRouter、LiteLLM、自己包的都行）</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">llmCall</span>(<span class="params"></span></span><br><span class="line"><span class="params">  <span class="attr">task</span>: keyof <span class="keyword">typeof</span> PROVIDERS,</span></span><br><span class="line"><span class="params">  <span class="attr">messages</span>: <span class="title class_">Message</span>[],</span></span><br><span class="line"><span class="params">  <span class="attr">opts</span>?: &#123; fallback?: keyof <span class="keyword">typeof</span> PROVIDERS; timeoutMs?: <span class="built_in">number</span> &#125;</span></span><br><span class="line"><span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> provider = <span class="variable constant_">PROVIDERS</span>[task]</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> router.<span class="title function_">complete</span>(&#123;</span><br><span class="line">      <span class="attr">model</span>: provider.<span class="property">model</span>,</span><br><span class="line">      messages,</span><br><span class="line">      <span class="attr">timeout</span>: opts?.<span class="property">timeoutMs</span> ?? <span class="number">30_000</span>,</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">    <span class="keyword">if</span> (opts?.<span class="property">fallback</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> router.<span class="title function_">complete</span>(&#123; <span class="attr">model</span>: <span class="variable constant_">PROVIDERS</span>[opts.<span class="property">fallback</span>].<span class="property">model</span>, messages &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">throw</span> err</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>切換模型不只是改一個字串。實際要驗的差異清單：</p>
 <ul>
 <li>tool calling schema 格式（OpenAI 和 Anthropic 的結構不同）</li>
@@ -210,7 +143,7 @@ btf.addGlobalFn('pjaxComplete', () => {
 <p><strong>2. 壓力測試長上下文</strong></p>
 <p>150 萬 token 窗口聽起來很美。但長上下文不只是「塞得進去」的問題：</p>
 <ul>
-<li>推理品質在 50 萬 token 之後是否衰減？（所謂的 “lost in the middle” 問題）</li>
+<li>推理品質在 50 萬 token 之後是否衰減？（所謂的 &quot;lost in the middle&quot; 問題）</li>
 <li>延遲和成本能接受嗎？150 萬 input token 的單次呼叫，以 GPT-5.5 目前的定價算，光 input 就超過 10 美元</li>
 <li>什麼場景用完整上下文比 RAG 更值得？文件完整性要求高、跨段引用需要精確時，full-context 有優勢。延遲敏感、Token 預算有限時，RAG 仍然更實際</li>
 </ul>
@@ -227,8 +160,7 @@ btf.addGlobalFn('pjaxComplete', () => {
 <th>來源</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>Qwen3.7-Max</td>
 <td>Code Arena 1541 分（非 Claude 陣營最高），隱式快取自動啟用</td>
 <td>阿里雲官方 2026/5/26</td>
@@ -243,16 +175,14 @@ btf.addGlobalFn('pjaxComplete', () => {
 <td>1B 參數，INT4 量化後 0.5GB，可在手機和瀏覽器跑</td>
 <td>面壁智能 2026/5/26 開源</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>成本敏感 + 低敏感資料的場景適合考慮。使用邊界：跨境資料傳輸合規、供應商穩定度、企業採購審核流程。</p>
 <p><strong>4. 別急著 all-in——先建 eval 集</strong></p>
 <p>每家的 benchmark 都只能參考，你的任務分佈跟他們的測試集不會一樣。正式切換前，用自己場景的 eval 集跑兩週再決定。</p>
 <p>eval 集怎麼建？不需要很複雜：從你的生產日誌裡撈 50-100 筆有代表性的真實任務，固定輸入、記錄期望的輸出格式和品質標準，人工評分打 pass/fail。跑 eval 時固定 temperature、seed 和 prompt 版本，確保可重跑。新模型上線後跑一遍，看 pass rate、p95 延遲、單任務成本三個數字，資料會告訴你哪個模型在你的場景裡表現最好。</p>
 <hr>
 <p>以下是六月前後各家的動態整理。每段結尾會標出確認程度和建議動作時機。</p>
-<h2 id="OpenAI：GPT-5-6-iris-alpha">OpenAI：GPT-5.6 iris-alpha</h2>
-<p>多名開發者在 OpenAI Codex 的後端日誌裡獨立發現了未官宣的 GPT-5.6 模型，內部代號 iris-alpha（來源：IT 之家 2026/5/26 報導，引述多名開發者獨立發現）。</p>
+<h2 id="OpenAI：GPT-5-6-iris-alpha"><a href="#OpenAI：GPT-5-6-iris-alpha" class="headerlink" title="OpenAI：GPT-5.6 iris-alpha"></a>OpenAI：GPT-5.6 iris-alpha</h2><p>多名開發者在 OpenAI Codex 的後端日誌裡獨立發現了未官宣的 GPT-5.6 模型，內部代號 iris-alpha（來源：IT 之家 2026/5/26 報導，引述多名開發者獨立發現）。</p>
 <p>核心規格：</p>
 <ul>
 <li>上下文窗口 150 萬 token，較 GPT-5.5 的 105 萬提升 43%</li>
@@ -262,11 +192,9 @@ btf.addGlobalFn('pjaxComplete', () => {
 </ul>
 <p>值得注意的是發現方式——不是 API changelog，是 Codex 後端日誌。這代表 OpenAI 已經在自家產品裡跑這個模型了。如果 90 萬 token 下仍能流暢回應的報告屬實，意味著 OpenAI 在長上下文的推理品質上有了實質進展，不只是把窗口數字拉大。</p>
 <blockquote>
-<p><strong>確認程度：</strong> 洩漏情報（多人獨立驗證，但非官方公告）<br>
-<strong>建議動作：</strong> 不要基於洩漏資訊重寫架構。但如果你的應用涉及大量文件分析或整個程式碼庫的理解，值得留意正式發佈後的 benchmark 和定價。</p>
+<p><strong>確認程度：</strong> 洩漏情報（多人獨立驗證，但非官方公告）<br><strong>建議動作：</strong> 不要基於洩漏資訊重寫架構。但如果你的應用涉及大量文件分析或整個程式碼庫的理解，值得留意正式發佈後的 benchmark 和定價。</p>
 </blockquote>
-<h2 id="Anthropic：Mythos-不只是解數學題">Anthropic：Mythos 不只是解數學題</h2>
-<p>2026/5/26，Anthropic 工程師 Sholto Douglas 在社群表示，Claude Mythos 在週末推翻了 Erdős 單位距離猜想——一個近 80 年的數學難題，OpenAI 曾將其列為 AI 數學能力的里程碑（來源：The Decoder 2026/5/26 報導）。Douglas 形容那是一個「巧妙簡潔的證明」。</p>
+<h2 id="Anthropic：Mythos-不只是解數學題"><a href="#Anthropic：Mythos-不只是解數學題" class="headerlink" title="Anthropic：Mythos 不只是解數學題"></a>Anthropic：Mythos 不只是解數學題</h2><p>2026/5/26，Anthropic 工程師 Sholto Douglas 在社群表示，Claude Mythos 在週末推翻了 Erdős 單位距離猜想——一個近 80 年的數學難題，OpenAI 曾將其列為 AI 數學能力的里程碑（來源：The Decoder 2026/5/26 報導）。Douglas 形容那是一個「巧妙簡潔的證明」。</p>
 <p>數學題是能力信號，但真正能落到工程流程的是安全掃描。Mythos 對開發者更直接的影響是 Project Glasswing——這對備戰清單第 4 點的 eval 流程最相關。Glasswing 從 2026 年 4 月啟動，約 50 家合作夥伴用 Mythos Preview 掃描關鍵軟體（來源：Anthropic 官方 2026/5/21 發佈的 Glasswing 進度更新）。幾個數字：</p>
 <ul>
 <li>超過 10,000 個高危或嚴重漏洞</li>
@@ -283,508 +211,157 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li>密鑰和客戶資料絕對不進 prompt</li>
 </ul>
 <blockquote>
-<p><strong>確認程度：</strong> Mythos 能力與 Glasswing 資料 — 官方發佈<br>
-<strong>建議動作：</strong> 可以開始在 staging 環境測試 Claude 做 SAST 掃描。</p>
+<p><strong>確認程度：</strong> Mythos 能力與 Glasswing 資料 — 官方發佈<br><strong>建議動作：</strong> 可以開始在 staging 環境測試 Claude 做 SAST 掃描。</p>
 </blockquote>
-<h2 id="Google-Apple：Gemini-3-5-Pro-和-1-2T-的-Siri-引擎">Google + Apple：Gemini 3.5 Pro 和 1.2T 的 Siri 引擎</h2>
-<p>Google 這邊有兩條線。</p>
+<h2 id="Google-Apple：Gemini-3-5-Pro-和-1-2T-的-Siri-引擎"><a href="#Google-Apple：Gemini-3-5-Pro-和-1-2T-的-Siri-引擎" class="headerlink" title="Google + Apple：Gemini 3.5 Pro 和 1.2T 的 Siri 引擎"></a>Google + Apple：Gemini 3.5 Pro 和 1.2T 的 Siri 引擎</h2><p>Google 這邊有兩條線。</p>
 <p>Gemini 3.5 Pro 預期 2026 年 6 月發佈（來源：Nathan Lambert Interconnects 2026/5/26 文章提及；Kim @kimmonismus 2026/5/25 推文交叉印證）。Google I/O 後，Sundar Pichai 受訪把方向講得很直——搜尋要從「給結果」變成「啟動任務」（來源：The Verge Decoder Podcast 2026/5/26）。Gemini Spark Agent平台是這個方向的產品化嘗試。</p>
 <p>另一條是 Apple：據報導，Apple 不只是把 Gemini 加到 Siri，而是用了一個定制版 1.2T 參數的 Google 模型重塑 Siri 核心（來源：Kim @kimmonismus 2026/5/25 推文，為單一二手來源，未經官方確認）。如果屬實，這個規模遠大於 Gemini 3.5 Flash 預估的 300B。</p>
 <p>Apple 的方案據稱是分層架構：簡單查詢走本地端側模型，複雜問題上雲端大模型。架構合理，但「什麼算簡單」的切分邏輯是使用體驗的關鍵。WWDC 預計六月初舉行。</p>
 <p>如果 WWDC 確認 Siri 能更可靠地呼叫 App Intents，iOS 開發者需要重新評估整合策略。後端開發者也值得留意——Apple Intelligence 對 API schema 的理解能力提升，意味著你的 API 文件品質會直接影響 Siri 能不能正確呼叫你的服務。</p>
 <blockquote>
-<p><strong>確認程度：</strong> WWDC — 已確認；Gemini 3.5 Pro — 高度可能（多來源交叉）；1.2T 定制模型 — 單一二手來源，未官方確認<br>
-<strong>建議動作：</strong> WWDC 後第一週重新評估 Apple Intelligence 整合方案。</p>
+<p><strong>確認程度：</strong> WWDC — 已確認；Gemini 3.5 Pro — 高度可能（多來源交叉）；1.2T 定制模型 — 單一二手來源，未官方確認<br><strong>建議動作：</strong> WWDC 後第一週重新評估 Apple Intelligence 整合方案。</p>
 </blockquote>
-<h2 id="xAI：Grok-Build-已經在跑了">xAI：Grok Build 已經在跑了</h2>
-<p>其他家還在「即將發佈」，xAI 的 Grok Build 2026/5/25 已開放 Beta（來源：xAI 官方推文）。跟 Claude Code 走類似路線——不只是 chat，而是 CLI 工具直接進入開發者工作流程。同時 Grok 模型接進了開源編碼工具 OpenCode，用 OAuth 認證即可在終端裡呼叫。xAI 在模型排行上不是前三，但產品節奏確實激進。</p>
+<h2 id="xAI：Grok-Build-已經在跑了"><a href="#xAI：Grok-Build-已經在跑了" class="headerlink" title="xAI：Grok Build 已經在跑了"></a>xAI：Grok Build 已經在跑了</h2><p>其他家還在「即將發佈」，xAI 的 Grok Build 2026/5/25 已開放 Beta（來源：xAI 官方推文）。跟 Claude Code 走類似路線——不只是 chat，而是 CLI 工具直接進入開發者工作流程。同時 Grok 模型接進了開源編碼工具 OpenCode，用 OAuth 認證即可在終端裡呼叫。xAI 在模型排行上不是前三，但產品節奏確實激進。</p>
 <blockquote>
-<p><strong>確認程度：</strong> 官方發佈<br>
-<strong>建議動作：</strong> 有 SuperGrok 訂閱的話花半小時試用，跟現有工具比一下手感。不急。</p>
+<p><strong>確認程度：</strong> 官方發佈<br><strong>建議動作：</strong> 有 SuperGrok 訂閱的話花半小時試用，跟現有工具比一下手感。不急。</p>
 </blockquote>
-<h2 id="回到清單">回到清單</h2>
-<p>六月之後回來看，這些消息裡一定有些是錯的。但不管哪些成真，備戰清單裡的四件事都不會白做。如果只能做一件，先做第一項——把模型名稱從業務邏輯裡抽出來，六月不管誰先出牌，你都能跟上。</p>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kyosora.github.io">kyosora</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://kyosora.github.io/posts/ae04c230/">https://kyosora.github.io/posts/ae04c230/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 授權協議。轉載請註明來源 <a href="https://kyosora.github.io" target="_blank">kyosora 筆記</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Claude/">Claude</a><a class="post-meta__tags" href="/tags/LLM/">LLM</a><a class="post-meta__tags" href="/tags/Gemini/">Gemini</a><a class="post-meta__tags" href="/tags/GPT-5-6/">GPT-5.6</a><a class="post-meta__tags" href="/tags/AI%E6%A8%A1%E5%9E%8B/">AI模型</a></div><div class="post-share"><div class="social-share" data-image="/images/posts/june-2026-ai-model-war-preview-cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'" integrity="sha384-pHP5Gsph8nDYa2Wj0frFT8K63FVU7zVae69H6kGfTbqR7A7DzAMSqKXk1iUB9/6G" crossorigin="anonymous"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer integrity="sha384-CvrrTalky/rRVwzG52LyKTddyiATRqUS5VTzYUhO9/f0W2+VNbyNuZi1FKxniL5E" crossorigin="anonymous"></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/3e7cf918/" title="你的 AI Agent 拿到的權限比你的實習生還大？Anthropic 零信任框架拆解"><img class="cover" src="/images/posts/anthropic-zero-trust-ai-agent-security-framework-cover.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">你的 AI Agent 拿到的權限比你的實習生還大？Anthropic 零信任框架拆解</div></div><div class="info-2"><div class="info-item-1">5 月 27 日 Anthropic 丟出一份 36 頁的電子書，標題叫《Zero Trust for AI Agents》。這不是一般的行銷白皮書——它給了具體的架構、實施路徑和威脅分類，而且每條建議都對應到成熟度等級，讓你知道自己該做到哪一層。 我把重點整理出來，順便加上我自己在用 Claude Code 和各種 Agent 工具時踩過的坑。 為什麼現在要談 Agent 安全 先說結論：AI Agent 跟傳統軟體最大的差別，是它會自己做決定。 傳統軟體執行你寫好的邏輯。Agent 不一樣，它解讀目標、選擇工具、執行多步驟操作，全程不需要你點頭。這帶來一個根本性的安全問題——你給它的權限，它會用自己的判斷去使用。 Anthropic 在文件裡點出了五個 Agent 特有的安全考量：  自主執行：不用人工批准就能完成整條工作流程 工具存取：能操作 API、資料庫、檔案系統、MCP 伺服器 決策模糊性：人類覺得無害的指令，Agent 可能解讀出完全不同的結果 跨 session 記憶：記住上次對話的偏好和知識——也記住被注入的毒 多 Agent 協作：Agent 之間的信任關係，...</div></div></div></a><a class="pagination-related" href="/posts/589db222/" title="沒有「取代所有人」的臨界點——讀 Dan Shipper 的〈After Automation〉"><img class="cover" src="/images/posts/after-automation-frames-cover.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">沒有「取代所有人」的臨界點——讀 Dan Shipper 的〈After Automation〉</div></div><div class="info-2"><div class="info-item-1">我們這行最近最焦慮的一個問題是：下一個模型發布，會不會就是把我們全部換掉的那一個？ Every 的執行長 Dan Shipper 在〈After Automation〉裡給的答案是：沒有那一天。不是因為 AI 不夠強，而是因為這個問題本身問錯了。這篇文章值得每個天天用 Claude Code、Codex 寫程式的人讀一遍——它把「AI 越強、人類越沒事做」這個直覺，整個翻了過來。 我把它的論點整理成下面幾條，順便講講我自己半年下來、哪裡認同、哪裡存疑。 一個反直覺的前提：越自動化，人類工作越多 Shipper 開頭就攤牌：Every 這家三十人左右的公司，把能自動化的全自動化了——寫程式、寫稿、設計、客服，全靠 Codex 和 Claude Code。他們搶先測試 OpenAI、Anthropic、Google 還沒發布的模型。照理說人應該越用越少。 結果相反。他們沒有裁掉所有員工換成 agent，還是請真人寫稿、編輯、工程師、客服。工作的「形態」完全變了——沒人手寫程式碼了，Slack 上 tag 一個人你還不確定對方是真人還是 agent——但事情比以前更多。 Shipper...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/d2eaf73a/" title="三月AI模型大亂鬥：GPT-5.4、Gemini 3.1 Pro、Claude Opus 4.6 到底誰贏了"><img class="cover" src="/images/posts/legacy-d2eaf73a-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-08</div><div class="info-item-2">三月AI模型大亂鬥：GPT-5.4、Gemini 3.1 Pro、Claude Opus 4.6 到底誰贏了</div></div><div class="info-2"><div class="info-item-1">3 月 5 日，OpenAI 丟出 GPT-5.4。兩週前，Google 才發了 Gemini 3.1 Pro。Anthropic 的 Claude Opus 4.6 也在持續迭代。三家模型同時站在擂台上，跑分互有勝負，開發者選擇困難症大爆發。 我花了幾天把三家的 benchmark 資料、定價和實際使用場景整理了一遍。結論先說：沒有全能冠軍，但各有各的殺手鐧。 GPT-5.4：第一個真正會用電腦的 AI OpenAI 這次最大的賣點不是跑分——是 Computer Use。 GPT-5.4 能直接操作桌面應用程式：看螢幕截圖、移動滑鼠、敲鍵盤。在 OSWorld 測試中，它拿到 75% 的成功率，超越人類的 72.4%。這不是小數字的進步，GPT-5.2 在同一個測試只有 47.3%。 另一個重點是「統合模型」架構。OpenAI 把之前分散在不同模型的能力——Codex 的寫程式、推理模型的思考鏈、Agent 的自主操作——塞進同一個模型裡。不用再煩惱「這個任務該叫哪個模型」。 硬指標    項目 GPT-5.4 跟 GPT-5.2 相比     GDPval（知識工作） 83...</div></div></div></a><a class="pagination-related" href="/posts/dae68e3b/" title="100 兆 tokens 告訴你：為什麼降價 10% 也救不了你的 LLM 產品"><img class="cover" src="/images/posts/legacy-dae68e3b-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-09</div><div class="info-item-2">100 兆 tokens 告訴你：為什麼降價 10% 也救不了你的 LLM 產品</div></div><div class="info-2"><div class="info-item-1">你以為 AI 模型競爭就是打價格戰？ OpenRouter 剛發佈的報告分析了 100 兆 tokens 的真實使用資料，發現一個驚人事實：降價 10%，使用量只增加 0.5-0.7%。 更扯的是，Claude 價格最貴，卻占了編程市場 60%。 到底發生什麼事？  為什麼這份報告值得關注？ 這不是又一份「AI 趨勢預測」報告。 OpenRouter 是全球最大的 LLM API 聚合平台：  支援 300+ 模型 60+ 供應商（OpenAI、Anthropic、Google、DeepSeek…） 100 兆 tokens 真實使用資料（2024/11 - 2025/11）  這份報告揭露了三個開發者必須知道的反直覺發現。  發現 1：價格戰是假議題 資料打臉時刻    策略 實際結果     降價 10% 使用量 ↑ 0.5-0.7%   Claude（最貴） 編程市場占 60%   DeepSeek（便宜） 使用者流失後又回流    報告原話：  “需求缺乏價格彈性，使用者優先考慮品質和可靠性而非價格。”  為什麼會這樣？ 工程師選模型的真實決策流程：  能不能解決問題？（...</div></div></div></a><a class="pagination-related" href="/posts/ddaf3523/" title="跟 AI 說「這對我很重要」讓它表現提升 115%——論文怎麼解釋這件事"><img class="cover" src="/images/posts/legacy-ddaf3523-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-06</div><div class="info-item-2">跟 AI 說「這對我很重要」讓它表現提升 115%——論文怎麼解釋這件事</div></div><div class="info-2"><div class="info-item-1">那個 115% 是怎麼來的 我第一次看到這個數字的時候反應是「不可能吧」。 論文叫 Large Language Models Understand and Can be Enhanced by Emotional Stimuli，2023 年由 Microsoft、中科院、威廉與瑪麗學院等機構合作發表。研究方法很簡單：在 prompt 末尾加上一句情緒話語，例如「這對我的職涯非常重要」「我相信你可以做得很好」，然後看模型表現會不會變化。 結果是：  自動評測涵蓋 45 個任務（Instruction Induction + BIG-Bench），多個模型上都看到改善 另有 106 位受試者評估 30 個生成問題，EmotionPrompt 在 performance、truthfulness、responsibility 三項平均相對提升 10.9% 在 BIG-Bench 某些子任務上，相對改善飆到 115%（注意這是 relative improvement，在原始低基準任務上會被放大） 在 Flan-T5、Vicuna、Llama 2、BLOOM、ChatGPT、GPT-...</div></div></div></a><a class="pagination-related" href="/posts/4d323b4a/" title="指數時間假說是什麼？OpenAI 和 Claude 宣稱推翻它，為什麼這是大事"><img class="cover" src="/images/posts/exponential-time-hypothesis-ai-refutation-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-28</div><div class="info-item-2">指數時間假說是什麼？OpenAI 和 Claude 宣稱推翻它，為什麼這是大事</div></div><div class="info-2"><div class="info-item-1">10 月 26 日（美國時間），OpenAI 在 openai/math 放出一份手稿，標題只有一句話：〈The Exponential Time Hypothesis is False〉。幾個小時後，Anthropic 在 anthropics/formal-math 放出一篇 Claude 署名的論文〈A 2^o(n) Time Algorithm for 3-SAT〉，宣稱的是同一件事。兩家都附了 Lean 4 形式證明，由學界組成的獨立審查還在進行。 幣圈先炸了一輪。ETH 在他們眼裡是以太坊，Decrypt 的標題直接寫「OpenAI Proves ETH Is False, and Crypto Twitter Has Questions」。 這裡的 ETH 是 Exponential Time Hypothesis，指數時間假說。它跟以太坊無關，是理論電腦科學裡一條撐了二十多年的基礎假設。如果這次的反證成立，影響的是一整批理論結果；對你寫的程式，則幾乎沒有影響。下面從頭講。 先從 3-SAT 講起 想像你在排班。每條規則長這樣：「小明值班、小華不值班、小美值班，三個...</div></div></div></a><a class="pagination-related" href="/posts/b7d668e1/" title="當你的 AI Agent 有 500 個工具：從 GPT-5.4 的 Tool Search 看工具管理的正確姿勢"><img class="cover" src="/images/posts/legacy-b7d668e1-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-12</div><div class="info-item-2">當你的 AI Agent 有 500 個工具：從 GPT-5.4 的 Tool Search 看工具管理的正確姿勢</div></div><div class="info-2"><div class="info-item-1">上週我在幫公司的 AI Agent 接上第 47 個 MCP server 時，API 帳單跳了一個數字讓我差點從椅子上摔下來。 不是因為用量暴增。是因為每一次 API 呼叫，光是把 36 個 MCP server 的工具定義塞進 context，就吃掉了將近 40,000 tokens。模型還沒開始思考，錢已經燒了一半。 3 月 5 日 OpenAI 發佈 GPT-5.4 時，benchmark 數字和 Computer Use 搶走了所有目光。但對我來說，最值得注意的功能只有一個——Tool Search。 工具爆炸問題：你可能已經踩到了 先說個數字。一個標準的 function calling 工具定義，包含名稱、描述、參數 schema，平均佔 200-500 tokens。聽起來不多？ 算一下：  10 個工具 → ~3,000 tokens（還好） 50 個工具 → ~15,000 tokens（開始痛） 200 個工具 → ~60,000 tokens（每次呼叫都在燒錢） 500 個工具 → ~150,000 tokens（恭喜，光工具定義就用掉一般模型 conte...</div></div></div></a><a class="pagination-related" href="/posts/c750d8d3/" title="解決 C 槽爆炸危機！把 Ollama 模型檔案搬到 D 槽"><img class="cover" src="/images/posts/legacy-c750d8d3-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-11</div><div class="info-item-2">解決 C 槽爆炸危機！把 Ollama 模型檔案搬到 D 槽</div></div><div class="info-2"><div class="info-item-1">為什麼要移動 Ollama 模型？ Ollama 預設把所有模型檔案丟在 C 槽，下載幾個大模型之後系統碟就開始告急。本教學帶你把模型搬到 D 槽，並在確認搬移成功後刪掉 C 槽的舊資料，真正把空間釋出來。 移動前的準備工作  確認 D 槽有足夠空間 在右下角系統匣對 Ollama 圖示按右鍵選「Quit Ollama」，確認背景程序完全停止（直接關視窗不夠，背景程序還在跑） 若有自訂 Modelfile 或用 ollama create 建立的本地模型，先把 Modelfile 另存備份；官方預建模型可隨時用 ollama pull 重下，不需額外備份  詳細移動步驟 步驟一：建立新的存放位置  在 D 槽建立新的資料夾：  1mkdir D:\Ollama\models  注意這裡多建了一層 models。Ollama 真正的模型檔放在 .ollama\models 底下（裡面有 blobs\ 和 manifests\ 兩個子資料夾），稍後的環境變數要對準這一層，否則 Ollama 會在錯誤的路徑找不到模型。  步驟二：移動現有模型  打開檔案總管，預設模型位置在：  1C:...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">245</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">540</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%96%8B%E7%99%BC%E8%80%85%E5%82%99%E6%88%B0%E6%B8%85%E5%96%AE%EF%BC%88%E5%85%AD%E6%9C%88%E5%89%8D%E5%AE%8C%E6%88%90%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">開發者備戰清單（六月前完成）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OpenAI%EF%BC%9AGPT-5-6-iris-alpha"><span class="toc-number">2.</span> <span class="toc-text">OpenAI：GPT-5.6 iris-alpha</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Anthropic%EF%BC%9AMythos-%E4%B8%8D%E5%8F%AA%E6%98%AF%E8%A7%A3%E6%95%B8%E5%AD%B8%E9%A1%8C"><span class="toc-number">3.</span> <span class="toc-text">Anthropic：Mythos 不只是解數學題</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Google-Apple%EF%BC%9AGemini-3-5-Pro-%E5%92%8C-1-2T-%E7%9A%84-Siri-%E5%BC%95%E6%93%8E"><span class="toc-number">4.</span> <span class="toc-text">Google + Apple：Gemini 3.5 Pro 和 1.2T 的 Siri 引擎</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#xAI%EF%BC%9AGrok-Build-%E5%B7%B2%E7%B6%93%E5%9C%A8%E8%B7%91%E4%BA%86"><span class="toc-number">5.</span> <span class="toc-text">xAI：Grok Build 已經在跑了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E5%88%B0%E6%B8%85%E5%96%AE"><span class="toc-number">6.</span> <span class="toc-text">回到清單</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/4fb41c1c/" title="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它"><img src="/images/posts/riemann-hypothesis-claude-lean-proof-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/4fb41c1c/" title="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z" title="發表於 2026-11-25 10:40:00">2026-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7463bf4c/" title="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法"><img src="/images/posts/windows-openssh-key-only-four-machines-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/7463bf4c/" title="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z" title="發表於 2026-11-12 11:30:00">2026-11-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3c89a868/" title="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊"><img src="/images/posts/aspnet-session-lock-request-queue-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/3c89a868/" title="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z" title="發表於 2026-11-12 11:00:00">2026-11-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7cf056d5/" title="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI"><img src="/images/posts/nikke-launcher-cdn-sri-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/7cf056d5/" title="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z" title="發表於 2026-11-05 13:00:00">2026-11-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/34c467cd/" title="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法"><img src="/images/posts/twca-cyber-root-iis-iphone-untrusted-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/34c467cd/" title="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法">TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法</a><time datetime="2026-11-02T06:45:00.000Z" title="發表於 2026-11-02 14:45:00">2026-11-02</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/images/posts/june-2026-ai-model-war-preview-cover.webp);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By kyosora</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><script src="/js/tw_cn.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.js" integrity="sha384-gxImbXBiSbxiZ81MBKincxlzfmdjvLfzyAvwe2hUA/rhcWB88+gfX+uzi8K/rw84" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.js" type="module" integrity="sha384-+oVCYEOCpcTbL4CsQ1hK+6Prt7+Kx2+ER1RSn5iQ0Ua0B1sBuGONp1jKt8dkcd5n" crossorigin="anonymous"></script><div class="js-pjax"><script>(() => {
-  const parseViewBox = viewBox => {
-    if (!viewBox) return null
-    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
-    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
-    return parts
-  }
-
-  const getSvgViewBox = svg => {
-    const attr = parseViewBox(svg.getAttribute('viewBox'))
-    if (attr) return attr
-
-    // Fallback: use bbox to build a viewBox
-    try {
-      const bbox = svg.getBBox()
-      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
-    } catch (e) {
-      // getBBox may fail on some edge cases; ignore
-    }
-
-    const w = Number(svg.getAttribute('width')) || 0
-    const h = Number(svg.getAttribute('height')) || 0
-    if (w > 0 && h > 0) return [0, 0, w, h]
-    return [0, 0, 100, 100]
-  }
-
-  const setSvgViewBox = (svg, vb) => {
-    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
-  }
-
-  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
-
-  const openSvgInNewTab = ({ source, initViewBox }) => {
-    const getClonedSvg = () => {
-      if (typeof source === 'string') {
-        const template = document.createElement('template')
-        template.innerHTML = source.trim()
-        const svg = template.content.querySelector('svg')
-        return svg ? svg.cloneNode(true) : null
-      }
-      if (source && typeof source.cloneNode === 'function') {
-        return source.cloneNode(true)
-      }
-      return null
-    }
-
-    const clone = getClonedSvg()
-    if (!clone) return
-    if (initViewBox && initViewBox.length === 4) {
-      clone.setAttribute('viewBox', initViewBox.join(' '))
-    }
-    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
-    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
-      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-    }
-    // inject background to match current theme
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
-    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
-    if (!clone.style.background) clone.style.background = bg
-
-    const serializer = new XMLSerializer()
-    const svgSource = serializer.serializeToString(clone)
-    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
-      <style>
-        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
-        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
-      </style>
-      </head><body>${svgSource}</body></html>`
-    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    window.open(url, '_blank', 'noopener')
-    setTimeout(() => URL.revokeObjectURL(url), 30000)
-  }
-
-  const attachMermaidViewerButton = wrap => {
-    let btn = wrap.querySelector('.mermaid-open-btn')
-    if (!btn) {
-      btn = document.createElement('button')
-      btn.type = 'button'
-      btn.className = 'mermaid-open-btn'
-      wrap.appendChild(btn)
-    }
-
-    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
-
-    if (!btn.__mermaidViewerBound) {
-      btn.addEventListener('click', e => {
-        e.preventDefault()
-        e.stopPropagation()
-        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
-        if (!svg) return
-        const initViewBox = wrap.__mermaidInitViewBox
-        if (typeof svg === 'string') {
-          openSvgInNewTab({ source: svg, initViewBox })
-          return
-        }
-        openSvgInNewTab({ source: svg, initViewBox })
-      })
-      btn.__mermaidViewerBound = true
-    }
-  }
-
-  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
-  const zoomAtPoint = (vb, factor, px, py) => {
-    const w = vb[2] * factor
-    const h = vb[3] * factor
-    const nx = px - (px - vb[0]) * factor
-    const ny = py - (py - vb[1]) * factor
-    return [nx, ny, w, h]
-  }
-
-  const initMermaidGestures = wrap => {
-    const svg = wrap.querySelector('svg')
-    if (!svg) return
-
-    // Ensure viewBox exists so gestures always work
-    const initVb = getSvgViewBox(svg)
-    wrap.__mermaidInitViewBox = initVb
-    wrap.__mermaidCurViewBox = initVb.slice()
-    setSvgViewBox(svg, initVb)
-
-    // Avoid binding multiple times on themeChange/pjax
-    if (wrap.__mermaidGestureBound) return
-    wrap.__mermaidGestureBound = true
-
-    // Helper: map client (viewport) coordinate -> viewBox coordinate
-    const clientToViewBox = (clientX, clientY) => {
-      const rect = svg.getBoundingClientRect()
-      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
-      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
-      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
-      return { x, y, rect, vb }
-    }
-
-    const state = {
-      pointers: new Map(),
-      startVb: null,
-      startDist: 0,
-      startCenter: null
-    }
-
-    const clampVb = vb => {
-      const init = wrap.__mermaidInitViewBox || vb
-      const minW = init[2] * 0.1
-      const maxW = init[2] * 10
-      const minH = init[3] * 0.1
-      const maxH = init[3] * 10
-      vb[2] = clamp(vb[2], minW, maxW)
-      vb[3] = clamp(vb[3], minH, maxH)
-      return vb
-    }
-
-    const setCurVb = vb => {
-      vb = clampVb(vb)
-      wrap.__mermaidCurViewBox = vb
-      setSvgViewBox(svg, vb)
-    }
-
-    const onPointerDown = e => {
-      // Allow only primary button for mouse
-      if (e.pointerType === 'mouse' && e.button !== 0) return
-      svg.setPointerCapture(e.pointerId)
-      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
-
-      if (state.pointers.size === 1) {
-        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-      } else if (state.pointers.size === 2) {
-        const pts = [...state.pointers.values()]
-        const dx = pts[0].x - pts[1].x
-        const dy = pts[0].y - pts[1].y
-        state.startDist = Math.hypot(dx, dy)
-        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
-      }
-    }
-
-    const onPointerMove = e => {
-      if (!state.pointers.has(e.pointerId)) return
-      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
-
-      // Pan with 1 pointer
-      if (state.pointers.size === 1 && state.startVb) {
-        const p = [...state.pointers.values()][0]
-        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
-        // movementX/Y unreliable on touch, compute from stored last position
-        const last = wrap.__mermaidLastSinglePointer || p
-        const dxClient = p.x - last.x
-        const dyClient = p.y - last.y
-        wrap.__mermaidLastSinglePointer = p
-
-        const { rect } = clientToViewBox(p.x, p.y)
-        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-        const dx = dxClient * (vb[2] / rect.width)
-        const dy = dyClient * (vb[3] / rect.height)
-        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
-        return
-      }
-
-      // Pinch zoom with 2 pointers
-      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
-        const pts = [...state.pointers.values()]
-        const dx = pts[0].x - pts[1].x
-        const dy = pts[0].y - pts[1].y
-        const dist = Math.hypot(dx, dy)
-        if (!dist) return
-        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
-
-        const cx = (pts[0].x + pts[1].x) / 2
-        const cy = (pts[0].y + pts[1].y) / 2
-        const centerClient = { x: cx, y: cy }
-
-        const pxy = clientToViewBox(centerClient.x, centerClient.y)
-        const cpx = pxy.x
-        const cpy = pxy.y
-
-        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
-        setCurVb(vb)
-      }
-    }
-
-    const onPointerUpOrCancel = e => {
-      state.pointers.delete(e.pointerId)
-      if (state.pointers.size === 0) {
-        state.startVb = null
-        state.startDist = 0
-        state.startCenter = null
-        wrap.__mermaidLastSinglePointer = null
-      } else if (state.pointers.size === 1) {
-        // reset single pointer baseline to avoid jump
-        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
-      }
-    }
-
-    // Wheel zoom (mouse/trackpad)
-    const onWheel = e => {
-      // ctrlKey on mac trackpad pinch; we treat both as zoom
-      e.preventDefault()
-      const delta = e.deltaY
-      const zoomFactor = delta > 0 ? 1.1 : 0.9
-      const { x, y } = clientToViewBox(e.clientX, e.clientY)
-      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
-    }
-
-    const onDblClick = () => {
-      const init = wrap.__mermaidInitViewBox
-      if (!init) return
-      wrap.__mermaidCurViewBox = init.slice()
-      setSvgViewBox(svg, init)
-    }
-
-    svg.addEventListener('pointerdown', onPointerDown)
-    svg.addEventListener('pointermove', onPointerMove)
-    svg.addEventListener('pointerup', onPointerUpOrCancel)
-    svg.addEventListener('pointercancel', onPointerUpOrCancel)
-    svg.addEventListener('wheel', onWheel, { passive: false })
-    svg.addEventListener('dblclick', onDblClick)
-  }
-
-  const runMermaid = ele => {
-    window.loadMermaid = true
-    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
-
-    ele.forEach((item, index) => {
-      const mermaidSrc = item.firstElementChild
-
-      // Clear old render (themeChange/pjax will rerun)
-      const oldSvg = item.querySelector('svg')
-      if (oldSvg) oldSvg.remove()
-      item.__mermaidGestureBound = false
-
-      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
-      if (!config.theme) {
-        config.theme = theme
-      }
-      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
-      const mermaidID = `mermaid-${index}`
-      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
-
-      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
-      const renderMermaid = svg => {
-        mermaidSrc.insertAdjacentHTML('afterend', svg)
-        if (true) initMermaidGestures(item)
-        item.__mermaidOriginalSvg = svg
-        if (true) attachMermaidViewerButton(item)
-      }
-
-
-      // mermaid v9 and v10 compatibility
-      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
-    })
-  }
-
-  const codeToMermaid = () => {
-    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
-    if (codeMermaidEle.length === 0) return
-
-    codeMermaidEle.forEach(ele => {
-      const preEle = document.createElement('pre')
-      preEle.className = 'mermaid-src'
-      preEle.hidden = true
-      preEle.textContent = ele.textContent
-      const newEle = document.createElement('div')
-      newEle.className = 'mermaid-wrap'
-      newEle.appendChild(preEle)
-      ele.parentNode.replaceWith(newEle)
-    })
-  }
-
-  const loadMermaid = () => {
-    if (true) codeToMermaid()
-    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
-    if ($mermaid.length === 0) return
-
-    const runMermaidFn = () => runMermaid($mermaid)
-    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
-    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
-  }
-
-  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
-  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
-})()</script><script>(() => {
-  const applyThemeDefaultsConfig = theme => {
-    if (theme === 'dark-mode') {
-      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
-      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
-      Chart.defaults.scale.ticks.backdropColor = "transparent"
-    } else {
-      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
-      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
-      Chart.defaults.scale.ticks.backdropColor = "transparent"
-    }
-  }
-
-  // Recursively traverse the config object and automatically apply theme-specific color schemes
-  const applyThemeConfig = (obj, theme) => {
-    if (typeof obj !== 'object' || obj === null) return
-
-    Object.keys(obj).forEach(key => {
-      const value = obj[key]
-      // If the property is an object and has theme-specific options, apply them
-      if (typeof value === 'object' && value !== null) {
-        if (value[theme]) {
-          obj[key] = value[theme] // Apply the value for the current theme
-        } else {
-          // Recursively process child objects
-          applyThemeConfig(value, theme)
-        }
-      }
-    })
-  }
-
-  const runChartJS = ele => {
-    window.loadChartJS = true
-
-    Array.from(ele).forEach((item, index) => {
-      const chartSrc = item.firstElementChild
-      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
-      const width = item.getAttribute('data-width')
-      const existingCanvas = document.getElementById(chartID)
-
-      // If a canvas already exists, remove it to avoid rendering duplicates
-      if (existingCanvas) {
-          existingCanvas.parentNode.remove()
-      }
-
-      const chartDefinition = chartSrc.textContent
-      const canvas = document.createElement('canvas')
-      canvas.id = chartID
-
-      const div = document.createElement('div')
-      div.className = 'chartjs-wrap'
-
-      if (width) {
-        div.style.width = width
-      }
-
-      div.appendChild(canvas)
-      chartSrc.insertAdjacentElement('afterend', div)
-
-      const ctx = document.getElementById(chartID).getContext('2d')
-
-      const config = JSON.parse(chartDefinition)
-
-      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
-
-      // Set default styles (initial setup)
-      applyThemeDefaultsConfig(theme)
-
-      // Automatically traverse the config and apply dual-mode color schemes
-      applyThemeConfig(config, theme)
-
-      new Chart(ctx, config)
-    })
-  }
-
-  const loadChartJS = () => {
-    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
-    if (chartJSEle.length === 0) return
-
-    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
-  }
-
-  // Listen for theme change events
-  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
-  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
-
-  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
-})()</script><script>(() => {
-  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
-  const option = {"mapping":"pathname","inputPosition":"top","lang":"zh-TW","reactionsEnabled":1}
-
-  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
-
-  const createScriptElement = config => {
-    const ele = document.createElement('script')
-    Object.entries(config).forEach(([key, value]) => {
-      ele.setAttribute(key, value)
-    })
-    return ele
-  }
-
-  const loadGiscus = (el = document, key) => {
-    const mappingConfig = isShuoshuo
-      ? { 'data-mapping': 'specific', 'data-term': key }
-      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
-
-    const giscusConfig = {
-      src: 'https://giscus.app/client.js',
-      'data-repo': 'kyosora/kyosora.github.io',
-      'data-repo-id': 'R_kgDOLJYL_w',
-      'data-category-id': 'DIC_kwDOLJYL_84C516C',
-      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
-      'data-reactions-enabled': '1',
-      crossorigin: 'anonymous',
-      async: true,
-      ...option,
-      ...mappingConfig
-    }
-
-    const scriptElement = createScriptElement(giscusConfig)
-
-    el.querySelector('#giscus-wrap').appendChild(scriptElement)
-
-    if (isShuoshuo) {
-      window.shuoshuoComment.destroyGiscus = () => {
-        if (el.children.length) {
-          el.innerHTML = ''
-          el.classList.add('no-comment')
-        }
-      }
-    }
-  }
-
-  const changeGiscusTheme = theme => {
-    const iframe = document.querySelector('#giscus-wrap iframe')
-    if (iframe) {
-      const message = {
-        giscus: {
-          setConfig: {
-            theme: getGiscusTheme(theme)
-          }
-        }
-      }
-      iframe.contentWindow.postMessage(message, 'https://giscus.app')
-    }
-  }
-
-  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
-
-  if (isShuoshuo) {
-    'Giscus' === 'Giscus'
-      ? window.shuoshuoComment = { loadComment: loadGiscus }
-      : window.loadOtherComment = loadGiscus
-    return
-  }
-
-  if ('Giscus' === 'Giscus' || !true) {
-    if (true) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
-    else loadGiscus()
-  } else {
-    window.loadOtherComment = loadGiscus
-  }
-})()</script></div><script src="/js/about-cards.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>
+<h2 id="回到清單"><a href="#回到清單" class="headerlink" title="回到清單"></a>回到清單</h2><p>六月之後回來看，這些消息裡一定有些是錯的。但不管哪些成真，備戰清單裡的四件事都不會白做。如果只能做一件，先做第一項——把模型名稱從業務邏輯裡抽出來，六月不管誰先出牌，你都能跟上。</p>
+
+      </div>
+      
+<footer class="post-end">
+  
+  <ul class="post-tags" aria-label="標籤">
+    <li><a href="/tags/Claude/">Claude</a></li><li><a href="/tags/LLM/">LLM</a></li><li><a href="/tags/Gemini/">Gemini</a></li><li><a href="/tags/GPT-5-6/">GPT-5.6</a></li><li><a href="/tags/AI%E6%A8%A1%E5%9E%8B/">AI模型</a></li>
+  </ul>
+  
+
+  <section class="license" aria-label="版權資訊">
+    <p>作者 <a href="/about/">kyosora</a>。本文網址 <a href="https://kyosora.github.io/posts/ae04c230/">https://kyosora.github.io/posts/ae04c230/</a></p>
+    <p>以 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license noopener" target="_blank">CC BY-NC-SA 4.0</a> 授權，轉載請註明出處。</p>
+  </section>
+
+  <div class="share" aria-label="分享這篇文章">
+    <span class="share-label">分享</span>
+    
+    <a class="chip" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fkyosora.github.io%2Fposts%2Fae04c230%2F" target="_blank" rel="noopener nofollow">Facebook</a>
+    
+    <a class="chip" href="https://x.com/intent/post?url=https%3A%2F%2Fkyosora.github.io%2Fposts%2Fae04c230%2F&amp;text=%E5%85%AD%E6%9C%88%20AI%20%E6%A8%A1%E5%9E%8B%E5%A4%A7%E6%88%B0%E5%89%8D%E5%A4%95%EF%BC%9AGPT-5.6%E3%80%81Gemini%203.5%20Pro%E3%80%81Claude%20Mythos%20%E5%90%8C%E6%99%82%E5%A3%93%E5%A2%83%EF%BC%8C%E9%96%8B%E7%99%BC%E8%80%85%E6%80%8E%E9%BA%BC%E6%BA%96%E5%82%99%EF%BC%9F" target="_blank" rel="noopener nofollow">X</a>
+    
+    <a class="chip" href="https://social-plugins.line.me/lineit/share?url=https%3A%2F%2Fkyosora.github.io%2Fposts%2Fae04c230%2F" target="_blank" rel="noopener nofollow">LINE</a>
+    
+    <button class="chip" type="button" data-action="copy-link" data-url="https://kyosora.github.io/posts/ae04c230/">複製連結</button>
+    <button class="chip" type="button" data-action="native-share" data-url="https://kyosora.github.io/posts/ae04c230/" data-title="六月 AI 模型大戰前夕：GPT-5.6、Gemini 3.5 Pro、Claude Mythos 同時壓境，開發者怎麼準備？" hidden>更多分享方式</button>
+  </div>
+
+  
+  <nav class="neighbours" aria-label="前後篇">
+    
+    <a class="neighbour neighbour--older" href="/posts/589db222/">
+      <span class="neighbour-label">前一篇</span>
+      <span class="neighbour-title">沒有「取代所有人」的臨界點——讀 Dan Shipper 的〈After Automation〉</span>
+    </a>
+    
+    <a class="neighbour neighbour--newer" href="/posts/3e7cf918/">
+      <span class="neighbour-label">下一篇</span>
+      <span class="neighbour-title">你的 AI Agent 拿到的權限比你的實習生還大？Anthropic 零信任框架拆解</span>
+    </a>
+    
+  </nav>
+  
+
+  
+  <section class="related" aria-labelledby="related-title">
+    <h2 id="related-title">相關文章</h2>
+    <ul class="related-list">
+    
+      <li>
+        <a href="/posts/d2eaf73a/">
+          <img src="/images/posts/legacy-d2eaf73a-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">三月AI模型大亂鬥：GPT-5.4、Gemini 3.1 Pro、Claude Opus 4.6 到底誰贏了</span>
+          <span class="related-date">2026-03-08</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/dae68e3b/">
+          <img src="/images/posts/legacy-dae68e3b-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">100 兆 tokens 告訴你：為什麼降價 10% 也救不了你的 LLM 產品</span>
+          <span class="related-date">2025-12-09</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/c750d8d3/">
+          <img src="/images/posts/legacy-c750d8d3-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">解決 C 槽爆炸危機！把 Ollama 模型檔案搬到 D 槽</span>
+          <span class="related-date">2024-12-11</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/60405c28/">
+          <img src="/images/posts/legacy-60405c28-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">當 Siri 終於有了大腦：Apple 與 Google 聯手打造的三層 AI 架構解析</span>
+          <span class="related-date">2026-03-09</span>
+        </a>
+      </li>
+    
+    </ul>
+  </section>
+  
+
+  
+  <section class="recent" aria-labelledby="recent-title">
+    <h2 id="recent-title">最近寫的</h2>
+    <ul>
+    
+      <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
+    
+      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
+    
+      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
+    
+      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
+    
+      <li><a href="/posts/34c467cd/">TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法</a><time datetime="2026-11-02T06:45:00.000Z">2026-11-02</time></li>
+    
+    </ul>
+  </section>
+  
+
+  
+<section class="comments" id="comments" aria-labelledby="comments-title">
+  <h2 id="comments-title">留言</h2>
+  <div class="giscus-slot" data-giscus><p class="comments-note">往下捲到這裡才會載入留言區（使用 GitHub 帳號留言）。</p></div>
+</section>
+
+
+</footer>
+
+    </div>
+  </div>
+</article>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>© 2024–2026 kyosora。文章以 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license noopener" target="_blank">CC BY-NC-SA 4.0</a> 授權。</p>
+    <p class="footer-links"><a href="/atom.xml">RSS 訂閱</a><a href="https://github.com/kyosora" rel="noopener" target="_blank">GitHub</a><a href="/about/">關於我</a></p>
+  </div>
+</footer>
+
+<dialog class="search" id="search" aria-label="搜尋文章">
+  <form class="search-bar" role="search">
+    <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+    <input type="search" name="q" placeholder="搜尋標題與內文" aria-label="搜尋關鍵字" autocomplete="off" enterkeyhint="search">
+    <button class="tool" type="button" data-close aria-label="關閉搜尋"><svg class="icon"><use href="#i-close"/></svg></button>
+  </form>
+  <p class="search-status" role="status" aria-live="polite"></p>
+  <ol class="search-results"></ol>
+</dialog>
+
+<script>window.KY={"search":"/search.json","twcn":"/js/ky-twcn.js?v=eba49651","codeHeight":400,"mermaid":null,"giscus":{"data-repo":"kyosora/kyosora.github.io","data-repo-id":"R_kgDOLJYL_w","data-category-id":"DIC_kwDOLJYL_84C516C","data-mapping":"pathname","data-input-position":"top","data-lang":"zh-TW","data-reactions-enabled":"1","light":"light","dark":"dark"},"views":{"endpoint":"https://kyosora-views.coasta98381.workers.dev","minSeconds":15,"since":"2026-11","path":"/posts/ae04c230/"}}</script>
+<script src="/js/kyosora.js?v=0f20e8d5" defer></script>
+
+</body>
+</html>

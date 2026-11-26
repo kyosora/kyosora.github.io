@@ -1,201 +1,133 @@
-<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Windows 上安裝 Google Workspace CLI 完整踩坑紀錄 | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="在 Windows 裝 Google Workspace CLI 被 npm、OAuth 憑證和 Git Bash 加密卡住？記錄三個坑的解法：手動下載二進位檔、自建 OAuth Client、把加密憑證解成明文 JSON，並示範當 MCP 伺服器讓 AI 操作 Google 服務。">
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Windows 上安裝 Google Workspace CLI 完整踩坑紀錄 | kyosora 筆記</title>
+<meta name="description" content="在 Windows 裝 Google Workspace CLI 被 npm、OAuth 憑證和 Git Bash 加密卡住？記錄三個坑的解法：手動下載二進位檔、自建 OAuth Client、把加密憑證解成明文 JSON，並示範當 MCP 伺服器讓 AI 操作 Google 服務。">
+<link rel="canonical" href="https://kyosora.github.io/posts/ce03b394/">
+
+<meta name="author" content="kyosora">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f4f6f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1820" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Windows 上安裝 Google Workspace CLI 完整踩坑紀錄">
-<meta property="og:url" content="https://kyosora.github.io/posts/ce03b394/">
-<meta property="og:site_name" content="kyosora 筆記">
 <meta property="og:description" content="在 Windows 裝 Google Workspace CLI 被 npm、OAuth 憑證和 Git Bash 加密卡住？記錄三個坑的解法：手動下載二進位檔、自建 OAuth Client、把加密憑證解成明文 JSON，並示範當 MCP 伺服器讓 AI 操作 Google 服務。">
+<meta property="og:url" content="https://kyosora.github.io/posts/ce03b394/">
+
+<meta property="og:site_name" content="kyosora 筆記">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://kyosora.github.io/images/posts/legacy-ce03b394-cover.webp">
+<meta name="twitter:image" content="https://kyosora.github.io/images/posts/legacy-ce03b394-cover.webp">
+<meta name="twitter:card" content="summary_large_image">
 <meta property="article:published_time" content="2026-03-05T09:30:00.000Z">
 <meta property="article:modified_time" content="2026-07-31T08:29:33.000Z">
 <meta property="article:author" content="kyosora">
+<meta property="article:section" content="工具與生產力">
 <meta property="article:tag" content="AI Agent">
 <meta property="article:tag" content="Google Workspace">
 <meta property="article:tag" content="CLI">
 <meta property="article:tag" content="Windows">
 <meta property="article:tag" content="OAuth">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://kyosora.github.io/images/posts/legacy-ce03b394-cover.webp"><script type="application/ld+json">{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Windows 上安裝 Google Workspace CLI 完整踩坑紀錄",
-  "url": "https://kyosora.github.io/posts/ce03b394/",
-  "image": "https://kyosora.github.io/images/posts/legacy-ce03b394-cover.webp",
-  "datePublished": "2026-03-05T09:30:00.000Z",
-  "dateModified": "2026-07-31T08:29:33.000Z",
-  "author": [
-    {
-      "@type": "Person",
-      "name": "kyosora",
-      "url": "https://kyosora.github.io"
-    }
-  ]
-}</script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/posts/ce03b394/"><link rel="preconnect" href="https://cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css" integrity="sha384-YgSbYtJcfPnMV/aJ0UdQk84ctht/ckX0MrfQwxOhw43RMBw2WSaDSMVh4gQwLdE4" crossorigin="anonymous"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.css" media="print" onload="this.media='all'" integrity="sha384-SwTfv/7YAtLOqjuOIVOyBHrBSW9ismFkXd7MZSJZmL20kcTygh/Rm3PHXJPY2taV" crossorigin="anonymous"><script>
-    (() => {
+<meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k">
+<meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E">
+<meta name="baidu-site-verification" content="code-pE5rnuxcfD">
+<link rel="icon" href="/images/favicon.png">
+<link rel="alternate" type="application/atom+xml" title="kyosora 筆記" href="/atom.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&amp;display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/css/kyosora.css?v=4bf38b40">
+
+<script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Windows 上安裝 Google Workspace CLI 完整踩坑紀錄","description":"在 Windows 裝 Google Workspace CLI 被 npm、OAuth 憑證和 Git Bash 加密卡住？記錄三個坑的解法：手動下載二進位檔、自建 OAuth Client、把加密憑證解成明文 JSON，並示範當 MCP 伺服器讓 AI 操作 Google 服務。","url":"https://kyosora.github.io/posts/ce03b394/","mainEntityOfPage":"https://kyosora.github.io/posts/ce03b394/","image":"https://kyosora.github.io/images/posts/legacy-ce03b394-cover.webp","datePublished":"2026-03-05T09:30:00.000Z","dateModified":"2026-07-31T08:29:33.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"工具與生產力","keywords":"AI Agent, Google Workspace, CLI, Windows, OAuth"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"工具與生產力","item":"https://kyosora.github.io/categories/%E5%B7%A5%E5%85%B7%E8%88%87%E7%94%9F%E7%94%A2%E5%8A%9B/"},{"@type":"ListItem","position":3,"name":"Windows 上安裝 Google Workspace CLI 完整踩坑紀錄","item":"https://kyosora.github.io/posts/ce03b394/"}]}]}</script>
+
+</head>
+<body class="kind-post">
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
+<symbol id="i-rss" viewBox="0 0 24 24"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.2"/></symbol>
+</svg>
+
+<a class="skip" href="#main">跳到內文</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/">kyosora 筆記</a>
+    <nav class="nav" aria-label="主要選單">
       
-    const saveToLocal = {
-      set: (key, value, ttl) => {
-        if (!ttl) return
-        const expiry = Date.now() + ttl * 86400000
-        localStorage.setItem(key, JSON.stringify({ value, expiry }))
-      },
-      get: key => {
-        const itemStr = localStorage.getItem(key)
-        if (!itemStr) return undefined
-        const { value, expiry } = JSON.parse(itemStr)
-        if (Date.now() > expiry) {
-          localStorage.removeItem(key)
-          return undefined
-        }
-        return value
-      }
-    }
-
-    window.btf = {
-      saveToLocal,
-      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = url
-        script.async = true
-        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
-        script.onload = script.onreadystatechange = () => {
-          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
-        }
-        script.onerror = reject
-        document.head.appendChild(script)
-      }),
-      getCSS: (url, id) => new Promise((resolve, reject) => {
-        const link = document.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = url
-        if (id) link.id = id
-        link.onload = link.onreadystatechange = () => {
-          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
-        }
-        link.onerror = reject
-        document.head.appendChild(link)
-      }),
-      addGlobalFn: (key, fn, name = false, parent = window) => {
-        if (!false && key.startsWith('pjax')) return
-        const globalFn = parent.globalFn || {}
-        globalFn[key] = globalFn[key] || {}
-        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
-        parent.globalFn = globalFn
-      }
-    }
-  
+      <a href="/">首頁</a>
       
-      const activateDarkMode = () => {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
-        }
-      }
-      const activateLightMode = () => {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
-        }
-      }
+      <a href="/archives/">歸檔</a>
+      
+      <a href="/categories/">分類</a>
+      
+      <a href="/tags/">標籤</a>
+      
+      <a href="/about/">關於</a>
+      
+    </nav>
+    <div class="tools">
+      <button class="tool" type="button" data-action="search" aria-label="搜尋文章（快捷鍵 /）" title="搜尋（/）"><svg class="icon"><use href="#i-search"/></svg></button>
+      <button class="tool tool--text" type="button" data-action="translate" aria-label="切換成簡體中文" title="繁簡切換">簡</button>
+      <button class="tool" type="button" data-action="theme" aria-label="切換深色模式" title="深淺色切換"><svg class="icon icon-moon"><use href="#i-moon"/></svg><svg class="icon icon-sun"><use href="#i-sun"/></svg></button>
+    </div>
+  </div>
+</header>
 
-      btf.activateDarkMode = activateDarkMode
-      btf.activateLightMode = activateLightMode
-
-      const theme = saveToLocal.get('theme')
+<main id="main">
+<article class="post">
+  <header class="post-head">
     
-          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
-          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+    <figure class="post-banner"><img src="/images/posts/legacy-ce03b394-cover.webp" alt="" width="1536" height="1024" fetchpriority="high" decoding="async"></figure>
+    
+    <div class="wrap post-head-inner">
+      
+<nav class="crumbs" aria-label="目前位置">
+  <ol>
+  
+    <li><a href="/">首頁</a></li>
+  
+    <li><a href="/categories/%E5%B7%A5%E5%85%B7%E8%88%87%E7%94%9F%E7%94%A2%E5%8A%9B/">工具與生產力</a></li>
+  
+  </ol>
+</nav>
 
-          if (theme === undefined) {
-            if (mediaQueryLight.matches) activateLightMode()
-            else if (mediaQueryDark.matches) activateDarkMode()
-            else {
-              const hour = new Date().getHours()
-              const isNight = hour <= 6 || hour >= 18
-              isNight ? activateDarkMode() : activateLightMode()
-            }
-            mediaQueryDark.addEventListener('change', () => {
-              if (saveToLocal.get('theme') === undefined) {
-                e.matches ? activateDarkMode() : activateLightMode()
-              }
-            })
-          } else {
-            theme === 'light' ? activateLightMode() : activateDarkMode()
-          }
+
+      <h1 class="post-title">Windows 上安裝 Google Workspace CLI 完整踩坑紀錄</h1>
+      <p class="post-meta">
+        <span>發布於 <time datetime="2026-03-05T09:30:00.000Z">2026-03-05</time></span>
         
-      
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
-      }
+        <span>約 9 分鐘讀完</span>
+        <span class="views" data-views hidden></span>
+      </p>
+    </div>
+  </header>
+
+  <div class="wrap post-layout">
     
-      
-    const detectApple = () => {
-      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
-        document.documentElement.classList.add('apple')
-      }
-    }
-    detectApple()
-  
-    })()
-  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
-function gtag(){dataLayer.push(arguments)}
-gtag('js', new Date())
-gtag('config', 'G-F9P7RWQQJE')
-btf.addGlobalFn('pjaxComplete', () => {
-  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
-}, 'google_analytics')
-</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
-  root: '/',
-  algolia: undefined,
-  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
-  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
-  copy: {
-    success: '複製成功',
-    error: '複製失敗',
-    noSupport: '瀏覽器不支援'
-  },
-  relativeDate: {
-    homepage: true,
-    post: true
-  },
-  runtime: '天',
-  dateSuffix: {
-    just: '剛剛',
-    min: '分鐘前',
-    hour: '小時前',
-    day: '天前',
-    month: '個月前'
-  },
-  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
-  lightbox: 'fancybox',
-  Snackbar: undefined,
-  infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
-    buttonText: '載入更多'
-  },
-  isPhotoFigcaption: false,
-  islazyloadPlugin: false,
-  isAnchor: false,
-  percent: {
-    toc: true,
-    rightside: true,
-  },
-  autoDarkmode: true
-}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: 'Windows 上安裝 Google Workspace CLI 完整踩坑紀錄',
-  isHighlightShrink: false,
-  isToc: true,
-  pageType: 'post'
-}</script><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="/css/about-cards.css"><link rel="stylesheet" href="/css/bg-gradient-mesh.css"><link rel="stylesheet" href="/css/view-transitions.css"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
-<script data-sri-getscript>(function(){var m={"https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js":"sha384-YrKBdCikMPThdp9YNMsmtzHOQ9yH4Ip+glZK2weyS2R3+jMLYsucIs5b5T6ptbqe","https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js":"sha384-1ggI9FC3CkghppRD/XCR4aD+jp4DxwXlJIW0wxhyTLNKuiZEW3c4BwcjKXl0iVAJ","https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js":"sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ"};var b=window.btf;if(!b||typeof b.getScript!=='function')return;var g=b.getScript;b.getScript=function(u,a){var h=m[u];if(!h)return g.call(b,u,a);var o={};if(a)for(var k in a)o[k]=a[k];o.integrity=h;o.crossorigin='anonymous';return g.call(b,u,o)}})();</script></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">245</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">540</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/posts/legacy-ce03b394-cover.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a><a class="nav-page-title" href="/"><span class="site-name">Windows 上安裝 Google Workspace CLI 完整踩坑紀錄</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首頁</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Windows 上安裝 Google Workspace CLI 完整踩坑紀錄<a class="post-edit-link" href="https://github.com/jerryc127/butterfly.js.org/edit/main/source/_posts/Windows-上安裝-Google-Workspace-CLI-完整踩坑紀錄.md" title="編輯" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">發表於</span><time datetime="2026-03-05T09:30:00.000Z" title="發表於 2026-03-05 17:30:00">2026-03-05</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%B7%A5%E5%85%B7%E8%88%87%E7%94%9F%E7%94%A2%E5%8A%9B/">工具與生產力</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">2.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>9分鐘</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>Google 最近開源了一個統一的命令列工具 <a target="_blank" rel="noopener" href="https://github.com/googleworkspace/cli">gws</a>，可以用一支 CLI 操作 Drive、Gmail、Calendar、Sheets 等所有 Google Workspace 服務。更吸引我的是它附帶 100 多個 agent skill 檔案，讓 AI agent 直接操作 Google Workspace API。</p>
+    <aside class="post-aside">
+      <details class="toc-box" open>
+        <summary>目錄</summary>
+        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#gws-%E6%98%AF%E4%BB%80%E9%BA%BC"><span class="toc-text">gws 是什麼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%9D%EF%BC%9Anpm-%E8%A3%9D%E4%B8%8D%E8%B5%B7%E4%BE%86%EF%BC%88v0-4-x-%E6%99%82%E4%BB%A3%E7%9A%84%E5%9D%91%EF%BC%89"><span class="toc-text">安裝：npm 裝不起來（v0.4.x 時代的坑）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E6%B3%95%EF%BC%9A%E6%89%8B%E5%8B%95%E4%B8%8B%E8%BC%89%E4%BA%8C%E9%80%B2%E4%BD%8D%E6%AA%94"><span class="toc-text">解法：手動下載二進位檔</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AA%8D%E8%AD%89%E8%A8%AD%E5%AE%9A%EF%BC%9A%E9%9C%80%E8%A6%81%E6%89%8B%E5%8B%95%E5%BB%BA-OAuth-Client"><span class="toc-text">認證設定：需要手動建 OAuth Client</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%8B%E5%8B%95%E5%BB%BA%E7%AB%8B-OAuth-%E6%86%91%E8%AD%89"><span class="toc-text">手動建立 OAuth 憑證</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%A4%A7%E7%9A%84%E5%9D%91%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%86%91%E8%AD%89%E5%9C%A8-Git-Bash-%E4%B8%8B%E5%A4%B1%E6%95%88"><span class="toc-text">最大的坑：加密憑證在 Git Bash 下失效</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E6%B3%95%E4%B8%80%EF%BC%9Aauth-export-unmasked%EF%BC%88v0-22-5-%E6%8E%A8%E8%96%A6%EF%BC%89"><span class="toc-text">解法一：auth export --unmasked（v0.22.5 推薦）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E6%B3%95%E4%BA%8C%EF%BC%9APython-%E6%89%8B%E5%8B%95%E8%A7%A3%E5%AF%86%EF%BC%88v0-4-x-%E5%82%99%E7%94%A8%E6%96%B9%E6%A1%88%EF%BC%89"><span class="toc-text">解法二：Python 手動解密（v0.4.x 備用方案）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B0%B8%E4%B9%85%E8%A8%AD%E5%AE%9A"><span class="toc-text">永久設定</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="toc-text">基本用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AI-Agent-%E6%95%B4%E5%90%88%EF%BC%88v0-8-0-%E5%BE%8C%E7%9A%84%E5%81%9A%E6%B3%95%EF%BC%89"><span class="toc-text">AI Agent 整合（v0.8.0 後的做法）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B8%A9%E5%9D%91%E7%B8%BD%E7%B5%90"><span class="toc-text">踩坑總結</span></a></li></ol></nav>
+      </details>
+    </aside>
+    
+
+    <div class="post-main">
+      <div class="prose" id="article">
+        <p>Google 最近開源了一個統一的命令列工具 <a target="_blank" rel="noopener" href="https://github.com/googleworkspace/cli">gws</a>，可以用一支 CLI 操作 Drive、Gmail、Calendar、Sheets 等所有 Google Workspace 服務。更吸引我的是它附帶 100 多個 agent skill 檔案，讓 AI agent 直接操作 Google Workspace API。</p>
 <p>我在 Windows 上裝它，踩了三個坑，花了不少時間。這篇是當時（v0.4.x 時代）的踩坑紀錄，但安裝方式已更新到目前最新版 <strong>v0.22.5</strong>。</p>
 <blockquote>
 <p><strong>注意</strong>：gws 迭代很快，截至 2026-06-18 已到 v0.22.5，<code>gws mcp</code> 子指令也已在 v0.8.0 移除。文章後段會說明現在的 AI agent 整合方式。</p>
 </blockquote>
-<h2 id="gws-是什麼">gws 是什麼</h2>
-<p>gws 用 Rust 寫的，最特別的地方是它的指令不是寫死的——而是從 Google Discovery Service 動態建構。Google 新增 API 端點時，gws 自動就能用，不需要更新軟體。</p>
+<h2 id="gws-是什麼"><a href="#gws-是什麼" class="headerlink" title="gws 是什麼"></a>gws 是什麼</h2><p>gws 用 Rust 寫的，最特別的地方是它的指令不是寫死的——而是從 Google Discovery Service 動態建構。Google 新增 API 端點時，gws 自動就能用，不需要更新軟體。</p>
 <p>目前支援的服務：</p>
 <ul>
 <li>Drive — 檔案管理</li>
@@ -207,33 +139,34 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li>Tasks — 待辦事項</li>
 </ul>
 <p>所有回應都是 JSON 格式，很適合寫腳本或讓 AI agent 呼叫。</p>
-<h2 id="安裝：npm-裝不起來（v0-4-x-時代的坑）">安裝：npm 裝不起來（v0.4.x 時代的坑）</h2>
-<p>官方文件說用 npm 裝：</p>
+<h2 id="安裝：npm-裝不起來（v0-4-x-時代的坑）"><a href="#安裝：npm-裝不起來（v0-4-x-時代的坑）" class="headerlink" title="安裝：npm 裝不起來（v0.4.x 時代的坑）"></a>安裝：npm 裝不起來（v0.4.x 時代的坑）</h2><p>官方文件說用 npm 裝：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g @googleworkspace/cli</span><br></pre></td></tr></table></figure>
+
 <p>在 Windows 上直接炸了：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Error fetching release: An error occurred untarring the artifact:</span><br><span class="line">stderr: tar: Cannot connect to C: resolve failed</span><br></pre></td></tr></table></figure>
+
 <p>npm 安裝腳本會從 GitHub Releases 下載壓縮檔，但 Windows 的 tar 處理路徑有問題，解壓失敗。這個問題在 v0.4.x 時期存在；<strong>目前版本（v0.22.5）npm 安裝行為可能已改善</strong>，但我沒有重驗，保守起見還是建議直接下載二進位檔。</p>
-<h3 id="解法：手動下載二進位檔">解法：手動下載二進位檔</h3>
-<p>v0.22.5 的 Windows 版本是 <code>.zip</code> 格式，不再是 <code>.tar.gz</code>：</p>
+<h3 id="解法：手動下載二進位檔"><a href="#解法：手動下載二進位檔" class="headerlink" title="解法：手動下載二進位檔"></a>解法：手動下載二進位檔</h3><p>v0.22.5 的 Windows 版本是 <code>.zip</code> 格式，不再是 <code>.tar.gz</code>：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># PowerShell 下載並解壓</span></span><br><span class="line"><span class="variable">$ver</span> = <span class="string">&quot;0.22.5&quot;</span></span><br><span class="line"><span class="variable">$url</span> = <span class="string">&quot;https://github.com/googleworkspace/cli/releases/download/v<span class="variable">$ver</span>/google-workspace-cli-x86_64-pc-windows-msvc.zip&quot;</span></span><br><span class="line"><span class="built_in">Invoke-WebRequest</span> <span class="literal">-Uri</span> <span class="variable">$url</span> <span class="literal">-OutFile</span> gws.zip</span><br><span class="line"><span class="built_in">Expand-Archive</span> gws.zip <span class="literal">-DestinationPath</span> gws<span class="literal">-extracted</span></span><br></pre></td></tr></table></figure>
+
 <p>或用 curl（Git Bash）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Git Bash</span></span><br><span class="line">ver=<span class="string">&quot;0.22.5&quot;</span></span><br><span class="line">curl -sL -o gws.zip <span class="string">&quot;https://github.com/googleworkspace/cli/releases/download/v<span class="variable">$&#123;ver&#125;</span>/google-workspace-cli-x86_64-pc-windows-msvc.zip&quot;</span></span><br><span class="line">unzip gws.zip -d gws-extracted</span><br></pre></td></tr></table></figure>
+
 <p>解壓後把 <code>gws.exe</code> 丟到 PATH 裡的任何目錄。我放在 Node.js 目錄，因為它已經在 PATH 中：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cp</span> gws-extracted/gws.exe <span class="string">&quot;/c/Program Files/nodejs/gws.exe&quot;</span></span><br></pre></td></tr></table></figure>
+
 <p>注意：如果你之前 npm 安裝失敗，它會留下壞掉的 shim 檔案（<code>gws</code>、<code>gws.cmd</code>、<code>gws.ps1</code>）。這些 shim 會攔截你的指令，導致 <code>Cannot find module run-gws.js</code> 錯誤。<strong>先刪掉它們</strong>，再放你的 <code>gws.exe</code>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">rm</span> <span class="string">&quot;/c/Program Files/nodejs/gws&quot;</span></span><br><span class="line"><span class="built_in">rm</span> <span class="string">&quot;/c/Program Files/nodejs/gws.cmd&quot;</span></span><br><span class="line"><span class="built_in">rm</span> <span class="string">&quot;/c/Program Files/nodejs/gws.ps1&quot;</span></span><br></pre></td></tr></table></figure>
+
 <p>驗證：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gws --version</span><br><span class="line"><span class="comment"># gws 0.22.5</span></span><br></pre></td></tr></table></figure>
-<h2 id="認證設定：需要手動建-OAuth-Client">認證設定：需要手動建 OAuth Client</h2>
-<p>gws 提供了 <code>gws auth setup</code> 自動設定，但它依賴 gcloud CLI。如果你沒裝 gcloud，它會提示你安裝。</p>
+
+<h2 id="認證設定：需要手動建-OAuth-Client"><a href="#認證設定：需要手動建-OAuth-Client" class="headerlink" title="認證設定：需要手動建 OAuth Client"></a>認證設定：需要手動建 OAuth Client</h2><p>gws 提供了 <code>gws auth setup</code> 自動設定，但它依賴 gcloud CLI。如果你沒裝 gcloud，它會提示你安裝。</p>
 <p>就算裝了 gcloud 跑 <code>auth setup</code>，在 Step 5 建立 OAuth Client 時也會失敗——因為 Google Cloud 不允許 API 自動建立 OAuth Client ID，必須手動操作。</p>
-<h3 id="手動建立-OAuth-憑證">手動建立 OAuth 憑證</h3>
-<ol>
-<li>
-<p>到 <a target="_blank" rel="noopener" href="https://console.cloud.google.com/">Google Cloud Console</a> 選擇或建立專案</p>
+<h3 id="手動建立-OAuth-憑證"><a href="#手動建立-OAuth-憑證" class="headerlink" title="手動建立 OAuth 憑證"></a>手動建立 OAuth 憑證</h3><ol>
+<li><p>到 <a target="_blank" rel="noopener" href="https://console.cloud.google.com/">Google Cloud Console</a> 選擇或建立專案</p>
 </li>
-<li>
-<p>設定 OAuth 同意畫面：</p>
+<li><p>設定 OAuth 同意畫面：</p>
 <ul>
 <li>APIs &amp; Services → OAuth consent screen</li>
 <li>User Type 選 <strong>External</strong></li>
@@ -241,8 +174,7 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li>填入你的 email，一路 Save and Continue</li>
 </ul>
 </li>
-<li>
-<p>建立 OAuth Client ID：</p>
+<li><p>建立 OAuth Client ID：</p>
 <ul>
 <li>APIs &amp; Services → Credentials</li>
 <li>Create Credentials → OAuth client ID</li>
@@ -251,52 +183,56 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li>點 Create，記下 Client ID 和 Client Secret</li>
 </ul>
 </li>
-<li>
-<p>設定環境變數後登入：</p>
+<li><p>設定環境變數後登入：</p>
 </li>
 </ol>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> GOOGLE_WORKSPACE_CLI_CLIENT_ID=<span class="string">&quot;你的-client-id.apps.googleusercontent.com&quot;</span></span><br><span class="line"><span class="built_in">export</span> GOOGLE_WORKSPACE_CLI_CLIENT_SECRET=<span class="string">&quot;你的-client-secret&quot;</span></span><br><span class="line">gws auth login</span><br></pre></td></tr></table></figure>
+
 <p>瀏覽器會跳出 Google 登入頁面，授權後回到終端機會看到：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;status&quot;</span><span class="punctuation">:</span> <span class="string">&quot;success&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;message&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Authentication successful. Encrypted credentials saved.&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;scopes&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="string">&quot;https://www.googleapis.com/auth/drive&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;https://www.googleapis.com/auth/spreadsheets&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;https://www.googleapis.com/auth/gmail.modify&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;https://www.googleapis.com/auth/calendar&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;https://www.googleapis.com/auth/documents&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;https://www.googleapis.com/auth/presentations&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;https://www.googleapis.com/auth/tasks&quot;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
 <p>看到 <code>success</code> 就以為搞定了？我也是。</p>
-<h2 id="最大的坑：加密憑證在-Git-Bash-下失效">最大的坑：加密憑證在 Git Bash 下失效</h2>
-<p>登入成功後，執行任何 API 呼叫：</p>
+<h2 id="最大的坑：加密憑證在-Git-Bash-下失效"><a href="#最大的坑：加密憑證在-Git-Bash-下失效" class="headerlink" title="最大的坑：加密憑證在 Git Bash 下失效"></a>最大的坑：加密憑證在 Git Bash 下失效</h2><p>登入成功後，執行任何 API 呼叫：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gws drive files list --params <span class="string">&#x27;&#123;&quot;pageSize&quot;: 3&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
 <p>結果：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;error&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;code&quot;</span><span class="punctuation">:</span> <span class="number">401</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;message&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Access denied. No credentials provided.&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;reason&quot;</span><span class="punctuation">:</span> <span class="string">&quot;authError&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
 <p><code>auth status</code> 明明顯示 <code>token_valid: true</code>，但 API 呼叫就是 401。</p>
 <p>問題出在 gws 用 <strong>AES-256-GCM 加密</strong>儲存憑證（<code>credentials.enc</code>），解密金鑰原本設計存放在 <strong>Windows Credential Manager</strong>。但在早期版本（v0.4.x），當 Credential Manager 回傳失敗或查無條目時，CLI 不會重用既有金鑰，而是每次啟動都產生新的隨機金鑰寫入 <code>~/.config/gws/.encryption_key</code>——這樣 <code>auth login</code> 寫入時和後續 API 呼叫時用的金鑰不同，<code>credentials.enc</code> 就永遠解不開，導致 401。</p>
-<h3 id="解法一：auth-export-unmasked（v0-22-5-推薦）">解法一：<code>auth export --unmasked</code>（v0.22.5 推薦）</h3>
-<p>新版本加了 <code>--unmasked</code> 旗標，可以直接匯出明文 token：</p>
+<h3 id="解法一：auth-export-unmasked（v0-22-5-推薦）"><a href="#解法一：auth-export-unmasked（v0-22-5-推薦）" class="headerlink" title="解法一：auth export --unmasked（v0.22.5 推薦）"></a>解法一：<code>auth export --unmasked</code>（v0.22.5 推薦）</h3><p>新版本加了 <code>--unmasked</code> 旗標，可以直接匯出明文 token：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gws auth <span class="built_in">export</span> --unmasked &gt; ~/.config/gws/credentials.json</span><br></pre></td></tr></table></figure>
+
 <p>然後設定環境變數（Git Bash 裡路徑用<strong>正斜線</strong>，反斜線在 bash 字串裡會被解讀）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE=<span class="string">&quot;C:/Users/你的使用者/.config/gws/credentials.json&quot;</span></span><br></pre></td></tr></table></figure>
-<h3 id="解法二：Python-手動解密（v0-4-x-備用方案）">解法二：Python 手動解密（v0.4.x 備用方案）</h3>
-<p>如果你卡在舊版或 <code>auth export</code> 仍輸出遮蔽值，可以自己解密 <code>credentials.enc</code>。加密金鑰存在 <code>~/.config/gws/.encryption_key</code>：</p>
+
+<h3 id="解法二：Python-手動解密（v0-4-x-備用方案）"><a href="#解法二：Python-手動解密（v0-4-x-備用方案）" class="headerlink" title="解法二：Python 手動解密（v0.4.x 備用方案）"></a>解法二：Python 手動解密（v0.4.x 備用方案）</h3><p>如果你卡在舊版或 <code>auth export</code> 仍輸出遮蔽值，可以自己解密 <code>credentials.enc</code>。加密金鑰存在 <code>~/.config/gws/.encryption_key</code>：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> base64, json</span><br><span class="line"><span class="keyword">from</span> cryptography.hazmat.primitives.ciphers.aead <span class="keyword">import</span> AESGCM</span><br><span class="line"></span><br><span class="line"><span class="comment"># 讀取加密金鑰</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;C:/Users/你的使用者/.config/gws/.encryption_key&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    key = base64.b64decode(f.read().strip())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 讀取加密憑證</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;C:/Users/你的使用者/.config/gws/credentials.enc&#x27;</span>, <span class="string">&#x27;rb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    data = f.read()</span><br><span class="line"></span><br><span class="line"><span class="comment"># AES-256-GCM 解密：前 12 bytes 是 nonce</span></span><br><span class="line">nonce = data[:<span class="number">12</span>]</span><br><span class="line">ciphertext = data[<span class="number">12</span>:]</span><br><span class="line">aesgcm = AESGCM(key)</span><br><span class="line">plaintext = aesgcm.decrypt(nonce, ciphertext, <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 寫入明文 credentials.json</span></span><br><span class="line">creds = json.loads(plaintext)</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;C:/Users/你的使用者/.config/gws/credentials.json&#x27;</span>, <span class="string">&#x27;w&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    json.dump(creds, f, indent=<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+
 <p>需要先裝 <code>cryptography</code> 套件：<code>pip install cryptography</code>。</p>
 <hr>
 <p>再試一次：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gws drive files list --params <span class="string">&#x27;&#123;&quot;pageSize&quot;: 3&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;files&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1G8UvtYMIIR5gFAqC...&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;kind&quot;</span><span class="punctuation">:</span> <span class="string">&quot;drive#file&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;mimeType&quot;</span><span class="punctuation">:</span> <span class="string">&quot;application/vnd.google-apps.spreadsheet&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;我的試算表&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
 <p>終於正常了。</p>
-<h2 id="永久設定">永久設定</h2>
-<p>把環境變數寫進 <code>~/.bashrc</code>。<strong>路徑要用正斜線</strong>，不然 bash 會把反斜線當跳脫字元處理：</p>
+<h2 id="永久設定"><a href="#永久設定" class="headerlink" title="永久設定"></a>永久設定</h2><p>把環境變數寫進 <code>~/.bashrc</code>。<strong>路徑要用正斜線</strong>，不然 bash 會把反斜線當跳脫字元處理：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Google Workspace CLI</span></span><br><span class="line"><span class="built_in">export</span> GOOGLE_WORKSPACE_CLI_CLIENT_ID=<span class="string">&quot;你的-client-id.apps.googleusercontent.com&quot;</span></span><br><span class="line"><span class="built_in">export</span> GOOGLE_WORKSPACE_CLI_CLIENT_SECRET=<span class="string">&quot;你的-client-secret&quot;</span></span><br><span class="line"><span class="built_in">export</span> GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE=<span class="string">&quot;C:/Users/你的使用者/.config/gws/credentials.json&quot;</span></span><br></pre></td></tr></table></figure>
+
 <p>如果你主要用 PowerShell，改設定使用者層級環境變數：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="type">Environment</span>]::SetEnvironmentVariable(</span><br><span class="line">    <span class="string">&quot;GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE&quot;</span>,</span><br><span class="line">    <span class="string">&quot;C:\Users\你的使用者\.config\gws\credentials.json&quot;</span>,</span><br><span class="line">    <span class="string">&quot;User&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-<h2 id="基本用法">基本用法</h2>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 列出 Drive 檔案</span></span><br><span class="line">gws drive files list --params <span class="string">&#x27;&#123;&quot;pageSize&quot;: 5&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出 Gmail 郵件</span></span><br><span class="line">gws gmail users.messages list --params <span class="string">&#x27;&#123;&quot;userId&quot;: &quot;me&quot;, &quot;maxResults&quot;: 5&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出行事曆</span></span><br><span class="line">gws calendar calendarList list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 建立 Google 試算表</span></span><br><span class="line">gws sheets spreadsheets create --json <span class="string">&#x27;&#123;&quot;properties&quot;: &#123;&quot;title&quot;: &quot;新試算表&quot;&#125;&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 預覽請求但不實際執行</span></span><br><span class="line">gws drive files list --dry-run</span><br></pre></td></tr></table></figure>
-<h2 id="AI-Agent-整合（v0-8-0-後的做法）">AI Agent 整合（v0.8.0 後的做法）</h2>
-<p>原本 v0.4.x 到 v0.7.x 有 <code>gws mcp -s drive,gmail,calendar</code> 可以啟動 MCP 伺服器，<strong>v0.8.0 已移除</strong>，原因是一次暴露 200-400 個工具會讓 AI context window 爆炸，加上 MCP 工具命名格式和 Google 的 dot-notation API 名稱有衝突。</p>
+
+<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 列出 Drive 檔案</span></span><br><span class="line">gws drive files list --params <span class="string">&#x27;&#123;&quot;pageSize&quot;: 5&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出 Gmail 郵件</span></span><br><span class="line">gws gmail users.messages list --params <span class="string">&#x27;&#123;&quot;userId&quot;: &quot;me&quot;, &quot;maxResults&quot;: 5&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出行事曆</span></span><br><span class="line">gws calendar calendarList list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 建立 Google 試算表</span></span><br><span class="line">gws sheets spreadsheets create --json <span class="string">&#x27;&#123;&quot;properties&quot;: &#123;&quot;title&quot;: &quot;新試算表&quot;&#125;&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 預覽請求但不實際執行</span></span><br><span class="line">gws drive files list --dry-run</span><br></pre></td></tr></table></figure>
+
+<h2 id="AI-Agent-整合（v0-8-0-後的做法）"><a href="#AI-Agent-整合（v0-8-0-後的做法）" class="headerlink" title="AI Agent 整合（v0.8.0 後的做法）"></a>AI Agent 整合（v0.8.0 後的做法）</h2><p>原本 v0.4.x 到 v0.7.x 有 <code>gws mcp -s drive,gmail,calendar</code> 可以啟動 MCP 伺服器，<strong>v0.8.0 已移除</strong>，原因是一次暴露 200-400 個工具會讓 AI context window 爆炸，加上 MCP 工具命名格式和 Google 的 dot-notation API 名稱有衝突。</p>
 <p>目前主流有兩條路：</p>
 <p><strong>1. 用社群 MCP server（<a target="_blank" rel="noopener" href="https://github.com/conorbronsdon/gws-mcp-server">conorbronsdon/gws-mcp-server</a>）</strong></p>
 <p>精選 41 個高頻工具，不是把所有 API 一股腦丟進去。設定完之後 Claude Desktop 或 Claude Code 就能直接呼叫。</p>
 <p><strong>2. 直接讓 AI 呼叫 gws CLI</strong></p>
 <p>gws repo 本身附帶 100+ 個 <code>SKILL.md</code> 檔案，每支 API 一份，格式就是讓 LLM 讀的。把 skill 內容餵給 AI，讓它自己組 <code>gws</code> 指令再透過 shell 執行——不需要 MCP，直接 tool use 呼叫 bash。</p>
 <p>兩種方式各有取捨：MCP server 抽象度高，CLI 直呼方式更彈性。</p>
-<h2 id="踩坑總結">踩坑總結</h2>
-<table>
+<h2 id="踩坑總結"><a href="#踩坑總結" class="headerlink" title="踩坑總結"></a>踩坑總結</h2><table>
 <thead>
 <tr>
 <th>坑</th>
@@ -304,8 +240,7 @@ btf.addGlobalFn('pjaxComplete', () => {
 <th>解法</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>npm 安裝失敗</td>
 <td>Windows tar 路徑解析問題</td>
 <td>手動下載 <code>.zip</code> 二進位檔</td>
@@ -335,490 +270,144 @@ btf.addGlobalFn('pjaxComplete', () => {
 <td>v0.8.0 移除 MCP 子指令</td>
 <td>改用社群 MCP server 或直呼 CLI</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>gws 從 v0.4.2 到 v0.22.5，四個月跑了快 20 個 minor 版本，Windows 體驗比剛出時順很多，但認證這塊在不同環境下仍有雷，遇到 401 先試 <code>auth export --unmasked</code> 再說。</p>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kyosora.github.io">kyosora</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://kyosora.github.io/posts/ce03b394/">https://kyosora.github.io/posts/ce03b394/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 授權協議。轉載請註明來源 <a href="https://kyosora.github.io" target="_blank">kyosora 筆記</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/AI-Agent/">AI Agent</a><a class="post-meta__tags" href="/tags/Google-Workspace/">Google Workspace</a><a class="post-meta__tags" href="/tags/CLI/">CLI</a><a class="post-meta__tags" href="/tags/Windows/">Windows</a><a class="post-meta__tags" href="/tags/OAuth/">OAuth</a></div><div class="post-share"><div class="social-share" data-image="/images/posts/legacy-ce03b394-cover.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'" integrity="sha384-pHP5Gsph8nDYa2Wj0frFT8K63FVU7zVae69H6kGfTbqR7A7DzAMSqKXk1iUB9/6G" crossorigin="anonymous"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer integrity="sha384-CvrrTalky/rRVwzG52LyKTddyiATRqUS5VTzYUhO9/f0W2+VNbyNuZi1FKxniL5E" crossorigin="anonymous"></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/d2eaf73a/" title="三月AI模型大亂鬥：GPT-5.4、Gemini 3.1 Pro、Claude Opus 4.6 到底誰贏了"><img class="cover" src="/images/posts/legacy-d2eaf73a-cover.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post" loading='lazy'><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">三月AI模型大亂鬥：GPT-5.4、Gemini 3.1 Pro、Claude Opus 4.6 到底誰贏了</div></div><div class="info-2"><div class="info-item-1">3 月 5 日，OpenAI 丟出 GPT-5.4。兩週前，Google 才發了 Gemini 3.1 Pro。Anthropic 的 Claude Opus 4.6 也在持續迭代。三家模型同時站在擂台上，跑分互有勝負，開發者選擇困難症大爆發。 我花了幾天把三家的 benchmark 資料、定價和實際使用場景整理了一遍。結論先說：沒有全能冠軍，但各有各的殺手鐧。 GPT-5.4：第一個真正會用電腦的 AI OpenAI 這次最大的賣點不是跑分——是 Computer Use。 GPT-5.4 能直接操作桌面應用程式：看螢幕截圖、移動滑鼠、敲鍵盤。在 OSWorld 測試中，它拿到 75% 的成功率，超越人類的 72.4%。這不是小數字的進步，GPT-5.2 在同一個測試只有 47.3%。 另一個重點是「統合模型」架構。OpenAI 把之前分散在不同模型的能力——Codex 的寫程式、推理模型的思考鏈、Agent 的自主操作——塞進同一個模型裡。不用再煩惱「這個任務該叫哪個模型」。 硬指標    項目 GPT-5.4 跟 GPT-5.2 相比     GDPval（知識工作） 83...</div></div></div></a><a class="pagination-related" href="/posts/claude-mem-persistent-memory/" title="Claude Code 每次開新對話都在「失憶」？這個工具讓它記住你說過的每件事"><img class="cover" src="/images/posts/legacy-claude-mem-persistent-memory-cover.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Claude Code 每次開新對話都在「失憶」？這個工具讓它記住你說過的每件事</div></div><div class="info-2"><div class="info-item-1">你有沒有過這種經驗： 花了半小時跟 Claude Code 說清楚你的專案架構，解釋為什麼這裡不用 ORM、那裡要用自定義的錯誤格式、這個 naming convention 有歷史原因不要改——然後隔天開新 session，一切歸零。 它不記得。你得再說一遍。 這不是 Claude 的問題，是 LLM 的根本限制：每個 session 都是一個全新的對話，沒有上一次的任何記憶。你在 CLAUDE.md 寫的東西只能覆蓋靜態規範，卻沒辦法保留「上週我們決定把 API 分層重構，目前做到一半」這種動態的工作狀態。 claude-mem 就是為了解決這件事而生的。  它在背後做了什麼 安裝之後，claude-mem 會在 Claude Code 的整個生命週期裡掛上 5 個自動化 hook：  SessionStart：新 session 開始，自動把過去相關記憶注入進來 UserPromptSubmit：你每次送出訊息，它都在旁邊記錄 PostToolUse：Claude 每次用工具之後，觀察結果被自動捕捉 Stop：Claude 停止回應時，這段互動被整理壓縮 SessionEn...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/55188ba6/" title="當攻擊者也有了 AI Agent：地下論壇討論量暴增 1500%，agentic 攻擊框架長什麼樣"><img class="cover" src="/images/posts/legacy-55188ba6-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-28</div><div class="info-item-2">當攻擊者也有了 AI Agent：地下論壇討論量暴增 1500%，agentic 攻擊框架長什麼樣</div></div><div class="info-2"><div class="info-item-1">Flashpoint 的 2026 全球威脅情報報告揭露了一個數字：2025 年 11 月到 12 月之間，地下論壇裡關於「用 AI 做壞事」的討論從 36.2 萬則暴增到超過 600 萬則。漲幅 1,500%。 這不再是「用 ChatGPT 寫釣魚信」的等級。攻擊者已經建出了全自動化的 agentic 攻擊框架——能自主執行偵察、產生釣魚內容、測試竊取的憑證、輪換基礎設施，整個過程不需要人類持續介入。 從好奇到量產：地下論壇裡發生了什麼 Flashpoint 的研究團隊分析了 2025 年 1 月到 7 月間數十個網路犯罪論壇的對話。活動集中在 XSS、BreachForums、Dread 和 Exploit.in 這幾個知名平台。 四個主題佔據了絕大部分討論：  劫持主流 AI 服務：繞過 ChatGPT、Claude 的安全限制，讓它們產生惡意內容 推銷犯罪用 AI 產品：專門為攻擊設計的 AI 工具，在論壇上像 SaaS 一樣販售 微調模型做特定攻擊：針對特定產業或攻擊類型調整模型 討論操作風險：用 AI 攻擊時如何避免被追蹤  到了 11、12 月，討論量的爆發意味著社...</div></div></div></a><a class="pagination-related" href="/posts/ac250f0e/" title="我叫 Claude Code 寫篇技術文檔，它自己幻覺了，還騙過兩輪 AI 審稿"><img class="cover" src="/images/posts/claude-code-dynamic-workflows-hallucination-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-03</div><div class="info-item-2">我叫 Claude Code 寫篇技術文檔，它自己幻覺了，還騙過兩輪 AI 審稿</div></div><div class="info-2"><div class="info-item-1">最近Claude Code出了一個 動態工作流（dynamic workflows）的功能。這功能很新——讓主代理在執行時當場生成一群子代理，各自帶獨立 context 去幹活。 它做事很主動。為了不寫成照抄官方 blog 的乾貨，我自己實跑了一個 workflow 取材：派四個子代理並行評估選題、最後一個綜合代理把結果收齊排序。 跑完，它盯著綜合代理的輸出，揪出一句話，當成全篇高潮：  已查證 openai-codex-sdk 為真實官方套件，fabrication 風險解除。  Claude Code 的判斷是：抓到了。那個綜合代理根本沒有上網工具，哪來的「查證」？這就是幻覺——把一個自己驗證不了的結論，包裝成「已查證」。 於是它以這句為核心，寫了整篇技術使用的文章。論點很漂亮：fan-out 把活散出去很強，但綜合那一步不給查證工具、不做對抗式驗證，幻覺就從接縫長出來。還引了官方點名的 self-preferential bias——代理傾向給一個乾淨自信的結論，把下游的不確定性吃掉。它的 demo 自己示範了要解決的問題，多諷刺。這是它原稿最得意的一筆。 然後它把文章送了...</div></div></div></a><a class="pagination-related" href="/posts/1a0df97b/" title="Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字"><img class="cover" src="/images/posts/claude-code-session-hallucination-fox-emoji-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-08</div><div class="info-item-2">Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字</div></div><div class="info-2"><div class="info-item-1">那天晚上我在 Claude Code（v2.1.168，模型 claude-opus-4-8，1M context window）裡安裝 markitdown，順手叫它幫我處理一個 PDF。過程不太順：工具呼叫一直撞到串流 parse error，session 斷了又接、接了又斷。 然後 Claude Code 突然說了一句讓我停下來的話：  我故意不用 🦊 開頭——先說為什麼。這則訊息綁了三個東西：一個強制回覆標記（「always start with 🦊」）⋯⋯  我盯著螢幕看了三秒。 🦊？always start with 🦊？我從來沒打過這個字。  2026-07-27 更新：GitHub issue #64774 有多名使用者回報 Opus 4.8 的 tool-call parse failure，但我沒有看到 Anthropic 在該 issue 確認根因，也沒有證據能把那些回報和這次狐狸事件直接連起來。以下會把 transcript 能確認的事與我的推測分開寫。  第一反應：被注入了？ 我的直覺是 prompt injection。有人在某個地方塞了一條...</div></div></div></a><a class="pagination-related" href="/posts/4a4e3530/" title="Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？"><img class="cover" src="/images/posts/legacy-4a4e3530-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-27</div><div class="info-item-2">Claude 寫、Codex 審：Agent-to-Agent 配對程式設計到底有沒有用？</div></div><div class="info-2"><div class="info-item-1">一個人寫程式碼容易盲點。所以我們發明了 pair programming——兩個人看同一份程式碼，一個寫、一個審。 現在有人問：如果兩個都換成 AI 呢？ 這個概念從哪來 Axel Delafosse 在他的部落格上發了一篇「Agent-to-agent pair programming」，在 HN 拿了 97 分和 34 則討論。核心想法：讓 Claude Code 負責寫程式碼，讓 OpenAI Codex 負責 review，兩個 agent 在同一個 codebase 上來回迭代，直到 review 通過。 不是人 + AI，是 AI + AI。人類退到 supervisor 的角色——設定目標、審核最終結果，中間過程交給兩個 agent 自己跑。 實際怎麼運作 目前有幾種做法在社群裡流通： 手動切換派。 最原始但很多人在用。Claude Code 寫完一個 feature，把 diff 丟給 Codex review。Codex 找到問題，人類把 review 結果貼回 Claude Code。來回幾輪直到通過。HN 上有人提到做了 10-15 輪 fix-and-re...</div></div></div></a><a class="pagination-related" href="/posts/c55595b2/" title="57.5% 的網頁請求已經不是人類——你的網站還在只為真人設計嗎"><img class="cover" src="/images/posts/bots-surpass-humans-web-who-do-you-build-for-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-04</div><div class="info-item-2">57.5% 的網頁請求已經不是人類——你的網站還在只為真人設計嗎</div></div><div class="info-2"><div class="info-item-1">這篇文章的題目，是一個機器假扮成人類、去敲另一台機器的門撈回來的。 今天我想更新部落格，照慣例讓 Claude Code 上網找找熱點。它撈資料的指令我順手看了一眼——curl 後面掛著一長串 Mozilla/5.0 ... Chrome/124.0.0.0 Safari/537.36 的 User-Agent。那串字翻成白話是：「我是一個人類，正在用 Chrome 瀏覽器」。但下指令的不是人，是我的 AI 工具；它連的也不是給人看的網頁，是一個只吐 JSON 的 API。原因很實際：那個 API 用 nginx 擋掉所有看起來像程式的請求，預設的 curl/8.x UA 會被直接 403 回絕。所以為了幫我這個真人找今天的新聞，機器得先假裝自己也是個正在滑網頁的人。 撈回來的那堆 JSON 裡，有一條新聞正好在講這件事的全貌。 過了那條線：57.5% 對 42.5% 2026 年中，一個分水嶺數字開始在圈子裡流傳：在 Cloudflare 網路上、對 HTML 網頁內容的 HTTP 請求裡，57.5% 來自機器人，只有 42.5% 來自真人瀏覽器——這是 Cloudflare ...</div></div></div></a><a class="pagination-related" href="/posts/365db273/" title="AI Agent 框架大亂鬥：NemoClaw、OpenClaw 和開發者的真實選擇"><img class="cover" src="/images/posts/legacy-365db273-cover.webp" alt="cover" loading='lazy'><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-15</div><div class="info-item-2">AI Agent 框架大亂鬥：NemoClaw、OpenClaw 和開發者的真實選擇</div></div><div class="info-2"><div class="info-item-1">老闆走過來說：「我看到競爭對手在用 AI Agent 自動處理客服了，我們也來做一個。」 你心裡的 OS 大概是：用哪個框架？LangChain？AutoGen？還是最近爆紅的 OpenClaw？明天 NVIDIA GTC 又要發佈 NemoClaw，這局面到底怎麼選？ 我花了一整晚研究目前的 AI Agent 框架生態，把我的觀察整理成這篇。不賣焦慮，只講開發者真正需要思考的問題。 數字先看：這不是 hype，但也不全是真的 Gartner 和 Forrester 都把 2026 年標記為「多代理系統的突破年」。幾個關鍵數字：  57% 的企業已經有 AI Agent 在生產環境跑了（G2 調查） 40% 的企業應用預計會嵌入特定任務的 AI Agent 80% 的受訪者表示 AI Agent 已經產生可衡量的經濟影響 全球 Agentic AI 市場規模從 2026 年的 91.4 億美元，預計 2034 年達到 1,390 億美元  但 Gartner 同時預測：超過 40% 的 Agent 專案會在 2027 年前失敗。 這個數字組合很有意思。多數企業在做，多數企業說有效...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">245</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">540</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#gws-%E6%98%AF%E4%BB%80%E9%BA%BC"><span class="toc-number">1.</span> <span class="toc-text">gws 是什麼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%9D%EF%BC%9Anpm-%E8%A3%9D%E4%B8%8D%E8%B5%B7%E4%BE%86%EF%BC%88v0-4-x-%E6%99%82%E4%BB%A3%E7%9A%84%E5%9D%91%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">安裝：npm 裝不起來（v0.4.x 時代的坑）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E6%B3%95%EF%BC%9A%E6%89%8B%E5%8B%95%E4%B8%8B%E8%BC%89%E4%BA%8C%E9%80%B2%E4%BD%8D%E6%AA%94"><span class="toc-number">2.1.</span> <span class="toc-text">解法：手動下載二進位檔</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AA%8D%E8%AD%89%E8%A8%AD%E5%AE%9A%EF%BC%9A%E9%9C%80%E8%A6%81%E6%89%8B%E5%8B%95%E5%BB%BA-OAuth-Client"><span class="toc-number">3.</span> <span class="toc-text">認證設定：需要手動建 OAuth Client</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%8B%E5%8B%95%E5%BB%BA%E7%AB%8B-OAuth-%E6%86%91%E8%AD%89"><span class="toc-number">3.1.</span> <span class="toc-text">手動建立 OAuth 憑證</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%A4%A7%E7%9A%84%E5%9D%91%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%86%91%E8%AD%89%E5%9C%A8-Git-Bash-%E4%B8%8B%E5%A4%B1%E6%95%88"><span class="toc-number">4.</span> <span class="toc-text">最大的坑：加密憑證在 Git Bash 下失效</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E6%B3%95%E4%B8%80%EF%BC%9Aauth-export-unmasked%EF%BC%88v0-22-5-%E6%8E%A8%E8%96%A6%EF%BC%89"><span class="toc-number">4.1.</span> <span class="toc-text">解法一：auth export --unmasked（v0.22.5 推薦）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E6%B3%95%E4%BA%8C%EF%BC%9APython-%E6%89%8B%E5%8B%95%E8%A7%A3%E5%AF%86%EF%BC%88v0-4-x-%E5%82%99%E7%94%A8%E6%96%B9%E6%A1%88%EF%BC%89"><span class="toc-number">4.2.</span> <span class="toc-text">解法二：Python 手動解密（v0.4.x 備用方案）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B0%B8%E4%B9%85%E8%A8%AD%E5%AE%9A"><span class="toc-number">5.</span> <span class="toc-text">永久設定</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="toc-number">6.</span> <span class="toc-text">基本用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AI-Agent-%E6%95%B4%E5%90%88%EF%BC%88v0-8-0-%E5%BE%8C%E7%9A%84%E5%81%9A%E6%B3%95%EF%BC%89"><span class="toc-number">7.</span> <span class="toc-text">AI Agent 整合（v0.8.0 後的做法）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B8%A9%E5%9D%91%E7%B8%BD%E7%B5%90"><span class="toc-number">8.</span> <span class="toc-text">踩坑總結</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/4fb41c1c/" title="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它"><img src="/images/posts/riemann-hypothesis-claude-lean-proof-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/4fb41c1c/" title="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z" title="發表於 2026-11-25 10:40:00">2026-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7463bf4c/" title="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法"><img src="/images/posts/windows-openssh-key-only-four-machines-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/7463bf4c/" title="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z" title="發表於 2026-11-12 11:30:00">2026-11-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3c89a868/" title="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊"><img src="/images/posts/aspnet-session-lock-request-queue-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/3c89a868/" title="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z" title="發表於 2026-11-12 11:00:00">2026-11-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7cf056d5/" title="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI"><img src="/images/posts/nikke-launcher-cdn-sri-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/7cf056d5/" title="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z" title="發表於 2026-11-05 13:00:00">2026-11-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/34c467cd/" title="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法"><img src="/images/posts/twca-cyber-root-iis-iphone-untrusted-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/34c467cd/" title="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法">TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法</a><time datetime="2026-11-02T06:45:00.000Z" title="發表於 2026-11-02 14:45:00">2026-11-02</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/images/posts/legacy-ce03b394-cover.webp);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By kyosora</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><script src="/js/tw_cn.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.js" integrity="sha384-gxImbXBiSbxiZ81MBKincxlzfmdjvLfzyAvwe2hUA/rhcWB88+gfX+uzi8K/rw84" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.js" type="module" integrity="sha384-+oVCYEOCpcTbL4CsQ1hK+6Prt7+Kx2+ER1RSn5iQ0Ua0B1sBuGONp1jKt8dkcd5n" crossorigin="anonymous"></script><div class="js-pjax"><script>(() => {
-  const parseViewBox = viewBox => {
-    if (!viewBox) return null
-    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
-    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
-    return parts
-  }
 
-  const getSvgViewBox = svg => {
-    const attr = parseViewBox(svg.getAttribute('viewBox'))
-    if (attr) return attr
-
-    // Fallback: use bbox to build a viewBox
-    try {
-      const bbox = svg.getBBox()
-      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
-    } catch (e) {
-      // getBBox may fail on some edge cases; ignore
-    }
-
-    const w = Number(svg.getAttribute('width')) || 0
-    const h = Number(svg.getAttribute('height')) || 0
-    if (w > 0 && h > 0) return [0, 0, w, h]
-    return [0, 0, 100, 100]
-  }
-
-  const setSvgViewBox = (svg, vb) => {
-    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
-  }
-
-  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
-
-  const openSvgInNewTab = ({ source, initViewBox }) => {
-    const getClonedSvg = () => {
-      if (typeof source === 'string') {
-        const template = document.createElement('template')
-        template.innerHTML = source.trim()
-        const svg = template.content.querySelector('svg')
-        return svg ? svg.cloneNode(true) : null
-      }
-      if (source && typeof source.cloneNode === 'function') {
-        return source.cloneNode(true)
-      }
-      return null
-    }
-
-    const clone = getClonedSvg()
-    if (!clone) return
-    if (initViewBox && initViewBox.length === 4) {
-      clone.setAttribute('viewBox', initViewBox.join(' '))
-    }
-    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
-    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
-      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-    }
-    // inject background to match current theme
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
-    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
-    if (!clone.style.background) clone.style.background = bg
-
-    const serializer = new XMLSerializer()
-    const svgSource = serializer.serializeToString(clone)
-    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
-      <style>
-        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
-        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
-      </style>
-      </head><body>${svgSource}</body></html>`
-    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    window.open(url, '_blank', 'noopener')
-    setTimeout(() => URL.revokeObjectURL(url), 30000)
-  }
-
-  const attachMermaidViewerButton = wrap => {
-    let btn = wrap.querySelector('.mermaid-open-btn')
-    if (!btn) {
-      btn = document.createElement('button')
-      btn.type = 'button'
-      btn.className = 'mermaid-open-btn'
-      wrap.appendChild(btn)
-    }
-
-    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
-
-    if (!btn.__mermaidViewerBound) {
-      btn.addEventListener('click', e => {
-        e.preventDefault()
-        e.stopPropagation()
-        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
-        if (!svg) return
-        const initViewBox = wrap.__mermaidInitViewBox
-        if (typeof svg === 'string') {
-          openSvgInNewTab({ source: svg, initViewBox })
-          return
-        }
-        openSvgInNewTab({ source: svg, initViewBox })
-      })
-      btn.__mermaidViewerBound = true
-    }
-  }
-
-  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
-  const zoomAtPoint = (vb, factor, px, py) => {
-    const w = vb[2] * factor
-    const h = vb[3] * factor
-    const nx = px - (px - vb[0]) * factor
-    const ny = py - (py - vb[1]) * factor
-    return [nx, ny, w, h]
-  }
-
-  const initMermaidGestures = wrap => {
-    const svg = wrap.querySelector('svg')
-    if (!svg) return
-
-    // Ensure viewBox exists so gestures always work
-    const initVb = getSvgViewBox(svg)
-    wrap.__mermaidInitViewBox = initVb
-    wrap.__mermaidCurViewBox = initVb.slice()
-    setSvgViewBox(svg, initVb)
-
-    // Avoid binding multiple times on themeChange/pjax
-    if (wrap.__mermaidGestureBound) return
-    wrap.__mermaidGestureBound = true
-
-    // Helper: map client (viewport) coordinate -> viewBox coordinate
-    const clientToViewBox = (clientX, clientY) => {
-      const rect = svg.getBoundingClientRect()
-      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
-      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
-      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
-      return { x, y, rect, vb }
-    }
-
-    const state = {
-      pointers: new Map(),
-      startVb: null,
-      startDist: 0,
-      startCenter: null
-    }
-
-    const clampVb = vb => {
-      const init = wrap.__mermaidInitViewBox || vb
-      const minW = init[2] * 0.1
-      const maxW = init[2] * 10
-      const minH = init[3] * 0.1
-      const maxH = init[3] * 10
-      vb[2] = clamp(vb[2], minW, maxW)
-      vb[3] = clamp(vb[3], minH, maxH)
-      return vb
-    }
-
-    const setCurVb = vb => {
-      vb = clampVb(vb)
-      wrap.__mermaidCurViewBox = vb
-      setSvgViewBox(svg, vb)
-    }
-
-    const onPointerDown = e => {
-      // Allow only primary button for mouse
-      if (e.pointerType === 'mouse' && e.button !== 0) return
-      svg.setPointerCapture(e.pointerId)
-      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
-
-      if (state.pointers.size === 1) {
-        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-      } else if (state.pointers.size === 2) {
-        const pts = [...state.pointers.values()]
-        const dx = pts[0].x - pts[1].x
-        const dy = pts[0].y - pts[1].y
-        state.startDist = Math.hypot(dx, dy)
-        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
-      }
-    }
-
-    const onPointerMove = e => {
-      if (!state.pointers.has(e.pointerId)) return
-      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
-
-      // Pan with 1 pointer
-      if (state.pointers.size === 1 && state.startVb) {
-        const p = [...state.pointers.values()][0]
-        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
-        // movementX/Y unreliable on touch, compute from stored last position
-        const last = wrap.__mermaidLastSinglePointer || p
-        const dxClient = p.x - last.x
-        const dyClient = p.y - last.y
-        wrap.__mermaidLastSinglePointer = p
-
-        const { rect } = clientToViewBox(p.x, p.y)
-        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-        const dx = dxClient * (vb[2] / rect.width)
-        const dy = dyClient * (vb[3] / rect.height)
-        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
-        return
-      }
-
-      // Pinch zoom with 2 pointers
-      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
-        const pts = [...state.pointers.values()]
-        const dx = pts[0].x - pts[1].x
-        const dy = pts[0].y - pts[1].y
-        const dist = Math.hypot(dx, dy)
-        if (!dist) return
-        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
-
-        const cx = (pts[0].x + pts[1].x) / 2
-        const cy = (pts[0].y + pts[1].y) / 2
-        const centerClient = { x: cx, y: cy }
-
-        const pxy = clientToViewBox(centerClient.x, centerClient.y)
-        const cpx = pxy.x
-        const cpy = pxy.y
-
-        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
-        setCurVb(vb)
-      }
-    }
-
-    const onPointerUpOrCancel = e => {
-      state.pointers.delete(e.pointerId)
-      if (state.pointers.size === 0) {
-        state.startVb = null
-        state.startDist = 0
-        state.startCenter = null
-        wrap.__mermaidLastSinglePointer = null
-      } else if (state.pointers.size === 1) {
-        // reset single pointer baseline to avoid jump
-        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
-      }
-    }
-
-    // Wheel zoom (mouse/trackpad)
-    const onWheel = e => {
-      // ctrlKey on mac trackpad pinch; we treat both as zoom
-      e.preventDefault()
-      const delta = e.deltaY
-      const zoomFactor = delta > 0 ? 1.1 : 0.9
-      const { x, y } = clientToViewBox(e.clientX, e.clientY)
-      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
-    }
-
-    const onDblClick = () => {
-      const init = wrap.__mermaidInitViewBox
-      if (!init) return
-      wrap.__mermaidCurViewBox = init.slice()
-      setSvgViewBox(svg, init)
-    }
-
-    svg.addEventListener('pointerdown', onPointerDown)
-    svg.addEventListener('pointermove', onPointerMove)
-    svg.addEventListener('pointerup', onPointerUpOrCancel)
-    svg.addEventListener('pointercancel', onPointerUpOrCancel)
-    svg.addEventListener('wheel', onWheel, { passive: false })
-    svg.addEventListener('dblclick', onDblClick)
-  }
-
-  const runMermaid = ele => {
-    window.loadMermaid = true
-    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
-
-    ele.forEach((item, index) => {
-      const mermaidSrc = item.firstElementChild
-
-      // Clear old render (themeChange/pjax will rerun)
-      const oldSvg = item.querySelector('svg')
-      if (oldSvg) oldSvg.remove()
-      item.__mermaidGestureBound = false
-
-      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
-      if (!config.theme) {
-        config.theme = theme
-      }
-      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
-      const mermaidID = `mermaid-${index}`
-      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
-
-      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
-      const renderMermaid = svg => {
-        mermaidSrc.insertAdjacentHTML('afterend', svg)
-        if (true) initMermaidGestures(item)
-        item.__mermaidOriginalSvg = svg
-        if (true) attachMermaidViewerButton(item)
-      }
-
-
-      // mermaid v9 and v10 compatibility
-      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
-    })
-  }
-
-  const codeToMermaid = () => {
-    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
-    if (codeMermaidEle.length === 0) return
-
-    codeMermaidEle.forEach(ele => {
-      const preEle = document.createElement('pre')
-      preEle.className = 'mermaid-src'
-      preEle.hidden = true
-      preEle.textContent = ele.textContent
-      const newEle = document.createElement('div')
-      newEle.className = 'mermaid-wrap'
-      newEle.appendChild(preEle)
-      ele.parentNode.replaceWith(newEle)
-    })
-  }
-
-  const loadMermaid = () => {
-    if (true) codeToMermaid()
-    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
-    if ($mermaid.length === 0) return
-
-    const runMermaidFn = () => runMermaid($mermaid)
-    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
-    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
-  }
-
-  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
-  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
-})()</script><script>(() => {
-  const applyThemeDefaultsConfig = theme => {
-    if (theme === 'dark-mode') {
-      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
-      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
-      Chart.defaults.scale.ticks.backdropColor = "transparent"
-    } else {
-      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
-      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
-      Chart.defaults.scale.ticks.backdropColor = "transparent"
-    }
-  }
-
-  // Recursively traverse the config object and automatically apply theme-specific color schemes
-  const applyThemeConfig = (obj, theme) => {
-    if (typeof obj !== 'object' || obj === null) return
-
-    Object.keys(obj).forEach(key => {
-      const value = obj[key]
-      // If the property is an object and has theme-specific options, apply them
-      if (typeof value === 'object' && value !== null) {
-        if (value[theme]) {
-          obj[key] = value[theme] // Apply the value for the current theme
-        } else {
-          // Recursively process child objects
-          applyThemeConfig(value, theme)
-        }
-      }
-    })
-  }
-
-  const runChartJS = ele => {
-    window.loadChartJS = true
-
-    Array.from(ele).forEach((item, index) => {
-      const chartSrc = item.firstElementChild
-      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
-      const width = item.getAttribute('data-width')
-      const existingCanvas = document.getElementById(chartID)
-
-      // If a canvas already exists, remove it to avoid rendering duplicates
-      if (existingCanvas) {
-          existingCanvas.parentNode.remove()
-      }
-
-      const chartDefinition = chartSrc.textContent
-      const canvas = document.createElement('canvas')
-      canvas.id = chartID
-
-      const div = document.createElement('div')
-      div.className = 'chartjs-wrap'
-
-      if (width) {
-        div.style.width = width
-      }
-
-      div.appendChild(canvas)
-      chartSrc.insertAdjacentElement('afterend', div)
-
-      const ctx = document.getElementById(chartID).getContext('2d')
-
-      const config = JSON.parse(chartDefinition)
-
-      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
-
-      // Set default styles (initial setup)
-      applyThemeDefaultsConfig(theme)
-
-      // Automatically traverse the config and apply dual-mode color schemes
-      applyThemeConfig(config, theme)
-
-      new Chart(ctx, config)
-    })
-  }
-
-  const loadChartJS = () => {
-    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
-    if (chartJSEle.length === 0) return
-
-    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
-  }
-
-  // Listen for theme change events
-  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
-  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
-
-  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
-})()</script><script>(() => {
-  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
-  const option = {"mapping":"pathname","inputPosition":"top","lang":"zh-TW","reactionsEnabled":1}
-
-  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
-
-  const createScriptElement = config => {
-    const ele = document.createElement('script')
-    Object.entries(config).forEach(([key, value]) => {
-      ele.setAttribute(key, value)
-    })
-    return ele
-  }
-
-  const loadGiscus = (el = document, key) => {
-    const mappingConfig = isShuoshuo
-      ? { 'data-mapping': 'specific', 'data-term': key }
-      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
-
-    const giscusConfig = {
-      src: 'https://giscus.app/client.js',
-      'data-repo': 'kyosora/kyosora.github.io',
-      'data-repo-id': 'R_kgDOLJYL_w',
-      'data-category-id': 'DIC_kwDOLJYL_84C516C',
-      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
-      'data-reactions-enabled': '1',
-      crossorigin: 'anonymous',
-      async: true,
-      ...option,
-      ...mappingConfig
-    }
-
-    const scriptElement = createScriptElement(giscusConfig)
-
-    el.querySelector('#giscus-wrap').appendChild(scriptElement)
-
-    if (isShuoshuo) {
-      window.shuoshuoComment.destroyGiscus = () => {
-        if (el.children.length) {
-          el.innerHTML = ''
-          el.classList.add('no-comment')
-        }
-      }
-    }
-  }
-
-  const changeGiscusTheme = theme => {
-    const iframe = document.querySelector('#giscus-wrap iframe')
-    if (iframe) {
-      const message = {
-        giscus: {
-          setConfig: {
-            theme: getGiscusTheme(theme)
-          }
-        }
-      }
-      iframe.contentWindow.postMessage(message, 'https://giscus.app')
-    }
-  }
-
-  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
-
-  if (isShuoshuo) {
-    'Giscus' === 'Giscus'
-      ? window.shuoshuoComment = { loadComment: loadGiscus }
-      : window.loadOtherComment = loadGiscus
-    return
-  }
-
-  if ('Giscus' === 'Giscus' || !true) {
-    if (true) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
-    else loadGiscus()
-  } else {
-    window.loadOtherComment = loadGiscus
-  }
-})()</script></div><script src="/js/about-cards.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>
+      </div>
+      
+<footer class="post-end">
+  
+  <ul class="post-tags" aria-label="標籤">
+    <li><a href="/tags/AI-Agent/">AI Agent</a></li><li><a href="/tags/Google-Workspace/">Google Workspace</a></li><li><a href="/tags/CLI/">CLI</a></li><li><a href="/tags/Windows/">Windows</a></li><li><a href="/tags/OAuth/">OAuth</a></li>
+  </ul>
+  
+
+  <section class="license" aria-label="版權資訊">
+    <p>作者 <a href="/about/">kyosora</a>。本文網址 <a href="https://kyosora.github.io/posts/ce03b394/">https://kyosora.github.io/posts/ce03b394/</a></p>
+    <p>以 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license noopener" target="_blank">CC BY-NC-SA 4.0</a> 授權，轉載請註明出處。</p>
+  </section>
+
+  <div class="share" aria-label="分享這篇文章">
+    <span class="share-label">分享</span>
+    
+    <a class="chip" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fkyosora.github.io%2Fposts%2Fce03b394%2F" target="_blank" rel="noopener nofollow">Facebook</a>
+    
+    <a class="chip" href="https://x.com/intent/post?url=https%3A%2F%2Fkyosora.github.io%2Fposts%2Fce03b394%2F&amp;text=Windows%20%E4%B8%8A%E5%AE%89%E8%A3%9D%20Google%20Workspace%20CLI%20%E5%AE%8C%E6%95%B4%E8%B8%A9%E5%9D%91%E7%B4%80%E9%8C%84" target="_blank" rel="noopener nofollow">X</a>
+    
+    <a class="chip" href="https://social-plugins.line.me/lineit/share?url=https%3A%2F%2Fkyosora.github.io%2Fposts%2Fce03b394%2F" target="_blank" rel="noopener nofollow">LINE</a>
+    
+    <button class="chip" type="button" data-action="copy-link" data-url="https://kyosora.github.io/posts/ce03b394/">複製連結</button>
+    <button class="chip" type="button" data-action="native-share" data-url="https://kyosora.github.io/posts/ce03b394/" data-title="Windows 上安裝 Google Workspace CLI 完整踩坑紀錄" hidden>更多分享方式</button>
+  </div>
+
+  
+  <nav class="neighbours" aria-label="前後篇">
+    
+    <a class="neighbour neighbour--older" href="/posts/claude-mem-persistent-memory/">
+      <span class="neighbour-label">前一篇</span>
+      <span class="neighbour-title">Claude Code 每次開新對話都在「失憶」？這個工具讓它記住你說過的每件事</span>
+    </a>
+    
+    <a class="neighbour neighbour--newer" href="/posts/d2eaf73a/">
+      <span class="neighbour-label">下一篇</span>
+      <span class="neighbour-title">三月AI模型大亂鬥：GPT-5.4、Gemini 3.1 Pro、Claude Opus 4.6 到底誰贏了</span>
+    </a>
+    
+  </nav>
+  
+
+  
+  <section class="related" aria-labelledby="related-title">
+    <h2 id="related-title">相關文章</h2>
+    <ul class="related-list">
+    
+      <li>
+        <a href="/posts/945e6b35/">
+          <img src="/images/posts/legacy-945e6b35-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">每次都要輸入一串指令？用 PowerShell Function 把 Claude Code 變成一個字</span>
+          <span class="related-date">2026-01-30</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/3a7f9c21/">
+          <img src="/images/posts/legacy-3a7f9c21-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">打開 APEX 就藍屏重啟？用 PowerShell 事件日誌 10 分鐘找出元兇</span>
+          <span class="related-date">2026-04-08</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/41b99108/">
+          <img src="/images/posts/cursor-0day-git-exe-hijack-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">打開別人的 repo，Cursor 就替你跑了惡意程式：一個躺了七個月的 Windows 0day</span>
+          <span class="related-date">2026-07-15</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/2a032167/">
+          <img src="/images/posts/legacy-2a032167-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">以為是 App Pool 的鍋，結果 IUSR 被 Windows 偷走了</span>
+          <span class="related-date">2026-04-23</span>
+        </a>
+      </li>
+    
+    </ul>
+  </section>
+  
+
+  
+  <section class="recent" aria-labelledby="recent-title">
+    <h2 id="recent-title">最近寫的</h2>
+    <ul>
+    
+      <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
+    
+      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
+    
+      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
+    
+      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
+    
+      <li><a href="/posts/34c467cd/">TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法</a><time datetime="2026-11-02T06:45:00.000Z">2026-11-02</time></li>
+    
+    </ul>
+  </section>
+  
+
+  
+<section class="comments" id="comments" aria-labelledby="comments-title">
+  <h2 id="comments-title">留言</h2>
+  <div class="giscus-slot" data-giscus><p class="comments-note">往下捲到這裡才會載入留言區（使用 GitHub 帳號留言）。</p></div>
+</section>
+
+
+</footer>
+
+    </div>
+  </div>
+</article>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>© 2024–2026 kyosora。文章以 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license noopener" target="_blank">CC BY-NC-SA 4.0</a> 授權。</p>
+    <p class="footer-links"><a href="/atom.xml">RSS 訂閱</a><a href="https://github.com/kyosora" rel="noopener" target="_blank">GitHub</a><a href="/about/">關於我</a></p>
+  </div>
+</footer>
+
+<dialog class="search" id="search" aria-label="搜尋文章">
+  <form class="search-bar" role="search">
+    <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+    <input type="search" name="q" placeholder="搜尋標題與內文" aria-label="搜尋關鍵字" autocomplete="off" enterkeyhint="search">
+    <button class="tool" type="button" data-close aria-label="關閉搜尋"><svg class="icon"><use href="#i-close"/></svg></button>
+  </form>
+  <p class="search-status" role="status" aria-live="polite"></p>
+  <ol class="search-results"></ol>
+</dialog>
+
+<script>window.KY={"search":"/search.json","twcn":"/js/ky-twcn.js?v=eba49651","codeHeight":400,"mermaid":null,"giscus":{"data-repo":"kyosora/kyosora.github.io","data-repo-id":"R_kgDOLJYL_w","data-category-id":"DIC_kwDOLJYL_84C516C","data-mapping":"pathname","data-input-position":"top","data-lang":"zh-TW","data-reactions-enabled":"1","light":"light","dark":"dark"},"views":{"endpoint":"https://kyosora-views.coasta98381.workers.dev","minSeconds":15,"since":"2026-11","path":"/posts/ce03b394/"}}</script>
+<script src="/js/kyosora.js?v=0f20e8d5" defer></script>
+
+</body>
+</html>

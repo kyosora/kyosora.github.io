@@ -1,671 +1,204 @@
-<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>kyosora 筆記 - 技術探索與學習分享</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="個人技術筆記和學習心得分享">
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>最新文章（第 5 頁） | kyosora 筆記</title>
+<meta name="description" content="台灣軟體工程師的實戰筆記：IIS、SQL Server 與 Windows Server 的弱掃修補和維運踩坑，以及用 Claude Code 等 AI 工具開發的實際紀錄。">
+<link rel="canonical" href="https://kyosora.github.io/page/5/">
+
+<meta name="author" content="kyosora">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f4f6f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1820" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:title" content="kyosora 筆記">
+<meta property="og:description" content="台灣軟體工程師的實戰筆記：IIS、SQL Server 與 Windows Server 的弱掃修補和維運踩坑，以及用 Claude Code 等 AI 工具開發的實際紀錄。">
 <meta property="og:url" content="https://kyosora.github.io/page/5/">
+
 <meta property="og:site_name" content="kyosora 筆記">
-<meta property="og:description" content="個人技術筆記和學習心得分享">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://kyosora.github.io/images/avatar.png">
-<meta property="article:author" content="kyosora">
-<meta property="article:tag" content="網路安全, 系統管理, 程式設計, 技術筆記">
+<meta name="twitter:image" content="https://kyosora.github.io/images/avatar.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://kyosora.github.io/images/avatar.png"><script type="application/ld+json"></script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/page/5/"><link rel="preconnect" href="https://cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css" integrity="sha384-YgSbYtJcfPnMV/aJ0UdQk84ctht/ckX0MrfQwxOhw43RMBw2WSaDSMVh4gQwLdE4" crossorigin="anonymous"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.css" media="print" onload="this.media='all'" integrity="sha384-SwTfv/7YAtLOqjuOIVOyBHrBSW9ismFkXd7MZSJZmL20kcTygh/Rm3PHXJPY2taV" crossorigin="anonymous"><script>
-    (() => {
-      
-    const saveToLocal = {
-      set: (key, value, ttl) => {
-        if (!ttl) return
-        const expiry = Date.now() + ttl * 86400000
-        localStorage.setItem(key, JSON.stringify({ value, expiry }))
-      },
-      get: key => {
-        const itemStr = localStorage.getItem(key)
-        if (!itemStr) return undefined
-        const { value, expiry } = JSON.parse(itemStr)
-        if (Date.now() > expiry) {
-          localStorage.removeItem(key)
-          return undefined
-        }
-        return value
-      }
-    }
+<meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k">
+<meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E">
+<meta name="baidu-site-verification" content="code-pE5rnuxcfD">
+<link rel="icon" href="/images/favicon.png">
+<link rel="alternate" type="application/atom+xml" title="kyosora 筆記" href="/atom.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&amp;display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/css/kyosora.css?v=4bf38b40">
 
-    window.btf = {
-      saveToLocal,
-      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = url
-        script.async = true
-        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
-        script.onload = script.onreadystatechange = () => {
-          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
-        }
-        script.onerror = reject
-        document.head.appendChild(script)
-      }),
-      getCSS: (url, id) => new Promise((resolve, reject) => {
-        const link = document.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = url
-        if (id) link.id = id
-        link.onload = link.onreadystatechange = () => {
-          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
-        }
-        link.onerror = reject
-        document.head.appendChild(link)
-      }),
-      addGlobalFn: (key, fn, name = false, parent = window) => {
-        if (!false && key.startsWith('pjax')) return
-        const globalFn = parent.globalFn || {}
-        globalFn[key] = globalFn[key] || {}
-        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
-        parent.globalFn = globalFn
-      }
-    }
-  
-      
-      const activateDarkMode = () => {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
-        }
-      }
-      const activateLightMode = () => {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
-        }
-      }
+<script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://kyosora.github.io/#site","name":"kyosora 筆記","url":"https://kyosora.github.io/","description":"台灣軟體工程師的實戰筆記：IIS、SQL Server 與 Windows Server 的弱掃修補和維運踩坑，以及用 Claude Code 等 AI 工具開發的實際紀錄。","inLanguage":"zh-TW","publisher":{"@id":"https://kyosora.github.io/#author"}},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]}]}</script>
 
-      btf.activateDarkMode = activateDarkMode
-      btf.activateLightMode = activateLightMode
+</head>
+<body class="kind-home">
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
+<symbol id="i-rss" viewBox="0 0 24 24"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.2"/></symbol>
+</svg>
 
-      const theme = saveToLocal.get('theme')
-    
-          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
-          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
-
-          if (theme === undefined) {
-            if (mediaQueryLight.matches) activateLightMode()
-            else if (mediaQueryDark.matches) activateDarkMode()
-            else {
-              const hour = new Date().getHours()
-              const isNight = hour <= 6 || hour >= 18
-              isNight ? activateDarkMode() : activateLightMode()
-            }
-            mediaQueryDark.addEventListener('change', () => {
-              if (saveToLocal.get('theme') === undefined) {
-                e.matches ? activateDarkMode() : activateLightMode()
-              }
-            })
-          } else {
-            theme === 'light' ? activateLightMode() : activateDarkMode()
-          }
-        
+<a class="skip" href="#main">跳到內文</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/">kyosora 筆記</a>
+    <nav class="nav" aria-label="主要選單">
       
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
-      }
-    
+      <a href="/" aria-current="page">首頁</a>
       
-    const detectApple = () => {
-      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
-        document.documentElement.classList.add('apple')
-      }
-    }
-    detectApple()
-  
-    })()
-  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
-function gtag(){dataLayer.push(arguments)}
-gtag('js', new Date())
-gtag('config', 'G-F9P7RWQQJE')
-btf.addGlobalFn('pjaxComplete', () => {
-  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
-}, 'google_analytics')
-</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
-  root: '/',
-  algolia: undefined,
-  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
-  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
-  copy: {
-    success: '複製成功',
-    error: '複製失敗',
-    noSupport: '瀏覽器不支援'
-  },
-  relativeDate: {
-    homepage: true,
-    post: true
-  },
-  runtime: '天',
-  dateSuffix: {
-    just: '剛剛',
-    min: '分鐘前',
-    hour: '小時前',
-    day: '天前',
-    month: '個月前'
-  },
-  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
-  lightbox: 'fancybox',
-  Snackbar: undefined,
-  infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
-    buttonText: '載入更多'
-  },
-  isPhotoFigcaption: false,
-  islazyloadPlugin: false,
-  isAnchor: false,
-  percent: {
-    toc: true,
-    rightside: true,
-  },
-  autoDarkmode: true
-}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: 'kyosora 筆記',
-  isHighlightShrink: false,
-  isToc: false,
-  pageType: 'home'
-}</script><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="/css/about-cards.css"><link rel="stylesheet" href="/css/bg-gradient-mesh.css"><link rel="stylesheet" href="/css/view-transitions.css"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
-<script data-sri-getscript>(function(){var m={"https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js":"sha384-YrKBdCikMPThdp9YNMsmtzHOQ9yH4Ip+glZK2weyS2R3+jMLYsucIs5b5T6ptbqe","https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js":"sha384-1ggI9FC3CkghppRD/XCR4aD+jp4DxwXlJIW0wxhyTLNKuiZEW3c4BwcjKXl0iVAJ","https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js":"sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ"};var b=window.btf;if(!b||typeof b.getScript!=='function')return;var g=b.getScript;b.getScript=function(u,a){var h=m[u];if(!h)return g.call(b,u,a);var o={};if(a)for(var k in a)o[k]=a[k];o.integrity=h;o.crossorigin='anonymous';return g.call(b,u,o)}})();</script></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">245</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">540</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><h1 class="title-seo">kyosora 筆記</h1></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="post_cover left"><a href="/posts/a8143cdc/" title="「學術已死，只是還沒辦葬禮」——下一個是工程師"><img class="post-bg" src="/images/posts/academia-is-dead-engineers-next-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="「學術已死，只是還沒辦葬禮」——下一個是工程師" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/a8143cdc/" title="「學術已死，只是還沒辦葬禮」——下一個是工程師">「學術已死，只是還沒辦葬禮」——下一個是工程師</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-06-24T07:35:00.000Z" title="發表於 2026-06-24 15:35:00">2026-06-24</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E8%81%B7%E6%B6%AF%E8%88%87%E5%8F%8D%E6%80%9D/">職涯與反思</a></span></div><div class="content">一位拿到終身教職、endowed research chair、編輯一份國際期刊的教授，這週在自己的部落格上發了一篇文章。標題很狠：「AI Has Already Killed Academia as we Know it」。 他是業內贏家，所有學術圈定義的成功——tenure、研究椅、得獎名單、期刊主編、帶出去能獨當一面的學生——他全拿了。然後他寫：「如果學術界是一場遊戲，我贏了。但這場遊戲已經沒意義了。」 我把那篇看完，腦袋裡只跳出一句話：軟體業也是。 他講了什麼 他講的是三套機制，被 AI 從不同角度拆掉。 學生作業已經抓不到了。過去我們抓 AI 抓的是「用得爛」的學生：ChatGPT 排版、一句三項列表、幻覺引用、沒有段落縮排。但抓不到的才是真問題——一個學生用兩個付費帳號，Claude 寫初稿、ChatGPT 反覆批改，迴圈到語感乾淨、論證緊實，再叫 AI 三重檢查引用跟格式。這種作業不只偵測不出，還比一般學生寫得好。系統現在做兩件事：懲罰自己寫的學生（自然有瑕疵），給最會用 AI 的學生最高分——而後者不是「懶」或「不誠實」，他們只是看到了 AI 用得越好、成績越好的...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/b225451/" title="Hexo blog 想加 iOS 風炫過場？跑半天 morph 沒成，反而發現自己藏了 84MB 圖片巨石"><img class="post-bg" src="/images/posts/hexo-view-transition-found-image-bloat-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Hexo blog 想加 iOS 風炫過場？跑半天 morph 沒成，反而發現自己藏了 84MB 圖片巨石" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/b225451/" title="Hexo blog 想加 iOS 風炫過場？跑半天 morph 沒成，反而發現自己藏了 84MB 圖片巨石">Hexo blog 想加 iOS 風炫過場？跑半天 morph 沒成，反而發現自己藏了 84MB 圖片巨石</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-06-22T07:49:46.000Z" title="發表於 2026-06-22 15:49:46">2026-06-22</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E5%B7%A5%E5%85%B7%E8%88%87%E7%94%9F%E7%94%A2%E5%8A%9B/">工具與生產力</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E5%89%8D%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/">前後端開發</a></span></div><div class="content">昨天晚上看了 Coding2GO 一條 5 分 46 秒的影片，講 CSS View Transition API 終於支援跨文件了——純 CSS 兩頁各加幾行（同源 + 兩頁都 @view-transition &#123; navigation: auto; &#125;）、靜態網站也能做出 SPA 風的換頁過場。我當下就想到自己那個 Hexo blog：能不能加上 iOS 相簿那種「點縮圖、圖飛進去變大圖」的 morph 效果？ 今天動手，跑半天 morph 沒成。但 debug 過程裡順手 PowerShell 抓了一下封面圖檔大小——35 張總共 84.3MB，平均 2.4MB 一張。 結果 morph 收手，反而把整站圖片壓掉 93%（84MB → 6MB）。本來想搞炫的，沒成；結果抓到真正拖慢網站的東西。記錄一下這次的過程。 原本的目標清單 下班前的 2 小時 budget，我想要的兩個東西：  [x] 整頁 cross-fade 換頁過場（基本款） [ ] list 縮圖 → 詳情頁大圖的 hero morph（進階款）  我以為大半是 CSS 的事，看起來很簡單...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/posts/2745f1c7/" title="Loop Engineering 沒那麼神：我跑半年 agent loop，真正的工程全在沒人拍貼文的那半"><img class="post-bg" src="/images/posts/loop-engineering-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Loop Engineering 沒那麼神：我跑半年 agent loop，真正的工程全在沒人拍貼文的那半" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/2745f1c7/" title="Loop Engineering 沒那麼神：我跑半年 agent loop，真正的工程全在沒人拍貼文的那半">Loop Engineering 沒那麼神：我跑半年 agent loop，真正的工程全在沒人拍貼文的那半</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-06-15T08:55:00.000Z" title="發表於 2026-06-15 16:55:00">2026-06-15</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a></span></div><div class="content">那天我派了三個 agent 並行改一個專案。一個管 API 層，一個管 service 層，一個做全專案改名。跑完回來，service 層那隻明明回報改好了，我打開檔案一看——它加的快取不見了。 我第一個念頭是：Claude Code 出 bug 了吧。差點就去開 issue。 冷靜下來看檔案修改時間和 diff，才發現工具沒錯，錯的是我。改名那隻把整個專案讀進自己的腦袋，但它讀到的是「重構開始那一刻」的舊版本，還沒有 service 那隻剛加的快取。它改完寫回去，用舊版蓋掉了新的。誰最後寫完，誰的版本就贏。那段快取我連 git add 都還沒，根本沒進 Git 的 object，蓋掉就是真的沒了，reflog 也撈不回來。 我講這件事，是因為這週我的時間線被「Loop Engineering」洗版了，而我看著那些貼文，像在看別人興奮地發現我家後院。 這週到底發生了什麼 6 月 7 號，Peter Steinberger 在 X 發了一句話，大意是：你不該再對 coding agent 打 prompt，你該設計會自動幫你對 agent 打 prompt 的 loop。他是 Op...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/e4c60403/" title="你的 AI 供應商，它的房東兼金主可能就是它的對手"><img class="post-bg" src="/images/posts/ai-vendor-landlord-investor-rival-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="你的 AI 供應商，它的房東兼金主可能就是它的對手" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/e4c60403/" title="你的 AI 供應商，它的房東兼金主可能就是它的對手">你的 AI 供應商，它的房東兼金主可能就是它的對手</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-06-15T05:10:00.000Z" title="發表於 2026-06-15 13:10:00">2026-06-15</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a></span></div><div class="content">六月十三號早上，Claude Code 把我降回 Opus 4.8 那件事，我前一篇寫過了——政府一封出口管制信，讓 Fable 5 全球下線。那篇的主角是政府，故事線也很乾淨：一家把 AI 管制喊得最大聲的公司，被它自己要的國家權力反噬。 我以為到此為止。結果過了兩天，真正按下關機鍵的那隻手浮出來，不是白宮，是 Amazon——Anthropic 自己最大的金主。 兇手具名了，比我想的還難看一層 我在前一篇老實寫過，我查不出是誰捅的。當時觸發政府出手的說法，只有 Axios 一家、引一名匿名行政官員，說是「另一家公司宣稱破解了 Mythos」，那家公司從頭到尾沒被點名。我寫到那裡只能收手，再往下就是腦補。 六月十四號，Fortune 跟進，把名字補上了。那家公司是 Amazon。 時間軸是這樣的。六月十一號週四深夜，Amazon 執行長 Andy Jassy 親自打電話給白宮高層，包括財政部長 Bessent，手上拿著一份 Amazon 自家研究員做的測試報告：他們用一串提示詞越獄了 Fable 5，讓它吐出可以用在網路攻擊的資訊。白宮拿這份報告去找 Amodei，給了兩條路—...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/posts/68b58a92/" title="Meta AI 客服漏洞：20,225 個 Instagram 帳號的驗證缺口"><img class="post-bg" src="/images/posts/meta-ai-instagram-takeover-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Meta AI 客服漏洞：20,225 個 Instagram 帳號的驗證缺口" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/68b58a92/" title="Meta AI 客服漏洞：20,225 個 Instagram 帳號的驗證缺口">Meta AI 客服漏洞：20,225 個 Instagram 帳號的驗證缺口</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-06-15T03:59:18.000Z" title="發表於 2026-06-15 11:59:18">2026-06-15</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/">資訊安全</a></span></div><div class="content">我第一次看到這則事件時，也被標題帶著走了：駭客只對 Meta AI 客服說「這是我的帳號，請把新 email 連上去」，AI 就信了，接著把帳號交出去。 讀完 Meta 提交給緬因州檢察總長的事件通報後，我得修正這個判斷。公開證據能確認的是：AI 輔助的 Instagram 帳號恢復系統有一條後端程式路徑漏做 email 比對。至於語言模型有沒有判斷「這個人就是帳號擁有者」、駭客是否靠話術說服模型，目前沒有公開技術資料可以證明。 這個差別很重要。若把原因寫成「AI 太好騙」，工程團隊可能去調整提示詞或模型；官方通報指出的缺口，卻是每次高權限操作都該執行的身份核對沒有執行。 Meta 官方到底確認了什麼？ Meta 的事件通報把系統稱為 High Touch Support（HTS），是一套 AI 輔助的 Instagram 帳號恢復工具。使用者被鎖在帳號外時，可以要求系統把密碼重設連結寄到 email。 Meta 在通報裡寫得很具體：HTS 工具本身依原先設計運作，但「另一條程式路徑」有 bug，沒有確認使用者提供的 email 是否與該 Instagram 帳號原本綁定的 em...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/31661a41/" title="我的 Claude Code 一夜被降級：鼓吹 AI 管制最力的公司，被自己要的刀砍中"><img class="post-bg" src="/images/posts/fable5-summoner-sacrifice-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="我的 Claude Code 一夜被降級：鼓吹 AI 管制最力的公司，被自己要的刀砍中" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/31661a41/" title="我的 Claude Code 一夜被降級：鼓吹 AI 管制最力的公司，被自己要的刀砍中">我的 Claude Code 一夜被降級：鼓吹 AI 管制最力的公司，被自己要的刀砍中</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-06-13T10:38:00.000Z" title="發表於 2026-06-13 18:38:00">2026-06-13</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a></span></div><div class="content">六月十三號早上，我打開 Claude Code 想接著昨天的專案稽核，發現它不對勁。 回答變慢、變保守，連我前一天問都不眨眼的東西，現在開始猶豫。狀態列那行模型名稱，從 Fable 5 變回了 Opus 4.8。 我第一個念頭是自己把額度燒爆了——畢竟這三天我用得很兇，週限制已經吃掉七成。第二個念頭是網路或帳號出問題。查了一輪都不是。真正的原因比這些都荒謬：Fable 5 不是只對我關掉。美國政府前一天傍晚下了一道命令，禁止任何外國公民存取；Anthropic 說為了確保合規，只能對全球所有客戶停用它。台灣這邊我隔天一早就撞上牆。 我為什麼三天就燒掉七成週限制 先講我怎麼會用到這個地步。 Fable 5 是 Anthropic 六月九號發布的最強模型，我當天就接上 Claude Code。第一天我開了 Ultracode 模式（Claude Code 裡火力全開、會派一群子代理平行幹活的模式），拿它去掃一個專案做全面稽核，一趟下來燒掉 11% 的週限制——是貴，貴得有感。但它在那個我自己掃過好幾輪的專案裡，揪出了我和其他模型都漏掉的問題。我那時還想，這個價錢換這種準度，划算。 還...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/posts/1d7fcb0e/" title="Sitemap 卡「無法擷取」三個月？修了四輪 XML 都沒用，最後把它搬到 Cloudflare Worker 才過關"><img class="post-bg" src="/images/posts/github-pages-sitemap-couldnt-fetch-cloudflare-worker-fix-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Sitemap 卡「無法擷取」三個月？修了四輪 XML 都沒用，最後把它搬到 Cloudflare Worker 才過關" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/1d7fcb0e/" title="Sitemap 卡「無法擷取」三個月？修了四輪 XML 都沒用，最後把它搬到 Cloudflare Worker 才過關">Sitemap 卡「無法擷取」三個月？修了四輪 XML 都沒用，最後把它搬到 Cloudflare Worker 才過關</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-06-11T13:30:00.000Z" title="發表於 2026-06-11 21:30:00">2026-06-11</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%B3%BB%E7%B5%B1%E8%88%87%E7%B6%AD%E9%81%8B/">系統與維運</a></span></div><div class="content">今天打開 Search Console，看到這一行： 1/sitemap.xml   2026年6月8日   2026年6月11日   成功   612 狀態「成功」，系統探索到的網頁 612。我盯著它看了幾秒，因為文章也累積到一些數量了，想著要讓Google搜尋能搜尋到，結果到現在，這一欄一直是紅色的「無法擷取」。整整三個月，Google 連我的 sitemap 都不願意讀，全站文章只有首頁被索引。 最後解決問題的那一步，跟 sitemap 的內容一點關係都沒有。這篇把整個排查過程寫下來，包含三次「修對了東西但沒解決問題」的彎路——如果你的 GitHub Pages 部落格也卡在這個狀態，也許可以少走幾步。 問題長什麼樣 我的部落格是 Hexo 生成、部署在 GitHub Pages（kyosora.github.io）。三月中建站時把 sitemap.xml 提交到 Search Console，狀態顯示「無法擷取」（Couldn’t fetch）。 當時想說剛建站，Google 需要時間。結果這個狀態凍結了快三個月，期間「已送出」日期一直停在 3 月 17 日，系統探索到的...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/1a0df97b/" title="Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字"><img class="post-bg" src="/images/posts/claude-code-session-hallucination-fox-emoji-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/1a0df97b/" title="Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字">Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-06-08T04:00:00.000Z" title="發表於 2026-06-08 12:00:00">2026-06-08</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E8%81%B7%E6%B6%AF%E8%88%87%E5%8F%8D%E6%80%9D/">職涯與反思</a></span></div><div class="content">那天晚上我在 Claude Code（v2.1.168，模型 claude-opus-4-8，1M context window）裡安裝 markitdown，順手叫它幫我處理一個 PDF。過程不太順：工具呼叫一直撞到串流 parse error，session 斷了又接、接了又斷。 然後 Claude Code 突然說了一句讓我停下來的話：  我故意不用 🦊 開頭——先說為什麼。這則訊息綁了三個東西：一個強制回覆標記（「always start with 🦊」）⋯⋯  我盯著螢幕看了三秒。 🦊？always start with 🦊？我從來沒打過這個字。  2026-07-27 更新：GitHub issue #64774 有多名使用者回報 Opus 4.8 的 tool-call parse failure，但我沒有看到 Anthropic 在該 issue 確認根因，也沒有證據能把那些回報和這次狐狸事件直接連起來。以下會把 transcript 能確認的事與我的推測分開寫。  第一反應：被注入了？ 我的直覺是 prompt injection。有人在某個地方塞了一條...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/posts/6d803eef/" title="Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告"><img class="post-bg" src="/images/posts/her-claude-code-session-analysis-observability-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/6d803eef/" title="Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告">Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-06-08T04:00:00.000Z" title="發表於 2026-06-08 12:00:00">2026-06-08</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E5%B7%A5%E5%85%B7%E8%88%87%E7%94%9F%E7%94%A2%E5%8A%9B/">工具與生產力</a></span></div><div class="content">你有沒有認真算過，Claude Code 幫你跑完一個長 session，到底燒了多少 token、按了哪些工具、有沒有在你沒盯著的時候改了什麼設定、碰了哪一把金鑰？ 我沒有。多數時候我就是看著它一條條工具呼叫往下刷，跑完、能用、收工。中間那一大段，基本是個黑盒——我信任它，但我沒看。 前幾天看到一個叫 Her（天城文寫作 हेर）的工具，就是來幹這件事的——把那段沒人在看的過程，變成你看得懂的東西。先講清楚：我還沒實際把自己的 session 餵進去跑過，下面講的是讀了它的設計和文件之後的判斷，不是實測評測。但它的一個設計取捨很值得拿出來講。 跑完一個長 session，你真的知道它幹了什麼嗎 每一次 Claude Code 的 session，都會在硬碟上留下一個 .jsonl 檔——裡面記著每一輪對話、每一次工具呼叫、每一筆 token 花費。這個檔一直在那，只是沒人會去讀。它又長又密，是寫給機器看的，不是寫給人看的。 問題是，當你越來越放手讓 agent 自己跑——讓它部署、讓它改設定檔、讓它接觸生產環境——這個沒人讀的檔裡，就藏著一些你其實該知道的事。它有沒有在第 40...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/41ca610c/" title="OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事"><img class="post-bg" src="/images/posts/openai-chat-is-dead-super-app-financial-truth-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/41ca610c/" title="OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事">OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2026-06-08T03:30:00.000Z" title="發表於 2026-06-08 11:30:00">2026-06-08</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a></span></div><div class="content">2026 年 6 月初，OpenAI 一位資深員工對英國《金融時報》丟出一句話：「Chat is dead.」聊天已死。 緊接著的消息是：ChatGPT 要迎來上線以來最大的一次改版。介面重做，未來幾週陸續上線，主動把你往三個地方推——寫程式的 Codex、圖像生成、以及 Canva、Booking.com 這些外部夥伴做的 App。負責 OpenAI 核心產品的 Thibault Sottiaux 描繪的願景是：你有一個屬於自己的 agent，能在工作和生活的每一件事上幫你。 聊天框退到後面，agent 走到台前。這是新聞講的故事。但我把這幾條消息擺在一起讀，看到的是另一個故事。 先別急著相信「聊天已死」 「聊天已死」是個漂亮的句子，漂亮到值得懷疑。 死了嗎？ChatGPT 現在每週有超過 9 億活躍使用者、5000 萬付費訂閱。一個每週被 9 億人打開的介面，很難說它「死了」。對絕大多數人來說，打開一個框、打一句話、拿到答案——這套互動順得很，沒有壞掉，也不需要被搶救。 所以這句話真正的意思，不是聊天這個「介面」死了。我認為它說的是另一件沒講出口的事：靠賣聊天訂閱來養這家公司...</div></div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/4/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/#content-inner">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/#content-inner">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/25/#content-inner">25</a><a class="extend next" rel="next" href="/page/6/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">245</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">540</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/4fb41c1c/" title="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它"><img src="/images/posts/riemann-hypothesis-claude-lean-proof-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/4fb41c1c/" title="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z" title="發表於 2026-11-25 10:40:00">2026-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7463bf4c/" title="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法"><img src="/images/posts/windows-openssh-key-only-four-machines-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/7463bf4c/" title="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z" title="發表於 2026-11-12 11:30:00">2026-11-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3c89a868/" title="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊"><img src="/images/posts/aspnet-session-lock-request-queue-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/3c89a868/" title="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z" title="發表於 2026-11-12 11:00:00">2026-11-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7cf056d5/" title="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI"><img src="/images/posts/nikke-launcher-cdn-sri-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/7cf056d5/" title="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z" title="發表於 2026-11-05 13:00:00">2026-11-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/34c467cd/" title="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法"><img src="/images/posts/twca-cyber-root-iis-iphone-untrusted-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/34c467cd/" title="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法">TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法</a><time datetime="2026-11-02T06:45:00.000Z" title="發表於 2026-11-02 14:45:00">2026-11-02</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
-            <i class="fas fa-folder-open"></i>
-            <span>分類</span>
-            
-          </div>
-          <ul class="card-category-list expandBtn" id="aside-cat-list">
-            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"><span class="card-category-list-name">AI工具實戰</span><span class="card-category-list-count">99</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/"><span class="card-category-list-name">AI產業觀察</span><span class="card-category-list-count">52</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%89%8D%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/"><span class="card-category-list-name">前後端開發</span><span class="card-category-list-count">24</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%B7%A5%E5%85%B7%E8%88%87%E7%94%9F%E7%94%A2%E5%8A%9B/"><span class="card-category-list-name">工具與生產力</span><span class="card-category-list-count">49</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/"><span class="card-category-list-name">程式設計</span><span class="card-category-list-count">54</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%B3%BB%E7%B5%B1%E8%88%87%E7%B6%AD%E9%81%8B/"><span class="card-category-list-name">系統與維運</span><span class="card-category-list-count">28</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%81%B7%E6%B6%AF%E8%88%87%E5%8F%8D%E6%80%9D/"><span class="card-category-list-name">職涯與反思</span><span class="card-category-list-count">20</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB/"><span class="card-category-list-name">資料庫</span><span class="card-category-list-count">15</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/"><span class="card-category-list-name">資訊安全</span><span class="card-category-list-count">38</span></a></li>
-          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>標籤</span></div><div class="card-tag-cloud"><a href="/tags/%E6%9C%AC%E5%9C%B0LLM/" style="font-size: 1.15em; color: rgb(105, 77, 50);">本地LLM</a><a href="/tags/benchmark/" style="font-size: 1.23em; color: rgb(92, 96, 99);">benchmark</a><a href="/tags/ATLAS/" style="font-size: 1.15em; color: rgb(50, 196, 96);">ATLAS</a><a href="/tags/Claude/" style="font-size: 1.4em; color: rgb(58, 110, 188);">Claude</a><a href="/tags/%E6%88%90%E6%9C%AC%E5%88%86%E6%9E%90/" style="font-size: 1.15em; color: rgb(86, 194, 130);">成本分析</a><a href="/tags/LLM/" style="font-size: 1.34em; color: rgb(98, 50, 50);">LLM</a><a href="/tags/DeepSeek/" style="font-size: 1.2em; color: rgb(171, 112, 75);">DeepSeek</a><a href="/tags/Gemini/" style="font-size: 1.23em; color: rgb(178, 54, 187);">Gemini</a><a href="/tags/AI-%E8%B6%A8%E5%8B%A2/" style="font-size: 1.18em; color: rgb(50, 50, 127);">AI 趨勢</a><a href="/tags/OpenRouter/" style="font-size: 1.15em; color: rgb(161, 80, 77);">OpenRouter</a><a href="/tags/Cursor/" style="font-size: 1.2em; color: rgb(50, 98, 196);">Cursor</a><a href="/tags/AI-Agent/" style="font-size: 1.45em; color: rgb(197, 157, 113);">AI Agent</a><a href="/tags/Temporal/" style="font-size: 1.15em; color: rgb(50, 95, 194);">Temporal</a><a href="/tags/%E7%B3%BB%E7%B5%B1%E5%8F%AF%E9%9D%A0%E6%80%A7/" style="font-size: 1.15em; color: rgb(60, 50, 50);">系統可靠性</a><a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AF%A6%E8%B8%90/" style="font-size: 1.15em; color: rgb(50, 50, 68);">工程實踐</a><a href="/tags/NemoClaw/" style="font-size: 1.23em; color: rgb(87, 165, 161);">NemoClaw</a><a href="/tags/OpenClaw/" style="font-size: 1.26em; color: rgb(163, 173, 107);">OpenClaw</a><a href="/tags/GTC-2026/" style="font-size: 1.2em; color: rgb(119, 145, 194);">GTC 2026</a><a href="/tags/%E6%A1%86%E6%9E%B6%E9%81%B8%E5%9E%8B/" style="font-size: 1.15em; color: rgb(125, 107, 188);">框架選型</a><a href="/tags/Claude-Code/" style="font-size: 1.42em; color: rgb(199, 50, 133);">Claude Code</a><a href="/tags/AI-Coding-Assistant/" style="font-size: 1.15em; color: rgb(172, 50, 97);">AI Coding Assistant</a><a href="/tags/%E5%AE%89%E5%85%A8%E6%80%A7/" style="font-size: 1.15em; color: rgb(75, 154, 50);">安全性</a><a href="/tags/%E9%96%8B%E7%99%BC%E7%B6%93%E9%A9%97/" style="font-size: 1.15em; color: rgb(133, 164, 50);">開發經驗</a><a href="/tags/Firefox/" style="font-size: 1.15em; color: rgb(155, 177, 50);">Firefox</a><a href="/tags/%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E/" style="font-size: 1.15em; color: rgb(104, 76, 154);">安全漏洞</a><a href="/tags/AI%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/" style="font-size: 1.15em; color: rgb(50, 59, 50);">AI安全研究</a><a href="/tags/LLM%E6%87%89%E7%94%A8/" style="font-size: 1.15em; color: rgb(183, 181, 131);">LLM應用</a><a href="/tags/AI/" style="font-size: 1.2em; color: rgb(108, 123, 50);">AI</a><a href="/tags/%E6%8A%95%E8%B3%87/" style="font-size: 1.15em; color: rgb(141, 122, 146);">投資</a><a href="/tags/%E7%94%A2%E6%A5%AD%E5%88%86%E6%9E%90/" style="font-size: 1.15em; color: rgb(137, 182, 50);">產業分析</a><a href="/tags/%E9%96%8B%E7%99%BC%E8%80%85%E7%94%9F%E6%85%8B/" style="font-size: 1.15em; color: rgb(50, 186, 78);">開發者生態</a><a href="/tags/NVIDIA/" style="font-size: 1.31em; color: rgb(164, 50, 50);">NVIDIA</a><a href="/tags/GitHub-Trending/" style="font-size: 1.15em; color: rgb(157, 200, 62);">GitHub Trending</a><a href="/tags/%E9%96%8B%E7%99%BC%E8%80%85%E5%B7%A5%E5%85%B7/" style="font-size: 1.23em; color: rgb(75, 186, 64);">開發者工具</a><a href="/tags/GPT-5-4/" style="font-size: 1.23em; color: rgb(50, 98, 107);">GPT-5.4</a><a href="/tags/Computer-Use/" style="font-size: 1.18em; color: rgb(114, 82, 133);">Computer Use</a><a href="/tags/%E8%87%AA%E5%8B%95%E5%8C%96/" style="font-size: 1.26em; color: rgb(98, 70, 175);">自動化</a><a href="/tags/OpenAI/" style="font-size: 1.37em; color: rgb(181, 96, 187);">OpenAI</a><a href="/tags/API%E9%99%90%E6%B5%81/" style="font-size: 1.15em; color: rgb(147, 69, 50);">API限流</a><a href="/tags/Net/" style="font-size: 1.29em; color: rgb(64, 110, 162);">Net</a></div></div><div class="card-widget card-archives">
-    <div class="item-headline">
-      <i class="fas fa-archive"></i>
-      <span>歸檔</span>
-      <a class="card-more-btn" href="/archives/"
-            title="檢視更多">
-            <i class="fas fa-angle-right"></i>
-          </a>
+      <a href="/archives/">歸檔</a>
+      
+      <a href="/categories/">分類</a>
+      
+      <a href="/tags/">標籤</a>
+      
+      <a href="/about/">關於</a>
+      
+    </nav>
+    <div class="tools">
+      <button class="tool" type="button" data-action="search" aria-label="搜尋文章（快捷鍵 /）" title="搜尋（/）"><svg class="icon"><use href="#i-search"/></svg></button>
+      <button class="tool tool--text" type="button" data-action="translate" aria-label="切換成簡體中文" title="繁簡切換">簡</button>
+      <button class="tool" type="button" data-action="theme" aria-label="切換深色模式" title="深淺色切換"><svg class="icon icon-moon"><use href="#i-moon"/></svg><svg class="icon icon-sun"><use href="#i-sun"/></svg></button>
     </div>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="wrap block">
   
-    <ul class="card-archive-list">
-      
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/11/">
-            <span class="card-archive-list-date">
-              2026年11月
-            </span>
-            <span class="card-archive-list-count">5</span>
-          </a>
-        </li>
-      
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/10/">
-            <span class="card-archive-list-date">
-              2026年10月
-            </span>
-            <span class="card-archive-list-count">8</span>
-          </a>
-        </li>
-      
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/09/">
-            <span class="card-archive-list-date">
-              2026年09月
-            </span>
-            <span class="card-archive-list-count">10</span>
-          </a>
-        </li>
-      
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/08/">
-            <span class="card-archive-list-date">
-              2026年08月
-            </span>
-            <span class="card-archive-list-count">5</span>
-          </a>
-        </li>
-      
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/07/">
-            <span class="card-archive-list-date">
-              2026年07月
-            </span>
-            <span class="card-archive-list-count">10</span>
-          </a>
-        </li>
-      
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/06/">
-            <span class="card-archive-list-date">
-              2026年06月
-            </span>
-            <span class="card-archive-list-count">22</span>
-          </a>
-        </li>
-      
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/05/">
-            <span class="card-archive-list-date">
-              2026年05月
-            </span>
-            <span class="card-archive-list-count">17</span>
-          </a>
-        </li>
-      
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/04/">
-            <span class="card-archive-list-date">
-              2026年04月
-            </span>
-            <span class="card-archive-list-count">5</span>
-          </a>
-        </li>
-      
-    </ul>
-  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>網站資訊</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章數量 :</div><div class="item-count">245</div></div><div class="webinfo-item"><div class="item-name">運行時間 :</div><div class="item-count" id="runtimeshow" data-publishDate="2019-11-12T16:00:00.000Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">總字數 :</div><div class="item-count">531.5k</div></div><div class="webinfo-item"><div class="item-name">最後更新時間 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-11-25T02:35:49.635Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By kyosora</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><script src="/js/tw_cn.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.js" integrity="sha384-gxImbXBiSbxiZ81MBKincxlzfmdjvLfzyAvwe2hUA/rhcWB88+gfX+uzi8K/rw84" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.js" type="module" integrity="sha384-+oVCYEOCpcTbL4CsQ1hK+6Prt7+Kx2+ER1RSn5iQ0Ua0B1sBuGONp1jKt8dkcd5n" crossorigin="anonymous"></script><div class="js-pjax"><script>(() => {
-  const parseViewBox = viewBox => {
-    if (!viewBox) return null
-    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
-    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
-    return parts
-  }
+  <h1 class="page-title">最新文章，第 5 頁</h1>
+  <ul class="post-list">
 
-  const getSvgViewBox = svg => {
-    const attr = parseViewBox(svg.getAttribute('viewBox'))
-    if (attr) return attr
+  <li class="post-row">
+    <a class="row-cover" href="/posts/a8143cdc/" tabindex="-1" aria-hidden="true"><img src="/images/posts/academia-is-dead-engineers-next-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/a8143cdc/">「學術已死，只是還沒辦葬禮」——下一個是工程師</a></h2>
+      <p class="row-desc">一位拿到終身教職的教授宣布「學術已死，只是還沒辦葬禮」。他講的是 AI 怎麼拆解學術三套評鑑機制。把同樣邏輯搬到軟體業，PR 數、velocity、面試白板題也都已經量不到任何東西。</p>
+      <p class="row-meta"><time datetime="2026-06-24T07:35:00.000Z">2026-06-24</time><a class="row-cat" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a><span>7 分鐘</span></p>
+    </div>
+  </li>
 
-    // Fallback: use bbox to build a viewBox
-    try {
-      const bbox = svg.getBBox()
-      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
-    } catch (e) {
-      // getBBox may fail on some edge cases; ignore
-    }
+  <li class="post-row">
+    <a class="row-cover" href="/posts/b225451/" tabindex="-1" aria-hidden="true"><img src="/images/posts/hexo-view-transition-found-image-bloat-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/b225451/">Hexo blog 想加 iOS 風炫過場？跑半天 morph 沒成，反而發現自己藏了 84MB 圖片巨石</a></h2>
+      <p class="row-desc">想在 hexo blog 加 iOS 相簿風的 morph 過場、跑半天沒成，debug 過程意外發現自己藏了 84MB 圖片巨石。記錄一個從炫效果反挖出真效能問題的踩坑過程，以及 hexo + sharp 自動壓 WebP 的實作。</p>
+      <p class="row-meta"><time datetime="2026-06-22T07:49:46.000Z">2026-06-22</time><a class="row-cat" href="/categories/%E5%B7%A5%E5%85%B7%E8%88%87%E7%94%9F%E7%94%A2%E5%8A%9B/">工具與生產力</a><span>10 分鐘</span></p>
+    </div>
+  </li>
 
-    const w = Number(svg.getAttribute('width')) || 0
-    const h = Number(svg.getAttribute('height')) || 0
-    if (w > 0 && h > 0) return [0, 0, w, h]
-    return [0, 0, 100, 100]
-  }
+  <li class="post-row">
+    <a class="row-cover" href="/posts/2745f1c7/" tabindex="-1" aria-hidden="true"><img src="/images/posts/loop-engineering-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/2745f1c7/">Loop Engineering 沒那麼神：我跑半年 agent loop，真正的工程全在沒人拍貼文的那半</a></h2>
+      <p class="row-desc">這週 Loop Engineering 被捧成取代 prompt engineering 的新範式。但跑了半年 agent loop，我認為它被過度包裝：那行 while 迴圈誰都會寫，難的是對付會說謊的 loop、互相覆蓋的子代理、默默失敗的 workflow，和你被迫自己焊上的驗證層。</p>
+      <p class="row-meta"><time datetime="2026-06-15T08:55:00.000Z">2026-06-15</time><a class="row-cat" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><span>16 分鐘</span></p>
+    </div>
+  </li>
 
-  const setSvgViewBox = (svg, vb) => {
-    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
-  }
+  <li class="post-row">
+    <a class="row-cover" href="/posts/e4c60403/" tabindex="-1" aria-hidden="true"><img src="/images/posts/ai-vendor-landlord-investor-rival-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/e4c60403/">你的 AI 供應商，它的房東兼金主可能就是它的對手</a></h2>
+      <p class="row-desc">Claude Fable 5 被政府下架，按下鈕的卻是最大股東 Amazon。拆解 AI 供應鏈的股權結構風險：當模型供應商的房東兼金主就是它的對手，開發者選型與 Anthropic IPO 定價都得重看這條風險。</p>
+      <p class="row-meta"><time datetime="2026-06-15T05:10:00.000Z">2026-06-15</time><a class="row-cat" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><span>10 分鐘</span></p>
+    </div>
+  </li>
 
-  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+  <li class="post-row">
+    <a class="row-cover" href="/posts/68b58a92/" tabindex="-1" aria-hidden="true"><img src="/images/posts/meta-ai-instagram-takeover-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/68b58a92/">Meta AI 客服漏洞：20,225 個 Instagram 帳號的驗證缺口</a></h2>
+      <p class="row-desc">Meta 的 AI 輔助帳號恢復工具漏做 email 核對，讓重設連結寄到陌生信箱。本文拆開官方通報與駭客說法，說明 agent 高權限操作該放哪些驗證關卡。</p>
+      <p class="row-meta"><time datetime="2026-06-15T03:59:18.000Z">2026-06-15</time><a class="row-cat" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a><span>9 分鐘</span></p>
+    </div>
+  </li>
 
-  const openSvgInNewTab = ({ source, initViewBox }) => {
-    const getClonedSvg = () => {
-      if (typeof source === 'string') {
-        const template = document.createElement('template')
-        template.innerHTML = source.trim()
-        const svg = template.content.querySelector('svg')
-        return svg ? svg.cloneNode(true) : null
-      }
-      if (source && typeof source.cloneNode === 'function') {
-        return source.cloneNode(true)
-      }
-      return null
-    }
+  <li class="post-row">
+    <a class="row-cover" href="/posts/31661a41/" tabindex="-1" aria-hidden="true"><img src="/images/posts/fable5-summoner-sacrifice-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/31661a41/">我的 Claude Code 一夜被降級：鼓吹 AI 管制最力的公司，被自己要的刀砍中</a></h2>
+      <p class="row-desc">Anthropic 最強的 Fable 5 上線三天就被美國政府令全球下線，開發者一夜被降回 Opus 4.8。鼓吹 AI 監管與出口管制最力的公司，如何被自己要的國家權力反噬？附雲端 AI 供應鏈風險與靜默降級的開發者教訓。</p>
+      <p class="row-meta"><time datetime="2026-06-13T10:38:00.000Z">2026-06-13</time><a class="row-cat" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><span>15 分鐘</span></p>
+    </div>
+  </li>
 
-    const clone = getClonedSvg()
-    if (!clone) return
-    if (initViewBox && initViewBox.length === 4) {
-      clone.setAttribute('viewBox', initViewBox.join(' '))
-    }
-    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
-    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
-      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-    }
-    // inject background to match current theme
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
-    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
-    if (!clone.style.background) clone.style.background = bg
+  <li class="post-row">
+    <a class="row-cover" href="/posts/1d7fcb0e/" tabindex="-1" aria-hidden="true"><img src="/images/posts/github-pages-sitemap-couldnt-fetch-cloudflare-worker-fix-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/1d7fcb0e/">Sitemap 卡「無法擷取」三個月？修了四輪 XML 都沒用，最後把它搬到 Cloudflare Worker 才過關</a></h2>
+      <p class="row-desc">GitHub Pages 部落格的 sitemap 在 Search Console 一直顯示無法擷取？我修 robots.txt、清重複 URL、換檔名全試過，三個月後才發現問題出在讀取路徑。這篇是完整排查紀錄。</p>
+      <p class="row-meta"><time datetime="2026-06-11T13:30:00.000Z">2026-06-11</time><a class="row-cat" href="/categories/%E7%B3%BB%E7%B5%B1%E8%88%87%E7%B6%AD%E9%81%8B/">系統與維運</a><span>10 分鐘</span></p>
+    </div>
+  </li>
 
-    const serializer = new XMLSerializer()
-    const svgSource = serializer.serializeToString(clone)
-    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
-      <style>
-        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
-        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
-      </style>
-      </head><body>${svgSource}</body></html>`
-    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    window.open(url, '_blank', 'noopener')
-    setTimeout(() => URL.revokeObjectURL(url), 30000)
-  }
+  <li class="post-row">
+    <a class="row-cover" href="/posts/1a0df97b/" tabindex="-1" aria-hidden="true"><img src="/images/posts/claude-code-session-hallucination-fox-emoji-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/1a0df97b/">Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字</a></h2>
+      <p class="row-desc">Claude Code 在長 session 裡回應不存在的 🦊 指令。我逐行檢查 jsonl，排除可見的 user、hook 與工具輸入，發現錯誤記憶又被摘要放大。</p>
+      <p class="row-meta"><time datetime="2026-06-08T04:00:00.000Z">2026-06-08</time><a class="row-cat" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><span>10 分鐘</span></p>
+    </div>
+  </li>
 
-  const attachMermaidViewerButton = wrap => {
-    let btn = wrap.querySelector('.mermaid-open-btn')
-    if (!btn) {
-      btn = document.createElement('button')
-      btn.type = 'button'
-      btn.className = 'mermaid-open-btn'
-      wrap.appendChild(btn)
-    }
+  <li class="post-row">
+    <a class="row-cover" href="/posts/6d803eef/" tabindex="-1" aria-hidden="true"><img src="/images/posts/her-claude-code-session-analysis-observability-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/6d803eef/">Claude Code 跑完那個長 session 到底幹了什麼？Her 把 .jsonl 變成一份審計報告</a></h2>
+      <p class="row-desc">Claude Code session 跑完留下的 .jsonl 是黑盒。Her 把它攤成審計報告——規則引擎判風險，模型只管寫白話。</p>
+      <p class="row-meta"><time datetime="2026-06-08T04:00:00.000Z">2026-06-08</time><a class="row-cat" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/">AI工具實戰</a><span>7 分鐘</span></p>
+    </div>
+  </li>
 
-    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+  <li class="post-row">
+    <a class="row-cover" href="/posts/41ca610c/" tabindex="-1" aria-hidden="true"><img src="/images/posts/openai-chat-is-dead-super-app-financial-truth-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/41ca610c/">OpenAI 說「聊天已死」，但死的不是聊天——是靠聊天賺錢這件事</a></h2>
+      <p class="row-desc">OpenAI 一句「聊天已死」要把 ChatGPT 改成 agent 超級應用，引導你去用 Codex、圖像生成和 Canva、Booking。但聊天框真的不好用了嗎？這篇從 OpenAI 的損益表和 IPO 壓力，拆解這場改版的真實理由，以及它對開發者意味著什麼。</p>
+      <p class="row-meta"><time datetime="2026-06-08T03:30:00.000Z">2026-06-08</time><a class="row-cat" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/">AI產業觀察</a><span>6 分鐘</span></p>
+    </div>
+  </li>
 
-    if (!btn.__mermaidViewerBound) {
-      btn.addEventListener('click', e => {
-        e.preventDefault()
-        e.stopPropagation()
-        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
-        if (!svg) return
-        const initViewBox = wrap.__mermaidInitViewBox
-        if (typeof svg === 'string') {
-          openSvgInNewTab({ source: svg, initViewBox })
-          return
-        }
-        openSvgInNewTab({ source: svg, initViewBox })
-      })
-      btn.__mermaidViewerBound = true
-    }
-  }
+</ul>
 
-  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
-  const zoomAtPoint = (vb, factor, px, py) => {
-    const w = vb[2] * factor
-    const h = vb[3] * factor
-    const nx = px - (px - vb[0]) * factor
-    const ny = py - (py - vb[1]) * factor
-    return [nx, ny, w, h]
-  }
-
-  const initMermaidGestures = wrap => {
-    const svg = wrap.querySelector('svg')
-    if (!svg) return
-
-    // Ensure viewBox exists so gestures always work
-    const initVb = getSvgViewBox(svg)
-    wrap.__mermaidInitViewBox = initVb
-    wrap.__mermaidCurViewBox = initVb.slice()
-    setSvgViewBox(svg, initVb)
-
-    // Avoid binding multiple times on themeChange/pjax
-    if (wrap.__mermaidGestureBound) return
-    wrap.__mermaidGestureBound = true
-
-    // Helper: map client (viewport) coordinate -> viewBox coordinate
-    const clientToViewBox = (clientX, clientY) => {
-      const rect = svg.getBoundingClientRect()
-      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
-      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
-      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
-      return { x, y, rect, vb }
-    }
-
-    const state = {
-      pointers: new Map(),
-      startVb: null,
-      startDist: 0,
-      startCenter: null
-    }
-
-    const clampVb = vb => {
-      const init = wrap.__mermaidInitViewBox || vb
-      const minW = init[2] * 0.1
-      const maxW = init[2] * 10
-      const minH = init[3] * 0.1
-      const maxH = init[3] * 10
-      vb[2] = clamp(vb[2], minW, maxW)
-      vb[3] = clamp(vb[3], minH, maxH)
-      return vb
-    }
-
-    const setCurVb = vb => {
-      vb = clampVb(vb)
-      wrap.__mermaidCurViewBox = vb
-      setSvgViewBox(svg, vb)
-    }
-
-    const onPointerDown = e => {
-      // Allow only primary button for mouse
-      if (e.pointerType === 'mouse' && e.button !== 0) return
-      svg.setPointerCapture(e.pointerId)
-      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
-
-      if (state.pointers.size === 1) {
-        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-      } else if (state.pointers.size === 2) {
-        const pts = [...state.pointers.values()]
-        const dx = pts[0].x - pts[1].x
-        const dy = pts[0].y - pts[1].y
-        state.startDist = Math.hypot(dx, dy)
-        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
-      }
-    }
-
-    const onPointerMove = e => {
-      if (!state.pointers.has(e.pointerId)) return
-      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
-
-      // Pan with 1 pointer
-      if (state.pointers.size === 1 && state.startVb) {
-        const p = [...state.pointers.values()][0]
-        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
-        // movementX/Y unreliable on touch, compute from stored last position
-        const last = wrap.__mermaidLastSinglePointer || p
-        const dxClient = p.x - last.x
-        const dyClient = p.y - last.y
-        wrap.__mermaidLastSinglePointer = p
-
-        const { rect } = clientToViewBox(p.x, p.y)
-        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-        const dx = dxClient * (vb[2] / rect.width)
-        const dy = dyClient * (vb[3] / rect.height)
-        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
-        return
-      }
-
-      // Pinch zoom with 2 pointers
-      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
-        const pts = [...state.pointers.values()]
-        const dx = pts[0].x - pts[1].x
-        const dy = pts[0].y - pts[1].y
-        const dist = Math.hypot(dx, dy)
-        if (!dist) return
-        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
-
-        const cx = (pts[0].x + pts[1].x) / 2
-        const cy = (pts[0].y + pts[1].y) / 2
-        const centerClient = { x: cx, y: cy }
-
-        const pxy = clientToViewBox(centerClient.x, centerClient.y)
-        const cpx = pxy.x
-        const cpy = pxy.y
-
-        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
-        setCurVb(vb)
-      }
-    }
-
-    const onPointerUpOrCancel = e => {
-      state.pointers.delete(e.pointerId)
-      if (state.pointers.size === 0) {
-        state.startVb = null
-        state.startDist = 0
-        state.startCenter = null
-        wrap.__mermaidLastSinglePointer = null
-      } else if (state.pointers.size === 1) {
-        // reset single pointer baseline to avoid jump
-        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
-      }
-    }
-
-    // Wheel zoom (mouse/trackpad)
-    const onWheel = e => {
-      // ctrlKey on mac trackpad pinch; we treat both as zoom
-      e.preventDefault()
-      const delta = e.deltaY
-      const zoomFactor = delta > 0 ? 1.1 : 0.9
-      const { x, y } = clientToViewBox(e.clientX, e.clientY)
-      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
-    }
-
-    const onDblClick = () => {
-      const init = wrap.__mermaidInitViewBox
-      if (!init) return
-      wrap.__mermaidCurViewBox = init.slice()
-      setSvgViewBox(svg, init)
-    }
-
-    svg.addEventListener('pointerdown', onPointerDown)
-    svg.addEventListener('pointermove', onPointerMove)
-    svg.addEventListener('pointerup', onPointerUpOrCancel)
-    svg.addEventListener('pointercancel', onPointerUpOrCancel)
-    svg.addEventListener('wheel', onWheel, { passive: false })
-    svg.addEventListener('dblclick', onDblClick)
-  }
-
-  const runMermaid = ele => {
-    window.loadMermaid = true
-    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
-
-    ele.forEach((item, index) => {
-      const mermaidSrc = item.firstElementChild
-
-      // Clear old render (themeChange/pjax will rerun)
-      const oldSvg = item.querySelector('svg')
-      if (oldSvg) oldSvg.remove()
-      item.__mermaidGestureBound = false
-
-      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
-      if (!config.theme) {
-        config.theme = theme
-      }
-      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
-      const mermaidID = `mermaid-${index}`
-      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
-
-      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
-      const renderMermaid = svg => {
-        mermaidSrc.insertAdjacentHTML('afterend', svg)
-        if (true) initMermaidGestures(item)
-        item.__mermaidOriginalSvg = svg
-        if (true) attachMermaidViewerButton(item)
-      }
+  
+  
+<nav class="pager" aria-label="分頁">
+  <a class="extend prev" rel="prev" href="/page/4/">上一頁</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/25/">25</a><a class="extend next" rel="next" href="/page/6/">下一頁</a>
+</nav>
 
 
-      // mermaid v9 and v10 compatibility
-      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
-    })
-  }
+</section>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>© 2024–2026 kyosora。文章以 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license noopener" target="_blank">CC BY-NC-SA 4.0</a> 授權。</p>
+    <p class="footer-links"><a href="/atom.xml">RSS 訂閱</a><a href="https://github.com/kyosora" rel="noopener" target="_blank">GitHub</a><a href="/about/">關於我</a></p>
+  </div>
+</footer>
 
-  const codeToMermaid = () => {
-    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
-    if (codeMermaidEle.length === 0) return
+<dialog class="search" id="search" aria-label="搜尋文章">
+  <form class="search-bar" role="search">
+    <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+    <input type="search" name="q" placeholder="搜尋標題與內文" aria-label="搜尋關鍵字" autocomplete="off" enterkeyhint="search">
+    <button class="tool" type="button" data-close aria-label="關閉搜尋"><svg class="icon"><use href="#i-close"/></svg></button>
+  </form>
+  <p class="search-status" role="status" aria-live="polite"></p>
+  <ol class="search-results"></ol>
+</dialog>
 
-    codeMermaidEle.forEach(ele => {
-      const preEle = document.createElement('pre')
-      preEle.className = 'mermaid-src'
-      preEle.hidden = true
-      preEle.textContent = ele.textContent
-      const newEle = document.createElement('div')
-      newEle.className = 'mermaid-wrap'
-      newEle.appendChild(preEle)
-      ele.parentNode.replaceWith(newEle)
-    })
-  }
+<script>window.KY={"search":"/search.json","twcn":"/js/ky-twcn.js?v=eba49651","codeHeight":400,"mermaid":null,"giscus":null,"views":{"endpoint":"https://kyosora-views.coasta98381.workers.dev","minSeconds":15,"since":"2026-11","path":null}}</script>
+<script src="/js/kyosora.js?v=0f20e8d5" defer></script>
 
-  const loadMermaid = () => {
-    if (true) codeToMermaid()
-    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
-    if ($mermaid.length === 0) return
-
-    const runMermaidFn = () => runMermaid($mermaid)
-    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
-    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
-  }
-
-  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
-  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
-})()</script><script>(() => {
-  const applyThemeDefaultsConfig = theme => {
-    if (theme === 'dark-mode') {
-      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
-      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
-      Chart.defaults.scale.ticks.backdropColor = "transparent"
-    } else {
-      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
-      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
-      Chart.defaults.scale.ticks.backdropColor = "transparent"
-    }
-  }
-
-  // Recursively traverse the config object and automatically apply theme-specific color schemes
-  const applyThemeConfig = (obj, theme) => {
-    if (typeof obj !== 'object' || obj === null) return
-
-    Object.keys(obj).forEach(key => {
-      const value = obj[key]
-      // If the property is an object and has theme-specific options, apply them
-      if (typeof value === 'object' && value !== null) {
-        if (value[theme]) {
-          obj[key] = value[theme] // Apply the value for the current theme
-        } else {
-          // Recursively process child objects
-          applyThemeConfig(value, theme)
-        }
-      }
-    })
-  }
-
-  const runChartJS = ele => {
-    window.loadChartJS = true
-
-    Array.from(ele).forEach((item, index) => {
-      const chartSrc = item.firstElementChild
-      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
-      const width = item.getAttribute('data-width')
-      const existingCanvas = document.getElementById(chartID)
-
-      // If a canvas already exists, remove it to avoid rendering duplicates
-      if (existingCanvas) {
-          existingCanvas.parentNode.remove()
-      }
-
-      const chartDefinition = chartSrc.textContent
-      const canvas = document.createElement('canvas')
-      canvas.id = chartID
-
-      const div = document.createElement('div')
-      div.className = 'chartjs-wrap'
-
-      if (width) {
-        div.style.width = width
-      }
-
-      div.appendChild(canvas)
-      chartSrc.insertAdjacentElement('afterend', div)
-
-      const ctx = document.getElementById(chartID).getContext('2d')
-
-      const config = JSON.parse(chartDefinition)
-
-      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
-
-      // Set default styles (initial setup)
-      applyThemeDefaultsConfig(theme)
-
-      // Automatically traverse the config and apply dual-mode color schemes
-      applyThemeConfig(config, theme)
-
-      new Chart(ctx, config)
-    })
-  }
-
-  const loadChartJS = () => {
-    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
-    if (chartJSEle.length === 0) return
-
-    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
-  }
-
-  // Listen for theme change events
-  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
-  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
-
-  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
-})()</script></div><script src="/js/about-cards.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>
+</body>
+</html>

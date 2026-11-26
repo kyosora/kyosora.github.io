@@ -1,671 +1,215 @@
-<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>分類: 程式設計 | kyosora 筆記</title><meta name="author" content="kyosora"><meta name="copyright" content="kyosora"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="個人技術筆記和學習心得分享">
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>分類: 程式設計（第 5 頁） | kyosora 筆記</title>
+<meta name="description" content="JavaScript、Python、C# 與 .NET 的寫法筆記與效能細節。">
+<link rel="canonical" href="https://kyosora.github.io/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/page/5/">
+
+<meta name="author" content="kyosora">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f4f6f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1820" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
-<meta property="og:title" content="kyosora 筆記">
+<meta property="og:title" content="分類: 程式設計">
+<meta property="og:description" content="JavaScript、Python、C# 與 .NET 的寫法筆記與效能細節。">
 <meta property="og:url" content="https://kyosora.github.io/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/page/5/">
+
 <meta property="og:site_name" content="kyosora 筆記">
-<meta property="og:description" content="個人技術筆記和學習心得分享">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://kyosora.github.io/images/avatar.png">
-<meta property="article:author" content="kyosora">
-<meta property="article:tag" content="網路安全, 系統管理, 程式設計, 技術筆記">
+<meta name="twitter:image" content="https://kyosora.github.io/images/avatar.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://kyosora.github.io/images/avatar.png"><script type="application/ld+json"></script><link rel="shortcut icon" href="/images/favicon.png"><link rel="canonical" href="https://kyosora.github.io/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/page/5/"><link rel="preconnect" href="https://cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k"/><meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E"/><meta name="baidu-site-verification" content="code-pE5rnuxcfD"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css" integrity="sha384-YgSbYtJcfPnMV/aJ0UdQk84ctht/ckX0MrfQwxOhw43RMBw2WSaDSMVh4gQwLdE4" crossorigin="anonymous"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.css" media="print" onload="this.media='all'" integrity="sha384-SwTfv/7YAtLOqjuOIVOyBHrBSW9ismFkXd7MZSJZmL20kcTygh/Rm3PHXJPY2taV" crossorigin="anonymous"><script>
-    (() => {
-      
-    const saveToLocal = {
-      set: (key, value, ttl) => {
-        if (!ttl) return
-        const expiry = Date.now() + ttl * 86400000
-        localStorage.setItem(key, JSON.stringify({ value, expiry }))
-      },
-      get: key => {
-        const itemStr = localStorage.getItem(key)
-        if (!itemStr) return undefined
-        const { value, expiry } = JSON.parse(itemStr)
-        if (Date.now() > expiry) {
-          localStorage.removeItem(key)
-          return undefined
-        }
-        return value
-      }
-    }
+<meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k">
+<meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E">
+<meta name="baidu-site-verification" content="code-pE5rnuxcfD">
+<link rel="icon" href="/images/favicon.png">
+<link rel="alternate" type="application/atom+xml" title="kyosora 筆記" href="/atom.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&amp;display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/css/kyosora.css?v=4bf38b40">
 
-    window.btf = {
-      saveToLocal,
-      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = url
-        script.async = true
-        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
-        script.onload = script.onreadystatechange = () => {
-          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
-        }
-        script.onerror = reject
-        document.head.appendChild(script)
-      }),
-      getCSS: (url, id) => new Promise((resolve, reject) => {
-        const link = document.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = url
-        if (id) link.id = id
-        link.onload = link.onreadystatechange = () => {
-          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
-        }
-        link.onerror = reject
-        document.head.appendChild(link)
-      }),
-      addGlobalFn: (key, fn, name = false, parent = window) => {
-        if (!false && key.startsWith('pjax')) return
-        const globalFn = parent.globalFn || {}
-        globalFn[key] = globalFn[key] || {}
-        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
-        parent.globalFn = globalFn
-      }
-    }
-  
-      
-      const activateDarkMode = () => {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
-        }
-      }
-      const activateLightMode = () => {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
-        }
-      }
+<script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","name":"分類: 程式設計","url":"https://kyosora.github.io/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/page/5/","description":"JavaScript、Python、C# 與 .NET 的寫法筆記與效能細節。","inLanguage":"zh-TW"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"分類","item":"https://kyosora.github.io/categories/"},{"@type":"ListItem","position":3,"name":"程式設計","item":"https://kyosora.github.io/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/page/5/"}]}]}</script>
 
-      btf.activateDarkMode = activateDarkMode
-      btf.activateLightMode = activateLightMode
+</head>
+<body class="kind-category">
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
+<symbol id="i-rss" viewBox="0 0 24 24"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.2"/></symbol>
+</svg>
 
-      const theme = saveToLocal.get('theme')
-    
-          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
-          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
-
-          if (theme === undefined) {
-            if (mediaQueryLight.matches) activateLightMode()
-            else if (mediaQueryDark.matches) activateDarkMode()
-            else {
-              const hour = new Date().getHours()
-              const isNight = hour <= 6 || hour >= 18
-              isNight ? activateDarkMode() : activateLightMode()
-            }
-            mediaQueryDark.addEventListener('change', () => {
-              if (saveToLocal.get('theme') === undefined) {
-                e.matches ? activateDarkMode() : activateLightMode()
-              }
-            })
-          } else {
-            theme === 'light' ? activateLightMode() : activateDarkMode()
-          }
-        
+<a class="skip" href="#main">跳到內文</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/">kyosora 筆記</a>
+    <nav class="nav" aria-label="主要選單">
       
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
-      }
-    
+      <a href="/">首頁</a>
       
-    const detectApple = () => {
-      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
-        document.documentElement.classList.add('apple')
-      }
-    }
-    detectApple()
-  
-    })()
-  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script><script>window.dataLayer = window.dataLayer || []
-function gtag(){dataLayer.push(arguments)}
-gtag('js', new Date())
-gtag('config', 'G-F9P7RWQQJE')
-btf.addGlobalFn('pjaxComplete', () => {
-  gtag('config', 'G-F9P7RWQQJE', {'page_path': window.location.pathname})
-}, 'google_analytics')
-</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
-  root: '/',
-  algolia: undefined,
-  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
-  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":false},
-  copy: {
-    success: '複製成功',
-    error: '複製失敗',
-    noSupport: '瀏覽器不支援'
-  },
-  relativeDate: {
-    homepage: true,
-    post: true
-  },
-  runtime: '天',
-  dateSuffix: {
-    just: '剛剛',
-    min: '分鐘前',
-    hour: '小時前',
-    day: '天前',
-    month: '個月前'
-  },
-  copyright: {"limitCount":150,"languages":{"author":"作者: kyosora","link":"連結: ","source":"來源: kyosora 筆記","info":"著作權歸作者所有。如需商業轉載，請聯絡作者獲得授權，非商業轉載請註明出處。"}},
-  lightbox: 'fancybox',
-  Snackbar: undefined,
-  infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
-    buttonText: '載入更多'
-  },
-  isPhotoFigcaption: false,
-  islazyloadPlugin: false,
-  isAnchor: false,
-  percent: {
-    toc: true,
-    rightside: true,
-  },
-  autoDarkmode: true
-}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: '分類: 程式設計',
-  isHighlightShrink: false,
-  isToc: false,
-  pageType: 'category'
-}</script><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="/css/about-cards.css"><link rel="stylesheet" href="/css/bg-gradient-mesh.css"><link rel="stylesheet" href="/css/view-transitions.css"><link rel="alternate" href="/atom.xml" title="kyosora 筆記" type="application/atom+xml">
-<script data-sri-getscript>(function(){var m={"https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js":"sha384-YrKBdCikMPThdp9YNMsmtzHOQ9yH4Ip+glZK2weyS2R3+jMLYsucIs5b5T6ptbqe","https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js":"sha384-1ggI9FC3CkghppRD/XCR4aD+jp4DxwXlJIW0wxhyTLNKuiZEW3c4BwcjKXl0iVAJ","https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js":"sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ"};var b=window.btf;if(!b||typeof b.getScript!=='function')return;var g=b.getScript;b.getScript=function(u,a){var h=m[u];if(!h)return g.call(b,u,a);var o={};if(a)for(var k in a)o[k]=a[k];o.integrity=h;o.crossorigin='anonymous';return g.call(b,u,o)}})();</script></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">245</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">540</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">kyosora 筆記</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-compass"></i><span> 頁面</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 關於</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><h1 class="title-seo">程式設計</h1></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="post_cover left"><a href="/posts/825b4919/" title="Pinia的資料儲存機制：深入探討"><img class="post-bg" src="/images/posts/legacy-825b4919-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Pinia的資料儲存機制：深入探討" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/825b4919/" title="Pinia的資料儲存機制：深入探討">Pinia的資料儲存機制：深入探討</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-03-17T09:26:14.000Z" title="發表於 2024-03-17 17:26:14">2024-03-17</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a></span></div><div class="content">在 Vue.js 生態系統中，Pinia 是目前官方推薦的狀態管理函式庫。不過，當我們透過 Pinia 儲存資料時，這些資料究竟放在哪裡？本文拆解 Pinia 的運作原理，以及它如何處理資料儲存。 Pinia 的核心概念 Pinia 把應用程式的狀態切成獨立的「store」，每個 store 負責管理一塊特定的狀態。這種設計讓狀態管理更模組化，也比較容易維護。 定義一個 store 的基本寫法： 12345678910111213import &#123; defineStore &#125; from &#x27;pinia&#x27;export const useCounterStore = defineStore(&#x27;counter&#x27;, &#123;  state: () =&gt; (&#123;    count: 0,    name: &#x27;guest&#x27;,  &#125;),  actions: &#123;    increment() &#123;      this.count++    &#125;,  &#125;,&#...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/8311066/" title="Promise 和 setTimeout 的深入解析"><img class="post-bg" src="/images/posts/legacy-8311066-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Promise 和 setTimeout 的深入解析" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/8311066/" title="Promise 和 setTimeout 的深入解析">Promise 和 setTimeout 的深入解析</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-03-14T11:16:13.000Z" title="發表於 2024-03-14 19:16:13">2024-03-14</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a></span></div><div class="content">在 JavaScript 中，Promise 和 setTimeout 是處理非同步操作的兩個重要工具。兩者都用於處理非同步事件，但工作方式和使用場景不同。 Promise Promise 是 JavaScript 用來處理非同步操作的物件，代表一個可能尚未完成、但未來某個時間點會完成的操作。Promise 有三種狀態：  Pending（進行中）：初始狀態，既未完成也未拒絕。 Fulfilled（已完成）：操作成功完成。 Rejected（已拒絕）：操作失敗。  Promise 的主要優點：  可以將非同步操作以同步流程的方式表達，避免回呼地獄。 提供 .then()、.catch() 和 .finally() 方法，讓處理非同步結果更直觀。  Promise 的基本用法 1234567891011121314const myPromise = new Promise((resolve, reject) =&gt; &#123;  // 非同步操作  if (/* 操作成功 */) &#123;    resolve(result);  &#125; else &#123;  ...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/posts/2ab9528b/" title="Vue中的Pinia狀態管理：全面指南"><img class="post-bg" src="/images/posts/legacy-2ab9528b-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Vue中的Pinia狀態管理：全面指南" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/2ab9528b/" title="Vue中的Pinia狀態管理：全面指南">Vue中的Pinia狀態管理：全面指南</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-03-12T11:33:18.000Z" title="發表於 2024-03-12 19:33:18">2024-03-12</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a></span></div><div class="content">引言 Vue 應用規模一大，狀態管理就會開始讓人頭痛。Pinia 是 Vue 官方推薦的狀態管理函式庫，設計目標是型別安全、直觀，且不需要 Vuex 那套繁瑣的 mutation 流程。本文涵蓋 Pinia 的核心概念、進階特性與常見實踐，從安裝到插件系統都會走一遍。 什麼是Pinia? Pinia 是新一代的 Vue 狀態管理函式庫，定位上取代 Vuex。由 Vue 核心團隊成員 Eduardo San Martin Morote 建立，在 Vue 3 中成為官方推薦的狀態管理方案。 Pinia的主要特性:  直觀且簡潔的 API 完整的 TypeScript 支援 支援 Vue 2 和 Vue 3（Pinia v2；v3 起僅支援 Vue 3） 極小的套件大小 支援多個 Store 支援熱模組替換（HMR） 支援 Vue DevTools 插件系統可擴充  安裝和設置 1npm install pinia 在 Vue 應用中引入 Pinia： 123456789import &#123; createApp &#125; from &#x27;vue&#x27;import ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/2f83e8a9/" title="JS防抖（Debouncing）與節流（Throttling）"><img class="post-bg" src="/images/posts/legacy-2f83e8a9-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="JS防抖（Debouncing）與節流（Throttling）" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/2f83e8a9/" title="JS防抖（Debouncing）與節流（Throttling）">JS防抖（Debouncing）與節流（Throttling）</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-03-11T01:38:57.000Z" title="發表於 2024-03-11 09:38:57">2024-03-11</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a></span></div><div class="content">JS防抖與節流教學 滾動、視窗縮放、鍵盤輸入這類高頻事件，若直接把處理函式綁上去，瀏覽器很快就會喘不過氣。防抖（Debouncing）和節流（Throttling）是兩種常見的解法，差別在於「事件停了才執行」還是「固定間隔最多執行一次」，選錯方向效果會差很多。 防抖 (Debouncing) 觸發事件後，等待指定時間才執行處理函式。如果等待期間又觸發了，就重新計時。連續快速觸發的情況下，最終只會執行一次。 使用時機 觸發頻率高、但不需要即時響應每次觸發的場景：  搜尋框輸入（使用者停止輸入後再發出請求） 視窗大小調整（調整結束後再重新計算排版）  範例 12345678910111213function debounce(func, wait) &#123;    let timeout;    return function(...args) &#123;        const context = this;        clearTimeout(timeout);        timeout = setTimeout(() =&gt; func.apply(conte...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/posts/297a49cd/" title="圖片懶加載技術：提升網站效能的七大方法"><img class="post-bg" src="/images/posts/legacy-297a49cd-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="圖片懶加載技術：提升網站效能的七大方法" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/297a49cd/" title="圖片懶加載技術：提升網站效能的七大方法">圖片懶加載技術：提升網站效能的七大方法</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-03-10T10:52:16.000Z" title="發表於 2024-03-10 18:52:16">2024-03-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a></span></div><div class="content">圖片往往是影響網頁載入速度的主要因素之一。本文整理七種圖片懶加載技術，比較各自的相容性與效能取捨，方便依場景選用。 什麼是圖片懶加載？ 圖片懶加載是一種網頁優化技術，延遲載入暫時不可見的圖片。只有當使用者滾動到圖片位置時，圖片才會開始載入，可以顯著減少初始頁面載入時間和頻寬使用。 七種圖片懶加載方法 1. 原生懶加載 HTML Living Standard 定義的 loading 屬性是最簡單的懶加載方式： 1&lt;img src=&quot;image.jpg&quot; loading=&quot;lazy&quot; alt=&quot;懶加載圖片&quot;&gt; 支援度：Chrome 77+、Firefox 75+、Safari 16.4+，全球覆蓋率約 95%。不支援的舊版瀏覽器會忽略此屬性，圖片照常載入，無需額外後備處理。 優點：  零程式碼，無需 JavaScript 瀏覽器原生支援，效能佳  缺點：  Safari 16.4 以下（含 iOS 16.4 以下）不支援  2. Intersection Observer API 這是一個強大的 JavaScr...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/941b0eb3/" title="深入理解 JavaScript 的 async/await"><img class="post-bg" src="/images/posts/legacy-941b0eb3-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="深入理解 JavaScript 的 async/await" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/941b0eb3/" title="深入理解 JavaScript 的 async/await">深入理解 JavaScript 的 async/await</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-03-09T09:39:33.000Z" title="發表於 2024-03-09 17:39:33">2024-03-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a></span></div><div class="content">async/await 是 Promise 的語法糖，讓非同步程式碼讀起來像同步。底層仍是 Promise，事件循環沒有改變，只是寫法不同。 async/await 的基本概念 async 函式：使用 async 關鍵字宣告，無論函式本身回傳什麼值，呼叫端拿到的一定是 Promise。 await 運算符：等待一個 Promise 決議（resolve 或 reject）。在標準模式下只能用在 async 函式內；ES2022 起，ES 模組的頂層也可以直接使用 await，不需要包一層 async 函式。 與 Promise 的關係 async/await 本質上是 Promise 的語法糖。看個對照例子： 使用 Promise： 1234567891011function fetchData() &#123;  return fetch(&#x27;https://api.example.com/data&#x27;)    .then(response =&gt; response.json())    .then(data =&gt; &#123;      consol...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/posts/47ffc215/" title="setTimeout 和 JavaScript 的 Event Loop 運作原理"><img class="post-bg" src="/images/posts/legacy-47ffc215-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="setTimeout 和 JavaScript 的 Event Loop 運作原理" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/47ffc215/" title="setTimeout 和 JavaScript 的 Event Loop 運作原理">setTimeout 和 JavaScript 的 Event Loop 運作原理</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-03-08T10:33:42.000Z" title="發表於 2024-03-08 18:33:42">2024-03-08</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a></span></div><div class="content">JavaScript 是單執行緒語言，一次只能執行一個操作。如果所有事情都同步跑，任何耗時任務都會卡住整個程式——這就是事件循環（Event Loop）存在的原因，也是 setTimeout 能讓你「稍後再執行」的底層機制。 JavaScript 的單執行緒特性 單執行緒的意思是：呼叫堆疊只有一條，同時只能有一段程式碼在跑。長時間的同步操作（例如複雜運算或等待 I/O）一旦佔住堆疊，使用者介面就會完全卡死、無法回應任何輸入。 非同步程式設計的核心思路是：把等待的部分交出去，主執行緒繼續跑其他的，等結果回來再接手。 事件循環的四個組件 理解事件循環前，先認識它的基本組成：  呼叫堆疊（Call Stack）：記錄目前正在執行的函式，採後進先出（LIFO）結構。 Web API：瀏覽器提供的環境能力，包括計時器（setTimeout、setInterval）、網路請求（fetch）、DOM 事件等。這些操作不在 JS 引擎內跑，而是交給瀏覽器的底層執行緒處理。 回呼佇列（Callback Queue / Task Queue）：Web API 完成後，把回呼函式排進這裡，等待被執行。...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/8589441f/" title="Vue 3 資料傳遞"><img class="post-bg" src="/images/posts/legacy-8589441f-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Vue 3 資料傳遞" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/8589441f/" title="Vue 3 資料傳遞">Vue 3 資料傳遞</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-03-07T07:47:44.000Z" title="發表於 2024-03-07 15:47:44">2024-03-07</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a></span></div><div class="content">Vue 3 組件化架構的核心問題之一，就是資料怎麼在元件之間流動。本文整理三個主要機制：父傳子用 props、子傳父用 emit、跨層級用 provide/inject，並附上 Vuex 與 Pinia 的對照。所有範例均採 &lt;script setup&gt; 語法。 1. 父元件傳資料到子元件（Props） 父元件透過屬性綁定把資料往下傳，子元件用 defineProps 宣告接收。 父元件 12345678910&lt;template&gt;  &lt;ChildComponent :message=&quot;messageFromParent&quot; /&gt;&lt;/template&gt;&lt;script setup&gt;import &#123; ref &#125; from &#x27;vue&#x27;;import ChildComponent from &#x27;./ChildComponent.vue&#x27;;const messageFromParent = ref(&#x27;Hello from Parent&#x27;)...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/posts/7aecd08e/" title="JavaScript 深拷貝完整指南：掌握物件複製的關鍵技巧"><img class="post-bg" src="/images/posts/legacy-7aecd08e-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="JavaScript 深拷貝完整指南：掌握物件複製的關鍵技巧" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/7aecd08e/" title="JavaScript 深拷貝完整指南：掌握物件複製的關鍵技巧">JavaScript 深拷貝完整指南：掌握物件複製的關鍵技巧</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-02-27T10:51:02.000Z" title="發表於 2024-02-27 18:51:02">2024-02-27</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a></span></div><div class="content">JavaScript 的物件是傳參考的，稍不注意就會讓原始資料被意外修改。本文整理四種深拷貝方法，說明各自的限制與適用場景。 深拷貝 vs 淺拷貝：關鍵差異  淺拷貝：只複製第一層屬性，內部物件仍然共享參考 深拷貝：遞迴複製所有層級，建立完全獨立的新物件  實作方法 1：使用 JSON 方法 最簡單的深拷貝寫法： 123456789function jsonDeepCopy(obj) &#123;  return JSON.parse(JSON.stringify(obj));&#125;const original = &#123;  name: &#x27;John&#x27;,  info: &#123; age: 25 &#125;&#125;;const copy = jsonDeepCopy(original); 優點：  寫法簡單，零依賴 適用於只含字串、數字、布林值、null 的普通物件  缺點：  函式屬性會直接消失 undefined 值會被丟棄 無法處理循環引用（直接拋錯） Date 會被轉成 ISO 字串，JSON.parse 後變成 string 而非 ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/posts/2212f7f6/" title="Chrome套件開發教學：自動整理書籤到域名資料夾"><img class="post-bg" src="/images/posts/legacy-2212f7f6-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Chrome套件開發教學：自動整理書籤到域名資料夾" loading='lazy'></a></div><div class="recent-post-info"><a class="article-title" href="/posts/2212f7f6/" title="Chrome套件開發教學：自動整理書籤到域名資料夾">Chrome套件開發教學：自動整理書籤到域名資料夾</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-02-23T09:05:31.000Z" title="發表於 2024-02-23 17:05:31">2024-02-23</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a></span></div><div class="content">本教學將引導如何開發一個 Chrome 擴充套件，此套件能將新建的書籤依域名分類到對應資料夾。我們會使用 background.js 來實現這個功能。 前提 擁有基本的 JavaScript 知識。 已安裝 Chrome 瀏覽器。 步驟1：建立擴充套件目錄 首先，在你的電腦上建立一個新的資料夾來存放擴充套件檔案，例如命名為 BookmarkOrganizer。 步驟2：撰寫 manifest.json 在 BookmarkOrganizer 資料夾內，建立一個名為 manifest.json 的檔案，並加入以下內容： 12345678910&#123;  &quot;manifest_version&quot;: 3,  &quot;name&quot;: &quot;自動整理書籤到域名資料夾&quot;,  &quot;version&quot;: &quot;1.0&quot;,  &quot;description&quot;: &quot;將新建的書籤自動整理到以域名命名的資料夾中。&quot;,  &quot;permissions&quot;: [&quot;book...</div></div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/page/4/"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">1</a><span class="space">&hellip;</span><a class="page-number" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/page/6/">6</a><a class="extend next" rel="next" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/page/6/"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/images/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">kyosora</div><div class="author-info-description">技術探索與學習分享</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">245</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">540</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kyosora"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/kyosora" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/4fb41c1c/" title="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它"><img src="/images/posts/riemann-hypothesis-claude-lean-proof-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/4fb41c1c/" title="黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z" title="發表於 2026-11-25 10:40:00">2026-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7463bf4c/" title="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法"><img src="/images/posts/windows-openssh-key-only-four-machines-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/7463bf4c/" title="Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z" title="發表於 2026-11-12 11:30:00">2026-11-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3c89a868/" title="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊"><img src="/images/posts/aspnet-session-lock-request-queue-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/3c89a868/" title="API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z" title="發表於 2026-11-12 11:00:00">2026-11-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7cf056d5/" title="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI"><img src="/images/posts/nikke-launcher-cdn-sri-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/7cf056d5/" title="NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z" title="發表於 2026-11-05 13:00:00">2026-11-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/34c467cd/" title="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法"><img src="/images/posts/twca-cyber-root-iis-iphone-untrusted-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法"/ loading='lazy'></a><div class="content"><a class="title" href="/posts/34c467cd/" title="TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法">TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法</a><time datetime="2026-11-02T06:45:00.000Z" title="發表於 2026-11-02 14:45:00">2026-11-02</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
-            <i class="fas fa-folder-open"></i>
-            <span>分類</span>
-            
-          </div>
-          <ul class="card-category-list expandBtn" id="aside-cat-list">
-            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"><span class="card-category-list-name">AI工具實戰</span><span class="card-category-list-count">99</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/"><span class="card-category-list-name">AI產業觀察</span><span class="card-category-list-count">52</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%89%8D%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/"><span class="card-category-list-name">前後端開發</span><span class="card-category-list-count">24</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%B7%A5%E5%85%B7%E8%88%87%E7%94%9F%E7%94%A2%E5%8A%9B/"><span class="card-category-list-name">工具與生產力</span><span class="card-category-list-count">49</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/"><span class="card-category-list-name">程式設計</span><span class="card-category-list-count">54</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%B3%BB%E7%B5%B1%E8%88%87%E7%B6%AD%E9%81%8B/"><span class="card-category-list-name">系統與維運</span><span class="card-category-list-count">28</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%81%B7%E6%B6%AF%E8%88%87%E5%8F%8D%E6%80%9D/"><span class="card-category-list-name">職涯與反思</span><span class="card-category-list-count">20</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%B3%87%E6%96%99%E5%BA%AB/"><span class="card-category-list-name">資料庫</span><span class="card-category-list-count">15</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/"><span class="card-category-list-name">資訊安全</span><span class="card-category-list-count">38</span></a></li>
-          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>標籤</span></div><div class="card-tag-cloud"><a href="/tags/%E6%9C%AC%E5%9C%B0LLM/" style="font-size: 1.15em; color: rgb(105, 77, 50);">本地LLM</a><a href="/tags/benchmark/" style="font-size: 1.23em; color: rgb(92, 96, 99);">benchmark</a><a href="/tags/ATLAS/" style="font-size: 1.15em; color: rgb(50, 196, 96);">ATLAS</a><a href="/tags/Claude/" style="font-size: 1.4em; color: rgb(58, 110, 188);">Claude</a><a href="/tags/%E6%88%90%E6%9C%AC%E5%88%86%E6%9E%90/" style="font-size: 1.15em; color: rgb(86, 194, 130);">成本分析</a><a href="/tags/LLM/" style="font-size: 1.34em; color: rgb(98, 50, 50);">LLM</a><a href="/tags/DeepSeek/" style="font-size: 1.2em; color: rgb(171, 112, 75);">DeepSeek</a><a href="/tags/Gemini/" style="font-size: 1.23em; color: rgb(178, 54, 187);">Gemini</a><a href="/tags/AI-%E8%B6%A8%E5%8B%A2/" style="font-size: 1.18em; color: rgb(50, 50, 127);">AI 趨勢</a><a href="/tags/OpenRouter/" style="font-size: 1.15em; color: rgb(161, 80, 77);">OpenRouter</a><a href="/tags/Cursor/" style="font-size: 1.2em; color: rgb(50, 98, 196);">Cursor</a><a href="/tags/AI-Agent/" style="font-size: 1.45em; color: rgb(197, 157, 113);">AI Agent</a><a href="/tags/Temporal/" style="font-size: 1.15em; color: rgb(50, 95, 194);">Temporal</a><a href="/tags/%E7%B3%BB%E7%B5%B1%E5%8F%AF%E9%9D%A0%E6%80%A7/" style="font-size: 1.15em; color: rgb(60, 50, 50);">系統可靠性</a><a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AF%A6%E8%B8%90/" style="font-size: 1.15em; color: rgb(50, 50, 68);">工程實踐</a><a href="/tags/NemoClaw/" style="font-size: 1.23em; color: rgb(87, 165, 161);">NemoClaw</a><a href="/tags/OpenClaw/" style="font-size: 1.26em; color: rgb(163, 173, 107);">OpenClaw</a><a href="/tags/GTC-2026/" style="font-size: 1.2em; color: rgb(119, 145, 194);">GTC 2026</a><a href="/tags/%E6%A1%86%E6%9E%B6%E9%81%B8%E5%9E%8B/" style="font-size: 1.15em; color: rgb(125, 107, 188);">框架選型</a><a href="/tags/Claude-Code/" style="font-size: 1.42em; color: rgb(199, 50, 133);">Claude Code</a><a href="/tags/AI-Coding-Assistant/" style="font-size: 1.15em; color: rgb(172, 50, 97);">AI Coding Assistant</a><a href="/tags/%E5%AE%89%E5%85%A8%E6%80%A7/" style="font-size: 1.15em; color: rgb(75, 154, 50);">安全性</a><a href="/tags/%E9%96%8B%E7%99%BC%E7%B6%93%E9%A9%97/" style="font-size: 1.15em; color: rgb(133, 164, 50);">開發經驗</a><a href="/tags/Firefox/" style="font-size: 1.15em; color: rgb(155, 177, 50);">Firefox</a><a href="/tags/%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E/" style="font-size: 1.15em; color: rgb(104, 76, 154);">安全漏洞</a><a href="/tags/AI%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/" style="font-size: 1.15em; color: rgb(50, 59, 50);">AI安全研究</a><a href="/tags/LLM%E6%87%89%E7%94%A8/" style="font-size: 1.15em; color: rgb(183, 181, 131);">LLM應用</a><a href="/tags/AI/" style="font-size: 1.2em; color: rgb(108, 123, 50);">AI</a><a href="/tags/%E6%8A%95%E8%B3%87/" style="font-size: 1.15em; color: rgb(141, 122, 146);">投資</a><a href="/tags/%E7%94%A2%E6%A5%AD%E5%88%86%E6%9E%90/" style="font-size: 1.15em; color: rgb(137, 182, 50);">產業分析</a><a href="/tags/%E9%96%8B%E7%99%BC%E8%80%85%E7%94%9F%E6%85%8B/" style="font-size: 1.15em; color: rgb(50, 186, 78);">開發者生態</a><a href="/tags/NVIDIA/" style="font-size: 1.31em; color: rgb(164, 50, 50);">NVIDIA</a><a href="/tags/GitHub-Trending/" style="font-size: 1.15em; color: rgb(157, 200, 62);">GitHub Trending</a><a href="/tags/%E9%96%8B%E7%99%BC%E8%80%85%E5%B7%A5%E5%85%B7/" style="font-size: 1.23em; color: rgb(75, 186, 64);">開發者工具</a><a href="/tags/GPT-5-4/" style="font-size: 1.23em; color: rgb(50, 98, 107);">GPT-5.4</a><a href="/tags/Computer-Use/" style="font-size: 1.18em; color: rgb(114, 82, 133);">Computer Use</a><a href="/tags/%E8%87%AA%E5%8B%95%E5%8C%96/" style="font-size: 1.26em; color: rgb(98, 70, 175);">自動化</a><a href="/tags/OpenAI/" style="font-size: 1.37em; color: rgb(181, 96, 187);">OpenAI</a><a href="/tags/API%E9%99%90%E6%B5%81/" style="font-size: 1.15em; color: rgb(147, 69, 50);">API限流</a><a href="/tags/Net/" style="font-size: 1.29em; color: rgb(64, 110, 162);">Net</a></div></div><div class="card-widget card-archives">
-    <div class="item-headline">
-      <i class="fas fa-archive"></i>
-      <span>歸檔</span>
-      <a class="card-more-btn" href="/archives/"
-            title="檢視更多">
-            <i class="fas fa-angle-right"></i>
-          </a>
+      <a href="/archives/">歸檔</a>
+      
+      <a href="/categories/" aria-current="page">分類</a>
+      
+      <a href="/tags/">標籤</a>
+      
+      <a href="/about/">關於</a>
+      
+    </nav>
+    <div class="tools">
+      <button class="tool" type="button" data-action="search" aria-label="搜尋文章（快捷鍵 /）" title="搜尋（/）"><svg class="icon"><use href="#i-search"/></svg></button>
+      <button class="tool tool--text" type="button" data-action="translate" aria-label="切換成簡體中文" title="繁簡切換">簡</button>
+      <button class="tool" type="button" data-action="theme" aria-label="切換深色模式" title="深淺色切換"><svg class="icon icon-moon"><use href="#i-moon"/></svg><svg class="icon icon-sun"><use href="#i-sun"/></svg></button>
     </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="wrap block listing">
   
-    <ul class="card-archive-list">
-      
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/11/">
-            <span class="card-archive-list-date">
-              2026年11月
-            </span>
-            <span class="card-archive-list-count">5</span>
-          </a>
-        </li>
-      
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/10/">
-            <span class="card-archive-list-date">
-              2026年10月
-            </span>
-            <span class="card-archive-list-count">8</span>
-          </a>
-        </li>
-      
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/09/">
-            <span class="card-archive-list-date">
-              2026年09月
-            </span>
-            <span class="card-archive-list-count">10</span>
-          </a>
-        </li>
-      
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/08/">
-            <span class="card-archive-list-date">
-              2026年08月
-            </span>
-            <span class="card-archive-list-count">5</span>
-          </a>
-        </li>
-      
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/07/">
-            <span class="card-archive-list-date">
-              2026年07月
-            </span>
-            <span class="card-archive-list-count">10</span>
-          </a>
-        </li>
-      
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/06/">
-            <span class="card-archive-list-date">
-              2026年06月
-            </span>
-            <span class="card-archive-list-count">22</span>
-          </a>
-        </li>
-      
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/05/">
-            <span class="card-archive-list-date">
-              2026年05月
-            </span>
-            <span class="card-archive-list-count">17</span>
-          </a>
-        </li>
-      
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/04/">
-            <span class="card-archive-list-date">
-              2026年04月
-            </span>
-            <span class="card-archive-list-count">5</span>
-          </a>
-        </li>
-      
-    </ul>
-  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>網站資訊</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章數量 :</div><div class="item-count">245</div></div><div class="webinfo-item"><div class="item-name">運行時間 :</div><div class="item-count" id="runtimeshow" data-publishDate="2019-11-12T16:00:00.000Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">總字數 :</div><div class="item-count">531.5k</div></div><div class="webinfo-item"><div class="item-name">最後更新時間 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-11-25T02:35:49.635Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By kyosora</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button id="translateLink" type="button" title="繁簡轉換">簡</button><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><script src="/js/tw_cn.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.9/dist/fancybox/fancybox.umd.js" integrity="sha384-gxImbXBiSbxiZ81MBKincxlzfmdjvLfzyAvwe2hUA/rhcWB88+gfX+uzi8K/rw84" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.js" type="module" integrity="sha384-+oVCYEOCpcTbL4CsQ1hK+6Prt7+Kx2+ER1RSn5iQ0Ua0B1sBuGONp1jKt8dkcd5n" crossorigin="anonymous"></script><div class="js-pjax"><script>(() => {
-  const parseViewBox = viewBox => {
-    if (!viewBox) return null
-    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
-    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
-    return parts
-  }
-
-  const getSvgViewBox = svg => {
-    const attr = parseViewBox(svg.getAttribute('viewBox'))
-    if (attr) return attr
-
-    // Fallback: use bbox to build a viewBox
-    try {
-      const bbox = svg.getBBox()
-      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
-    } catch (e) {
-      // getBBox may fail on some edge cases; ignore
-    }
-
-    const w = Number(svg.getAttribute('width')) || 0
-    const h = Number(svg.getAttribute('height')) || 0
-    if (w > 0 && h > 0) return [0, 0, w, h]
-    return [0, 0, 100, 100]
-  }
-
-  const setSvgViewBox = (svg, vb) => {
-    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
-  }
-
-  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
-
-  const openSvgInNewTab = ({ source, initViewBox }) => {
-    const getClonedSvg = () => {
-      if (typeof source === 'string') {
-        const template = document.createElement('template')
-        template.innerHTML = source.trim()
-        const svg = template.content.querySelector('svg')
-        return svg ? svg.cloneNode(true) : null
-      }
-      if (source && typeof source.cloneNode === 'function') {
-        return source.cloneNode(true)
-      }
-      return null
-    }
-
-    const clone = getClonedSvg()
-    if (!clone) return
-    if (initViewBox && initViewBox.length === 4) {
-      clone.setAttribute('viewBox', initViewBox.join(' '))
-    }
-    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
-    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
-      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-    }
-    // inject background to match current theme
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
-    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
-    if (!clone.style.background) clone.style.background = bg
-
-    const serializer = new XMLSerializer()
-    const svgSource = serializer.serializeToString(clone)
-    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
-      <style>
-        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
-        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
-      </style>
-      </head><body>${svgSource}</body></html>`
-    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    window.open(url, '_blank', 'noopener')
-    setTimeout(() => URL.revokeObjectURL(url), 30000)
-  }
-
-  const attachMermaidViewerButton = wrap => {
-    let btn = wrap.querySelector('.mermaid-open-btn')
-    if (!btn) {
-      btn = document.createElement('button')
-      btn.type = 'button'
-      btn.className = 'mermaid-open-btn'
-      wrap.appendChild(btn)
-    }
-
-    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
-
-    if (!btn.__mermaidViewerBound) {
-      btn.addEventListener('click', e => {
-        e.preventDefault()
-        e.stopPropagation()
-        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
-        if (!svg) return
-        const initViewBox = wrap.__mermaidInitViewBox
-        if (typeof svg === 'string') {
-          openSvgInNewTab({ source: svg, initViewBox })
-          return
-        }
-        openSvgInNewTab({ source: svg, initViewBox })
-      })
-      btn.__mermaidViewerBound = true
-    }
-  }
-
-  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
-  const zoomAtPoint = (vb, factor, px, py) => {
-    const w = vb[2] * factor
-    const h = vb[3] * factor
-    const nx = px - (px - vb[0]) * factor
-    const ny = py - (py - vb[1]) * factor
-    return [nx, ny, w, h]
-  }
-
-  const initMermaidGestures = wrap => {
-    const svg = wrap.querySelector('svg')
-    if (!svg) return
-
-    // Ensure viewBox exists so gestures always work
-    const initVb = getSvgViewBox(svg)
-    wrap.__mermaidInitViewBox = initVb
-    wrap.__mermaidCurViewBox = initVb.slice()
-    setSvgViewBox(svg, initVb)
-
-    // Avoid binding multiple times on themeChange/pjax
-    if (wrap.__mermaidGestureBound) return
-    wrap.__mermaidGestureBound = true
-
-    // Helper: map client (viewport) coordinate -> viewBox coordinate
-    const clientToViewBox = (clientX, clientY) => {
-      const rect = svg.getBoundingClientRect()
-      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
-      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
-      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
-      return { x, y, rect, vb }
-    }
-
-    const state = {
-      pointers: new Map(),
-      startVb: null,
-      startDist: 0,
-      startCenter: null
-    }
-
-    const clampVb = vb => {
-      const init = wrap.__mermaidInitViewBox || vb
-      const minW = init[2] * 0.1
-      const maxW = init[2] * 10
-      const minH = init[3] * 0.1
-      const maxH = init[3] * 10
-      vb[2] = clamp(vb[2], minW, maxW)
-      vb[3] = clamp(vb[3], minH, maxH)
-      return vb
-    }
-
-    const setCurVb = vb => {
-      vb = clampVb(vb)
-      wrap.__mermaidCurViewBox = vb
-      setSvgViewBox(svg, vb)
-    }
-
-    const onPointerDown = e => {
-      // Allow only primary button for mouse
-      if (e.pointerType === 'mouse' && e.button !== 0) return
-      svg.setPointerCapture(e.pointerId)
-      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
-
-      if (state.pointers.size === 1) {
-        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-      } else if (state.pointers.size === 2) {
-        const pts = [...state.pointers.values()]
-        const dx = pts[0].x - pts[1].x
-        const dy = pts[0].y - pts[1].y
-        state.startDist = Math.hypot(dx, dy)
-        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
-      }
-    }
-
-    const onPointerMove = e => {
-      if (!state.pointers.has(e.pointerId)) return
-      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
-
-      // Pan with 1 pointer
-      if (state.pointers.size === 1 && state.startVb) {
-        const p = [...state.pointers.values()][0]
-        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
-        // movementX/Y unreliable on touch, compute from stored last position
-        const last = wrap.__mermaidLastSinglePointer || p
-        const dxClient = p.x - last.x
-        const dyClient = p.y - last.y
-        wrap.__mermaidLastSinglePointer = p
-
-        const { rect } = clientToViewBox(p.x, p.y)
-        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-        const dx = dxClient * (vb[2] / rect.width)
-        const dy = dyClient * (vb[3] / rect.height)
-        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
-        return
-      }
-
-      // Pinch zoom with 2 pointers
-      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
-        const pts = [...state.pointers.values()]
-        const dx = pts[0].x - pts[1].x
-        const dy = pts[0].y - pts[1].y
-        const dist = Math.hypot(dx, dy)
-        if (!dist) return
-        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
-
-        const cx = (pts[0].x + pts[1].x) / 2
-        const cy = (pts[0].y + pts[1].y) / 2
-        const centerClient = { x: cx, y: cy }
-
-        const pxy = clientToViewBox(centerClient.x, centerClient.y)
-        const cpx = pxy.x
-        const cpy = pxy.y
-
-        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
-        setCurVb(vb)
-      }
-    }
-
-    const onPointerUpOrCancel = e => {
-      state.pointers.delete(e.pointerId)
-      if (state.pointers.size === 0) {
-        state.startVb = null
-        state.startDist = 0
-        state.startCenter = null
-        wrap.__mermaidLastSinglePointer = null
-      } else if (state.pointers.size === 1) {
-        // reset single pointer baseline to avoid jump
-        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
-      }
-    }
-
-    // Wheel zoom (mouse/trackpad)
-    const onWheel = e => {
-      // ctrlKey on mac trackpad pinch; we treat both as zoom
-      e.preventDefault()
-      const delta = e.deltaY
-      const zoomFactor = delta > 0 ? 1.1 : 0.9
-      const { x, y } = clientToViewBox(e.clientX, e.clientY)
-      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
-      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
-    }
-
-    const onDblClick = () => {
-      const init = wrap.__mermaidInitViewBox
-      if (!init) return
-      wrap.__mermaidCurViewBox = init.slice()
-      setSvgViewBox(svg, init)
-    }
-
-    svg.addEventListener('pointerdown', onPointerDown)
-    svg.addEventListener('pointermove', onPointerMove)
-    svg.addEventListener('pointerup', onPointerUpOrCancel)
-    svg.addEventListener('pointercancel', onPointerUpOrCancel)
-    svg.addEventListener('wheel', onWheel, { passive: false })
-    svg.addEventListener('dblclick', onDblClick)
-  }
-
-  const runMermaid = ele => {
-    window.loadMermaid = true
-    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
-
-    ele.forEach((item, index) => {
-      const mermaidSrc = item.firstElementChild
-
-      // Clear old render (themeChange/pjax will rerun)
-      const oldSvg = item.querySelector('svg')
-      if (oldSvg) oldSvg.remove()
-      item.__mermaidGestureBound = false
-
-      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
-      if (!config.theme) {
-        config.theme = theme
-      }
-      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
-      const mermaidID = `mermaid-${index}`
-      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
-
-      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
-      const renderMermaid = svg => {
-        mermaidSrc.insertAdjacentHTML('afterend', svg)
-        if (true) initMermaidGestures(item)
-        item.__mermaidOriginalSvg = svg
-        if (true) attachMermaidViewerButton(item)
-      }
+<nav class="crumbs" aria-label="目前位置">
+  <ol>
+  
+    <li><a href="/">首頁</a></li>
+  
+    <li><a href="/categories/">分類</a></li>
+  
+  </ol>
+</nav>
 
 
-      // mermaid v9 and v10 compatibility
-      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
-    })
-  }
+  <h1 class="page-title">程式設計，第 5 頁</h1>
+  <p class="page-lead">JavaScript、Python、C# 與 .NET 的寫法筆記與效能細節。</p>
+  <p class="page-count">這個分類有 54 篇文章。</p>
+  <ul class="post-list">
 
-  const codeToMermaid = () => {
-    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
-    if (codeMermaidEle.length === 0) return
+  <li class="post-row">
+    <a class="row-cover" href="/posts/825b4919/" tabindex="-1" aria-hidden="true"><img src="/images/posts/legacy-825b4919-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/825b4919/">Pinia的資料儲存機制：深入探討</a></h2>
+      <p class="row-desc">用 Pinia 管理狀態時，資料究竟存在哪裡？說明 store 如何透過 Vue 響應式系統把狀態放進瀏覽器或伺服器記憶體，並示範用 localStorage 與持久化外掛實現資料保存，帶你理清資料流動全貌，適合想搞懂 Pinia 底層的 Vue 開發者。</p>
+      <p class="row-meta"><time datetime="2024-03-17T09:26:14.000Z">2024-03-17</time><a class="row-cat" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a><span>3 分鐘</span></p>
+    </div>
+  </li>
 
-    codeMermaidEle.forEach(ele => {
-      const preEle = document.createElement('pre')
-      preEle.className = 'mermaid-src'
-      preEle.hidden = true
-      preEle.textContent = ele.textContent
-      const newEle = document.createElement('div')
-      newEle.className = 'mermaid-wrap'
-      newEle.appendChild(preEle)
-      ele.parentNode.replaceWith(newEle)
-    })
-  }
+  <li class="post-row">
+    <a class="row-cover" href="/posts/8311066/" tabindex="-1" aria-hidden="true"><img src="/images/posts/legacy-8311066-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/8311066/">Promise 和 setTimeout 的深入解析</a></h2>
+      <p class="row-desc">Promise 和 setTimeout 同樣處理非同步，執行順序為何常出乎意料？解析 Promise 三種狀態與鏈式寫法、setTimeout 的非阻塞特性與最小延遲，再從事件循環角度說清兩者結合時的執行先後，幫 JavaScript 開發者跳出回呼地獄。</p>
+      <p class="row-meta"><time datetime="2024-03-14T11:16:13.000Z">2024-03-14</time><a class="row-cat" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a><span>3 分鐘</span></p>
+    </div>
+  </li>
 
-  const loadMermaid = () => {
-    if (true) codeToMermaid()
-    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
-    if ($mermaid.length === 0) return
+  <li class="post-row">
+    <a class="row-cover" href="/posts/2ab9528b/" tabindex="-1" aria-hidden="true"><img src="/images/posts/legacy-2ab9528b-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/2ab9528b/">Vue中的Pinia狀態管理：全面指南</a></h2>
+      <p class="row-desc">Vue 應用狀態越長越難管？完整介紹官方推薦的 Pinia：從 state、getter、action 核心概念到組合式 API 寫法、狀態訂閱、持久化與插件系統，並對照 Vuex 差異與最佳實踐，幫前端建立型別安全又直觀的全域狀態管理。</p>
+      <p class="row-meta"><time datetime="2024-03-12T11:33:18.000Z">2024-03-12</time><a class="row-cat" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a><span>4 分鐘</span></p>
+    </div>
+  </li>
 
-    const runMermaidFn = () => runMermaid($mermaid)
-    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
-    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
-  }
+  <li class="post-row">
+    <a class="row-cover" href="/posts/2f83e8a9/" tabindex="-1" aria-hidden="true"><img src="/images/posts/legacy-2f83e8a9-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/2f83e8a9/">JS防抖（Debouncing）與節流（Throttling）</a></h2>
+      <p class="row-desc">滾動、視窗縮放、鍵盤輸入這類高頻事件直接綁處理函式，常拖垮瀏覽器效能。釐清防抖與節流的差異與適用時機——搜尋框輸入該用哪個、無限滾動又該用哪個，附實作範例，幫你選對策略提升響應性。</p>
+      <p class="row-meta"><time datetime="2024-03-11T01:38:57.000Z">2024-03-11</time><a class="row-cat" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a><span>2 分鐘</span></p>
+    </div>
+  </li>
 
-  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
-  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
-})()</script><script>(() => {
-  const applyThemeDefaultsConfig = theme => {
-    if (theme === 'dark-mode') {
-      Chart.defaults.color = "rgba(255, 255, 255, 0.8)"
-      Chart.defaults.borderColor = "rgba(255, 255, 255, 0.2)"
-      Chart.defaults.scale.ticks.backdropColor = "transparent"
-    } else {
-      Chart.defaults.color = "rgba(0, 0, 0, 0.8)"
-      Chart.defaults.borderColor = "rgba(0, 0, 0, 0.1)"
-      Chart.defaults.scale.ticks.backdropColor = "transparent"
-    }
-  }
+  <li class="post-row">
+    <a class="row-cover" href="/posts/297a49cd/" tabindex="-1" aria-hidden="true"><img src="/images/posts/legacy-297a49cd-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/297a49cd/">圖片懶加載技術：提升網站效能的七大方法</a></h2>
+      <p class="row-desc">圖片拖慢網頁初始載入又吃頻寬？整理七種圖片懶加載做法——原生 loading 屬性、Intersection Observer、滾動監聽、第三方庫、漸進式載入到 CSS 背景圖與 Vue v-if，比較相容性與效能取捨，幫你依場景挑對方案。</p>
+      <p class="row-meta"><time datetime="2024-03-10T10:52:16.000Z">2024-03-10</time><a class="row-cat" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a><span>7 分鐘</span></p>
+    </div>
+  </li>
 
-  // Recursively traverse the config object and automatically apply theme-specific color schemes
-  const applyThemeConfig = (obj, theme) => {
-    if (typeof obj !== 'object' || obj === null) return
+  <li class="post-row">
+    <a class="row-cover" href="/posts/941b0eb3/" tabindex="-1" aria-hidden="true"><img src="/images/posts/legacy-941b0eb3-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/941b0eb3/">深入理解 JavaScript 的 async/await</a></h2>
+      <p class="row-desc">async/await 其實是 Promise 的語法糖，讓非同步程式碼讀起來像同步。從 async 函式與 await 運算符的規則講起，對照 Promise 寫法、結合事件循環機制解釋執行順序，再談錯誤處理與常見陷阱，給想真正搞懂非同步的人。</p>
+      <p class="row-meta"><time datetime="2024-03-09T09:39:33.000Z">2024-03-09</time><a class="row-cat" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a><span>3 分鐘</span></p>
+    </div>
+  </li>
 
-    Object.keys(obj).forEach(key => {
-      const value = obj[key]
-      // If the property is an object and has theme-specific options, apply them
-      if (typeof value === 'object' && value !== null) {
-        if (value[theme]) {
-          obj[key] = value[theme] // Apply the value for the current theme
-        } else {
-          // Recursively process child objects
-          applyThemeConfig(value, theme)
-        }
-      }
-    })
-  }
+  <li class="post-row">
+    <a class="row-cover" href="/posts/47ffc215/" tabindex="-1" aria-hidden="true"><img src="/images/posts/legacy-47ffc215-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/47ffc215/">setTimeout 和 JavaScript 的 Event Loop 運作原理</a></h2>
+      <p class="row-desc">單執行緒的 JavaScript 為什麼能做非同步？從呼叫堆疊、Web API、回呼佇列到事件循環四大組件，逐步追蹤 setTimeout 被呼叫後到底發生什麼，搞懂延遲執行為何不準時，給想釐清非同步運作機制的前端工程師。</p>
+      <p class="row-meta"><time datetime="2024-03-08T10:33:42.000Z">2024-03-08</time><a class="row-cat" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a><span>3 分鐘</span></p>
+    </div>
+  </li>
 
-  const runChartJS = ele => {
-    window.loadChartJS = true
+  <li class="post-row">
+    <a class="row-cover" href="/posts/8589441f/" tabindex="-1" aria-hidden="true"><img src="/images/posts/legacy-8589441f-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/8589441f/">Vue 3 資料傳遞</a></h2>
+      <p class="row-desc">Vue 3 組件之間的資料到底怎麼傳？整理父傳子的 props、子傳父的 emit 事件，以及跨層級的 Provide／Inject 三種機制，搭配實際程式碼與 Pinia 對照，幫前端開發者依元件關係選對通信方式，避開 prop drilling 的麻煩。</p>
+      <p class="row-meta"><time datetime="2024-03-07T07:47:44.000Z">2024-03-07</time><a class="row-cat" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a><span>5 分鐘</span></p>
+    </div>
+  </li>
 
-    Array.from(ele).forEach((item, index) => {
-      const chartSrc = item.firstElementChild
-      const chartID = item.getAttribute('data-chartjs-id') || ('chartjs-' + index) // Use custom ID or default ID
-      const width = item.getAttribute('data-width')
-      const existingCanvas = document.getElementById(chartID)
+  <li class="post-row">
+    <a class="row-cover" href="/posts/7aecd08e/" tabindex="-1" aria-hidden="true"><img src="/images/posts/legacy-7aecd08e-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/7aecd08e/">JavaScript 深拷貝完整指南：掌握物件複製的關鍵技巧</a></h2>
+      <p class="row-desc">整理 JavaScript 四種深拷貝寫法——JSON 序列化、遞迴實作、structuredClone 與 Lodash cloneDeep，比較它們處理循環引用、Date、函式的能力與效能取捨，幫你依場景選對方法。</p>
+      <p class="row-meta"><time datetime="2024-02-27T10:51:02.000Z">2024-02-27</time><a class="row-cat" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a><span>3 分鐘</span></p>
+    </div>
+  </li>
 
-      // If a canvas already exists, remove it to avoid rendering duplicates
-      if (existingCanvas) {
-          existingCanvas.parentNode.remove()
-      }
+  <li class="post-row">
+    <a class="row-cover" href="/posts/2212f7f6/" tabindex="-1" aria-hidden="true"><img src="/images/posts/legacy-2212f7f6-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async"></a>
+    <div class="row-body">
+      <h2 class="row-title"><a href="/posts/2212f7f6/">Chrome套件開發教學：自動整理書籤到域名資料夾</a></h2>
+      <p class="row-desc">書籤一多就亂成一團？這篇從零教你開發 Chrome 擴充套件，用 background.js 監聽書籤建立事件，自動依網域分類到對應資料夾。涵蓋 manifest.json 設定、程式碼解析與載入測試，只需基本 JavaScript 即可上手。</p>
+      <p class="row-meta"><time datetime="2024-02-23T09:05:31.000Z">2024-02-23</time><a class="row-cat" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a><span>5 分鐘</span></p>
+    </div>
+  </li>
 
-      const chartDefinition = chartSrc.textContent
-      const canvas = document.createElement('canvas')
-      canvas.id = chartID
+</ul>
 
-      const div = document.createElement('div')
-      div.className = 'chartjs-wrap'
+  
+<nav class="pager" aria-label="分頁">
+  <a class="extend prev" rel="prev" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/page/4/">上一頁</a><a class="page-number" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">1</a><span class="space">&hellip;</span><a class="page-number" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/page/6/">6</a><a class="extend next" rel="next" href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/page/6/">下一頁</a>
+</nav>
 
-      if (width) {
-        div.style.width = width
-      }
 
-      div.appendChild(canvas)
-      chartSrc.insertAdjacentElement('afterend', div)
+</section>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>© 2024–2026 kyosora。文章以 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license noopener" target="_blank">CC BY-NC-SA 4.0</a> 授權。</p>
+    <p class="footer-links"><a href="/atom.xml">RSS 訂閱</a><a href="https://github.com/kyosora" rel="noopener" target="_blank">GitHub</a><a href="/about/">關於我</a></p>
+  </div>
+</footer>
 
-      const ctx = document.getElementById(chartID).getContext('2d')
+<dialog class="search" id="search" aria-label="搜尋文章">
+  <form class="search-bar" role="search">
+    <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+    <input type="search" name="q" placeholder="搜尋標題與內文" aria-label="搜尋關鍵字" autocomplete="off" enterkeyhint="search">
+    <button class="tool" type="button" data-close aria-label="關閉搜尋"><svg class="icon"><use href="#i-close"/></svg></button>
+  </form>
+  <p class="search-status" role="status" aria-live="polite"></p>
+  <ol class="search-results"></ol>
+</dialog>
 
-      const config = JSON.parse(chartDefinition)
+<script>window.KY={"search":"/search.json","twcn":"/js/ky-twcn.js?v=eba49651","codeHeight":400,"mermaid":null,"giscus":null,"views":{"endpoint":"https://kyosora-views.coasta98381.workers.dev","minSeconds":15,"since":"2026-11","path":null}}</script>
+<script src="/js/kyosora.js?v=0f20e8d5" defer></script>
 
-      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark-mode' : 'light-mode'
-
-      // Set default styles (initial setup)
-      applyThemeDefaultsConfig(theme)
-
-      // Automatically traverse the config and apply dual-mode color schemes
-      applyThemeConfig(config, theme)
-
-      new Chart(ctx, config)
-    })
-  }
-
-  const loadChartJS = () => {
-    const chartJSEle = document.querySelectorAll('#article-container .chartjs-container')
-    if (chartJSEle.length === 0) return
-
-    window.loadChartJS ? runChartJS(chartJSEle) : btf.getScript('https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js').then(() => runChartJS(chartJSEle))
-  }
-
-  // Listen for theme change events
-  btf.addGlobalFn('themeChange', loadChartJS, 'chartjs')
-  btf.addGlobalFn('encrypt', loadChartJS, 'chartjs')
-
-  window.pjax ? loadChartJS() : document.addEventListener('DOMContentLoaded', loadChartJS)
-})()</script></div><script src="/js/about-cards.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>
+</body>
+</html>
