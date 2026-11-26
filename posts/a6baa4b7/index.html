@@ -124,7 +124,8 @@
       <div class="prose" id="article">
         <p>上一篇我寫了件讓人有點不安的事：在 Cloudflare 的觀測範圍裡，對網頁的請求已經有超過半數來自機器、不是人。那篇談的是需求側——誰在抓。這篇換個角度，談供給側：這些機器，到底拿什麼在抓？</p>
 <p>問題是我自己的。我有一套夜班工作流，每天清晨讓 Claude Code 自動撈財經新聞、AI 文章、社群討論，整理成一份報告。撐起它抓取層的，目前主要是兩樣東西：Jina Reader 把網頁轉成乾淨 markdown，Agent-Reach 串各家平台。用了一陣子，我開始想——市面上那些更炫的 AI 爬蟲，Firecrawl、Crawl4AI、ScrapeGraphAI，要不要換、或該加進來？於是花了點時間把四個主流工具攤開比。結論有點反直覺：多數時候，你需要的是最便宜、最笨的那個。</p>
-<h2 id="先搞清楚：功能重疊，但預設路線不同"><a href="#先搞清楚：功能重疊，但預設路線不同" class="headerlink" title="先搞清楚：功能重疊，但預設路線不同"></a>先搞清楚：功能重疊，但預設路線不同</h2><p>把它們擺在一起比，第一個陷阱是硬切成四個互不重疊的類別。這幾套工具都在增加功能：Jina Reader 已能按 schema 抽 JSON，Crawl4AI 也有 LLM extraction，Firecrawl 同時能 scrape、crawl 和 extract。比較時應該看各自最順手的預設路線：</p>
+<h2 id="先搞清楚：功能重疊，但預設路線不同">先搞清楚：功能重疊，但預設路線不同</h2>
+<p>把它們擺在一起比，第一個陷阱是硬切成四個互不重疊的類別。這幾套工具都在增加功能：Jina Reader 已能按 schema 抽 JSON，Crawl4AI 也有 LLM extraction，Firecrawl 同時能 scrape、crawl 和 extract。比較時應該看各自最順手的預設路線：</p>
 <ul>
 <li>單頁轉換優先（Jina Reader）：最短路徑是把一個 URL 變成乾淨 markdown，也可選擇結構化抽取。</li>
 <li>託管平台（Firecrawl）：雲端 SaaS，幫你把爬取、反爬、proxy 這些髒活全包了。</li>
@@ -132,29 +133,31 @@
 <li>LLM pipeline 優先（ScrapeGraphAI）：用自然語言與 graph pipeline 組合抓取、理解和結構化輸出。</li>
 </ul>
 <p>它們不是「能不能做」的差別，而是要花多少設定、運算、代管費與維運時間。下面一個個拆。</p>
-<h2 id="Jina-Reader：最笨，但你八成只需要它"><a href="#Jina-Reader：最笨，但你八成只需要它" class="headerlink" title="Jina Reader：最笨，但你八成只需要它"></a>Jina Reader：最笨，但你八成只需要它</h2><p>Jina Reader 的用法笨到一句話講完：在任何網址前面加上 <code>r.jina.ai/</code>。</p>
+<h2 id="Jina-Reader：最笨，但你八成只需要它">Jina Reader：最笨，但你八成只需要它</h2>
+<p>Jina Reader 的用法笨到一句話講完：在任何網址前面加上 <code>r.jina.ai/</code>。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 把一篇文章變成乾淨 markdown，沒了</span></span><br><span class="line">curl https://r.jina.ai/https://example.com/some-article</span><br></pre></td></tr></table></figure>
-
 <p>基本用法不需要 API key 或設定檔；要提高 rate limit 才需要 key，並依 token 用量計費。它把網頁正文抓出來、轉成 markdown 丟回給你。我的夜班流程裡，「撈某篇文章全文餵給模型摘要」這種需求，九成都是它在扛。</p>
 <p>它的核心仍是「給 URL、拿內容」，不是完整的整站排程與資料管線。ReaderLM-v2 已支援 <code>x-json-schema</code>、<code>x-instruction</code> 做結構化抽取，所以「Jina 完全不能抽欄位」已經過時；但遇到網站擋 bot 時，付費 key 只會提高流量與效能，不會替你繞過存取控制。我的需求若只是把一頁餵給 LLM，仍不需要先扛一套爬蟲平台。</p>
-<h2 id="Firecrawl：要省事、要整站爬，給錢買託管"><a href="#Firecrawl：要省事、要整站爬，給錢買託管" class="headerlink" title="Firecrawl：要省事、要整站爬，給錢買託管"></a>Firecrawl：要省事、要整站爬，給錢買託管</h2><p>Firecrawl 定位是 API 優先的託管平台。它的賣點是把 JS 渲染、proxy、整站爬取與結構化抽取包成服務，你只管打 API。GitHub 星數每天都會變，拿它當能力證據沒有意義，這裡不列。</p>
+<h2 id="Firecrawl：要省事、要整站爬，給錢買託管">Firecrawl：要省事、要整站爬，給錢買託管</h2>
+<p>Firecrawl 定位是 API 優先的託管平台。它的賣點是把 JS 渲染、proxy、整站爬取與結構化抽取包成服務，你只管打 API。GitHub 星數每天都會變，拿它當能力證據沒有意義，這裡不列。</p>
 <p>它的能力清單確實齊：<code>scrape</code> 抓單頁、<code>crawl</code> 爬整站、<code>map</code> 快速列出全站 URL、<code>extract</code> 按 schema 抽資料，還有官方 MCP server 能直接接 Claude、Cursor。要做「給一個網域、把整站內容灌進 RAG」這種事，它幾乎是開箱即用。</p>
 <p>但有兩個地方我研究時才注意到，這裡幫你踩在前面：</p>
 <p>第一，<strong>自架不等於完整複製託管服務</strong>。Firecrawl 核心可以自架（AGPL-3.0），但官方託管環境的瀏覽器基礎設施與進階抓取能力不保證全部出現在自架版。決定自架前要逐項對照官方 self-host 文件，不能只看到同一個 repo 就假設功能與成功率完全相同。</p>
 <p>第二，<strong>credit 不能簡單等同頁數</strong>。不同端點、格式與進階功能可能有不同消耗，方案和價格也會改。評估時拿自己的 URL 數、更新頻率與端點跑一輪估算，再看 <a target="_blank" rel="noopener" href="https://www.firecrawl.dev/pricing">Firecrawl pricing</a>；不要把某天的月費與「1 頁 = 1 credit」寫死進長期架構決策。</p>
-<h2 id="Crawl4AI：要省錢、要資料主權，自己架"><a href="#Crawl4AI：要省錢、要資料主權，自己架" class="headerlink" title="Crawl4AI：要省錢、要資料主權，自己架"></a>Crawl4AI：要省錢、要資料主權，自己架</h2><p>如果 Firecrawl 是「給錢買省事」，Crawl4AI 就是反過來——「花力氣換省錢和掌控」。它是 Apache 2.0 的開源框架，核心完全免費，設計上就是要你自架。你付的只有自己的運算和 proxy 成本，資料不經過任何第三方。</p>
+<h2 id="Crawl4AI：要省錢、要資料主權，自己架">Crawl4AI：要省錢、要資料主權，自己架</h2>
+<p>如果 Firecrawl 是「給錢買省事」，Crawl4AI 就是反過來——「花力氣換省錢和掌控」。它是 Apache 2.0 的開源框架，核心完全免費，設計上就是要你自架。你付的只有自己的運算和 proxy 成本，資料不經過任何第三方。</p>
 <p>能力上它不輸託管方案：底層用 Playwright 做完整 JS 渲染、支援深度爬取（BFS／DFS／Best-First 幾種策略）、有 stealth mode 和 proxy 輪換。抽取這塊它給了兩條路，這個區分很關鍵：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 路線一：規則式抽取（CSS selector + schema）</span></span><br><span class="line"><span class="comment"># 不呼叫 LLM，快、零 token 成本，適合版型固定的頁面</span></span><br><span class="line">schema = &#123;</span><br><span class="line">    <span class="string">&quot;name&quot;</span>: <span class="string">&quot;文章列表&quot;</span>,</span><br><span class="line">    <span class="string">&quot;baseSelector&quot;</span>: <span class="string">&quot;article.post&quot;</span>,</span><br><span class="line">    <span class="string">&quot;fields&quot;</span>: [</span><br><span class="line">        &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;title&quot;</span>, <span class="string">&quot;selector&quot;</span>: <span class="string">&quot;h2&quot;</span>, <span class="string">&quot;type&quot;</span>: <span class="string">&quot;text&quot;</span>&#125;,</span><br><span class="line">        &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;link&quot;</span>, <span class="string">&quot;selector&quot;</span>: <span class="string">&quot;a&quot;</span>, <span class="string">&quot;type&quot;</span>: <span class="string">&quot;attribute&quot;</span>, <span class="string">&quot;attribute&quot;</span>: <span class="string">&quot;href&quot;</span>&#125;,</span><br><span class="line">    ],</span><br><span class="line">&#125;</span><br><span class="line">strategy = JsonCssExtractionStrategy(schema)  <span class="comment"># 把 schema 餵給規則式抽取策略</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 路線二：LLM 抽取策略（LLMExtractionStrategy）</span></span><br><span class="line"><span class="comment"># 版型不固定、需要「讀懂」才能抽時才用，代價是 token 成本與速度</span></span><br></pre></td></tr></table></figure>
-
 <p>它還有個好用的輸出叫 Fit Markdown，會用啟發式規則把導航、側欄那些雜訊砍掉，只留正文。官方也有 MCP server 跟 Docker image，要接進現有 agent 工具不費事。</p>
 <p>有一點我得提醒，因為它直接關係到自架安全：不要把 Crawl4AI 的 Docker API server 直接暴露到網際網路。爬蟲本來就會接收 URL、執行瀏覽器與處理不可信內容，SSRF、檔案存取與容器邊界都要自己防。鎖來源、加驗證、限制出站網段，並在升級前查看專案的 security advisories。自架省的是服務費，維運責任會留在自己手上。</p>
-<h2 id="ScrapeGraphAI：最聰明，但聰明要付錢"><a href="#ScrapeGraphAI：最聰明，但聰明要付錢" class="headerlink" title="ScrapeGraphAI：最聰明，但聰明要付錢"></a>ScrapeGraphAI：最聰明，但聰明要付錢</h2><p>前面三個主要都在做「把內容乾淨地抓回來」。ScrapeGraphAI 更強調抓回來之後，怎麼變成業務需要的結構。</p>
+<h2 id="ScrapeGraphAI：最聰明，但聰明要付錢">ScrapeGraphAI：最聰明，但聰明要付錢</h2>
+<p>前面三個主要都在做「把內容乾淨地抓回來」。ScrapeGraphAI 更強調抓回來之後，怎麼變成業務需要的結構。</p>
 <p>它的路線是 LLM + graph pipeline。你不寫 CSS selector、不寫 XPath，而是用一句自然語言描述要什麼：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> scrapegraphai.graphs <span class="keyword">import</span> SmartScraperGraph</span><br><span class="line"></span><br><span class="line">graph = SmartScraperGraph(</span><br><span class="line">    prompt=<span class="string">&quot;抽出這頁所有商品的名稱、價格和庫存狀態&quot;</span>,</span><br><span class="line">    source=<span class="string">&quot;https://example.com/products&quot;</span>,</span><br><span class="line">    config=&#123;<span class="string">&quot;llm&quot;</span>: &#123;<span class="string">&quot;model&quot;</span>: <span class="string">&quot;ollama/llama3&quot;</span>&#125;&#125;,  <span class="comment"># 可接本地模型省 token</span></span><br><span class="line">)</span><br><span class="line">result = graph.run()  <span class="comment"># 回傳 Python dict，已是結構化資料</span></span><br></pre></td></tr></table></figure>
-
 <p>它相對不依賴固定 selector，網站小幅改版時有機會繼續抽到資料；這是容錯空間，不是「改版不壞」保證。欄位名稱、語意或頁面內容一變，LLM 一樣會漏抓或誤判。它能用 Pydantic 或 Zod schema 約束輸出，也能接 Ollama 本地模型；本地模型省掉第三方 token 帳單，仍有 GPU／CPU、延遲與維運成本。</p>
 <p>代價也很實在，而且是三筆一起來：每抽一頁就要做 LLM 推論，所以比純格式轉換慢、貴；而且 LLM 抽取偶爾會飄移甚至幻覺，確定性不如固定 selector。它最不適合的場景，恰恰是「大規模、版型固定、追求每頁極低成本」——那種情況用 Crawl4AI 的規則式抽取又快又便宜又可預測，犯不著請一個 LLM 來慢慢讀。</p>
-<h2 id="攤開來比"><a href="#攤開來比" class="headerlink" title="攤開來比"></a>攤開來比</h2><table>
+<h2 id="攤開來比">攤開來比</h2>
+<table>
 <thead>
 <tr>
 <th>工具</th>
@@ -165,7 +168,8 @@
 <th>殺手鐧</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>Jina Reader</td>
 <td>單頁轉換優先</td>
 <td>服務／部分開源元件</td>
@@ -197,8 +201,10 @@
 <td>模型／雲端服務成本</td>
 <td>自然語言驅動抽取流程</td>
 </tr>
-</tbody></table>
-<h2 id="那到底怎麼選"><a href="#那到底怎麼選" class="headerlink" title="那到底怎麼選"></a>那到底怎麼選</h2><p>我把選型收斂成一個問題開頭，比記四個工具的功能表好用得多：</p>
+</tbody>
+</table>
+<h2 id="那到底怎麼選">那到底怎麼選</h2>
+<p>我把選型收斂成一個問題開頭，比記四個工具的功能表好用得多：</p>
 <p>先問：你要不要結構化抽取？</p>
 <ul>
 <li>不要，只是要把單頁內容餵給 LLM —— 先用 Jina Reader。要整站排程、重試與代管，再評估 Firecrawl。</li>
@@ -207,10 +213,12 @@
 </ul>
 <p>網站拒絕自動抓取時，先確認 robots.txt、服務條款、授權與 API 選項。付費方案不等於取得繞過存取控制的權利，技術上抓得到也不代表應該抓。這條是選型條件，不是抓取成功率之外的附註。</p>
 <p>照成本由低到高排，務實的組合大概是：原型和單頁即查用 Jina，產線大量轉內容用 Firecrawl 或 Crawl4AI，只在複雜頁面要特定欄位時才動用 ScrapeGraphAI。</p>
-<h2 id="我自己的結論"><a href="#我自己的結論" class="headerlink" title="我自己的結論"></a>我自己的結論</h2><p>回到我夜班工作流那個原始問題——要不要換、要不要加？</p>
+<h2 id="我自己的結論">我自己的結論</h2>
+<p>回到我夜班工作流那個原始問題——要不要換、要不要加？</p>
 <p>答案是：暫時不動。我的需求九成是「把這頁餵給模型摘要」，Jina Reader 的基本額度與速度目前夠用，硬要換成 Firecrawl 反而多一層成本和依賴。等哪天真要做「整站爬下來建索引」或「從一堆雜亂頁面抽特定欄位」，我會先拿真實樣本比正確率，再決定加 Crawl4AI、Firecrawl 或 ScrapeGraphAI；工具功能一直變，現在不能先把答案寫死。</p>
 <p>研究這四個工具最大的收穫，反而不是記功能表。功能會追上彼此，部署方式和責任不會：資料交給誰、失敗誰維修、每月有多少量，才是長期差別。我的預設仍是從最短路徑開始，直到真實樣本證明它不夠用再升級。</p>
-<h2 id="官方資料"><a href="#官方資料" class="headerlink" title="官方資料"></a>官方資料</h2><ul>
+<h2 id="官方資料">官方資料</h2>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://jina.ai/reader/">Jina Reader API 與最新 rate limit／計價</a></li>
 <li><a target="_blank" rel="noopener" href="https://docs.firecrawl.dev/">Firecrawl 文件</a></li>
 <li><a target="_blank" rel="noopener" href="https://docs.crawl4ai.com/">Crawl4AI 文件</a></li>
@@ -307,15 +315,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

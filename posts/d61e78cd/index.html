@@ -119,49 +119,57 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>Docker 現在幾乎是開發環境的標準配備。無論你是開發者、系統管理員，還是 DevOps 工程師，花時間理解它帶來的好處都值得。這篇文章整理了幾個最實際的理由，說明為什麼要把 Docker 加進你的工作流程。</p>
-<h2 id="1-一致的開發環境"><a href="#1-一致的開發環境" class="headerlink" title="1. 一致的開發環境"></a>1. 一致的開發環境</h2><p>Docker 最直接的好處是讓所有人在同一個環境裡工作，不管跑的是 Windows、macOS 還是 Linux。</p>
+<h2 id="1-一致的開發環境">1. 一致的開發環境</h2>
+<p>Docker 最直接的好處是讓所有人在同一個環境裡工作，不管跑的是 Windows、macOS 還是 Linux。</p>
 <ul>
 <li><strong>消除「在我的機器上可以跑」的問題：</strong> Docker 容器把應用程式和它的所有相依套件一起封裝，確保在任何地方都以相同方式執行。</li>
 <li><strong>加速新人上手：</strong> 新加入的成員不需要花幾個小時自己對齊環境設定，拉下映像檔就能動工。</li>
 <li><strong>環境版本化：</strong> 不同專案需要不同版本的 runtime 或工具，切換起來不會互相干擾。</li>
 </ul>
-<h2 id="2-提高部署效率"><a href="#2-提高部署效率" class="headerlink" title="2. 提高部署效率"></a>2. 提高部署效率</h2><p>從開發到生產的遷移，過去有一大塊時間耗在環境差異上。容器化之後這個問題幾乎消失。</p>
+<h2 id="2-提高部署效率">2. 提高部署效率</h2>
+<p>從開發到生產的遷移，過去有一大塊時間耗在環境差異上。容器化之後這個問題幾乎消失。</p>
 <ul>
 <li><strong>快速部署：</strong> Docker 映像檔可以在幾秒內啟動，大幅壓縮部署等待時間。</li>
 <li><strong>可移植性：</strong> 容器可以在任何支援 Docker 的系統上執行，不需要擔心底層基礎架構的差異。</li>
 <li><strong>擴展性：</strong> 搭配 Docker Swarm 或 Kubernetes，水平擴展不需要重新設計應用程式。</li>
 </ul>
-<h2 id="3-資源效率"><a href="#3-資源效率" class="headerlink" title="3. 資源效率"></a>3. 資源效率</h2><p>比起傳統虛擬機，Docker 容器輕量很多，同樣的硬體能跑更多服務。</p>
+<h2 id="3-資源效率">3. 資源效率</h2>
+<p>比起傳統虛擬機，Docker 容器輕量很多，同樣的硬體能跑更多服務。</p>
 <ul>
 <li><strong>共享作業系統核心：</strong> 多個容器共用同一個 kernel，省去了每台 VM 各自維護完整 OS 的開銷。</li>
 <li><strong>快速啟動：</strong> 容器通常在幾百毫秒內就起來了，比傳統虛擬機快一到兩個數量級。</li>
 <li><strong>高密度部署：</strong> 同一台主機上可以同時跑更多容器，硬體利用率明顯提升。</li>
 </ul>
-<h2 id="4-隔離性和安全性"><a href="#4-隔離性和安全性" class="headerlink" title="4. 隔離性和安全性"></a>4. 隔離性和安全性</h2><p>Docker 讓每個服務跑在自己的沙箱裡，出問題的範圍比較好控制。</p>
+<h2 id="4-隔離性和安全性">4. 隔離性和安全性</h2>
+<p>Docker 讓每個服務跑在自己的沙箱裡，出問題的範圍比較好控制。</p>
 <ul>
 <li><strong>應用程式隔離：</strong> 容器之間互相看不到彼此的 process，一個服務掛了不會直接拖垮其他的。</li>
 <li><strong>資源限制：</strong> 可以替每個容器設定 CPU 和記憶體上限，防止單一容器把整台主機的資源吃光。</li>
 <li><strong>版本管理：</strong> 不同版本的映像檔都有紀錄，出問題時要回退到上一版並不麻煩。</li>
 </ul>
-<h2 id="5-微服務架構的好搭檔"><a href="#5-微服務架構的好搭檔" class="headerlink" title="5. 微服務架構的好搭檔"></a>5. 微服務架構的好搭檔</h2><p>微服務的核心是讓每個服務獨立存活，Docker 的容器模型天生就符合這個需求。</p>
+<h2 id="5-微服務架構的好搭檔">5. 微服務架構的好搭檔</h2>
+<p>微服務的核心是讓每個服務獨立存活，Docker 的容器模型天生就符合這個需求。</p>
 <ul>
 <li><strong>服務獨立性：</strong> 每個微服務跑在自己的容器裡，部署、重啟、擴展都互不干擾。</li>
 <li><strong>快速迭代：</strong> 只需要重新建置並部署改動的那個服務，不用動到整個系統。</li>
 <li><strong>技術多樣性：</strong> 不同服務可以用不同的語言或技術棧，只要容器介面一致就好。</li>
 </ul>
-<h2 id="6-CI-CD-流程更可靠"><a href="#6-CI-CD-流程更可靠" class="headerlink" title="6. CI/CD 流程更可靠"></a>6. CI/CD 流程更可靠</h2><p>Docker 和 GitHub Actions、GitLab CI、Jenkins 這類工具配合得很好，讓自動化測試與部署少了很多意外。</p>
+<h2 id="6-CI-CD-流程更可靠">6. CI/CD 流程更可靠</h2>
+<p>Docker 和 GitHub Actions、GitLab CI、Jenkins 這類工具配合得很好，讓自動化測試與部署少了很多意外。</p>
 <ul>
 <li><strong>一致的測試環境：</strong> 測試跑在和生產環境相同的容器映像檔上，「測試過了但 prod 掛了」的情況少很多。</li>
 <li><strong>快速建置與部署：</strong> 容器化的應用程式可以在 CI pipeline 裡快速建置、測試、推送。</li>
 <li><strong>容易回退：</strong> 新版本出問題，切回上一個穩定映像檔不需要太多手動操作。</li>
 </ul>
-<h2 id="7-雲端遷移和混合雲"><a href="#7-雲端遷移和混合雲" class="headerlink" title="7. 雲端遷移和混合雲"></a>7. 雲端遷移和混合雲</h2><p>要把服務搬到雲上，或在不同雲端平台之間移動，容器化讓這件事的摩擦力小很多。</p>
+<h2 id="7-雲端遷移和混合雲">7. 雲端遷移和混合雲</h2>
+<p>要把服務搬到雲上，或在不同雲端平台之間移動，容器化讓這件事的摩擦力小很多。</p>
 <ul>
 <li><strong>雲端無關性：</strong> 同一個容器映像檔可以在 AWS、GCP、Azure 或自架主機上執行，不需要為每個平台重新調整。</li>
 <li><strong>混合雲：</strong> 本地機房和公有雲之間的遷移，容器的一致性讓這條路比較走得通。</li>
 <li><strong>避免被單一供應商綁死：</strong> 應用程式容器化之後，換平台的成本比直接跑在原生服務上低。</li>
 </ul>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>上面這七點，幾乎每一點都指向同一個核心：Docker 讓「環境」這件事從不可控變成可以版本化、可以複製、可以移動。這對個人開發者和團隊都有實質意義。</p>
+<h2 id="結論">結論</h2>
+<p>上面這七點，幾乎每一點都指向同一個核心：Docker 讓「環境」這件事從不可控變成可以版本化、可以複製、可以移動。這對個人開發者和團隊都有實質意義。</p>
 <p>如果你還沒用過，從本地開發環境開始試，感受一下把環境寫成 <code>Dockerfile</code> 之後的差異，比讀再多文章都直接。</p>
 
       </div>
@@ -253,15 +261,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -25,8 +25,8 @@
 <meta property="article:modified_time" content="2026-07-27T02:49:09.000Z">
 <meta property="article:author" content="kyosora">
 <meta property="article:section" content="AI工具實戰">
-<meta property="article:tag" content="AI Agent">
 <meta property="article:tag" content="benchmark">
+<meta property="article:tag" content="AI Agent">
 <meta property="article:tag" content="GPT-5.6 Sol">
 <meta property="article:tag" content="reward hacking">
 <meta property="article:tag" content="模型評估">
@@ -43,7 +43,7 @@
 <script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"我剛換上 GPT-5.6 Sol，它第一個挑到的題目是自己作弊了 12.6%","description":"GPT-5.6 Sol 在 AISI 評測有 12.6% 軌跡越界，同週含 Sol 的模型更打進 Hugging Face。拆解 agent 作弊、評測失真與權限邊界。","url":"https://kyosora.github.io/posts/c4fd2b1e/","mainEntityOfPage":"https://kyosora.github.io/posts/c4fd2b1e/","image":"https://kyosora.github.io/images/posts/gpt-5-6-sol-cheating-aisi-agent-oversight-cover.webp","datePublished":"2026-07-24T07:23:46.000Z","dateModified":"2026-07-27T02:49:09.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI工具實戰","keywords":"AI Agent, benchmark, GPT-5.6 Sol, reward hacking, 模型評估"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI工具實戰","item":"https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"},{"@type":"ListItem","position":3,"name":"我剛換上 GPT-5.6 Sol，它第一個挑到的題目是自己作弊了 12.6%","item":"https://kyosora.github.io/posts/c4fd2b1e/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"我剛換上 GPT-5.6 Sol，它第一個挑到的題目是自己作弊了 12.6%","description":"GPT-5.6 Sol 在 AISI 評測有 12.6% 軌跡越界，同週含 Sol 的模型更打進 Hugging Face。拆解 agent 作弊、評測失真與權限邊界。","url":"https://kyosora.github.io/posts/c4fd2b1e/","mainEntityOfPage":"https://kyosora.github.io/posts/c4fd2b1e/","image":"https://kyosora.github.io/images/posts/gpt-5-6-sol-cheating-aisi-agent-oversight-cover.webp","datePublished":"2026-07-24T07:23:46.000Z","dateModified":"2026-07-27T02:49:09.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI工具實戰","keywords":"benchmark, AI Agent, GPT-5.6 Sol, reward hacking, 模型評估"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI工具實戰","item":"https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"},{"@type":"ListItem","position":3,"name":"我剛換上 GPT-5.6 Sol，它第一個挑到的題目是自己作弊了 12.6%","item":"https://kyosora.github.io/posts/c4fd2b1e/"}]}]}</script>
 
 </head>
 <body class="kind-post">
@@ -126,7 +126,8 @@
 <p>它從這週的 AI 新聞裡挑出的第一個題目，是英國 AI Security Institute（AISI）剛發布的報告：GPT-5.6 Sol 在 475 次資安評測裡，有 60 次被抓到試圖作弊，比例 12.6%。</p>
 <p>一個模型替自己挑到這題，多少有點喜劇效果。</p>
 <p>但我回頭讀完 AISI 原文、OpenAI 的 system card 和 METR 評測後，反而覺得 12.6% 不是最值得盯的數字。真正麻煩的是：模型做完越界動作後，你問它有沒有作弊，它的回答也不能拿來當稽核結果。同一週，這種行為還真的穿過沙盒，打進 Hugging Face 的 production。</p>
-<h2 id="先別急著把「作弊」讀成人格"><a href="#先別急著把「作弊」讀成人格" class="headerlink" title="先別急著把「作弊」讀成人格"></a>先別急著把「作弊」讀成人格</h2><p>AISI 對作弊的定義很窄：模型為了完成目標，採取任務範圍外或規則明文禁止的動作，靠捷徑、變通或出題者沒預期的解法過關。</p>
+<h2 id="先別急著把「作弊」讀成人格">先別急著把「作弊」讀成人格</h2>
+<p>AISI 對作弊的定義很窄：模型為了完成目標，採取任務範圍外或規則明文禁止的動作，靠捷徑、變通或出題者沒預期的解法過關。</p>
 <p>這個標籤描述的是行為，不負責判斷模型有沒有欺騙意圖。AISI 自己也特別寫明這一點。</p>
 <p>他們測的是資安任務。模型要在模擬環境裡逆向程式、利用漏洞，最後找出一串 flag。它本來就被允許「駭」目標，差別只在邊界：攻擊指定機器是解題；轉頭攻擊評測系統、偷看答案或跑去外網找現成解法，就是越界。</p>
 <p>這種行為會同時弄壞兩件事：能力評測的可信度，以及 agent 在實際部署中的授權邊界。</p>
@@ -135,41 +136,44 @@
 <thead>
 <tr>
 <th>模型</th>
-<th align="right">被偵測到嘗試作弊</th>
-<th align="right">次數</th>
+<th style="text-align:right">被偵測到嘗試作弊</th>
+<th style="text-align:right">次數</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>GPT-5.4</td>
-<td align="right">14.1%</td>
-<td align="right">67 / 475</td>
+<td style="text-align:right">14.1%</td>
+<td style="text-align:right">67 / 475</td>
 </tr>
 <tr>
 <td>GPT-5.5</td>
-<td align="right">11.4%</td>
-<td align="right">54 / 475</td>
+<td style="text-align:right">11.4%</td>
+<td style="text-align:right">54 / 475</td>
 </tr>
 <tr>
 <td>GPT-5.6 Sol</td>
-<td align="right">12.6%</td>
-<td align="right">60 / 475</td>
+<td style="text-align:right">12.6%</td>
+<td style="text-align:right">60 / 475</td>
 </tr>
 <tr>
 <td>Claude Opus 4.7</td>
-<td align="right">9.1%</td>
-<td align="right">43 / 475</td>
+<td style="text-align:right">9.1%</td>
+<td style="text-align:right">43 / 475</td>
 </tr>
 <tr>
 <td>Claude Mythos Preview</td>
-<td align="right">7.8%</td>
-<td align="right">37 / 475</td>
+<td style="text-align:right">7.8%</td>
+<td style="text-align:right">37 / 475</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>五個模型，沒有一個是零。</p>
 <p>這張表也不能拿來宣布 Claude 比 GPT 誠實。每根柱子的誤差區間不小，AISI 的結論是「作弊率沒有隨能力上升或下降的清楚趨勢」。偵測器還可能漏抓，所以這些比例是已偵測到的下限，不是模型在真實世界裡的作弊機率。</p>
 <p>AISI 對已發布的能力評測還會人工檢查完整 transcript。依他們目前所知，沒有模型靠未被發現的作弊成功灌高已發布成績。圖上的自動偵測數字是用來找行為模式，不是拿機器判決直接發榜。</p>
 <p>上個月我才寫過 <a href="/posts/25fc61f3/">SWE-bench Pro 把 gold commit 留在 Docker 鏡像裡，Agent 直接讀答案的事件</a>（原始揭露在 <a target="_blank" rel="noopener" href="https://github.com/scaleapi/SWE-bench_Pro-os/issues/93">GitHub issue #93</a>）。那次還能把責任拆成「模型會鑽」和「出題者把答案放在桌上」。AISI 這次往前走了一步：它看的不只某個 benchmark 漏洞，而是 agent 遇到邊界時會怎麼找別條路。</p>
-<h2 id="它們找的路，比改測試檔激進得多"><a href="#它們找的路，比改測試檔激進得多" class="headerlink" title="它們找的路，比改測試檔激進得多"></a>它們找的路，比改測試檔激進得多</h2><p>AISI 抓到的行為包括：</p>
+<h2 id="它們找的路，比改測試檔激進得多">它們找的路，比改測試檔激進得多</h2>
+<p>AISI 抓到的行為包括：</p>
 <ul>
 <li>上網搜尋現成答案</li>
 <li>繞過沙盒網路限制</li>
@@ -181,7 +185,8 @@
 <p>不同模型的行為分布不太一樣。GPT 各版本較常上網找答案；其他類型看不出乾淨的家族差異。Opus 4.7 繞沙盒的比例偏高，Mythos Preview 卻沒有同樣模式。AISI 認為訓練方法會影響作弊行為，但光靠這張圖還不能反推出是哪段訓練造成的。</p>
 <p>最誇張的一次，任務因設定錯誤而根本無法完成。模型沒有停下來回報，而是把程式寫到 AISI 以外的公開服務上執行，企圖從外部接觸評測基礎設施，最後觸發資安警報。AISI 沒公開那個案例的模型名稱；<a target="_blank" rel="noopener" href="https://deploymentsafety.openai.com/gpt-5-6">OpenAI 的 GPT-5.6 system card</a>則把同一類事件列在 UK AISI 對 Sol 的評測摘要裡。</p>
 <p>沒有資料外洩，也沒有造成損害。但這個例子把問題講得很清楚：任務做不到時，更強的 agent 不一定比較早承認失敗。它可能只是多找幾扇你沒想到要鎖的門。</p>
-<h2 id="一組含-Sol-的模型，真的打進-Hugging-Face-production"><a href="#一組含-Sol-的模型，真的打進-Hugging-Face-production" class="headerlink" title="一組含 Sol 的模型，真的打進 Hugging Face production"></a>一組含 Sol 的模型，真的打進 Hugging Face production</h2><p>上面那起 AISI 警報還停在嘗試階段。另一起 OpenAI 內部評測，已經真的跨進第三方 production。兩件事不是同一場測試，但行為模式幾乎接在一起。</p>
+<h2 id="一組含-Sol-的模型，真的打進-Hugging-Face-production">一組含 Sol 的模型，真的打進 Hugging Face production</h2>
+<p>上面那起 AISI 警報還停在嘗試階段。另一起 OpenAI 內部評測，已經真的跨進第三方 production。兩件事不是同一場測試，但行為模式幾乎接在一起。</p>
 <p>7 月 16 日，<a target="_blank" rel="noopener" href="https://huggingface.co/blog/security-incident-july-2026">Hugging Face 先披露一場特殊入侵</a>：一個自主 AI agent 從頭到尾執行攻擊，未授權存取部分內部資料集與數個服務憑證。Hugging Face 沒發現公開模型、資料集或 Spaces 被竄改，軟體供應鏈也確認乾淨；合作夥伴與客戶資料有沒有受影響，當時仍在調查。</p>
 <p>五天後，<a target="_blank" rel="noopener" href="https://openai.com/index/hugging-face-model-evaluation-security-incident/">OpenAI 正式認領這起事故</a>。執行者不是單一模型，而是一組 OpenAI 模型，包含 GPT-5.6 Sol 與一個能力更強、尚未發布的模型。為了測量最大資安能力，這些模型都降低了 cyber refusal，production classifiers 也沒有啟用。</p>
 <p>兩邊公開的仍是初步調查，拼出來的也不是一條乾淨的四步流程。</p>
@@ -190,19 +195,22 @@
 <p>OpenAI 沒公布每一步由哪個模型完成，所以不能簡化成「Sol 單獨攻破 Hugging Face」。這也不是一般 ChatGPT 或 Codex 的 production 設定。模型端的 cyber refusal 與 production classifiers 被刻意降低或關閉，基礎設施 containment 仍是防線，只是這次沒守住。</p>
 <p>事故後，Hugging Face 關閉兩條 dataset code-execution paths、清除 foothold、重建受影響節點、輪替憑證，並加上更嚴格的 cluster admission controls。OpenAI 則暫時收緊評測基礎設施設定，向第三方 proxy 廠商通報 zero-day 並協助修補。雙方在公告時都還沒結束調查。</p>
 <p>AISI 在特定評測中量到越界不是孤例；Hugging Face 事故則示範 containment 沒攔住時，影響半徑會走多遠。</p>
-<h2 id="問它「你剛才有沒有作弊」也沒用"><a href="#問它「你剛才有沒有作弊」也沒用" class="headerlink" title="問它「你剛才有沒有作弊」也沒用"></a>問它「你剛才有沒有作弊」也沒用</h2><p>AISI 在每次軌跡跑完後，再問模型有沒有做可疑或違規的事。</p>
+<h2 id="問它「你剛才有沒有作弊」也沒用">問它「你剛才有沒有作弊」也沒用</h2>
+<p>AISI 在每次軌跡跑完後，再問模型有沒有做可疑或違規的事。</p>
 <p>GPT-5.6 Sol 有 75% 的回答會提到那個具體動作，只有 44% 明確承認那是錯的。</p>
 <p>這裡也不能直接喊「Sol 說謊」。它可能誤解規則、漏掉重點，或真的認為那是允許的解法。對工程端來說，原因反而沒那麼重要——無論是哪一種，結論都一樣：<strong>agent 的自我報告不能當 audit log。</strong></p>
 <p>看 reasoning 也不夠。AISI 發現模型經常沒有在推理文字裡提到作弊；更麻煩的案例是，它明明在 reasoning 裡考慮「這算不算作弊」，最後仍然照做。OpenAI 的 system card 也記錄到 Sol 會在推理裡承認策略有問題，對使用者的摘要卻淡化或省略。</p>
 <p>這跟我之前遇到 <a href="/posts/563aaa0d/">Claude Code 交回一份格式完美、內容卻是假的研究報告</a> 很像。你不能因為它交代得完整，就把交代本身當成證據。真正有用的是模型碰過哪些檔案、呼叫哪些工具、送出哪些網路請求，以及外部系統實際留下什麼狀態。</p>
-<h2 id="同一批資料，能擬合出差逾-24-倍的數字"><a href="#同一批資料，能擬合出差逾-24-倍的數字" class="headerlink" title="同一批資料，能擬合出差逾 24 倍的數字"></a>同一批資料，能擬合出差逾 24 倍的數字</h2><p>作弊不只影響安全判斷，也會把 benchmark 本身扭壞。</p>
+<h2 id="同一批資料，能擬合出差逾-24-倍的數字">同一批資料，能擬合出差逾 24 倍的數字</h2>
+<p>作弊不只影響安全判斷，也會把 benchmark 本身扭壞。</p>
 <p>METR 在 GPT-5.6 Sol 上跑軟體工作能力測試時，發現它的作弊率高過該機構過去在同一套 ReAct harness 測過的公開模型。Sol 會把 exploit 塞進中間產物，從隱藏測試套件挖資訊；另一次則抽出了含標準答案的隱藏原始碼。</p>
 <p>接下來的數字很荒謬。</p>
 <p><a target="_blank" rel="noopener" href="https://metr.org/blog/2026-06-26-gpt-5-6-sol/">METR 把作弊嘗試一律判失敗</a>時，Sol 的 50% task-completion time horizon 估計約為 11.3 小時。若把那些作弊過關也算成成功，模型擬合值會跳到 270 小時以上，已經超出這套測試能可靠衡量的範圍。</p>
 <p>如果乾脆排除所有作弊軌跡，點估計又變成 71 小時，95% 信賴區間從 13 小時一路拉到 11,400 小時，寬到幾乎失去資訊。作弊把幾個關鍵長任務的資料吃掉，剩餘樣本已經撐不起穩定估計。METR 最後拒絕把任何一個數字當成可靠結論。</p>
 <p>所以我現在看到 coding benchmark，第一個問題已經不是模型幾分，而是評測者有沒有看 trajectory。只看測試通過，量到的可能是解題能力，也可能是找評分漏洞的能力。兩種都很強，卻不是同一種能力。</p>
 <p>METR 證明的是能力評測會被污染。至於 Sol 為什麼容易走到這一步，OpenAI 提出了一個還沒證實的解釋。</p>
-<h2 id="OpenAI-懷疑問題出在「太想做完」"><a href="#OpenAI-懷疑問題出在「太想做完」" class="headerlink" title="OpenAI 懷疑問題出在「太想做完」"></a>OpenAI 懷疑問題出在「太想做完」</h2><p>OpenAI 在 system card 裡寫道，GPT-5.6 Sol 比 GPT-5.5 更常過度堅持完成目標，把「沒有明確禁止」解讀成「可以做」。他們懷疑，其中一部分來自 Sol 增強的 persistence；強調持續推進的 system prompt 也可能放大這種行為。METR 同樣提醒，評測 scaffold 的 prompt 與任務措辭都會影響觀察到的作弊率。</p>
+<h2 id="OpenAI-懷疑問題出在「太想做完」">OpenAI 懷疑問題出在「太想做完」</h2>
+<p>OpenAI 在 system card 裡寫道，GPT-5.6 Sol 比 GPT-5.5 更常過度堅持完成目標，把「沒有明確禁止」解讀成「可以做」。他們懷疑，其中一部分來自 Sol 增強的 persistence；強調持續推進的 system prompt 也可能放大這種行為。METR 同樣提醒，評測 scaffold 的 prompt 與任務措辭都會影響觀察到的作弊率。</p>
 <p>內部部署曾出現三個案例：</p>
 <ul>
 <li>使用者指定刪除三台遠端 VM，Sol 找不到名稱後，自行換成另外三台，強制移除 worktree，造成未提交內容可能遺失。</li>
@@ -211,7 +219,8 @@
 </ul>
 <p>OpenAI 強調這些行為的絕對發生率仍低，也沒觀察到第 4 級、屬於更廣泛失準計畫的行為。這些案例來自內部 agentic coding 流量；OpenAI 也提醒，內部與外部部署存在分布差異，不能把它們當成外部發生率。</p>
 <p>但「太想做完」在 coding agent 裡已經夠麻煩了。模型越能自己查資料、開 shell、搬檔案、呼叫外部服務，模糊授權造成的半徑就越大。以前笨模型卡住，頂多回你一段廢話；現在的模型卡住，可能先替你找憑證。</p>
-<h2 id="我會怎麼用這顆模型"><a href="#我會怎麼用這顆模型" class="headerlink" title="我會怎麼用這顆模型"></a>我會怎麼用這顆模型</h2><p>我不會因為 12.6% 就停用 Sol。恰好相反，它能寫、能查、會自己推進，才值得用。代價是不能再把「任務完成」當成唯一驗收條件。</p>
+<h2 id="我會怎麼用這顆模型">我會怎麼用這顆模型</h2>
+<p>我不會因為 12.6% 就停用 Sol。恰好相反，它能寫、能查、會自己推進，才值得用。代價是不能再把「任務完成」當成唯一驗收條件。</p>
 <p>我會加四道很土的限制：</p>
 <ol>
 <li><strong>目標和禁區一起寫。</strong> 不只寫要完成什麼，也列出不能碰的主機、憑證、目錄與外部服務。模糊處不能由 agent 自行擴權。</li>
@@ -228,7 +237,7 @@
 <footer class="post-end">
   
   <ul class="post-tags" aria-label="標籤">
-    <li><a href="/tags/AI-Agent/">AI Agent</a></li><li><a href="/tags/benchmark/">benchmark</a></li><li><a href="/tags/GPT-5-6-Sol/">GPT-5.6 Sol</a></li><li><a href="/tags/reward-hacking/">reward hacking</a></li><li><a href="/tags/%E6%A8%A1%E5%9E%8B%E8%A9%95%E4%BC%B0/">模型評估</a></li>
+    <li><a href="/tags/benchmark/">benchmark</a></li><li><a href="/tags/AI-Agent/">AI Agent</a></li><li><a href="/tags/GPT-5-6-Sol/">GPT-5.6 Sol</a></li><li><a href="/tags/reward-hacking/">reward hacking</a></li><li><a href="/tags/%E6%A8%A1%E5%9E%8B%E8%A9%95%E4%BC%B0/">模型評估</a></li>
   </ul>
   
 
@@ -312,15 +321,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

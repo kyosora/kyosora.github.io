@@ -119,9 +119,12 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>Vue 應用規模一大，狀態管理就會開始讓人頭痛。Pinia 是 Vue 官方推薦的狀態管理函式庫，設計目標是型別安全、直觀，且不需要 Vuex 那套繁瑣的 mutation 流程。本文涵蓋 Pinia 的核心概念、進階特性與常見實踐，從安裝到插件系統都會走一遍。</p>
-<h2 id="什麼是Pinia"><a href="#什麼是Pinia" class="headerlink" title="什麼是Pinia?"></a>什麼是Pinia?</h2><p>Pinia 是新一代的 Vue 狀態管理函式庫，定位上取代 Vuex。由 Vue 核心團隊成員 Eduardo San Martin Morote 建立，在 Vue 3 中成為官方推薦的狀態管理方案。</p>
-<h3 id="Pinia的主要特性"><a href="#Pinia的主要特性" class="headerlink" title="Pinia的主要特性:"></a>Pinia的主要特性:</h3><ol>
+        <h2 id="引言">引言</h2>
+<p>Vue 應用規模一大，狀態管理就會開始讓人頭痛。Pinia 是 Vue 官方推薦的狀態管理函式庫，設計目標是型別安全、直觀，且不需要 Vuex 那套繁瑣的 mutation 流程。本文涵蓋 Pinia 的核心概念、進階特性與常見實踐，從安裝到插件系統都會走一遍。</p>
+<h2 id="什麼是Pinia">什麼是Pinia?</h2>
+<p>Pinia 是新一代的 Vue 狀態管理函式庫，定位上取代 Vuex。由 Vue 核心團隊成員 Eduardo San Martin Morote 建立，在 Vue 3 中成為官方推薦的狀態管理方案。</p>
+<h3 id="Pinia的主要特性">Pinia的主要特性:</h3>
+<ol>
 <li>直觀且簡潔的 API</li>
 <li>完整的 TypeScript 支援</li>
 <li>支援 Vue 2 和 Vue 3（Pinia v2；v3 起僅支援 Vue 3）</li>
@@ -131,46 +134,50 @@
 <li>支援 Vue DevTools</li>
 <li>插件系統可擴充</li>
 </ol>
-<h2 id="安裝和設置"><a href="#安裝和設置" class="headerlink" title="安裝和設置"></a>安裝和設置</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install pinia</span><br></pre></td></tr></table></figure>
-
+<h2 id="安裝和設置">安裝和設置</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install pinia</span><br></pre></td></tr></table></figure>
 <p>在 Vue 應用中引入 Pinia：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createApp &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; createPinia &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">App</span> <span class="keyword">from</span> <span class="string">&#x27;./App.vue&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> pinia = <span class="title function_">createPinia</span>()</span><br><span class="line"><span class="keyword">const</span> app = <span class="title function_">createApp</span>(<span class="title class_">App</span>)</span><br><span class="line"></span><br><span class="line">app.<span class="title function_">use</span>(pinia)</span><br><span class="line">app.<span class="title function_">mount</span>(<span class="string">&#x27;#app&#x27;</span>)</span><br></pre></td></tr></table></figure>
-
-<h2 id="Pinia的核心概念"><a href="#Pinia的核心概念" class="headerlink" title="Pinia的核心概念"></a>Pinia的核心概念</h2><h3 id="Store"><a href="#Store" class="headerlink" title="Store"></a>Store</h3><p>Store 是 Pinia 的核心，包含狀態（state）、getter 和 action。</p>
+<h2 id="Pinia的核心概念">Pinia的核心概念</h2>
+<h3 id="Store">Store</h3>
+<p>Store 是 Pinia 的核心，包含狀態（state）、getter 和 action。</p>
 <p>建立一個基本的 Store：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; defineStore &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useCounterStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;counter&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">state</span>: <span class="function">() =&gt;</span> (&#123; <span class="attr">count</span>: <span class="number">0</span> &#125;),</span><br><span class="line">  <span class="attr">getters</span>: &#123;</span><br><span class="line">    <span class="attr">doubleCount</span>: <span class="function">(<span class="params">state</span>) =&gt;</span> state.<span class="property">count</span> * <span class="number">2</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">actions</span>: &#123;</span><br><span class="line">    <span class="title function_">increment</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">count</span>++</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<h3 id="組合式API風格的Store"><a href="#組合式API風格的Store" class="headerlink" title="組合式API風格的Store"></a>組合式API風格的Store</h3><p>Pinia 也支援組合式 API 風格定義 Store，TypeScript 推斷會更完整：</p>
+<h3 id="組合式API風格的Store">組合式API風格的Store</h3>
+<p>Pinia 也支援組合式 API 風格定義 Store，TypeScript 推斷會更完整：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; ref, computed &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; defineStore &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useCounterStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;counter&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> count = <span class="title function_">ref</span>(<span class="number">0</span>)</span><br><span class="line">  <span class="keyword">const</span> doubleCount = <span class="title function_">computed</span>(<span class="function">() =&gt;</span> count.<span class="property">value</span> * <span class="number">2</span>)</span><br><span class="line">  <span class="keyword">function</span> <span class="title function_">increment</span>(<span class="params"></span>) &#123;</span><br><span class="line">    count.<span class="property">value</span>++</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> &#123; count, doubleCount, increment &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<h2 id="在組件中使用Store"><a href="#在組件中使用Store" class="headerlink" title="在組件中使用Store"></a>在組件中使用Store</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;Count: &#123;&#123; counter.count &#125;&#125;&lt;/p&gt;</span><br><span class="line">    &lt;p&gt;Double Count: &#123;&#123; counter.doubleCount &#125;&#125;&lt;/p&gt;</span><br><span class="line">    &lt;button @click=&quot;counter.increment&quot;&gt;Increment&lt;/button&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script setup&gt;</span><br><span class="line">import &#123; useCounterStore &#125; from &#x27;@/stores/counter&#x27;</span><br><span class="line"></span><br><span class="line">const counter = useCounterStore()</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
+<h2 id="在組件中使用Store">在組件中使用Store</h2>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;p&gt;Count: &#123;&#123; counter.count &#125;&#125;&lt;/p&gt;</span><br><span class="line">    &lt;p&gt;Double Count: &#123;&#123; counter.doubleCount &#125;&#125;&lt;/p&gt;</span><br><span class="line">    &lt;button @click=&quot;counter.increment&quot;&gt;Increment&lt;/button&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script setup&gt;</span><br><span class="line">import &#123; useCounterStore &#125; from &#x27;@/stores/counter&#x27;</span><br><span class="line"></span><br><span class="line">const counter = useCounterStore()</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
 <p>注意：若要解構 store 裡的響應式屬性，需搭配 <code>storeToRefs</code>，直接解構會失去響應性：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; storeToRefs &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"><span class="keyword">const</span> &#123; count, doubleCount &#125; = <span class="title function_">storeToRefs</span>(counter)</span><br></pre></td></tr></table></figure>
-
-<h2 id="Pinia的高級特性"><a href="#Pinia的高級特性" class="headerlink" title="Pinia的高級特性"></a>Pinia的高級特性</h2><h3 id="1-訂閱狀態變化"><a href="#1-訂閱狀態變化" class="headerlink" title="1. 訂閱狀態變化"></a>1. 訂閱狀態變化</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> unsubscribe = someStore.$subscribe(<span class="function">(<span class="params">mutation, state</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 每次 state 變化時觸發</span></span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(mutation.<span class="property">type</span>)</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(mutation.<span class="property">storeId</span>)</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(mutation.<span class="property">payload</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-持久化"><a href="#2-持久化" class="headerlink" title="2. 持久化"></a>2. 持久化</h3><p>搭配 <code>pinia-plugin-persistedstate</code> 可以把 store 狀態寫入 localStorage：</p>
+<h2 id="Pinia的高級特性">Pinia的高級特性</h2>
+<h3 id="1-訂閱狀態變化">1. 訂閱狀態變化</h3>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> unsubscribe = someStore.$subscribe(<span class="function">(<span class="params">mutation, state</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 每次 state 變化時觸發</span></span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(mutation.<span class="property">type</span>)</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(mutation.<span class="property">storeId</span>)</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(mutation.<span class="property">payload</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h3 id="2-持久化">2. 持久化</h3>
+<p>搭配 <code>pinia-plugin-persistedstate</code> 可以把 store 狀態寫入 localStorage：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createPinia &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; createPersistedState &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia-plugin-persistedstate&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> pinia = <span class="title function_">createPinia</span>()</span><br><span class="line">pinia.<span class="title function_">use</span>(<span class="title function_">createPersistedState</span>())</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-插件系統"><a href="#3-插件系統" class="headerlink" title="3. 插件系統"></a>3. 插件系統</h3><p>Pinia 的插件接收每個 store 實例，可以在初始化時注入屬性或方法：</p>
+<h3 id="3-插件系統">3. 插件系統</h3>
+<p>Pinia 的插件接收每個 store 實例，可以在初始化時注入屬性或方法：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pinia.<span class="title function_">use</span>(<span class="function">(<span class="params">&#123; store &#125;</span>) =&gt;</span> &#123;</span><br><span class="line">  store.<span class="property">customValue</span> = <span class="string">&#x27;Hello&#x27;</span></span><br><span class="line">  store.<span class="property">customMethod</span> = <span class="function">() =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Custom method&#x27;</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<h2 id="與Vuex的比較"><a href="#與Vuex的比較" class="headerlink" title="與Vuex的比較"></a>與Vuex的比較</h2><p>Pinia 相比 Vuex 的主要差異：</p>
+<h2 id="與Vuex的比較">與Vuex的比較</h2>
+<p>Pinia 相比 Vuex 的主要差異：</p>
 <ol>
 <li>不需要 mutation，action 直接修改狀態</li>
 <li>TypeScript 支援更完整，不需要額外的型別包裝</li>
 <li>不需要嵌套模組，每個 store 獨立</li>
 <li>套件更輕量</li>
 </ol>
-<h2 id="最佳實踐"><a href="#最佳實踐" class="headerlink" title="最佳實踐"></a>最佳實踐</h2><ol>
+<h2 id="最佳實踐">最佳實踐</h2>
+<ol>
 <li>按功能或業務領域拆分 store，避免一個 store 管所有狀態</li>
 <li>組合式 API 風格對 TypeScript 推斷更友善，大型專案建議優先採用</li>
 <li>需要跨元件共用的衍生狀態放 getter，副作用放 action</li>
 <li>善用插件系統處理持久化、logging 等橫切關注點</li>
 </ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>Pinia 把全域狀態管理的概念直接對齊 Vue 3 的組合式 API，上手成本低、型別推斷完整。對於已經在用 Vue 3 的專案來說，沒有特別理由繼續留在 Vuex。</p>
-<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
+<h2 id="結論">結論</h2>
+<p>Pinia 把全域狀態管理的概念直接對齊 Vue 3 的組合式 API，上手成本低、型別推斷完整。對於已經在用 Vue 3 的專案來說，沒有特別理由繼續留在 Vuex。</p>
+<h2 id="參考資源">參考資源</h2>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://pinia.vuejs.org/">Pinia 官方文檔</a></li>
 <li><a target="_blank" rel="noopener" href="https://vuejs.org/">Vue 官方網站</a></li>
 <li><a target="_blank" rel="noopener" href="https://pinia.vuejs.org/introduction.html#comparison-with-vuex">Comparison with Vuex</a></li>
@@ -265,15 +272,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
     
       <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
     
     </ul>
   </section>

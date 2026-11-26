@@ -122,36 +122,41 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>在使用Windows遠端桌面連線(Remote Desktop Connection, RDP)時，有時候會遇到這樣的狀況：密碼已經改了、或是根本想重新輸入，系統卻一直拿舊的儲存認證自動送出，彈出錯誤後也不給你重填的機會。本文說明怎麼清掉這筆快取認證，重新登入。</p>
-<h2 id="問題說明"><a href="#問題說明" class="headerlink" title="問題說明"></a>問題說明</h2><p>當RDP連線失敗時，Windows有時會出現以下錯誤訊息：</p>
+<h2 id="問題說明">問題說明</h2>
+<p>當RDP連線失敗時，Windows有時會出現以下錯誤訊息：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">無法使用這個認證登入到遠端電腦。請確認你的認證是有效的，然後再試一次。如果問題持續發生，請連絡系統管理員。</span><br></pre></td></tr></table></figure>
-
 <p>這個錯誤的常見原因之一是：Windows之前儲存了一組舊的RDP認證（帳號密碼），遠端桌面連線程式自動拿這組舊認證去登入，但密碼已經改了或從未正確，導致持續失敗。解法不是等鎖定時間過去，而是直接清除這筆快取的認證，讓下次連線時能重新手動輸入。</p>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><h3 id="方法一：使用圖形介面清除認證"><a href="#方法一：使用圖形介面清除認證" class="headerlink" title="方法一：使用圖形介面清除認證"></a>方法一：使用圖形介面清除認證</h3><ol>
+<h2 id="解決方法">解決方法</h2>
+<h3 id="方法一：使用圖形介面清除認證">方法一：使用圖形介面清除認證</h3>
+<ol>
 <li>按下 Windows鍵 + R</li>
 <li>輸入 <code>control keymgr.dll</code>，按 Enter</li>
 <li>在「已儲存的使用者名稱和密碼」視窗中，找到目標為 <code>TERMSRV/主機名稱或IP</code> 的那一筆，點選後按「移除」</li>
 <li>關閉視窗，重新開啟遠端桌面連線程式</li>
 </ol>
-<h3 id="方法二：使用命令列清除認證"><a href="#方法二：使用命令列清除認證" class="headerlink" title="方法二：使用命令列清除認證"></a>方法二：使用命令列清除認證</h3><p>如果你比較習慣使用命令列介面，可以：</p>
+<h3 id="方法二：使用命令列清除認證">方法二：使用命令列清除認證</h3>
+<p>如果你比較習慣使用命令列介面，可以：</p>
 <ol>
 <li>開啟命令提示字元（不需要系統管理員身分）</li>
-<li>執行以下指令查看已儲存的認證：<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmdkey /list</span><br></pre></td></tr></table></figure></li>
+<li>執行以下指令查看已儲存的認證：</li>
 </ol>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmdkey /list</span><br></pre></td></tr></table></figure>
 <p>輸出範例：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">目前儲存的認證:</span><br><span class="line"></span><br><span class="line">    目標: Domain:target=TERMSRV/192.168.1.100</span><br><span class="line">    類型: 網域密碼</span><br><span class="line">    使用者: CORP\myuser</span><br><span class="line"></span><br><span class="line">    目標: Domain:target=TERMSRV/myserver.example.com</span><br><span class="line">    類型: 網域密碼</span><br><span class="line">    使用者: administrator</span><br></pre></td></tr></table></figure>
-
 <p>找到目標主機對應那一筆，複製 <code>TERMSRV/</code> 後面的部分（即主機名稱或 IP）。</p>
 <ol start="3">
-<li>執行以下指令刪除該認證，目標格式為 <code>TERMSRV/主機名稱或IP</code>：<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmdkey /delete:TERMSRV/<span class="number">192</span>.<span class="number">168</span>.<span class="number">1</span>.<span class="number">100</span></span><br></pre></td></tr></table></figure></li>
+<li>執行以下指令刪除該認證，目標格式為 <code>TERMSRV/主機名稱或IP</code>：</li>
 </ol>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmdkey /delete:TERMSRV/<span class="number">192</span>.<span class="number">168</span>.<span class="number">1</span>.<span class="number">100</span></span><br></pre></td></tr></table></figure>
 <p>若連線時是用主機名稱而非 IP，則改成：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmdkey /delete:TERMSRV/myserver.example.com</span><br></pre></td></tr></table></figure>
-
-<h2 id="預防措施"><a href="#預防措施" class="headerlink" title="預防措施"></a>預防措施</h2><ol>
+<h2 id="預防措施">預防措施</h2>
+<ol>
 <li>將常用的遠端連線資訊儲存成 .rdp 檔案，每次從檔案開啟，不讓 Windows 自動快取認證</li>
 <li>考慮使用密碼管理工具（如 Bitwarden、KeePass）集中管理帳密，避免輸入錯誤的舊密碼</li>
 </ol>
-<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ul>
+<h2 id="參考資料">參考資料</h2>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-tw/troubleshoot/windows-server/remote/rdp-error-general-troubleshooting">Microsoft Learn：針對一般遠端桌面連線進行疑難排解</a></li>
 </ul>
 
@@ -204,6 +209,14 @@
     <ul class="related-list">
     
       <li>
+        <a href="/posts/4f8c5648/">
+          <img src="/images/posts/bat-errorlevel-negative-exit-code-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</span>
+          <span class="related-date">2026-11-26</span>
+        </a>
+      </li>
+    
+      <li>
         <a href="/posts/7d2b90da/">
           <img src="/images/posts/windows-multi-nic-default-route-remove-netroute-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
           <span class="related-title">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</span>
@@ -227,14 +240,6 @@
         </a>
       </li>
     
-      <li>
-        <a href="/posts/8697256d/">
-          <img src="/images/posts/legacy-8697256d-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
-          <span class="related-title">PowerShell 從登錄檔匯出 Windows 已安裝軟體清單</span>
-          <span class="related-date">2025-01-02</span>
-        </a>
-      </li>
-    
     </ul>
   </section>
   
@@ -244,6 +249,8 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
@@ -251,8 +258,6 @@
       <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
     
       <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
     
     </ul>
   </section>

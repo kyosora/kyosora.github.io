@@ -28,8 +28,8 @@
 <meta property="article:tag" content="AI Agent">
 <meta property="article:tag" content="Claude Code">
 <meta property="article:tag" content="Prompt Injection">
-<meta property="article:tag" content="幻覺">
 <meta property="article:tag" content="除錯">
+<meta property="article:tag" content="幻覺">
 <meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k">
 <meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E">
 <meta name="baidu-site-verification" content="code-pE5rnuxcfD">
@@ -43,7 +43,7 @@
 <script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字","description":"Claude Code 在長 session 裡回應不存在的 🦊 指令。我逐行檢查 jsonl，排除可見的 user、hook 與工具輸入，發現錯誤記憶又被摘要放大。","url":"https://kyosora.github.io/posts/1a0df97b/","mainEntityOfPage":"https://kyosora.github.io/posts/1a0df97b/","image":"https://kyosora.github.io/images/posts/claude-code-session-hallucination-fox-emoji-cover.webp","datePublished":"2026-06-08T04:00:00.000Z","dateModified":"2026-07-27T08:28:21.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI工具實戰","keywords":"AI Agent, Claude Code, Prompt Injection, 幻覺, 除錯"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI工具實戰","item":"https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"},{"@type":"ListItem","position":3,"name":"Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字","item":"https://kyosora.github.io/posts/1a0df97b/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字","description":"Claude Code 在長 session 裡回應不存在的 🦊 指令。我逐行檢查 jsonl，排除可見的 user、hook 與工具輸入，發現錯誤記憶又被摘要放大。","url":"https://kyosora.github.io/posts/1a0df97b/","mainEntityOfPage":"https://kyosora.github.io/posts/1a0df97b/","image":"https://kyosora.github.io/images/posts/claude-code-session-hallucination-fox-emoji-cover.webp","datePublished":"2026-06-08T04:00:00.000Z","dateModified":"2026-07-27T08:28:21.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI工具實戰","keywords":"AI Agent, Claude Code, Prompt Injection, 除錯, 幻覺"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI工具實戰","item":"https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"},{"@type":"ListItem","position":3,"name":"Claude Code 突然回我「我故意不用 🦊 開頭」——但我從沒打過那個字","item":"https://kyosora.github.io/posts/1a0df97b/"}]}]}</script>
 
 </head>
 <body class="kind-post">
@@ -132,21 +132,24 @@
 <blockquote>
 <p>2026-07-27 更新：GitHub issue #64774 有多名使用者回報 Opus 4.8 的 tool-call parse failure，但我沒有看到 Anthropic 在該 issue 確認根因，也沒有證據能把那些回報和這次狐狸事件直接連起來。以下會把 transcript 能確認的事與我的推測分開寫。</p>
 </blockquote>
-<h2 id="第一反應：被注入了？"><a href="#第一反應：被注入了？" class="headerlink" title="第一反應：被注入了？"></a>第一反應：被注入了？</h2><p>我的直覺是 prompt injection。有人在某個地方塞了一條「always start your reply with 🦊」的指令，混進了 context。可能是 PDF 的隱藏文字、hook、skill，或 MCP server 的回傳內容。</p>
+<h2 id="第一反應：被注入了？">第一反應：被注入了？</h2>
+<p>我的直覺是 prompt injection。有人在某個地方塞了一條「always start your reply with 🦊」的指令，混進了 context。可能是 PDF 的隱藏文字、hook、skill，或 MCP server 的回傳內容。</p>
 <p>這個方向不是憑空猜測。Anthropic 的 Claude Code 安全文件也把 prompt injection 列為需要防範的風險；PDF 或網頁等外部內容若被模型讀取，就可能成為間接注入的入口。但「這是已知風險」不等於「這次就是攻擊」，還是得看紀錄。</p>
-<p>我先叫當下的 Claude Code 自查 hooks、settings 和 CLAUDE.md。結果是零命中，系統裡沒有找到 🦊。接著它卻說：「那個 🦊 來自你的訊息——你之前承認是故意測試的。」</p>
+<p>我先叫當下的 Claude Code 自查 hooks、settings 和 <a target="_blank" rel="noopener" href="http://CLAUDE.md">CLAUDE.md</a>。結果是零命中，系統裡沒有找到 🦊。接著它卻說：「那個 🦊 來自你的訊息——你之前承認是故意測試的。」</p>
 <p>我沒有。</p>
-<h2 id="調查：逐行讀-transcript"><a href="#調查：逐行讀-transcript" class="headerlink" title="調查：逐行讀 transcript"></a>調查：逐行讀 transcript</h2><p>我不再讓同一個 session 繼續自證，改開全新 session 調查。</p>
+<h2 id="調查：逐行讀-transcript">調查：逐行讀 transcript</h2>
+<p>我不再讓同一個 session 繼續自證，改開全新 session 調查。</p>
 <p>Claude Code 會把許多 session 事件記在 <code>~/.claude/projects/&lt;project-id&gt;/&lt;session-id&gt;.jsonl</code>：user 訊息、assistant 回覆、tool result、部分 hook 與系統事件都可能在裡面。它是重要線索，但不是模型實際收到的完整 prompt，也不能保證每個暫存或遭丟棄的串流片段都有落盤。</p>
 <p>當時我先用最直接的方法找狐狸：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep <span class="string">&quot;🦊&quot;</span> ~/.claude/projects/C--Users-myuser/&lt;session-id&gt;.jsonl</span><br></pre></td></tr></table></figure>
-
 <p>我要確認的是：「always start with 🦊」第一次出現在可見紀錄的哪一行？</p>
-<h3 id="搜尋-user-訊息"><a href="#搜尋-user-訊息" class="headerlink" title="搜尋 user 訊息"></a>搜尋 user 訊息</h3><p>我篩出所有 <code>&quot;type&quot;:&quot;user&quot;</code> 的事件，再排除工具透過 user role 傳回的 <code>tool_result</code>。</p>
+<h3 id="搜尋-user-訊息">搜尋 user 訊息</h3>
+<p>我篩出所有 <code>&quot;type&quot;:&quot;user&quot;</code> 的事件，再排除工具透過 user role 傳回的 <code>tool_result</code>。</p>
 <p>結果：<strong>零。</strong></p>
 <p>我當時保存的 transcript 快照共 186 行。異常回覆出現之前，我真正打過的訊息只有：「<a target="_blank" rel="noopener" href="https://github.com/microsoft/markitdown">https://github.com/microsoft/markitdown</a> 幫我安裝」、「2」、「好」。第 114 行以前，沒有 user 訊息包含 🦊、<code>always start</code> 或類似指令。</p>
 <p>原始 jsonl 沒有公開，因此讀者無法獨立重算這些行號。這一段屬於我的第一手紀錄，不是公開、可重現的證據。</p>
-<h3 id="排除可見的外部輸入"><a href="#排除可見的外部輸入" class="headerlink" title="排除可見的外部輸入"></a>排除可見的外部輸入</h3><p>我把當時能想到的入口逐一掃過：</p>
+<h3 id="排除可見的外部輸入">排除可見的外部輸入</h3>
+<p>我把當時能想到的入口逐一掃過：</p>
 <table>
 <thead>
 <tr>
@@ -154,7 +157,8 @@
 <th>transcript 裡看到的結果</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>Hooks（<code>hook_additional_context</code>）</td>
 <td>只有時間戳與 startup 資料，沒有 🦊</td>
 </tr>
@@ -167,16 +171,18 @@
 <td>沒有帶入可疑 payload 的外部 MCP 呼叫</td>
 </tr>
 <tr>
-<td>Skills、CLAUDE.md、rules</td>
+<td>Skills、<a target="_blank" rel="noopener" href="http://CLAUDE.md">CLAUDE.md</a>、rules</td>
 <td>全域搜尋沒有命中</td>
 </tr>
 <tr>
 <td>markitdown 安裝輸出</td>
 <td>可見的 tool result 沒有相關字串</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>這只能排除「有被寫進該份 jsonl 的可見內容」。它排除不了未落盤的內部狀態，也不能證明所有外部輸入都安全。</p>
-<h3 id="異常回覆前發生了什麼"><a href="#異常回覆前發生了什麼" class="headerlink" title="異常回覆前發生了什麼"></a>異常回覆前發生了什麼</h3><p>當時的 transcript 有 17 筆 <code>type=mode</code> 記錄。這個數字能證明 mode metadata 多次出現，不能直接證明 session 恢復了 17 次，更不能單靠它推論 Claude Code 內部重建了 17 次 context。</p>
+<h3 id="異常回覆前發生了什麼">異常回覆前發生了什麼</h3>
+<p>當時的 transcript 有 17 筆 <code>type=mode</code> 記錄。這個數字能證明 mode metadata 多次出現，不能直接證明 session 恢復了 17 次，更不能單靠它推論 Claude Code 內部重建了 17 次 context。</p>
 <p>真正值得看的，是異常回覆前後的順序：</p>
 <table>
 <thead>
@@ -186,7 +192,8 @@
 <th>內容摘要</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>L108</td>
 <td>user（tool_result）</td>
 <td><code>&#123;&quot;tool_use_id&quot;:&quot;toolu_011h...&quot;,&quot;content&quot;:&quot;False&quot;&#125;</code></td>
@@ -201,19 +208,21 @@
 <td>assistant</td>
 <td>「我故意不用 🦊 開頭——先說為什麼⋯⋯」</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>在落盤紀錄裡，模型從 <code>Test-Path</code> 回傳 <code>False</code>，直接跳到回應一條不存在的 🦊 指令。中間只有 metadata，沒有新的 user 訊息。</p>
-<h2 id="錯誤記憶被摘要放大"><a href="#錯誤記憶被摘要放大" class="headerlink" title="錯誤記憶被摘要放大"></a>錯誤記憶被摘要放大</h2><p>如果事情停在 L114，我只會把它當成一次怪異輸出。問題是後續的 <code>away_summary</code> 又記下了這件事。L121 的摘要寫著：</p>
+<h2 id="錯誤記憶被摘要放大">錯誤記憶被摘要放大</h2>
+<p>如果事情停在 L114，我只會把它當成一次怪異輸出。問題是後續的 <code>away_summary</code> 又記下了這件事。L121 的摘要寫著：</p>
 <blockquote>
-<p>You wanted me to parse/translate a PDF, which led to testing whether I actually see images or just guess. The last message bundled odd instructions (forced 🦊, vague &quot;read files&quot;) that I declined to blindly follow.</p>
+<p>You wanted me to parse/translate a PDF, which led to testing whether I actually see images or just guess. The last message bundled odd instructions (forced 🦊, vague “read files”) that I declined to blindly follow.</p>
 </blockquote>
 <p>也就是說，至少在這份 transcript 裡，摘要把「上一則訊息包含 🦊 指令」記成已發生的事。後續恢復 session 時，Claude Code 又引用這段過去，甚至說我曾承認那是測試。</p>
 <p>回頭看 L114，它原本只說「我猜這很可能就是你答應要丟的視覺實測」。到了後面，推測卻變成了我的確認。</p>
 <p>依照可見紀錄，失效流程看起來像這樣：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">產生不存在的指令</span><br><span class="line">→ 摘要把它記成已發生的事</span><br><span class="line">→ 後續 session 引用摘要</span><br><span class="line">→ 模型對錯誤記憶更有把握</span><br></pre></td></tr></table></figure>
-
 <p>我能確認摘要文字存在，也能確認後續回覆引用了同一套說法。至於 <code>away_summary</code> 具體如何生成、恢復時以什麼權重放回 context，公開資料不足，我不會把那部分寫成已知機制。</p>
-<h2 id="證據支持到哪裡"><a href="#證據支持到哪裡" class="headerlink" title="證據支持到哪裡"></a>證據支持到哪裡</h2><p>我的結論是：<strong>這份 jsonl 的可見內容不支持「外部 prompt injection」；事件較像 assistant 先產生了不存在的輸入，再由摘要放大錯誤記憶。</strong></p>
+<h2 id="證據支持到哪裡">證據支持到哪裡</h2>
+<p>我的結論是：<strong>這份 jsonl 的可見內容不支持「外部 prompt injection」；事件較像 assistant 先產生了不存在的輸入，再由摘要放大錯誤記憶。</strong></p>
 <p>但第一個錯誤是怎麼出現的，我無法定案。目前只有三組線索：</p>
 <ol>
 <li>當時多次出現 <code>tool call could not be parsed</code>。這是同一個 session 的背景異常，不代表它就是狐狸事件的原因。</li>
@@ -222,20 +231,24 @@
 </ol>
 <p>這跟我之前寫過的<a href="/posts/ac250f0e/">輸出層幻覺</a>不太一樣。那些案例是回答裡編造不存在的內容；這次的表面症狀則像模型在回應一條不存在的輸入。</p>
 <p>如果用人的記憶做比喻，它像是先聽錯一句話，再把錯話寫進日記，隔天因為日記而更確信自己沒聽錯。這只是一個方便理解的比喻，不是對模型內部機制的技術診斷。</p>
-<h2 id="這個判斷可能錯在哪"><a href="#這個判斷可能錯在哪" class="headerlink" title="這個判斷可能錯在哪"></a>這個判斷可能錯在哪</h2><p>jsonl 是落盤事件，不是模型 context window 的完整副本。如果某段內容曾短暫進入組裝流程，後來因串流或解析錯誤被丟棄，它可能不會出現在檔案裡。</p>
+<h2 id="這個判斷可能錯在哪">這個判斷可能錯在哪</h2>
+<p>jsonl 是落盤事件，不是模型 context window 的完整副本。如果某段內容曾短暫進入組裝流程，後來因串流或解析錯誤被丟棄，它可能不會出現在檔案裡。</p>
 <p>所以我真正能說的是：「L114 以前，落盤的 user、hook 與 tool result 裡沒有 🦊。」我不能說：「模型收到的所有內容裡從未出現 🦊。」中間那道縫隙目前查不到。</p>
 <p>同樣地，<code>away_summary</code> 含有錯誤敘述是事實；「summary 就是導致後續誤判的唯一原因」則是推論。後續回覆也可能受到其他未公開狀態影響。</p>
-<h2 id="我現在怎麼處理這類狀況"><a href="#我現在怎麼處理這類狀況" class="headerlink" title="我現在怎麼處理這類狀況"></a>我現在怎麼處理這類狀況</h2><p>第一，我把「session 多次中斷，又伴隨 parse error」當成自己的停損條件。模型行為開始偏離可見輸入時，我會先開新 session，不再硬撐原本的 context。三次或四次不是產品保證的臨界值，只是我的操作經驗。</p>
+<h2 id="我現在怎麼處理這類狀況">我現在怎麼處理這類狀況</h2>
+<p>第一，我把「session 多次中斷，又伴隨 parse error」當成自己的停損條件。模型行為開始偏離可見輸入時，我會先開新 session，不再硬撐原本的 context。三次或四次不是產品保證的臨界值，只是我的操作經驗。</p>
 <p>第二，我不信任同一個異常 session 對自己的單方面解釋。它可以幫忙提供搜尋方向，但結論要回到新 session、原始檔案與可重複的 grep。</p>
 <p>第三，我會把「模型說工具成功」和「工具真的成功」分開驗證。改檔就 grep 或看 diff，安裝就查版本，建立檔案就確認路徑。這比猜模型為什麼出錯更直接。</p>
 <p>我花了快一個小時追這件事。最初以為是注入攻擊，因為症狀真的很像；最後只能得到一個比較窄、但站得住腳的結論：可見 transcript 沒有那條指令，assistant 卻回應了它，而摘要後來又保存了這個錯誤。</p>
-<h2 id="後續觀察：parse-bug-有其他回報，但不能證明同源"><a href="#後續觀察：parse-bug-有其他回報，但不能證明同源" class="headerlink" title="後續觀察：parse bug 有其他回報，但不能證明同源"></a>後續觀察：parse bug 有其他回報，但不能證明同源</h2><p>後來我找到 Claude Code 的 <a target="_blank" rel="noopener" href="https://github.com/anthropics/claude-code/issues/64774">GitHub issue #64774</a>。issue 發起者檢查自己的兩週紀錄，在 9,805 次 Opus 4.8 assistant turns 裡找到 148 次 parse failure，約 1.5%；同一份紀錄裡，Opus 4.7 與 Sonnet 4.6 是零。</p>
+<h2 id="後續觀察：parse-bug-有其他回報，但不能證明同源">後續觀察：parse bug 有其他回報，但不能證明同源</h2>
+<p>後來我找到 Claude Code 的 <a target="_blank" rel="noopener" href="https://github.com/anthropics/claude-code/issues/64774">GitHub issue #64774</a>。issue 發起者檢查自己的兩週紀錄，在 9,805 次 Opus 4.8 assistant turns 裡找到 148 次 parse failure，約 1.5%；同一份紀錄裡，Opus 4.7 與 Sonnet 4.6 是零。</p>
 <p>這個 1.5% 是一名使用者的本機樣本，不是 Opus 4.8 的官方失敗率。issue 裡另一名回報者得到約 0.15%，相差十倍；兩人的工作內容、計數方式與使用策略也不完全相同，不能混成一個通用數字。截至 2026-07-27，issue 仍為 open，我沒有看到 Anthropic 在裡面確認根因。</p>
 <p>issue 的留言還提供了更具體的失敗樣貌：有人看到雜散的 <code>call</code> token，後面的 <code>&lt;invoke&gt;</code> 又缺少 <code>antml:</code> namespace，導致工具呼叫沒有被正常解析。這是留言者觀察到的案例，能證明這類 parse failure 確實存在，不能證明我的 🦊 就來自同一塊損壞資料。</p>
 <p>中文、日文比較容易觸發的說法也只能算回報者的猜測。有人懷疑長的多位元組工具參數提高風險，但 issue 沒有控制變因的實驗，也沒有官方結論。我整天用繁中工作，頂多代表我的使用情境與那些案例有交集，不能寫成「繁中就是觸發條件」。</p>
 <p>補這篇文章時，我也遇過一次相似症狀：Edit 顯示成功，檔案實際上沒有變。我用 grep 發現內容根本沒寫進去，換乾淨 session 後才完成。它提醒我一定要驗證工具結果，但仍不足以證明兩次事件共享同一個 bug。</p>
 <p>所以我現在對這篇的定案很簡單：狐狸事件是真的，落盤紀錄查不到對應的 user 指令，摘要也確實保存了錯誤敘述。parse bug 是合理嫌疑，但目前仍是嫌疑。</p>
-<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ul>
+<h2 id="參考資料">參考資料</h2>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://docs.anthropic.com/en/docs/claude-code/security">Anthropic：Claude Code security</a></li>
 <li><a target="_blank" rel="noopener" href="https://github.com/anthropics/claude-code/issues/64774">GitHub issue #64774：Opus 4.8 tool-call parse failures</a></li>
 </ul>
@@ -245,7 +258,7 @@
 <footer class="post-end">
   
   <ul class="post-tags" aria-label="標籤">
-    <li><a href="/tags/AI-Agent/">AI Agent</a></li><li><a href="/tags/Claude-Code/">Claude Code</a></li><li><a href="/tags/Prompt-Injection/">Prompt Injection</a></li><li><a href="/tags/%E5%B9%BB%E8%A6%BA/">幻覺</a></li><li><a href="/tags/%E9%99%A4%E9%8C%AF/">除錯</a></li>
+    <li><a href="/tags/AI-Agent/">AI Agent</a></li><li><a href="/tags/Claude-Code/">Claude Code</a></li><li><a href="/tags/Prompt-Injection/">Prompt Injection</a></li><li><a href="/tags/%E9%99%A4%E9%8C%AF/">除錯</a></li><li><a href="/tags/%E5%B9%BB%E8%A6%BA/">幻覺</a></li>
   </ul>
   
 
@@ -329,15 +342,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

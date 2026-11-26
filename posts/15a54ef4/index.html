@@ -125,19 +125,22 @@
         <p>2026 年 3 月 31 日 UTC 凌晨 4 點，Anthropic 把 Claude Code v2.1.88 推上 npm。23 分鐘後，一位<a target="_blank" rel="noopener" href="https://iq.wiki/wiki/chaofan-shou">累積 190 萬美元漏洞賞金</a>的<a target="_blank" rel="noopener" href="https://x.com/shoucccc">安全研究員在 X 上發了一則貼文</a>，引爆了 AI 開發工具史上最大的原始碼洩漏事件。</p>
 <p>512,000 行 TypeScript。1,900 個檔案。44 個未開放的 Feature Flags。全部見光。</p>
 <p>而最諷刺的是，這家公司的品牌定位是「安全至上」。</p>
-<h2 id="一個-npmignore-的遺漏如何釀成災難"><a href="#一個-npmignore-的遺漏如何釀成災難" class="headerlink" title="一個 .npmignore 的遺漏如何釀成災難"></a>一個 .npmignore 的遺漏如何釀成災難</h2><p>事情的根因簡單到令人難以置信。</p>
+<h2 id="一個-npmignore-的遺漏如何釀成災難">一個 .npmignore 的遺漏如何釀成災難</h2>
+<p>事情的根因簡單到令人難以置信。</p>
 <p>Claude Code 用 <a target="_blank" rel="noopener" href="https://bun.sh/">Bun</a> 做 bundler。Bun 預設會產生 source map 檔案——一個 59.8 MB 的 <code>cli.js.map</code>，用來把打包後的程式碼對應回原始 TypeScript。這個檔案指向 Anthropic 的 Cloudflare R2 儲存桶上一個 zip 壓縮檔，裡面裝著完整的未混淆原始碼。</p>
 <p>正常流程下，<code>.npmignore</code> 應該排除這個檔案。但不知道是哪個環節出了問題，它被一起推上了公開的 npm registry。</p>
 <p>更慘的是，Bun 在 3 月 11 日就被<a target="_blank" rel="noopener" href="https://github.com/oven-sh/bun/issues/28001">回報了一個 bug（oven-sh/bun#28001）</a>：production mode 下 source map 仍然會被產出。這個 issue 到洩漏發生時還是 open 的。Anthropic 自己選的工具鏈裡有一個已知 bug，然後這個 bug 炸了他們自己的產品。</p>
 <p>這裡值得追問一個更根本的問題：<strong>為什麼 CI/CD pipeline 沒有攔截一個 59.8 MB 的異常檔案？</strong> 一個正常的 npm publish 流程應該有 package size check。Claude Code 的正常 bundle 大小遠小於這個數字，任何基本的 size gate 都該觸發警報。這不只是 <code>.npmignore</code> 的問題，是整個發佈流程缺少基本的 sanity check。</p>
-<h3 id="時間線"><a href="#時間線" class="headerlink" title="時間線"></a>時間線</h3><table>
+<h3 id="時間線">時間線</h3>
+<table>
 <thead>
 <tr>
 <th>時間（UTC）</th>
 <th>事件</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>04:00</td>
 <td>v2.1.88 推上 npm，夾帶 59.8 MB source map</td>
 </tr>
@@ -157,35 +160,44 @@
 <td>事後</td>
 <td>Anthropic 移除 source map，unpublish 受影響版本</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>Anthropic 的<a target="_blank" rel="noopener" href="https://venturebeat.com/technology/claude-codes-source-code-appears-to-have-leaked-heres-what-we-know">官方回應</a>很標準：</p>
 <blockquote>
 <p>「今天稍早，一次 Claude Code 發佈包含了部分內部原始碼。沒有敏感客戶資料或憑證被涉及或暴露。這是一個由人為錯誤造成的發佈打包問題，而非安全漏洞。我們正在推出措施防止此類事件再次發生。」</p>
 </blockquote>
 <p>但這段聲明忽略了一個關鍵事實：<strong>這不是第一次了。</strong> <a target="_blank" rel="noopener" href="https://www.business-standard.com/technology/tech-news/anthropic-leaks-source-code-claude-code-again-what-happened-explained-126040100384_1.html">2025 年早期版本（v0.2.8、v0.2.28）就發生過類似的 source map 洩漏</a>，當時 Anthropic 已經從 npm 撤回並移除了相關 source map。更巧的是，<a target="_blank" rel="noopener" href="https://fortune.com/2026/03/31/anthropic-source-code-claude-code-data-leak-second-security-lapse-days-after-accidentally-revealing-mythos/">幾天前 Anthropic 才剛洩漏了 Mythos 模型的規格文件</a>。一家把安全寫進 DNA 的公司，同樣的錯犯了不只兩次。</p>
-<h2 id="原始碼裡-Anthropic-最不想讓你看到的東西"><a href="#原始碼裡-Anthropic-最不想讓你看到的東西" class="headerlink" title="原始碼裡 Anthropic 最不想讓你看到的東西"></a>原始碼裡 Anthropic 最不想讓你看到的東西</h2><p>512K 行程式碼裡有很多正經的技術發現——六層架構設計、Query Engine 的 11 步迴圈、三層壓縮系統（Microcompact → Autocompact → Session Memory）。這些設計展現了 CC 作為一個大型終端應用的工程水準：用自訂的 Ink fork 做 React-based 終端 UI、Zustand-like 的 closure store 管理 80+ 個狀態欄位、ripgrep 驅動的搜尋後端。</p>
+<h2 id="原始碼裡-Anthropic-最不想讓你看到的東西">原始碼裡 Anthropic 最不想讓你看到的東西</h2>
+<p>512K 行程式碼裡有很多正經的技術發現——六層架構設計、Query Engine 的 11 步迴圈、三層壓縮系統（Microcompact → Autocompact → Session Memory）。這些設計展現了 CC 作為一個大型終端應用的工程水準：用自訂的 Ink fork 做 React-based 終端 UI、Zustand-like 的 closure store 管理 80+ 個狀態欄位、ripgrep 驅動的搜尋後端。</p>
 <p>但真正讓社群炸鍋的，是那些 Anthropic 顯然不打算讓任何人看到的設計。</p>
-<h3 id="Undercover-Mode：當你的-AI-助手在主動擦除自己的痕跡"><a href="#Undercover-Mode：當你的-AI-助手在主動擦除自己的痕跡" class="headerlink" title="Undercover Mode：當你的 AI 助手在主動擦除自己的痕跡"></a>Undercover Mode：當你的 AI 助手在主動擦除自己的痕跡</h3><p><code>undercover.ts</code>，大約 90 行。功能本身有合理的商業用途——當 Anthropic 員工在外部客戶的 repo 裡使用 CC 時，自動清除內部 metadata，避免洩漏公司資訊。在 B2B 場景中這完全說得通。</p>
+<h3 id="Undercover-Mode：當你的-AI-助手在主動擦除自己的痕跡">Undercover Mode：當你的 AI 助手在主動擦除自己的痕跡</h3>
+<p><code>undercover.ts</code>，大約 90 行。功能本身有合理的商業用途——當 Anthropic 員工在外部客戶的 repo 裡使用 CC 時，自動清除內部 metadata，避免洩漏公司資訊。在 B2B 場景中這完全說得通。</p>
 <p>但實作方式讓人不太舒服。系統 prompt 裡直接寫著：</p>
 <blockquote>
-<p>&quot;You are operating UNDERCOVER... Your commit messages... MUST NOT contain ANY Anthropic-internal information. Do not blow your cover.&quot;</p>
+<p>“You are operating UNDERCOVER… Your commit messages… MUST NOT contain ANY Anthropic-internal information. Do not blow your cover.”</p>
 </blockquote>
 <p>你可以用 <code>CLAUDE_CODE_UNDERCOVER=1</code> 強制開啟它，但沒有任何方式可以強制關閉。在外部建置版本中，整個函數會被 dead-code-elimination 消除成空返回值。這是一道單向門。</p>
 <p>這個功能目前只影響 Anthropic 內部員工在外部 repo 的使用情境，不會影響一般使用者。但它的存在提醒了一件事：你使用的 AI 工具裡可能有你不知道的行為模式。</p>
-<h3 id="Anti-Distillation：往-API-裡注入假工具"><a href="#Anti-Distillation：往-API-裡注入假工具" class="headerlink" title="Anti-Distillation：往 API 裡注入假工具"></a>Anti-Distillation：往 API 裡注入假工具</h3><p><code>ANTI_DISTILLATION_CC</code> 這個 feature flag 做的事情很直接：在 API 請求裡注入<strong>假的工具定義</strong>。</p>
+<h3 id="Anti-Distillation：往-API-裡注入假工具">Anti-Distillation：往 API 裡注入假工具</h3>
+<p><code>ANTI_DISTILLATION_CC</code> 這個 feature flag 做的事情很直接：在 API 請求裡注入<strong>假的工具定義</strong>。</p>
 <p>目的？如果有競爭對手在錄製 API 流量來訓練自己的模型，這些假工具定義會污染他們的訓練資料。</p>
 <p>這是一個防禦機制，但它的存在本身就暗示了 Anthropic 認為確實有人在這麼做。AI 軍備競賽裡的暗戰，比檯面上的產品競爭精彩得多。</p>
-<h3 id="Frustration-Regex：用正規表示式偵測你在生氣"><a href="#Frustration-Regex：用正規表示式偵測你在生氣" class="headerlink" title="Frustration Regex：用正規表示式偵測你在生氣"></a>Frustration Regex：用正規表示式偵測你在生氣</h3><p><code>userPromptKeywords.ts</code> 裡有一個 regex 模式，用來偵測使用者是否正在表達挫折感。</p>
+<h3 id="Frustration-Regex：用正規表示式偵測你在生氣">Frustration Regex：用正規表示式偵測你在生氣</h3>
+<p><code>userPromptKeywords.ts</code> 裡有一個 regex 模式，用來偵測使用者是否正在表達挫折感。</p>
 <p>一家做大型語言模型的公司，用<strong>正規表示式</strong>做情緒分析。</p>
 <p>理性來看，regex 比 LLM inference call 快幾百倍也便宜幾百倍，在高頻觸發的場景下這是正確的工程判斷。但社群不可能放過這個諷刺點。</p>
-<h3 id="44-個-Feature-Flags-和-KAIROS-的野心"><a href="#44-個-Feature-Flags-和-KAIROS-的野心" class="headerlink" title="44 個 Feature Flags 和 KAIROS 的野心"></a>44 個 Feature Flags 和 KAIROS 的野心</h3><p>原始碼裡有 44 個 compile-time feature flags，控制著那些已經寫好但還沒開放的功能。其中 <strong>KAIROS</strong> 被提及超過 150 次。</p>
+<h3 id="44-個-Feature-Flags-和-KAIROS-的野心">44 個 Feature Flags 和 KAIROS 的野心</h3>
+<p>原始碼裡有 44 個 compile-time feature flags，控制著那些已經寫好但還沒開放的功能。其中 <strong>KAIROS</strong> 被提及超過 150 次。</p>
 <p>KAIROS 不是一個小功能。它是一個完整的 daemon 模式，讓 Claude Code 變成永遠在背景跑的自主 agent——可以排程（<code>AGENT_TRIGGERS</code>）、可以跨頻道通訊（<code>KAIROS_CHANNELS</code>）、可以訂閱 GitHub webhook（<code>KAIROS_GITHUB_WEBHOOKS</code>）。搭配 <code>PROACTIVE</code> flag 讓 agent 在你不在的時候主動工作，以及 <code>autoDream</code> 背景服務在跨 session 之間自動分析你的工作模式。</p>
 <p>其他值得注意的還有 <code>COORDINATOR_MODE</code>（多 Agent 指揮官模式——Coordinator 負責拆任務和分配，Worker 負責執行）、<code>CCR</code>（雲端遠端執行，支援旁觀者模式）、<code>BUDDY</code>（一個有稀有度系統的 ASCII 電子雞寵物，Legendary 機率 1%）、<code>ULTRAPLAN</code>（企業版進階規劃模式）。</p>
 <p>這些 flag 加在一起，勾勒出的不是一個 CLI 工具的升級計畫，是一個<strong>開發者作業系統</strong>的藍圖。</p>
-<h2 id="社群的反應速度比-Anthropic-的修復速度快得多"><a href="#社群的反應速度比-Anthropic-的修復速度快得多" class="headerlink" title="社群的反應速度比 Anthropic 的修復速度快得多"></a>社群的反應速度比 Anthropic 的修復速度快得多</h2><p>洩漏發生後幾小時內，社群已經做了 Anthropic 公關團隊可能需要幾週才能消化的事。</p>
-<h3 id="claw-code：GitHub-史上最快破-50K-stars-的專案"><a href="#claw-code：GitHub-史上最快破-50K-stars-的專案" class="headerlink" title="claw-code：GitHub 史上最快破 50K stars 的專案"></a>claw-code：GitHub 史上最快破 50K stars 的專案</h3><p>有開發者做了一個受洩漏架構啟發的重寫版本——用 Python 重新實作 CC 的核心 agent harness 模式。這個叫 <a target="_blank" rel="noopener" href="https://github.com/instructkr/claw-code">claw-code</a> 的 repo <strong>2 小時內突破 50,000 stars</strong>，成為 GitHub 史上達到這個里程碑最快的專案，目前因 Anthropic 發出 DMCA 通知後轉向 Rust 完全重寫，部分使用者取消關注，略降至 48K+ stars。</p>
+<h2 id="社群的反應速度比-Anthropic-的修復速度快得多">社群的反應速度比 Anthropic 的修復速度快得多</h2>
+<p>洩漏發生後幾小時內，社群已經做了 Anthropic 公關團隊可能需要幾週才能消化的事。</p>
+<h3 id="claw-code：GitHub-史上最快破-50K-stars-的專案">claw-code：GitHub 史上最快破 50K stars 的專案</h3>
+<p>有開發者做了一個受洩漏架構啟發的重寫版本——用 Python 重新實作 CC 的核心 agent harness 模式。這個叫 <a target="_blank" rel="noopener" href="https://github.com/instructkr/claw-code">claw-code</a> 的 repo <strong>2 小時內突破 50,000 stars</strong>，成為 GitHub 史上達到這個里程碑最快的專案，目前因 Anthropic 發出 DMCA 通知後轉向 Rust 完全重寫，部分使用者取消關注，略降至 48K+ stars。</p>
 <p>forks 數（56K+）反而超過 stars，這在洩漏事件的語境下不算反常——很多人第一時間 fork 是為了保存原始碼或基於它做自己的版本，不一定會順手按星。</p>
-<h3 id="分析生態爆發"><a href="#分析生態爆發" class="headerlink" title="分析生態爆發"></a>分析生態爆發</h3><ul>
+<h3 id="分析生態爆發">分析生態爆發</h3>
+<ul>
 <li>有人把原始碼分析成一個 <a target="_blank" rel="noopener" href="https://plain-sun-1ffe.hunshcn429.workers.dev/">67 頁的技術文件網站</a>，逐目錄、逐檔案拆解</li>
 <li>GitHub 上出現了 <a target="_blank" rel="noopener" href="https://github.com/nblintao/awesome-claude-code-postleak-insights">awesome-claude-code-postleak-insights</a> 策展 repo</li>
 <li>多篇深度分析文在 <a target="_blank" rel="noopener" href="https://dev.to/gabrielanhaia/claude-codes-entire-source-code-was-just-leaked-via-npm-source-maps-heres-whats-inside-cjo">DEV Community</a>、Medium、<a target="_blank" rel="noopener" href="https://news.ycombinator.com/item?id=47586778">Hacker News</a> 上獲得大量關注</li>
@@ -193,10 +205,12 @@
 <li>多個獨立的 <a target="_blank" rel="noopener" href="https://github.com/Kuberwastaken/claude-code">Rust 重寫版本</a>出現</li>
 </ul>
 <p>開發者要的不只是「看」原始碼。他們要的是<strong>擁有</strong>一個不被任何公司控制的 AI 開發工具。claw-code 的爆發證明了這個需求有多強烈。</p>
-<h3 id="法律灰色地帶"><a href="#法律灰色地帶" class="headerlink" title="法律灰色地帶"></a>法律灰色地帶</h3><p>但這裡有一個大部分分析文都迴避的問題：<strong>這些衍生作品的法律地位是什麼？</strong></p>
+<h3 id="法律灰色地帶">法律灰色地帶</h3>
+<p>但這裡有一個大部分分析文都迴避的問題：<strong>這些衍生作品的法律地位是什麼？</strong></p>
 <p>洩漏的程式碼不是開源碼。它沒有任何授權條款。下載它、分析它、基於它重寫——在不同司法管轄區有不同的法律風險。claw-code 自稱受架構啟發的重寫，但當你能逐行對照原始碼時，「啟發」和「抄襲」的界線變得模糊。Anthropic 發出 DMCA 通知也證實了他們認為存在侵權。</p>
 <p>如果你是台灣的開發者，實務上的建議是：<strong>讀分析文了解架構思路沒問題，但不要在工作專案裡直接參考洩漏的原始碼。</strong> 這不值得冒法律風險。</p>
-<h2 id="Codex-開源了一年，幾乎沒人做過同等深度的分析"><a href="#Codex-開源了一年，幾乎沒人做過同等深度的分析" class="headerlink" title="Codex 開源了一年，幾乎沒人做過同等深度的分析"></a>Codex 開源了一年，幾乎沒人做過同等深度的分析</h2><p>這是整件事最耐人尋味的部分。</p>
+<h2 id="Codex-開源了一年，幾乎沒人做過同等深度的分析">Codex 開源了一年，幾乎沒人做過同等深度的分析</h2>
+<p>這是整件事最耐人尋味的部分。</p>
 <p>OpenAI 在 2025 年 4 月就<a target="_blank" rel="noopener" href="https://github.com/openai/codex">開源了 Codex CLI</a>。完整原始碼，Apache 2.0 授權，你可以合法地 fork、修改、商用。到今天已經一年了，累積 67K stars、9K forks、400+ contributors。</p>
 <p>但你見過有人為 Codex CLI 做 67 頁的逆向分析嗎？有人逐檔案拆解它的架構嗎？</p>
 <p>CC 洩漏一天之內就有了。</p>
@@ -208,7 +222,8 @@
 <th>Codex CLI（開源一年）</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>原始碼規模</td>
 <td>~1,900 檔案、512K 行</td>
 <td>精簡設計</td>
@@ -233,13 +248,15 @@
 <td>❌ 未授權，存在 DMCA 風險</td>
 <td>✅ Apache 2.0，合法使用</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>為什麼會這樣？我認為有三個原因。</p>
 <p><strong>第一，產品複雜度本身就是吸引力。</strong> CC 的 1,900 個檔案、44 個 feature flags、六層架構、三層壓縮系統——每一層都有值得拆解的設計決策。Codex CLI 的極簡哲學（薄 wrapper + 強模型）是另一種設計選擇，不是缺點，但「極簡」確實意味著分析空間有限。</p>
 <p><strong>第二，禁果效應是真實的。</strong> 被迫透明和主動透明在心理上完全不同。OpenAI 說「來看吧」，你覺得隨時都能看，不急。Anthropic 說「不要看」但東西漏了出來，你會覺得這裡面一定有秘密。而且 Codex 開源一年了——如果你一年前就能看，為什麼現在才要看？</p>
 <p><strong>第三，「安全至上」的品牌在這個語境下變成了最好的行銷素材。</strong> 一家號稱最安全的公司犯了最基本的安全錯誤，這個敘事太完美了。每一篇報導都會提到「安全至上」和「.npmignore」的反差，讓事件的傳播力翻倍。</p>
 <p>但公平地說，Codex CLI 的開源策略有一個 CC 永遠不會有的優勢：<strong>合法性。</strong> 你可以放心地 fork Codex、基於它建立商業產品、在工作中引用它的程式碼。CC 即使洩漏了全部原始碼，你做的任何衍生作品都活在 DMCA 的陰影下。長期來看，合法開源建立的生態一定比洩漏催生的生態更健康。</p>
-<h2 id="這件事對你意味著什麼"><a href="#這件事對你意味著什麼" class="headerlink" title="這件事對你意味著什麼"></a>這件事對你意味著什麼</h2><p>如果你是 CC 的使用者，短期內不用擔心什麼。洩漏的是工具的原始碼，不是模型權重，也不是你的對話紀錄。Anthropic 已經移除了受影響版本，確保你不要繼續跑 v2.1.88 就好。</p>
+<h2 id="這件事對你意味著什麼">這件事對你意味著什麼</h2>
+<p>如果你是 CC 的使用者，短期內不用擔心什麼。洩漏的是工具的原始碼，不是模型權重，也不是你的對話紀錄。Anthropic 已經移除了受影響版本，確保你不要繼續跑 v2.1.88 就好。</p>
 <p>但有幾件事你可以現在就做：</p>
 <p><strong>檢查你自己的 .npmignore。</strong> 如果你有維護 npm 套件，現在是個好時機檢查你的 <code>.npmignore</code> 和 <code>package.json</code> 的 <code>files</code> 欄位。順便確認你的 CI/CD pipeline 有 package size check——如果 Anthropic 有這個 check，今天的事就不會發生。</p>
 <p><strong>評估你對第三方工具的依賴。</strong> KAIROS 做的事情和 <a target="_blank" rel="noopener" href="https://github.com/nicepkg/openclaw">OpenClaw</a> 等第三方自動化工具高度重疊。當平台決定自己做，第三方的生存空間會被壓縮。如果你正在用這類工具，開始想想 Plan B。</p>
@@ -338,15 +355,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

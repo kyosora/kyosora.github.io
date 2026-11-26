@@ -119,35 +119,36 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>在 Vue.js 生態系統中，Pinia 是目前官方推薦的狀態管理函式庫。不過，當我們透過 Pinia 儲存資料時，這些資料究竟放在哪裡？本文拆解 Pinia 的運作原理，以及它如何處理資料儲存。</p>
-<h2 id="Pinia-的核心概念"><a href="#Pinia-的核心概念" class="headerlink" title="Pinia 的核心概念"></a>Pinia 的核心概念</h2><p>Pinia 把應用程式的狀態切成獨立的「store」，每個 store 負責管理一塊特定的狀態。這種設計讓狀態管理更模組化，也比較容易維護。</p>
+<h2 id="Pinia-的核心概念">Pinia 的核心概念</h2>
+<p>Pinia 把應用程式的狀態切成獨立的「store」，每個 store 負責管理一塊特定的狀態。這種設計讓狀態管理更模組化，也比較容易維護。</p>
 <p>定義一個 store 的基本寫法：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; defineStore &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useCounterStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;counter&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">state</span>: <span class="function">() =&gt;</span> (&#123;</span><br><span class="line">    <span class="attr">count</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="attr">name</span>: <span class="string">&#x27;guest&#x27;</span>,</span><br><span class="line">  &#125;),</span><br><span class="line">  <span class="attr">actions</span>: &#123;</span><br><span class="line">    <span class="title function_">increment</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">count</span>++</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<h2 id="記憶體中的資料儲存"><a href="#記憶體中的資料儲存" class="headerlink" title="記憶體中的資料儲存"></a>記憶體中的資料儲存</h2><p>Pinia 的資料主要放在應用程式的記憶體裡，底層是 Vue 的響應式系統。</p>
+<h2 id="記憶體中的資料儲存">記憶體中的資料儲存</h2>
+<p>Pinia 的資料主要放在應用程式的記憶體裡，底層是 Vue 的響應式系統。</p>
 <ul>
 <li><strong>響應式物件</strong>：store 的 <code>state</code> 在底層是用 <code>ref()</code> 包裹、再透過 <code>reactive()</code> 展開。這讓所有依賴該狀態的元件在資料變動時自動重新渲染，不需要手動觸發。</li>
 <li><strong>JavaScript 執行環境</strong>：響應式物件存在 JavaScript 執行環境中——客戶端應用放在瀏覽器記憶體，伺服器端渲染（SSR）則放在伺服器記憶體，頁面重整或 tab 關閉後就消失。</li>
 </ul>
-<h2 id="持久化儲存"><a href="#持久化儲存" class="headerlink" title="持久化儲存"></a>持久化儲存</h2><p>預設情況下 Pinia 不會把資料寫到任何持久化位置，頁面重整就歸零。需要跨重整保留資料時，有幾種做法：</p>
-<h3 id="1-localStorage-sessionStorage"><a href="#1-localStorage-sessionStorage" class="headerlink" title="1. localStorage / sessionStorage"></a>1. localStorage / sessionStorage</h3><p>直接在 action 裡手動讀寫，或用 <code>pinia-plugin-persistedstate</code> 自動化這個流程。</p>
+<h2 id="持久化儲存">持久化儲存</h2>
+<p>預設情況下 Pinia 不會把資料寫到任何持久化位置，頁面重整就歸零。需要跨重整保留資料時，有幾種做法：</p>
+<h3 id="1-localStorage-sessionStorage">1. localStorage / sessionStorage</h3>
+<p>直接在 action 裡手動讀寫，或用 <code>pinia-plugin-persistedstate</code> 自動化這個流程。</p>
 <p><strong>手動寫法</strong></p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useUserStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;user&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">state</span>: <span class="function">() =&gt;</span> (&#123;</span><br><span class="line">    <span class="attr">token</span>: <span class="variable language_">localStorage</span>.<span class="title function_">getItem</span>(<span class="string">&#x27;token&#x27;</span>) ?? <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">  &#125;),</span><br><span class="line">  <span class="attr">actions</span>: &#123;</span><br><span class="line">    <span class="title function_">setToken</span>(<span class="params">token</span>) &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">token</span> = token</span><br><span class="line">      <span class="variable language_">localStorage</span>.<span class="title function_">setItem</span>(<span class="string">&#x27;token&#x27;</span>, token)</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
 <p><strong>使用 pinia-plugin-persistedstate</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install pinia-plugin-persistedstate</span><br></pre></td></tr></table></figure>
-
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"><span class="keyword">import</span> &#123; createPinia &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"><span class="keyword">import</span> piniaPluginPersistedstate <span class="keyword">from</span> <span class="string">&#x27;pinia-plugin-persistedstate&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> pinia = <span class="title function_">createPinia</span>()</span><br><span class="line">pinia.<span class="title function_">use</span>(piniaPluginPersistedstate)</span><br></pre></td></tr></table></figure>
-
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useUserStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;user&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">state</span>: <span class="function">() =&gt;</span> (&#123; <span class="attr">token</span>: <span class="string">&#x27;&#x27;</span>, <span class="attr">name</span>: <span class="string">&#x27;&#x27;</span> &#125;),</span><br><span class="line">  <span class="attr">persist</span>: <span class="literal">true</span>, <span class="comment">// 預設使用 localStorage，key 為 store id</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
 <p>也可以細調要持久化哪些欄位，或改用 <code>sessionStorage</code>：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">persist</span>: &#123;</span><br><span class="line">  <span class="attr">storage</span>: <span class="variable language_">sessionStorage</span>,</span><br><span class="line">  <span class="attr">pick</span>: [<span class="string">&#x27;token&#x27;</span>],  <span class="comment">// 只持久化 token，忽略 name</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-IndexedDB"><a href="#2-IndexedDB" class="headerlink" title="2. IndexedDB"></a>2. IndexedDB</h3><p>適合儲存量較大的客戶端資料（例如離線資料集）。需注意 IndexedDB 是非同步 API，無法直接插入 <code>pinia-plugin-persistedstate</code>（後者要求同步的 <code>getItem</code>/<code>setItem</code> 介面）。實務上通常透過 <a target="_blank" rel="noopener" href="https://localforage.github.io/localForage/">localForage</a> 包一層同步介面來銜接。</p>
-<h3 id="3-伺服器端儲存"><a href="#3-伺服器端儲存" class="headerlink" title="3. 伺服器端儲存"></a>3. 伺服器端儲存</h3><p>需要跨裝置或跨工作階段保留的資料，應透過 API 寫入資料庫，Pinia 只扮演客戶端快取的角色。</p>
-<h2 id="資料流動過程"><a href="#資料流動過程" class="headerlink" title="資料流動過程"></a>資料流動過程</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">應用啟動</span><br><span class="line">  └─ Pinia 初始化各 store，載入初始 state 至記憶體</span><br><span class="line"></span><br><span class="line">使用者操作</span><br><span class="line">  └─ 呼叫 action 或直接修改 state</span><br><span class="line">       └─ Vue 響應式系統偵測到變更，觸發元件重新渲染</span><br><span class="line"></span><br><span class="line">（啟用持久化外掛時）</span><br><span class="line">  └─ 資料變更同步寫入 localStorage / sessionStorage</span><br></pre></td></tr></table></figure>
-
-<h2 id="小結"><a href="#小結" class="headerlink" title="小結"></a>小結</h2><p>Pinia 的狀態存在記憶體裡，以響應式物件的形式跟著 Vue 的渲染週期走。頁面重整就消失是預設行為，不是 bug——需要持久化時，<code>pinia-plugin-persistedstate</code> 是最直接的方案，配合 <code>pick</code> 選項可以只持久化必要的欄位，避免把敏感資料（如完整 token payload）無意間全寫進 localStorage。</p>
+<h3 id="2-IndexedDB">2. IndexedDB</h3>
+<p>適合儲存量較大的客戶端資料（例如離線資料集）。需注意 IndexedDB 是非同步 API，無法直接插入 <code>pinia-plugin-persistedstate</code>（後者要求同步的 <code>getItem</code>/<code>setItem</code> 介面）。實務上通常透過 <a target="_blank" rel="noopener" href="https://localforage.github.io/localForage/">localForage</a> 包一層同步介面來銜接。</p>
+<h3 id="3-伺服器端儲存">3. 伺服器端儲存</h3>
+<p>需要跨裝置或跨工作階段保留的資料，應透過 API 寫入資料庫，Pinia 只扮演客戶端快取的角色。</p>
+<h2 id="資料流動過程">資料流動過程</h2>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">應用啟動</span><br><span class="line">  └─ Pinia 初始化各 store，載入初始 state 至記憶體</span><br><span class="line"></span><br><span class="line">使用者操作</span><br><span class="line">  └─ 呼叫 action 或直接修改 state</span><br><span class="line">       └─ Vue 響應式系統偵測到變更，觸發元件重新渲染</span><br><span class="line"></span><br><span class="line">（啟用持久化外掛時）</span><br><span class="line">  └─ 資料變更同步寫入 localStorage / sessionStorage</span><br></pre></td></tr></table></figure>
+<h2 id="小結">小結</h2>
+<p>Pinia 的狀態存在記憶體裡，以響應式物件的形式跟著 Vue 的渲染週期走。頁面重整就消失是預設行為，不是 bug——需要持久化時，<code>pinia-plugin-persistedstate</code> 是最直接的方案，配合 <code>pick</code> 選項可以只持久化必要的欄位，避免把敏感資料（如完整 token payload）無意間全寫進 localStorage。</p>
 
       </div>
       
@@ -222,15 +223,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

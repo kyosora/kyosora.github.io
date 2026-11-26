@@ -125,51 +125,56 @@
         <p>10 月 26 日（美國時間），OpenAI 在 <a target="_blank" rel="noopener" href="https://github.com/openai/math">openai/math</a> 放出一份手稿，標題只有一句話：〈The Exponential Time Hypothesis is False〉。幾個小時後，Anthropic 在 <a target="_blank" rel="noopener" href="https://github.com/anthropics/formal-math/tree/main/eth">anthropics/formal-math</a> 放出一篇 Claude 署名的論文〈A 2^o(n) Time Algorithm for 3-SAT〉，宣稱的是同一件事。兩家都附了 Lean 4 形式證明，由學界組成的獨立審查還在進行。</p>
 <p>幣圈先炸了一輪。ETH 在他們眼裡是以太坊，<a target="_blank" rel="noopener" href="https://decrypt.co/381956/opena-eth-false-crypto-twitter-has-questions">Decrypt 的標題</a>直接寫「OpenAI Proves ETH Is False, and Crypto Twitter Has Questions」。</p>
 <p>這裡的 ETH 是 Exponential Time Hypothesis，指數時間假說。它跟以太坊無關，是理論電腦科學裡一條撐了二十多年的基礎假設。如果這次的反證成立，影響的是一整批理論結果；對你寫的程式，則幾乎沒有影響。下面從頭講。</p>
-<h2 id="先從-3-SAT-講起"><a href="#先從-3-SAT-講起" class="headerlink" title="先從 3-SAT 講起"></a>先從 3-SAT 講起</h2><p>想像你在排班。每條規則長這樣：「小明值班、小華不值班、小美值班，三個條件至少要成立一個」。規則有幾百條，問：有沒有一種排法能讓所有規則同時成立？</p>
+<h2 id="先從-3-SAT-講起">先從 3-SAT 講起</h2>
+<p>想像你在排班。每條規則長這樣：「小明值班、小華不值班、小美值班，三個條件至少要成立一個」。規則有幾百條，問：有沒有一種排法能讓所有規則同時成立？</p>
 <p>這就是 3-SAT。每條規則叫一個子句，裡面有三個「文字」（某個變數，或它的否定），至少一個要成立。它是最經典的 NP-complete 問題，很多排程、驗證、規劃問題最後都能轉成它。</p>
 <p>最直覺的解法是全部試一遍。下面這段順便把解的數量也數出來，數量大於零就代表有解（這次兩家的演算法做的也是「數解」）：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> itertools <span class="keyword">import</span> product</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">count_3sat</span>(<span class="params">n, clauses</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;clauses 例：[(1, -2, 3)]，正數是變數本身，負數是它的否定&quot;&quot;&quot;</span></span><br><span class="line">    count = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> bits <span class="keyword">in</span> product([<span class="literal">False</span>, <span class="literal">True</span>], repeat=n):   <span class="comment"># 2^n 種組合全試一遍</span></span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">all</span>(<span class="built_in">any</span>(bits[<span class="built_in">abs</span>(l) - <span class="number">1</span>] == (l &gt; <span class="number">0</span>) <span class="keyword">for</span> l <span class="keyword">in</span> c) <span class="keyword">for</span> c <span class="keyword">in</span> clauses):</span><br><span class="line">            count += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> count</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(count_3sat(<span class="number">3</span>, [(<span class="number">1</span>, -<span class="number">2</span>, <span class="number">3</span>), (-<span class="number">1</span>, <span class="number">2</span>, -<span class="number">3</span>)]))  <span class="comment"># 6</span></span><br></pre></td></tr></table></figure>
-
 <p>n 個變數有 2^n 種組合。20 個變數要試 100 萬次，40 個就變成 1 兆次，每多一個變數，工作量翻倍。</p>
 <p>幾十年來，研究者一直在把這個 2 壓小。判斷「有沒有解」的最佳已知演算法約在 1.3^n 量級（略去多項式因子）；「數出有幾組解」，Anthropic 論文引用的前一個紀錄是 1.6423^n。底數一直在降，但時間始終跟 c^n 同一個級別：指數部分跟 n 成固定比例。</p>
-<h2 id="ETH-說的是：這個比例壓不到零"><a href="#ETH-說的是：這個比例壓不到零" class="headerlink" title="ETH 說的是：這個比例壓不到零"></a>ETH 說的是：這個比例壓不到零</h2><p>1999 年，Impagliazzo 和 Paturi 把這個觀察寫成假說：存在某個固定的正數 δ，使得沒有任何演算法能在最壞情況下用 O(2^(δn)) 的時間解完 3-SAT（略去跟輸入長度有關的多項式因子）。</p>
+<h2 id="ETH-說的是：這個比例壓不到零">ETH 說的是：這個比例壓不到零</h2>
+<p>1999 年，Impagliazzo 和 Paturi 把這個觀察寫成假說：存在某個固定的正數 δ，使得沒有任何演算法能在最壞情況下用 O(2^(δn)) 的時間解完 3-SAT（略去跟輸入長度有關的多項式因子）。</p>
 <p>白話一點：底數可以一直壓，但壓不到「指數跟 n 的比例趨近於零」的地步。最壞情況下，時間至少會像 2^(δn) 那樣成長。</p>
 <p>它還有個更強的兄弟 SETH（強指數時間假說），大意是：子句允許的文字越多，k-SAT 的最佳底數就越逼近 2，最後怎樣都壓不下去。SETH 成立的話 ETH 一定成立。</p>
 <p>ETH 也比 P ≠ NP 更強。P ≠ NP 只說 3-SAT 沒有多項式時間解法；ETH 說它連次指數時間都做不到。正因為它比較強，用起來也比較順手：很多「這個問題不可能比 X 更快」的結論，都是先假設 ETH 才推得出來。</p>
-<h2 id="什麼樣的時間上界能推翻-ETH"><a href="#什麼樣的時間上界能推翻-ETH" class="headerlink" title="什麼樣的時間上界能推翻 ETH"></a>什麼樣的時間上界能推翻 ETH</h2><p>Anthropic 證出的時間上界是 2^O(n·log log n／√log n)。這是固定 k = 3、只看變數數量 n 的版本，O 裡藏著常數，而且常數乘在指數裡面。OpenAI 在 Lean 裡證的版本多一個平方，是 2^O(n·(log log n)²／√log n)，同樣足以推翻 ETH。本文只談這個上界代表什麼，演算法怎麼做到它，需要另一篇（和比我更懂的人）來講。</p>
+<h2 id="什麼樣的時間上界能推翻-ETH">什麼樣的時間上界能推翻 ETH</h2>
+<p>Anthropic 證出的時間上界是 2^O(n·log log n／√log n)。這是固定 k = 3、只看變數數量 n 的版本，O 裡藏著常數，而且常數乘在指數裡面。OpenAI 在 Lean 裡證的版本多一個平方，是 2^O(n·(log log n)²／√log n)，同樣足以推翻 ETH。本文只談這個上界代表什麼，演算法怎麼做到它，需要另一篇（和比我更懂的人）來講。</p>
 <p>拿 Anthropic 的版本跟 2^(δn) 比，差別在 n 被乘上了 log log n／√log n。這個係數會隨 n 變大而趨近 0，所以不管 δ 挑多小，n 夠大時這個上界都會落在 2^(δn) 以下。如果證明成立，ETH 就倒了。</p>
 <p>但這個「趨近 0」慢得驚人。下表只算那個係數，不代表實際速度：</p>
 <table>
 <thead>
 <tr>
 <th>變數數量 n</th>
-<th align="right">log₂ n</th>
-<th align="right">係數 log log n／√log n</th>
+<th style="text-align:right">log₂ n</th>
+<th style="text-align:right">係數 log log n／√log n</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>100</td>
-<td align="right">6.6</td>
-<td align="right">1.06</td>
+<td style="text-align:right">6.6</td>
+<td style="text-align:right">1.06</td>
 </tr>
 <tr>
 <td>100 萬</td>
-<td align="right">19.9</td>
-<td align="right">0.97</td>
+<td style="text-align:right">19.9</td>
+<td style="text-align:right">0.97</td>
 </tr>
 <tr>
 <td>1 兆</td>
-<td align="right">39.9</td>
-<td align="right">0.84</td>
+<td style="text-align:right">39.9</td>
+<td style="text-align:right">0.84</td>
 </tr>
 <tr>
 <td>10^100</td>
-<td align="right">332.2</td>
-<td align="right">0.46</td>
+<td style="text-align:right">332.2</td>
+<td style="text-align:right">0.46</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>n 到了 10^100，比可觀測宇宙的原子數還多，這個係數也才降到一半左右，指數裡還藏著常數。</p>
-<h2 id="如果成立，為什麼是大事"><a href="#如果成立，為什麼是大事" class="headerlink" title="如果成立，為什麼是大事"></a>如果成立，為什麼是大事</h2><p>ETH 在理論電腦科學裡像一面承重牆。Anthropic 的論文寫，他們讓 Claude 做文獻搜尋，找到 800 多篇論文，至少有一個結果只在 ETH 或更強的假設（SETH、Gap-ETH）下成立。</p>
+<h2 id="如果成立，為什麼是大事">如果成立，為什麼是大事</h2>
+<p>ETH 在理論電腦科學裡像一面承重牆。Anthropic 的論文寫，他們讓 Claude 做文獻搜尋，找到 800 多篇論文，至少有一個結果只在 ETH 或更強的假設（SETH、Gap-ETH）下成立。</p>
 <p>這不代表 800 篇論文都錯了。那些結果的形式是「如果 ETH 成立，那麼某問題不可能比 X 更快」。前提倒了，「不可能更快」這個保證就沒了，原本的問題到底有多難，得重新判斷。</p>
 <p>論文列出的直接後果裡，有三個特別值得一提：</p>
 <ul>
@@ -179,22 +184,24 @@
 </ul>
 <p>也有東西留了下來。fine-grained complexity 裡很多下界靠的是 Orthogonal Vectors（OV）假說。SETH 能推出 OV 假說，但 SETH 倒了不會反過來推翻 OV，論文也註明這項結果沒有推翻它。</p>
 <p>另外，這項結果沒有給出多項式時間演算法，也沒有解決 P 與 NP 的問題。</p>
-<h2 id="短期實務影響：幾乎沒有"><a href="#短期實務影響：幾乎沒有" class="headerlink" title="短期實務影響：幾乎沒有"></a>短期實務影響：幾乎沒有</h2><p>Anthropic 自己算過門檻：子句數是變數 5 倍的 3-CNF，要變數超過 10^10000 個，他們證出的時間上界才會比 2^n 的暴力法好；只看變數數量的版本，門檻是 10^(10^8)。作者的判斷是，這套方法不管怎麼實作，n 小於 10^7 都不太可能帶來改善，而暴力法在 n = 100 就已經不實用。論文的原話：</p>
+<h2 id="短期實務影響：幾乎沒有">短期實務影響：幾乎沒有</h2>
+<p>Anthropic 自己算過門檻：子句數是變數 5 倍的 3-CNF，要變數超過 10^10000 個，他們證出的時間上界才會比 2^n 的暴力法好；只看變數數量的版本，門檻是 10^(10^8)。作者的判斷是，這套方法不管怎麼實作，n 小於 10^7 都不太可能帶來改善，而暴力法在 n = 100 就已經不實用。論文的原話：</p>
 <blockquote>
 <p>Thus our result says nothing about solving formulas in practice.</p>
 </blockquote>
 <p>所以你的 SAT solver、排程器、約束求解器都不用改。這項結果沒有提供破解現行加密系統的實用方法，也沒有直接推翻它們依賴的安全假設。以太坊更不用說，名字撞到而已。</p>
-<h2 id="那-AI-公司做這個，意義在哪"><a href="#那-AI-公司做這個，意義在哪" class="headerlink" title="那 AI 公司做這個，意義在哪"></a>那 AI 公司做這個，意義在哪</h2><p>既然實務上用不到，為什麼這會是新聞？因為找到它的是 AI。今年 5 月，三家公司的模型才在同一週推翻 Erdős 的單位距離猜想（<a href="/posts/abbd888d/">我當時整理過</a>）；這次換成理論電腦科學的基礎假說。</p>
+<h2 id="那-AI-公司做這個，意義在哪">那 AI 公司做這個，意義在哪</h2>
+<p>既然實務上用不到，為什麼這會是新聞？因為找到它的是 AI。今年 5 月，三家公司的模型才在同一週推翻 Erdős 的單位距離猜想（<a href="/posts/abbd888d/">我當時整理過</a>）；這次換成理論電腦科學的基礎假說。</p>
 <p>Anthropic 的論文寫，核心演算法是 10 月 16 日由一個內部 Claude 研究模型找到的，用了 1,400 萬個輸出 token，發現過程沒有人類參與；研究員之後才跟 Claude 一起改善論文的呈現。論文也寫明，OpenAI 的內部模型「independently and concurrently」宣稱證出了類似結果。</p>
 <p>OpenAI 則把 ETH 放在一項更大範圍的數學研究評測裡。repo 的 README 寫，他們原本的數學評測已經被模型做到飽和，於是擴大用開放研究問題來評測。他們讓內部模型嘗試了大約 4,000 個問題，平均每個結果用掉三小時的 ChatGPT Pro 思考算力，最後整理出 721 份手稿，ETH 是其中一份。OpenAI 自己把這些手稿定位成「raw research data」，跟正式論文分開看待。</p>
 <p>我認為重點在於，AI 的數學已經從題庫走到研究前沿，碰的是專家普遍相信的假說。如果這項結果成立，它證明了「做得到」；但還說明不了成功率和成本。721 份手稿也不等於 721 個經確認的解答，這要等 OpenAI 公開原始資料、外界逐份檢查之後才知道。</p>
 <p>產出變多，檢查的負擔也跟著變重。OpenAI 10 月 7 日才因為一個符號錯誤撤回三份手稿。這也讓 Lean 證明在這次事件裡格外重要。</p>
-<h2 id="Lean-驗過，代表什麼"><a href="#Lean-驗過，代表什麼" class="headerlink" title="Lean 驗過，代表什麼"></a>Lean 驗過，代表什麼</h2><p>Lean 是一種證明輔助工具。每一步推理都得寫成機器能檢查的程式碼，kernel 不接受就過不了。</p>
+<h2 id="Lean-驗過，代表什麼">Lean 驗過，代表什麼</h2>
+<p>Lean 是一種證明輔助工具。每一步推理都得寫成機器能檢查的程式碼，kernel 不接受就過不了。</p>
 <p>驗證的結構分兩半。Challenge 是一個短檔案，只寫定理「說了什麼」，不寫證明；Solution 是 AI 寫的證明本體，Anthropic 這份約 1,050 個模組。官方工具 <a target="_blank" rel="noopener" href="https://github.com/leanprover/comparator">comparator</a> 負責確認三件事：Solution 證的定理跟 Challenge 的形式陳述相符、沒用到設定之外的公理、而且被 Lean kernel 接受。Anthropic 還多用了一個獨立實作的 kernel（nanoda）再檢查一次，<a target="_blank" rel="noopener" href="https://github.com/anthropics/formal-math/actions/runs/40442388505">公開的 CI 紀錄</a>最後印出 <code>Your solution is okay!</code>。</p>
 <p>「推理有沒有出錯」這一層，現在由機器把關。</p>
 <p>機器管不到的是另一層：Challenge 裡的定義，是不是真的在說「ETH 是假的」？Anthropic 的陳述檔 <a target="_blank" rel="noopener" href="https://github.com/anthropics/formal-math/blob/main/eth/MainResults.lean"><code>MainResults.lean</code></a> 只有 182 行，只依賴 Mathlib，刻意寫短讓人讀得完。ETH 在裡面長這樣：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">/-- s_k：所有能讓某台確定性機器在 c·2^&#123;δn&#125; 步內判定 k-SAT 的 δ 的下確界 -/</span><br><span class="line">noncomputable def s (k : ℕ) : ℝ≥0∞ := ⨅ (δ : ℝ≥0) (_ : InTime k δ), (δ : ℝ≥0∞)</span><br><span class="line"></span><br><span class="line">/-- ETH：s₃ &gt; 0 -/</span><br><span class="line">def ETH : Prop := 0 &lt; s 3</span><br><span class="line"></span><br><span class="line">def ETHIsFalse : Prop := ¬ ETH</span><br></pre></td></tr></table></figure>
-
 <p>看起來只有三行，但「機器」是 Mathlib 的多堆疊圖靈機，「時間」是這台機器的步數，「輸入」是作者定義的位元編碼。每一個定義都要對上教科書的意思，<code>ETHIsFalse</code> 才真的等於「ETH 是假的」。從這種機器推到「一般意義的演算法」那一步，檔案註解寫明那是標準事實，不在 Lean 的陳述和證明裡。</p>
 <p>Anthropic 在論文 Appendix E 講得很直接：</p>
 <blockquote>
@@ -204,7 +211,8 @@
 <p>OpenAI 的陳述檔 <a target="_blank" rel="noopener" href="https://github.com/openai/math/blob/main/lean/ComparatorChallenges/SubexponentialSAT.lean"><code>SubexponentialSAT.lean</code></a> 有 220 行，寫法不一樣。它在 Mathlib 的紙帶和指令之上，自己定義了一種多紙帶機器，證明「存在一台這種機器，能在某個時間上限內數出解的數量」。ETH 本身沒有寫成 Lean 命題，從這個時間上限推到「ETH 是假的」，由讀者自己確認。</p>
 <p>兩種寫法都說得通。Lean 把需要人審的範圍，從上千個證明檔縮到一份定義檔。但那份定義檔要讀懂，得先懂它引用的機器模型、編碼方式和步數怎麼計算，再加上沒寫進 Lean 的模擬論證。行數短，工作不一定輕。</p>
 <p>審 AI 寫的 PR 也會碰到類似的問題，只是保證強度差很多。形式證明通過，代表形式命題在採用的公理下成立；測試通過，只代表被跑到的案例沒有失敗。兩者共通的地方在於：規格或測試本身有沒有寫對，都要另外有人看。</p>
-<h2 id="接下來看誰"><a href="#接下來看誰" class="headerlink" title="接下來看誰"></a>接下來看誰</h2><p>ETH 的兩位提出者 Impagliazzo、Paturi，加上 MIT 的 Ryan Williams，正在組織公開的獨立審查。三人的公開信寫：</p>
+<h2 id="接下來看誰">接下來看誰</h2>
+<p>ETH 的兩位提出者 Impagliazzo、Paturi，加上 MIT 的 Ryan Williams，正在組織公開的獨立審查。三人的公開信寫：</p>
 <blockquote>
 <p>Our involvement should not be taken as certification of the claim.</p>
 </blockquote>
@@ -300,15 +308,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
     
     </ul>
   </section>

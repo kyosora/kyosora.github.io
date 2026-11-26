@@ -126,60 +126,61 @@
 <p>這件事不能只改一個模型名稱。Claude Code 說的是 Anthropic Messages API；CCR 接住請求後，要轉成 <code>openai_responses</code> 格式，再用匯入的 Codex OAuth 憑證送往 Codex backend。我實際用 Claude Code Router（以下簡稱 CCR）接起來，沿用電腦上既有的 Codex 登入，不另外放 OpenAI API key。</p>
 <p>實際跑通的路徑是：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Claude Code</span><br><span class="line">  ↓ Anthropic Messages API</span><br><span class="line">CCR（127.0.0.1:3456）</span><br><span class="line">  ↓ openai_responses 請求（使用 Codex OAuth）</span><br><span class="line">OpenAI Codex backend</span><br><span class="line">  ↓</span><br><span class="line">gpt-6-astra</span><br></pre></td></tr></table></figure>
-
 <p>這篇記錄 Windows 上的完整設定，以及兩個比安裝本身更麻煩的坑：<code>-p</code> 提示詞被截斷，還有管理介面活著、gateway 卻已經死掉。</p>
-<h2 id="先講清楚測試環境"><a href="#先講清楚測試環境" class="headerlink" title="先講清楚測試環境"></a>先講清楚測試環境</h2><p>我在 2026-09-23 使用以下版本：</p>
+<h2 id="先講清楚測試環境">先講清楚測試環境</h2>
+<p>我在 2026-09-23 使用以下版本：</p>
 <table>
 <thead>
 <tr>
 <th>元件</th>
-<th align="right">版本</th>
+<th style="text-align:right">版本</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>Windows PowerShell</td>
-<td align="right">5.1</td>
+<td style="text-align:right">5.1</td>
 </tr>
 <tr>
 <td>Node.js</td>
-<td align="right">22.22.0</td>
+<td style="text-align:right">22.22.0</td>
 </tr>
 <tr>
 <td>Claude Code</td>
-<td align="right">2.1.278</td>
+<td style="text-align:right">2.1.278</td>
 </tr>
 <tr>
 <td>Codex CLI</td>
-<td align="right">0.156.0</td>
+<td style="text-align:right">0.156.0</td>
 </tr>
 <tr>
 <td>Claude Code Router</td>
-<td align="right">3.1.1</td>
+<td style="text-align:right">3.1.1</td>
 </tr>
 <tr>
 <td>模型</td>
-<td align="right"><code>gpt-6-astra</code></td>
+<td style="text-align:right"><code>gpt-6-astra</code></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>GPT-6 Astra 的官方模型 ID 就是 <code>gpt-6-astra</code>，不是 <code>gpt-6</code>。這點不要猜，模型名稱只要差一個字，後面看到的通常只剩一串 model not found。OpenAI 官方文件能證明模型 ID 與 Responses API 能力；把 Codex OAuth 匯入 CCR，則是 CCR 提供的第三方整合，不是 OpenAI 官方教學流程。</p>
 <p>還有一個邊界要先說。CCR 是第三方工具，Anthropic 官方文件也明寫：gateway 可以接，只是把 Claude Code 路由到非 Claude 模型不在官方支援範圍。Claude Code 更新後若新增欄位或工具，gateway 沒跟上，功能就可能退化。</p>
 <p>所以我沒有改掉原本的 <code>claude</code> 設定，而是建立一個只在 CCR 內生效的獨立 profile。壞了就關掉，不會連平常使用的 Claude Code 一起拖下水。</p>
-<h2 id="安裝-CCR"><a href="#安裝-CCR" class="headerlink" title="安裝 CCR"></a>安裝 CCR</h2><p>CCR 的 npm CLI 要求 Node.js 22 以上。先確認環境：</p>
+<h2 id="安裝-CCR">安裝 CCR</h2>
+<p>CCR 的 npm CLI 要求 Node.js 22 以上。先確認環境：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">node <span class="literal">--version</span></span><br><span class="line">claude <span class="literal">--version</span></span><br><span class="line">codex <span class="literal">--version</span></span><br></pre></td></tr></table></figure>
-
 <p>如果 Codex 還沒登入，先執行：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codex login</span><br></pre></td></tr></table></figure>
-
 <p>完成瀏覽器登入後，安裝我實測的 CCR 版本：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install <span class="literal">-g</span> @musistudio/claude<span class="literal">-code-router</span>@<span class="number">3.1</span>.<span class="number">1</span></span><br><span class="line">ccr ui</span><br></pre></td></tr></table></figure>
-
 <p><code>ccr ui</code> 會啟動兩個本機服務：</p>
 <ul>
 <li><code>http://127.0.0.1:3458</code>：管理介面</li>
 <li><code>http://127.0.0.1:3456</code>：模型 gateway</li>
 </ul>
 <p>兩個都只綁在 localhost。別為了省事改成 <code>0.0.0.0</code>，CCR 讀得到模型憑證與請求內容，沒有理由把它暴露到區網。</p>
-<h2 id="匯入-Codex-登入"><a href="#匯入-Codex-登入" class="headerlink" title="匯入 Codex 登入"></a>匯入 Codex 登入</h2><p>進入 CCR 管理介面後：</p>
+<h2 id="匯入-Codex-登入">匯入 Codex 登入</h2>
+<p>進入 CCR 管理介面後：</p>
 <ol>
 <li>打開 <code>Providers</code>。</li>
 <li>按 <code>Add Provider</code>。</li>
@@ -190,7 +191,8 @@
 </ol>
 <p>CCR 會讀取本機 Codex 的登入狀態與模型快取，建立 OAuth plugin，之後需要時也會更新 access token。Claude Code 端拿到的是 CCR 自己的本機 credential，不需要把 Codex token 塞進 <code>~/.claude/settings.json</code>。</p>
 <p>如果清單裡沒有 <code>gpt-6-astra</code>，先正常啟動一次 Codex，讓它更新模型快取，再回 CCR 重新掃描或手動編輯模型清單。模型能不能用仍取決於帳號權限；清單裡看得到，不等於帳號一定有額度。</p>
-<h2 id="建立獨立的-Claude-Code-profile"><a href="#建立獨立的-Claude-Code-profile" class="headerlink" title="建立獨立的 Claude Code profile"></a>建立獨立的 Claude Code profile</h2><p>接著到 <code>Agent Config</code>：</p>
+<h2 id="建立獨立的-Claude-Code-profile">建立獨立的 Claude Code profile</h2>
+<p>接著到 <code>Agent Config</code>：</p>
 <ol>
 <li>按 <code>Add profile</code>，選 <code>Claude Code</code>。</li>
 <li>名稱填 <code>GPT6-test</code>。</li>
@@ -202,60 +204,50 @@
 </ol>
 <p>我刻意不用 <code>System default</code>。原本執行 <code>claude</code> 仍走 Claude，只有這條命令走 GPT-6：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ccr GPT6<span class="literal">-test</span></span><br></pre></td></tr></table></figure>
-
 <p>CCR 產生的 profile 設定大致如下。這段用來理解資料流，不建議手改，因為 credential helper 與路徑由 CCR 維護。</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;apiKeyHelper&quot;</span><span class="punctuation">:</span> <span class="string">&quot;...ccr-claude-code-api-key-gpt6-test.cmd&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;env&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;ANTHROPIC_BASE_URL&quot;</span><span class="punctuation">:</span> <span class="string">&quot;http://127.0.0.1:3456&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;ANTHROPIC_MODEL&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Codex API/gpt-6-astra&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p>這裡最關鍵的是 <code>ANTHROPIC_BASE_URL</code>。Claude Code 仍然發送自己熟悉的 Messages API，CCR 在本機接住後，再轉成 OpenAI Responses API。</p>
-<h2 id="不要只問一句話，要測工具呼叫"><a href="#不要只問一句話，要測工具呼叫" class="headerlink" title="不要只問一句話，要測工具呼叫"></a>不要只問一句話，要測工具呼叫</h2><p>能回答「你好」只證明文字請求通了。coding agent 真正容易壞的是 tool call，所以我建了一個測試檔：</p>
+<h2 id="不要只問一句話，要測工具呼叫">不要只問一句話，要測工具呼叫</h2>
+<p>能回答「你好」只證明文字請求通了。coding agent 真正容易壞的是 tool call，所以我建了一個測試檔：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CCR tool-call smoke test.</span><br><span class="line">Numbers: 17, 29, 43</span><br><span class="line">Marker: KYOSORA-GPT6-ROUTE-OK</span><br></pre></td></tr></table></figure>
-
 <p>然後限制 Claude Code 只能用 <code>Read</code>，要求它讀檔並計算：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;Use the Read tool to read input.txt. Reply with its Marker and the sum of its Numbers.&#x27;</span> |</span><br><span class="line">  ccr GPT6<span class="literal">-test</span> <span class="literal">--</span> <span class="literal">-p</span> `</span><br><span class="line">    <span class="literal">--allowedTools</span> Read `</span><br><span class="line">    <span class="literal">--max-turns</span> <span class="number">3</span> `</span><br><span class="line">    <span class="literal">--output-format</span> json `</span><br><span class="line">    <span class="literal">--no-session-persistence</span></span><br></pre></td></tr></table></figure>
-
 <p>實際結果：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Marker: KYOSORA-GPT6-ROUTE-OK</span><br><span class="line">Sum: 89</span><br></pre></td></tr></table></figure>
-
 <p>同一次 JSON 輸出也留下模型證據：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;modelUsage&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;Codex API/gpt-6-astra&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;canonicalModel&quot;</span><span class="punctuation">:</span> <span class="string">&quot;codex api/gpt-6-astra&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;result&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Marker: KYOSORA-GPT6-ROUTE-OK\nSum: 89&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p>提示詞裡沒有 marker，模型只能透過 <code>Read</code> 拿到它。到這裡才能確認整條路真的通了：Claude Code 發出工具請求、GPT-6 決定讀檔、Claude Code 執行工具，再把結果送回模型。CCR 的 <code>Request Logs</code> 也能交叉檢查實際 provider、model 與 tool call。</p>
 <p>啟動時可能看到：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[claude-code:unrecognized_model] &#123;&quot;model&quot;:&quot;Codex API/gpt-6-astra&quot;&#125;</span><br></pre></td></tr></table></figure>
-
 <p>這是 Claude Code 不認得第三方模型名稱的警告。我這次沒有因此失敗，但不能只看它有沒有回話；最可靠的判斷仍是 CCR Request Logs 裡的 provider、model 與 tool call。</p>
-<h2 id="第一個坑：我在-CCR-3-1-1-遇到提示詞被截斷"><a href="#第一個坑：我在-CCR-3-1-1-遇到提示詞被截斷" class="headerlink" title="第一個坑：我在 CCR 3.1.1 遇到提示詞被截斷"></a>第一個坑：我在 CCR 3.1.1 遇到提示詞被截斷</h2><p>我一開始直接跑：</p>
+<h2 id="第一個坑：我在-CCR-3-1-1-遇到提示詞被截斷">第一個坑：我在 CCR 3.1.1 遇到提示詞被截斷</h2>
+<p>我一開始直接跑：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ccr GPT6<span class="literal">-test</span> <span class="literal">--</span> <span class="literal">-p</span> <span class="string">&#x27;Use the Read tool to read input.txt ...&#x27;</span></span><br></pre></td></tr></table></figure>
-
 <p>Claude Code 只收到 <code>Use</code>，還反問我要使用什麼工具。模型沒有突然變笨。在這台 Windows 與 CCR 3.1.1 上，含空白的提示詞經 launcher 轉交後只剩第一個 token；我沒有繼續拆 wrapper，所以不把問題再往 PowerShell quoting 或 CCR 內部哪一層硬猜。</p>
 <p>暫時解法是把提示詞從 stdin 管進去：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;完整提示詞放這裡&#x27;</span> | ccr GPT6<span class="literal">-test</span> <span class="literal">--</span> <span class="literal">-p</span></span><br></pre></td></tr></table></figure>
-
 <p>互動模式不受影響，直接執行 <code>ccr GPT6-test</code> 就能正常聊天。這個坑主要會咬到自動化腳本與 smoke test。</p>
-<h2 id="第二個坑：3458-活著，不代表-3456-也活著"><a href="#第二個坑：3458-活著，不代表-3456-也活著" class="headerlink" title="第二個坑：3458 活著，不代表 3456 也活著"></a>第二個坑：3458 活著，不代表 3456 也活著</h2><p>另一次啟動失敗時，<code>ccr start --no-open</code> 沒報錯，但 Claude Code 一直說連不到 gateway。檢查連接埠才看到：管理介面的 3458 還在，模型 gateway 的 3456 已經消失。</p>
+<h2 id="第二個坑：3458-活著，不代表-3456-也活著">第二個坑：3458 活著，不代表 3456 也活著</h2>
+<p>另一次啟動失敗時，<code>ccr start --no-open</code> 沒報錯，但 Claude Code 一直說連不到 gateway。檢查連接埠才看到：管理介面的 3458 還在，模型 gateway 的 3456 已經消失。</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-NetTCPConnection</span> <span class="literal">-State</span> Listen <span class="literal">-LocalPort</span> <span class="number">3456</span>,<span class="number">3458</span> <span class="literal">-ErrorAction</span> SilentlyContinue |</span><br><span class="line">  <span class="built_in">Select-Object</span> LocalAddress, LocalPort, OwningProcess</span><br></pre></td></tr></table></figure>
-
 <p>當時 CCR 記錄的 gateway 結束碼是 <code>0xC000013A</code>，代表程序收到類似 Ctrl+C 的 console control 中斷；它能說明 gateway 為何退出，卻不能單憑這個代碼判定中斷來源。</p>
 <p>我同時看到 3458 仍在監聽、3456 已消失，再執行 <code>ccr start --no-open</code> 也沒有恢復 gateway。從結果看，這次啟動沒有重新拉起 3456，形成一種很討厭的假存活。</p>
 <p>完整重啟就恢復了：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ccr stop</span><br><span class="line">ccr <span class="built_in">start</span> <span class="literal">--no-open</span></span><br></pre></td></tr></table></figure>
-
 <p>下次再看到 <code>fetch failed</code>，我會先查 3456，不會再盯著 3458 猜半天。</p>
-<h2 id="把它縮成-ccx"><a href="#把它縮成-ccx" class="headerlink" title="把它縮成 ccx"></a>把它縮成 ccx</h2><p>每次輸入 <code>ccr GPT6-test</code> 還是有點煩。我原本就用 <code>cx</code> 啟動 Codex，因此在 PowerShell profile 加了一個 <code>ccx</code>：</p>
+<h2 id="把它縮成-ccx">把它縮成 ccx</h2>
+<p>每次輸入 <code>ccr GPT6-test</code> 還是有點煩。我原本就用 <code>cx</code> 啟動 Codex，因此在 PowerShell profile 加了一個 <code>ccx</code>：</p>
 <p>新環境可能還沒有 profile 目錄，先建立再打開：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$profileDirectory</span> = <span class="built_in">Split-Path</span> <span class="literal">-Parent</span> <span class="variable">$PROFILE</span></span><br><span class="line"><span class="built_in">New-Item</span> <span class="literal">-ItemType</span> Directory <span class="literal">-Path</span> <span class="variable">$profileDirectory</span> <span class="literal">-Force</span> | <span class="built_in">Out-Null</span></span><br><span class="line"><span class="keyword">if</span> (!(<span class="built_in">Test-Path</span> <span class="literal">-LiteralPath</span> <span class="variable">$PROFILE</span>)) &#123;</span><br><span class="line">  <span class="built_in">New-Item</span> <span class="literal">-ItemType</span> File <span class="literal">-Path</span> <span class="variable">$PROFILE</span> <span class="literal">-Force</span> | <span class="built_in">Out-Null</span></span><br><span class="line">&#125;</span><br><span class="line">notepad <span class="variable">$PROFILE</span></span><br></pre></td></tr></table></figure>
-
 <p>加入下面這段。這是整理過方便分享的版本，比我一開始使用的函式多了 3456 health check：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ccx</span></span> &#123;</span><br><span class="line">  ccr <span class="built_in">start</span> <span class="literal">--no-open</span> | <span class="built_in">Out-Null</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="variable">$LASTEXITCODE</span> <span class="operator">-ne</span> <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="built_in">Write-Error</span> <span class="string">&quot;CCR 啟動失敗，結束碼：<span class="variable">$LASTEXITCODE</span>&quot;</span></span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="variable">$gatewayReady</span> = <span class="variable">$false</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="variable">$attempt</span> = <span class="number">0</span>; <span class="variable">$attempt</span> <span class="operator">-lt</span> <span class="number">20</span>; <span class="variable">$attempt</span>++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">Get-NetTCPConnection</span> <span class="literal">-State</span> Listen <span class="literal">-LocalPort</span> <span class="number">3456</span> <span class="literal">-ErrorAction</span> SilentlyContinue) &#123;</span><br><span class="line">      <span class="variable">$gatewayReady</span> = <span class="variable">$true</span></span><br><span class="line">      <span class="keyword">break</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">Start-Sleep</span> <span class="literal">-Milliseconds</span> <span class="number">250</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!<span class="variable">$gatewayReady</span>) &#123;</span><br><span class="line">    ccr stop | <span class="built_in">Out-Null</span></span><br><span class="line">    ccr <span class="built_in">start</span> <span class="literal">--no-open</span> | <span class="built_in">Out-Null</span></span><br><span class="line">    <span class="built_in">Start-Sleep</span> <span class="literal">-Seconds</span> <span class="number">1</span></span><br><span class="line">    <span class="variable">$gatewayReady</span> = [<span class="built_in">bool</span>](</span><br><span class="line">      <span class="built_in">Get-NetTCPConnection</span> <span class="literal">-State</span> Listen <span class="literal">-LocalPort</span> <span class="number">3456</span> <span class="literal">-ErrorAction</span> SilentlyContinue</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!<span class="variable">$gatewayReady</span>) &#123;</span><br><span class="line">    <span class="built_in">Write-Error</span> <span class="string">&quot;CCR 管理服務已啟動，但 gateway 3456 沒有監聽&quot;</span></span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  ccr <span class="string">&#x27;GPT6-test&#x27;</span> <span class="literal">--</span> @args</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>重新載入 profile：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">. <span class="variable">$PROFILE</span></span><br><span class="line">ccx</span><br></pre></td></tr></table></figure>
-
 <p>也可以先用版本參數做最小驗證：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ccx <span class="literal">--version</span></span><br></pre></td></tr></table></figure>
-
 <p>我這邊成功回傳 Claude Code <code>2.1.278</code>。若遇到前一節那種 3458 假存活，函式會重啟一次 CCR；第二次仍沒有 3456 才會報錯。</p>
-<h2 id="這樣比較模型，仍然不是純模型評測"><a href="#這樣比較模型，仍然不是純模型評測" class="headerlink" title="這樣比較模型，仍然不是純模型評測"></a>這樣比較模型，仍然不是純模型評測</h2><p>這套設定適合回答一個實用問題：在相同 Claude Code 操作介面下，GPT-6 寫程式、呼叫工具與處理長任務的感覺有何不同。</p>
+<h2 id="這樣比較模型，仍然不是純模型評測">這樣比較模型，仍然不是純模型評測</h2>
+<p>這套設定適合回答一個實用問題：在相同 Claude Code 操作介面下，GPT-6 寫程式、呼叫工具與處理長任務的感覺有何不同。</p>
 <p>它不能當成嚴格的模型 benchmark。Claude Code 的 system prompt、工具格式、context 管理仍在；CCR 又做了一次協定轉譯。這套流程測到的是「GPT-6 跑在 Claude Code harness 裡」的整體表現，不是裸 API 的 GPT-6。</p>
 <p>對我來說這反而更有用。我每天面對的是整個 coding agent，不是模型排行榜。現在 <code>ca</code> 開 Claude Code，<code>cx</code> 開 Codex，<code>ccx</code> 開 Claude Code 加 GPT-6；要比較時不用重配環境，也不用拿同一份設定反覆覆蓋。</p>
 <hr>
@@ -358,15 +350,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

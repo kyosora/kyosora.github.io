@@ -118,20 +118,24 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>某一天，系統突然開始出現詭異的現象：使用者回報網站時好時壞，重新整理一次可能好，但下一秒又壞了。查看記錄檔發現大量的 403 Forbidden 錯誤，但最讓人困惑的是，同一個檔案，有時候能載入，有時候卻被封鎖。這到底是怎麼回事？</p>
-<h2 id="1-檔案-資料夾權限設定問題"><a href="#1-檔案-資料夾權限設定問題" class="headerlink" title="1. 檔案/資料夾權限設定問題"></a>1. 檔案/資料夾權限設定問題</h2><p>先從最常見的原因開始排查：</p>
+        <h2 id="前言">前言</h2>
+<p>某一天，系統突然開始出現詭異的現象：使用者回報網站時好時壞，重新整理一次可能好，但下一秒又壞了。查看記錄檔發現大量的 403 Forbidden 錯誤，但最讓人困惑的是，同一個檔案，有時候能載入，有時候卻被封鎖。這到底是怎麼回事？</p>
+<h2 id="1-檔案-資料夾權限設定問題">1. 檔案/資料夾權限設定問題</h2>
+<p>先從最常見的原因開始排查：</p>
 <ol>
 <li>確認網站資料夾的 NTFS 權限是否正確</li>
 <li>IIS_IUSRS 和 IUSR 使用者需要有讀取權限</li>
 <li>Application Pool 身份對網站目錄需要有讀取權限</li>
 </ol>
-<h2 id="2-IIS-設定檢查"><a href="#2-IIS-設定檢查" class="headerlink" title="2. IIS 設定檢查"></a>2. IIS 設定檢查</h2><ol>
+<h2 id="2-IIS-設定檢查">2. IIS 設定檢查</h2>
+<ol>
 <li>在 IIS 管理員中確認網站的身份驗證設定</li>
 <li>檢查是否啟用了正確的驗證方式（如匿名驗證）</li>
 <li>確認網站綁定設定是否正確</li>
 </ol>
 <p>以上全部確認過，都沒有問題，403 依然持續出現。</p>
-<h2 id="問題的關鍵：動態-IP-限制設定"><a href="#問題的關鍵：動態-IP-限制設定" class="headerlink" title="問題的關鍵：動態 IP 限制設定"></a>問題的關鍵：動態 IP 限制設定</h2><p>以上都查過沒問題之後，只能在網站上重複重新整理，同時盯著 IIS 記錄檔看。記錄檔裡確實有很多 403，但看不出理由。接著注意到一件事：原本 403 的檔案忽然正常了，反而其他檔案變成 403。多重整幾次，每次被影響的檔案都不一樣。</p>
+<h2 id="問題的關鍵：動態-IP-限制設定">問題的關鍵：動態 IP 限制設定</h2>
+<p>以上都查過沒問題之後，只能在網站上重複重新整理，同時盯著 IIS 記錄檔看。記錄檔裡確實有很多 403，但看不出理由。接著注意到一件事：原本 403 的檔案忽然正常了，反而其他檔案變成 403。多重整幾次，每次被影響的檔案都不一樣。</p>
 <p>到這裡方向就清楚了。這不是靜態的權限問題，而是動態封鎖——問題的源頭是 IIS 的「動態 IP 限制」功能。這個原本用來防止 DDoS 的機制，把正常的頁面載入請求當成攻擊流量給擋掉了。</p>
 <p>讓我用一張圖來說明這個機制是如何運作的：</p>
 <div>
@@ -155,48 +159,72 @@
     <path d="M400 250 L400 300" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
 </svg>
 </div>
-
-<h2 id="為什麼會發生這個問題？"><a href="#為什麼會發生這個問題？" class="headerlink" title="為什麼會發生這個問題？"></a>為什麼會發生這個問題？</h2><p>現代網站通常需要載入大量的 JavaScript 檔案和其他資源。當使用者開啟網站時，瀏覽器會在短時間內對同一個伺服器發出多個請求來載入這些資源。如果動態 IP 限制的門檻設太低，這些正常的載入請求就可能被誤判成攻擊流量。</p>
-<h2 id="解決方案"><a href="#解決方案" class="headerlink" title="解決方案"></a>解決方案</h2><h3 id="1-調整動態-IP-限制設定"><a href="#1-調整動態-IP-限制設定" class="headerlink" title="1. 調整動態 IP 限制設定"></a>1. 調整動態 IP 限制設定</h3><p><img loading="lazy" decoding="async" src="20241125034541646.png"><br><img loading="lazy" decoding="async" src="20241125034128986.png"><br>這是我原先的設定，門檻太低導致一般使用者也被擋。修改為以下設定：</p>
+<h2 id="為什麼會發生這個問題？">為什麼會發生這個問題？</h2>
+<p>現代網站通常需要載入大量的 JavaScript 檔案和其他資源。當使用者開啟網站時，瀏覽器會在短時間內對同一個伺服器發出多個請求來載入這些資源。如果動態 IP 限制的門檻設太低，這些正常的載入請求就可能被誤判成攻擊流量。</p>
+<h2 id="解決方案">解決方案</h2>
+<h3 id="1-調整動態-IP-限制設定">1. 調整動態 IP 限制設定</h3>
+<p><img loading="lazy" decoding="async" src="20241125034541646.png" alt=""><br>
+<img loading="lazy" decoding="async" src="20241125034128986.png" alt=""><br>
+這是我原先的設定，門檻太低導致一般使用者也被擋。修改為以下設定：</p>
 <ol>
-<li><p><strong>「同時要求的動態 IP 位址」：50</strong><br>現代網站首次載入通常會在短時間內觸發多個資源請求，設 50 可以避免誤判正常的頁面載入行為。</p>
+<li>
+<p><strong>「同時要求的動態 IP 位址」：50</strong><br>
+現代網站首次載入通常會在短時間內觸發多個資源請求，設 50 可以避免誤判正常的頁面載入行為。</p>
 </li>
-<li><p><strong>「要求的最大數目」：100</strong><br>一般使用者很少在短時間內產生大量請求，設 100 允許正常的頁面切換和操作。</p>
+<li>
+<p><strong>「要求的最大數目」：100</strong><br>
+一般使用者很少在短時間內產生大量請求，設 100 允許正常的頁面切換和操作。</p>
 </li>
-<li><p><strong>「時間週期」：5 秒（5000 毫秒）</strong><br>縮短計算週期，讓封鎖更快失效，也讓正常使用者不會被連帶卡太久。DDoS 通常會在短時間內持續發送大量請求，這個設定仍然能偵測到。</p>
+<li>
+<p><strong>「時間週期」：5 秒（5000 毫秒）</strong><br>
+縮短計算週期，讓封鎖更快失效，也讓正常使用者不會被連帶卡太久。DDoS 通常會在短時間內持續發送大量請求，這個設定仍然能偵測到。</p>
 </li>
 </ol>
-<h3 id="2-設定-IP-白名單"><a href="#2-設定-IP-白名單" class="headerlink" title="2. 設定 IP 白名單"></a>2. 設定 IP 白名單</h3><ul>
-<li><p>開啟 IIS 管理器</p>
+<h3 id="2-設定-IP-白名單">2. 設定 IP 白名單</h3>
+<ul>
+<li>
+<p>開啟 IIS 管理器</p>
 </li>
-<li><p>在左側選擇您的網站</p>
+<li>
+<p>在左側選擇您的網站</p>
 </li>
-<li><p>找到「IP 位址和網域限制」功能並雙擊<br><img loading="lazy" decoding="async" src="20241125034541646.png"></p>
+<li>
+<p>找到「IP 位址和網域限制」功能並雙擊<br>
+<img loading="lazy" decoding="async" src="20241125034541646.png" alt=""></p>
 </li>
-<li><p>在右側「動作」面板點選「新增允許項目」</p>
+<li>
+<p>在右側「動作」面板點選「新增允許項目」</p>
 </li>
-<li><p>輸入要允許的 IP 或 IP 範圍：</p>
+<li>
+<p>輸入要允許的 IP 或 IP 範圍：</p>
 </li>
-<li><p>單一 IP：直接輸入 IP（如：192.168.0.1）</p>
+<li>
+<p>單一 IP：直接輸入 IP（如：192.168.0.1）</p>
 </li>
-<li><p>IP 範圍：輸入網段和遮罩（如：192.168.0.0，遮罩：255.255.255.0）<br><img loading="lazy" decoding="async" src="20241125034833729.png"></p>
+<li>
+<p>IP 範圍：輸入網段和遮罩（如：192.168.0.0，遮罩：255.255.255.0）<br>
+<img loading="lazy" decoding="async" src="20241125034833729.png" alt=""></p>
 </li>
 </ul>
-<h3 id="3-依請求類型調整安全規則"><a href="#3-依請求類型調整安全規則" class="headerlink" title="3. 依請求類型調整安全規則"></a>3. 依請求類型調整安全規則</h3><p>如果站內有明確的路徑區分（例如 <code>/api/</code>、<code>/static/</code>），可以在 IIS 的「IP 位址和網域限制」針對不同路徑設定不同的動態 IP 限制閾值，不需要對整個站套同一個規則：</p>
+<h3 id="3-依請求類型調整安全規則">3. 依請求類型調整安全規則</h3>
+<p>如果站內有明確的路徑區分（例如 <code>/api/</code>、<code>/static/</code>），可以在 IIS 的「IP 位址和網域限制」針對不同路徑設定不同的動態 IP 限制閾值，不需要對整個站套同一個規則：</p>
 <ul>
 <li>靜態資源路徑（圖片、CSS、JS）：限制可以放寬，這類請求量大但行為規律</li>
 <li>API 端點：維持中等門檻</li>
 <li>敏感操作路徑（登入、上傳等）：維持較嚴格的限制</li>
 </ul>
-<h2 id="補充建議"><a href="#補充建議" class="headerlink" title="補充建議"></a>補充建議</h2><p>如果調整完動態 IP 限制後，403 頻率明顯下降，可以再考慮從資源面下手減少並發請求數量，讓門檻不需要設太鬆：</p>
+<h2 id="補充建議">補充建議</h2>
+<p>如果調整完動態 IP 限制後，403 頻率明顯下降，可以再考慮從資源面下手減少並發請求數量，讓門檻不需要設太鬆：</p>
 <ul>
 <li><strong>合併 JavaScript 檔案</strong>：減少首次載入的請求數</li>
 <li><strong>啟用瀏覽器快取</strong>：回訪使用者不會重新觸發所有資源請求</li>
 <li><strong>使用 CDN</strong>：把靜態資源分流到 CDN 節點，不走 IIS 主站</li>
 </ul>
 <p>另外建議定期查一下 IIS 記錄檔，特別是 403 的來源 IP，確認封鎖的是正常使用者還是真的攻擊流量，視情況再調整門檻。</p>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>這次的問題排查過程說明一件事：403 不一定是權限設錯，也可能是安全機制誤殺了正常流量。動態 IP 限制的預設值是為了防 DDoS 設計的，套在一般公開網站上門檻往往太低。調整成符合實際流量的數值，並搭配 IP 白名單處理內部或信任 IP，通常就能解決這類間歇性 403。</p>
-<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ol>
+<h2 id="結論">結論</h2>
+<p>這次的問題排查過程說明一件事：403 不一定是權限設錯，也可能是安全機制誤殺了正常流量。動態 IP 限制的預設值是為了防 DDoS 設計的，套在一般公開網站上門檻往往太低。調整成符合實際流量的數值，並搭配 IP 白名單處理內部或信任 IP，通常就能解決這類間歇性 403。</p>
+<h2 id="參考資源">參考資源</h2>
+<ol>
 <li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/dynamicipsecurity/">Configure Dynamic IP Security in IIS</a></li>
 <li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/iis/get-started/planning-your-iis-architecture/understanding-security-in-iis">IIS Security Best Practices</a></li>
 <li><a target="_blank" rel="noopener" href="https://owasp.org/www-project-web-security-testing-guide/">Web Application Security Guidelines</a></li>
@@ -291,15 +319,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

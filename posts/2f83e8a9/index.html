@@ -111,31 +111,37 @@
     <aside class="post-aside">
       <details class="toc-box" open>
         <summary>目錄</summary>
-        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JS%E9%98%B2%E6%8A%96%E8%88%87%E7%AF%80%E6%B5%81%E6%95%99%E5%AD%B8"><span class="toc-text">JS防抖與節流教學</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%B2%E6%8A%96-Debouncing"><span class="toc-text">防抖 (Debouncing)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AF%80%E6%B5%81-Throttling"><span class="toc-text">節流 (Throttling)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B5%90%E8%AB%96"><span class="toc-text">結論</span></a></li></ol></li></ol></nav>
+        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">JS防抖與節流教學</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%B2%E6%8A%96-Debouncing"><span class="toc-text">防抖 (Debouncing)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AF%80%E6%B5%81-Throttling"><span class="toc-text">節流 (Throttling)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B5%90%E8%AB%96"><span class="toc-text">結論</span></a></li></ol></li></ol></nav>
       </details>
     </aside>
     
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="JS防抖與節流教學"><a href="#JS防抖與節流教學" class="headerlink" title="JS防抖與節流教學"></a>JS防抖與節流教學</h2><p>滾動、視窗縮放、鍵盤輸入這類高頻事件，若直接把處理函式綁上去，瀏覽器很快就會喘不過氣。防抖（Debouncing）和節流（Throttling）是兩種常見的解法，差別在於「事件停了才執行」還是「固定間隔最多執行一次」，選錯方向效果會差很多。</p>
-<h3 id="防抖-Debouncing"><a href="#防抖-Debouncing" class="headerlink" title="防抖 (Debouncing)"></a>防抖 (Debouncing)</h3><p>觸發事件後，等待指定時間才執行處理函式。如果等待期間又觸發了，就重新計時。連續快速觸發的情況下，最終只會執行一次。</p>
-<h4 id="使用時機"><a href="#使用時機" class="headerlink" title="使用時機"></a>使用時機</h4><p>觸發頻率高、但不需要即時響應每次觸發的場景：</p>
+        <h2>JS防抖與節流教學</h2>
+<p>滾動、視窗縮放、鍵盤輸入這類高頻事件，若直接把處理函式綁上去，瀏覽器很快就會喘不過氣。防抖（Debouncing）和節流（Throttling）是兩種常見的解法，差別在於「事件停了才執行」還是「固定間隔最多執行一次」，選錯方向效果會差很多。</p>
+<h3 id="防抖-Debouncing">防抖 (Debouncing)</h3>
+<p>觸發事件後，等待指定時間才執行處理函式。如果等待期間又觸發了，就重新計時。連續快速觸發的情況下，最終只會執行一次。</p>
+<h4 id="使用時機">使用時機</h4>
+<p>觸發頻率高、但不需要即時響應每次觸發的場景：</p>
 <ul>
 <li>搜尋框輸入（使用者停止輸入後再發出請求）</li>
 <li>視窗大小調整（調整結束後再重新計算排版）</li>
 </ul>
-<h4 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">debounce</span>(<span class="params">func, wait</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> timeout;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">function</span>(<span class="params">...args</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> context = <span class="variable language_">this</span>;</span><br><span class="line">        <span class="built_in">clearTimeout</span>(timeout);</span><br><span class="line">        timeout = <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> func.<span class="title function_">apply</span>(context, args), wait);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用防抖</span></span><br><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;resize&#x27;</span>, <span class="title function_">debounce</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;視窗大小調整完成&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">500</span>));</span><br></pre></td></tr></table></figure>
-
-<h3 id="節流-Throttling"><a href="#節流-Throttling" class="headerlink" title="節流 (Throttling)"></a>節流 (Throttling)</h3><p>在指定時間內最多只執行一次處理函式。不管這段期間觸發了幾次事件，執行次數都受到控制。</p>
-<h4 id="使用時機-1"><a href="#使用時機-1" class="headerlink" title="使用時機"></a>使用時機</h4><p>需要穩定控制事件處理頻率的場景：</p>
+<h4 id="範例">範例</h4>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">debounce</span>(<span class="params">func, wait</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> timeout;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">function</span>(<span class="params">...args</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> context = <span class="variable language_">this</span>;</span><br><span class="line">        <span class="built_in">clearTimeout</span>(timeout);</span><br><span class="line">        timeout = <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> func.<span class="title function_">apply</span>(context, args), wait);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用防抖</span></span><br><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;resize&#x27;</span>, <span class="title function_">debounce</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;視窗大小調整完成&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">500</span>));</span><br></pre></td></tr></table></figure>
+<h3 id="節流-Throttling">節流 (Throttling)</h3>
+<p>在指定時間內最多只執行一次處理函式。不管這段期間觸發了幾次事件，執行次數都受到控制。</p>
+<h4 id="使用時機-2">使用時機</h4>
+<p>需要穩定控制事件處理頻率的場景：</p>
 <ul>
 <li>滾動事件（例如無限滾動的載入更多）</li>
 <li>遊戲中的按鍵響應</li>
 </ul>
-<h4 id="範例-1"><a href="#範例-1" class="headerlink" title="範例"></a>範例</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">throttle</span>(<span class="params">func, wait</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> lastTime = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">function</span>(<span class="params">...args</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> now = <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getTime</span>();</span><br><span class="line">        <span class="keyword">if</span> (now - lastTime &gt; wait) &#123;</span><br><span class="line">            lastTime = now;</span><br><span class="line">            func.<span class="title function_">apply</span>(<span class="variable language_">this</span>, args);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用節流</span></span><br><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;scroll&#x27;</span>, <span class="title function_">throttle</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;滾動事件被觸發&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">1000</span>));</span><br></pre></td></tr></table></figure>
-
-<h3 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h3><p>兩者的核心差異：防抖是「事件平靜下來之後才動」，節流是「不管觸發幾次，固定間隔最多動一次」。搜尋框用防抖、無限滾動用節流，選對了才有實際效果。</p>
+<h4 id="範例-2">範例</h4>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">throttle</span>(<span class="params">func, wait</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> lastTime = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">function</span>(<span class="params">...args</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> now = <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getTime</span>();</span><br><span class="line">        <span class="keyword">if</span> (now - lastTime &gt; wait) &#123;</span><br><span class="line">            lastTime = now;</span><br><span class="line">            func.<span class="title function_">apply</span>(<span class="variable language_">this</span>, args);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用節流</span></span><br><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;scroll&#x27;</span>, <span class="title function_">throttle</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;滾動事件被觸發&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">1000</span>));</span><br></pre></td></tr></table></figure>
+<h3 id="結論">結論</h3>
+<p>兩者的核心差異：防抖是「事件平靜下來之後才動」，節流是「不管觸發幾次，固定間隔最多動一次」。搜尋框用防抖、無限滾動用節流，選對了才有實際效果。</p>
 
       </div>
       
@@ -226,15 +232,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

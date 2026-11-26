@@ -125,22 +125,23 @@
         <p>讓 agent 自己跑批次任務之前，我以為成本是可以「事後再看」的東西。</p>
 <p>那是一個排程任務：每天半夜起來，把前一天累積的一批項目逐筆讓 agent 處理、分類、寫回。我設好就睡了。隔天早上看帳單，一個晚上燒掉的量，差不多是我平常手動用一整個月的程度。</p>
 <p>東西是有跑完，但這個價錢完全不合理。我花了點時間把它拆開來看，發現失控的不是「AI 很貴」這個籠統印象，而是三、四個很具體、而且都能堵住的洞。這篇就是那幾道護欄。</p>
-<h2 id="先搞清楚錢是怎麼流掉的"><a href="#先搞清楚錢是怎麼流掉的" class="headerlink" title="先搞清楚錢是怎麼流掉的"></a>先搞清楚錢是怎麼流掉的</h2><p>LLM 的計費單位是 token，輸入和輸出分開算，而且輸出通常比輸入貴好幾倍。先記住這條核心關係：你每次呼叫付的錢 ≈（這次塞進去的 input token + 吐出來的 output token）× 對應模型的單價。實際帳單還有快取、推理 token 之類的細項，但抓大放小，主導成本的就是這三個變數——而每一個我那晚都用錯了。</p>
+<h2 id="先搞清楚錢是怎麼流掉的">先搞清楚錢是怎麼流掉的</h2>
+<p>LLM 的計費單位是 token，輸入和輸出分開算，而且輸出通常比輸入貴好幾倍。先記住這條核心關係：你每次呼叫付的錢 ≈（這次塞進去的 input token + 吐出來的 output token）× 對應模型的單價。實際帳單還有快取、推理 token 之類的細項，但抓大放小，主導成本的就是這三個變數——而每一個我那晚都用錯了。</p>
 <p>把這條公式攤開來算一次就很清楚。假設我那個任務每次呼叫平均塞 50K token 的 context，跑 200 筆，光 input 就是 1,000 萬 token。如果我還傻傻地全程用最貴的模型——以我寫這篇的當下，旗艦模型的單價大約是最小模型的十幾倍（實際比例請以各家官方價目為準，這裡只看數量級）——那這 1,000 萬 token 的帳，等於用小模型跑要花的十幾倍。任務內容一模一樣，只因為我選錯模型、塞太多 context，價差就是一個數量級。</p>
 <p>形容詞在這裡沒有意義。「AI 好貴」是錯的結論，「我用一個數量級的浪費，去跑一個根本不需要那麼貴的任務」才是真相。</p>
-<h2 id="護欄一：用對模型，別拿大砲打蚊子"><a href="#護欄一：用對模型，別拿大砲打蚊子" class="headerlink" title="護欄一：用對模型，別拿大砲打蚊子"></a>護欄一：用對模型，別拿大砲打蚊子</h2><p>我那晚最蠢的決定，是整批都用旗艦模型。</p>
+<h2 id="護欄一：用對模型，別拿大砲打蚊子">護欄一：用對模型，別拿大砲打蚊子</h2>
+<p>我那晚最蠢的決定，是整批都用旗艦模型。</p>
 <p>實際上 200 筆裡面，有 180 筆是「判斷這筆屬於哪一類」這種瑣事，剩下 20 筆才需要真的動腦推理。我卻讓最貴的模型去做那 180 筆分類，等於請一個資深架構師整晚在那邊蓋橡皮章。</p>
 <p>修法是加一層路由（routing）：先用便宜的小模型判斷這筆難不難，簡單的就地解決，只有它自己舉手說「這題我吃不準」的才升級到大模型。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">route</span>(<span class="params">task</span>):</span><br><span class="line">    <span class="comment"># 先用便宜模型快速分流</span></span><br><span class="line">    verdict = cheap_model(<span class="string">f&quot;這個任務需要深度推理嗎？只回 simple 或 hard：\n<span class="subst">&#123;task&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> verdict.strip() == <span class="string">&quot;hard&quot;</span>:</span><br><span class="line">        <span class="keyword">return</span> expensive_model(task)   <span class="comment"># 少數真的難的，才動用旗艦</span></span><br><span class="line">    <span class="keyword">return</span> cheap_model(task)           <span class="comment"># 多數簡單的，小模型直接做完</span></span><br></pre></td></tr></table></figure>
-
 <p>光是這一層，那 180 筆從旗艦單價掉到小模型單價，帳單立刻瘦一圈。一個常見的分法是：分類、抽取、格式轉換、簡單問答交給小模型，跨檔案推理、架構決策、需要長鏈思考的才給旗艦。</p>
 <p>但路由本身會看走眼——小模型判「難不難」也是會判錯的。所以分流的安全方向是「拿不準就往上送」：與其讓小模型硬接一個它其實搞不定的任務、產出爛結果還要重跑，不如讓它在猶豫時直接升級到旗艦。誤判往「貴」的方向偏，比往「爛」的方向偏便宜得多。</p>
-<h2 id="護欄二：設硬上限，到頂就停"><a href="#護欄二：設硬上限，到頂就停" class="headerlink" title="護欄二：設硬上限，到頂就停"></a>護欄二：設硬上限，到頂就停</h2><p>第二個洞更危險：我整個 loop 沒有任何花費上限。</p>
+<h2 id="護欄二：設硬上限，到頂就停">護欄二：設硬上限，到頂就停</h2>
+<p>第二個洞更危險：我整個 loop 沒有任何花費上限。</p>
 <p>那晚有幾筆項目資料是髒的，agent 處理失敗就重試。失敗、重試、又失敗、再重試，每一次重試都是一次完整的付費呼叫，而且它把前面失敗的對話也帶進去，context 越滾越大、越重試越貴。沒有人喊停，它就真的一直試到天亮。</p>
 <p>agent 不會自己心疼錢。你不給它上限，它就沒有上限。</p>
 <p>所以要在外層包一個預算守門員，花掉的累計到頂就強制停，而不是寄望任務「自然跑完」：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">BUDGET = <span class="number">2_000_000</span>   <span class="comment"># 這次任務的 token 總預算，到頂就停</span></span><br><span class="line">spent = <span class="number">0</span></span><br><span class="line">remaining = tasks.copy()</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> task <span class="keyword">in</span> tasks:</span><br><span class="line">    <span class="keyword">if</span> spent &gt;= BUDGET:</span><br><span class="line">        log(<span class="string">f&quot;已達預算上限，剩下 <span class="subst">&#123;<span class="built_in">len</span>(remaining)&#125;</span> 筆未處理，停止&quot;</span>)</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    result, used = run_agent(task)</span><br><span class="line">    spent += used</span><br><span class="line">    remaining.pop(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
-
 <p>關鍵不是 <code>BUDGET</code> 設多少，而是「有沒有這個 <code>if</code>」。有了它，最壞情況是「跑不完，剩幾筆明天再處理」；沒有它，最壞情況是「跑到天亮，帳單三位數」。前者我隔天補一下就好，後者只能心痛。</p>
 <p>這道護欄其實有三層，缺一層就漏：</p>
 <ul>
@@ -148,14 +149,15 @@
 <li>單次輸出上限（<code>max_tokens</code>）：每次呼叫都設輸出長度上限。很多人盯著 input，卻忘了帳單常常是炸在「模型一口氣吐了超長回覆」——尤其開了推理模式時，沒設上限等於開放式燒錢</li>
 <li>整批預算上限（上面那個 <code>if</code>）：所有花費累計到頂就停</li>
 </ul>
-<h2 id="護欄三：別每次都把整本歷史塞進去"><a href="#護欄三：別每次都把整本歷史塞進去" class="headerlink" title="護欄三：別每次都把整本歷史塞進去"></a>護欄三：別每次都把整本歷史塞進去</h2><p>第三個洞最隱形。我的 loop 為了讓 agent「有上下文」，每次呼叫都把前面所有處理過的紀錄一起帶進去。</p>
+<h2 id="護欄三：別每次都把整本歷史塞進去">護欄三：別每次都把整本歷史塞進去</h2>
+<p>第三個洞最隱形。我的 loop 為了讓 agent「有上下文」，每次呼叫都把前面所有處理過的紀錄一起帶進去。</p>
 <p>聽起來很合理，實際上是災難。第 1 筆帶 1 筆的量，第 200 筆帶 199 筆的量，單筆的 input 隨進度線性長大。把整批加起來更可怕——1+2+…+200，總成本是筆數的平方等級，不是線性。後半段每一筆都比前半段貴上好幾倍，而那些舊紀錄，對「處理當前這一筆」其實一點用都沒有。</p>
 <p>我一開始還懷疑是不是模型本身變慢變貴了，盯著單價看半天，後來把每次呼叫的 input token 印出來，才發現是自己親手讓 context 雪球越滾越大。（順帶一提，我也試過反方向矯枉過正——把 context 砍到完全不帶，結果 agent 失憶到連任務格式都記不住，輸出全亂。砍 context 不是砍越多越好，是砍掉「對當前這筆沒用」的部分。）</p>
 <p>修法是只帶當前這筆真正需要的東西，固定大小，不隨進度累積：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 錯：context 隨進度線性膨脹</span></span><br><span class="line">context = all_previous_results + current_task</span><br><span class="line"></span><br><span class="line"><span class="comment"># 對：只帶這筆需要的，每次大小固定</span></span><br><span class="line">context = system_prompt + current_task</span><br></pre></td></tr></table></figure>
-
 <p>如果任務之間真的有依賴，需要參考前面的結論，那就只摘要保留必要的幾條，而不是原封不動把整本歷史搬過去。</p>
-<h2 id="護欄四：重複的部分，快取起來"><a href="#護欄四：重複的部分，快取起來" class="headerlink" title="護欄四：重複的部分，快取起來"></a>護欄四：重複的部分，快取起來</h2><p>前三道堵的是可以避免的浪費，第四道針對的是那些無論如何都得送出去的 token——省不掉，但能便宜付。</p>
+<h2 id="護欄四：重複的部分，快取起來">護欄四：重複的部分，快取起來</h2>
+<p>前三道堵的是可以避免的浪費，第四道針對的是那些無論如何都得送出去的 token——省不掉，但能便宜付。</p>
 <p>我那個任務每一筆呼叫，前面都掛著一大段一模一樣的系統提示——角色設定、規則、輸出格式範例，每筆都重新送、重新計費。200 筆就把同一段東西付了 200 次。</p>
 <p>現在主流的 LLM API 大多支援 prompt caching：固定不變的前綴第一次正常計費，後續命中快取的部分用大幅折扣計價。對「同一套規則跑很多筆」這種場景，省下來的相當可觀。但有三個細節不搞清楚，你會以為自己省了其實沒省：</p>
 <ul>
@@ -165,11 +167,12 @@
 </ul>
 <p>要讓快取命中率高，把不變的東西放前面、會變的放後面：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[固定前綴] 系統提示 + 規則 + 輸出格式範例   ← 每次都一樣，放最前面</span><br><span class="line">[每次變動] 當前這筆任務的資料              ← 放最後</span><br></pre></td></tr></table></figure>
-
 <p>順序很重要。快取是從頭開始比對前綴的，你把會變的東西夾在固定內容中間，前綴一被打斷，後面的快取就全部失效。</p>
-<h2 id="還有一招：能等就走批次"><a href="#還有一招：能等就走批次" class="headerlink" title="還有一招：能等就走批次"></a>還有一招：能等就走批次</h2><p>如果你的任務跟我一樣是「一批東西、不急著即時拿到結果」，那最划算的一招其實是 Batch API。OpenAI、Anthropic 都有非即時的批次模式：你把一整批請求丟進去，它慢慢跑完（官方掛保證 24 小時內，實際通常幾小時就好），換來的是單價大約打對折。</p>
+<h2 id="還有一招：能等就走批次">還有一招：能等就走批次</h2>
+<p>如果你的任務跟我一樣是「一批東西、不急著即時拿到結果」，那最划算的一招其實是 Batch API。OpenAI、Anthropic 都有非即時的批次模式：你把一整批請求丟進去，它慢慢跑完（官方掛保證 24 小時內，實際通常幾小時就好），換來的是單價大約打對折。</p>
 <p>我那個排程任務根本是半夜跑、早上才看結果，完全不需要即時——卻用逐筆即時呼叫的全價去跑，等於白白多付一倍。能等的任務走批次，這一刀砍下去的幅度，比前面任何一道護欄都直接。</p>
-<h2 id="收一下"><a href="#收一下" class="headerlink" title="收一下"></a>收一下</h2><p>那次之後我重跑同一個任務，護欄都補上，帳單從「一個月的量」掉回「一個晚上該有的量」，任務照樣跑完。回頭看，這幾件事沒有一件是高深技術：</p>
+<h2 id="收一下">收一下</h2>
+<p>那次之後我重跑同一個任務，護欄都補上，帳單從「一個月的量」掉回「一個晚上該有的量」，任務照樣跑完。回頭看，這幾件事沒有一件是高深技術：</p>
 <ul>
 <li>用對模型——簡單任務別用旗艦，加一層便宜的路由分流，拿不準就往上送</li>
 <li>設上限——單筆限制重試、單次限制輸出、整批限制預算，三層都要有</li>
@@ -271,15 +274,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

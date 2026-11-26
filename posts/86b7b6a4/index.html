@@ -119,7 +119,8 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>工作的時候拿到了超過 1GB 的 JSON 檔，用 VSCode 和 Notepad++ 雖然都能開啟，但速度真的慢，而且 JSON 太大根本無法格式化。於是開始找能開啟大檔案的軟體。</p>
-<h2 id="1-EmEditor-軟體介紹"><a href="#1-EmEditor-軟體介紹" class="headerlink" title="1. EmEditor 軟體介紹"></a>1. EmEditor 軟體介紹</h2><p>EmEditor 是一款專為處理大型檔案設計的文字編輯器，幾個實際有感的功能：</p>
+<h2 id="1-EmEditor-軟體介紹">1. EmEditor 軟體介紹</h2>
+<p>EmEditor 是一款專為處理大型檔案設計的文字編輯器，幾個實際有感的功能：</p>
 <ul>
 <li><strong>高效能</strong>：能處理超過 248GB 的大型檔案。</li>
 <li><strong>多功能</strong>：支援多種編碼、語法高亮、正規表示式。</li>
@@ -129,8 +130,9 @@
 <li><strong>多語言介面</strong>：包含中文。</li>
 </ul>
 <p>處理大型 JSON 最有感的地方：開啟速度比 VSCode 快很多，還可以透過腳本做壓縮和格式化。</p>
-<h2 id="2-JSON-壓縮與格式化腳本"><a href="#2-JSON-壓縮與格式化腳本" class="headerlink" title="2. JSON 壓縮與格式化腳本"></a>2. JSON 壓縮與格式化腳本</h2><h3 id="壓縮腳本"><a href="#壓縮腳本" class="headerlink" title="壓縮腳本"></a>壓縮腳本</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">document</span>.<span class="property">selection</span>.<span class="title class_">SelectAll</span>();</span><br><span class="line"><span class="variable language_">document</span>.<span class="property">selection</span>.<span class="property">Text</span> = <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(<span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="variable language_">document</span>.<span class="property">selection</span>.<span class="property">Text</span>));</span><br></pre></td></tr></table></figure>
-
+<h2 id="2-JSON-壓縮與格式化腳本">2. JSON 壓縮與格式化腳本</h2>
+<h3 id="壓縮腳本">壓縮腳本</h3>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">document</span>.<span class="property">selection</span>.<span class="title class_">SelectAll</span>();</span><br><span class="line"><span class="variable language_">document</span>.<span class="property">selection</span>.<span class="property">Text</span> = <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(<span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="variable language_">document</span>.<span class="property">selection</span>.<span class="property">Text</span>));</span><br></pre></td></tr></table></figure>
 <p>運作方式：</p>
 <ol>
 <li><code>SelectAll()</code> 全選文字。</li>
@@ -138,21 +140,25 @@
 <li><code>JSON.stringify()</code> 轉回 JSON 字串，沒有任何縮排——也就是壓縮後的結果。</li>
 <li>直接替換編輯器裡的文字。</li>
 </ol>
-<h3 id="格式化腳本"><a href="#格式化腳本" class="headerlink" title="格式化腳本"></a>格式化腳本</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">document</span>.<span class="property">selection</span>.<span class="title class_">SelectAll</span>();</span><br><span class="line"><span class="variable language_">document</span>.<span class="property">selection</span>.<span class="property">Text</span> = <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(<span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="variable language_">document</span>.<span class="property">selection</span>.<span class="property">Text</span>), <span class="literal">null</span>, <span class="string">&#x27;\t&#x27;</span>);</span><br></pre></td></tr></table></figure>
-
+<h3 id="格式化腳本">格式化腳本</h3>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">document</span>.<span class="property">selection</span>.<span class="title class_">SelectAll</span>();</span><br><span class="line"><span class="variable language_">document</span>.<span class="property">selection</span>.<span class="property">Text</span> = <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(<span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="variable language_">document</span>.<span class="property">selection</span>.<span class="property">Text</span>), <span class="literal">null</span>, <span class="string">&#x27;\t&#x27;</span>);</span><br></pre></td></tr></table></figure>
 <p>跟壓縮腳本一樣的邏輯，差別在 <code>JSON.stringify()</code> 多了兩個參數：</p>
 <ul>
 <li><code>null</code>：不使用替換函式。</li>
-<li><code>&#39;\t&#39;</code>：用 Tab 縮排，讓 JSON 變成人眼可讀的格式。</li>
+<li><code>'\t'</code>：用 Tab 縮排，讓 JSON 變成人眼可讀的格式。</li>
 </ul>
-<h2 id="3-在-EmEditor-中使用腳本"><a href="#3-在-EmEditor-中使用腳本" class="headerlink" title="3. 在 EmEditor 中使用腳本"></a>3. 在 EmEditor 中使用腳本</h2><ol>
+<h2 id="3-在-EmEditor-中使用腳本">3. 在 EmEditor 中使用腳本</h2>
+<ol>
 <li>開啟 EmEditor，載入 JSON 檔案。</li>
 <li>點擊「巨集」&gt;「新增巨集」，在編輯頁面貼上腳本內容。</li>
 <li>儲存成 <code>.jsee</code> 檔，取個描述性的名稱（例如 <code>JSON壓縮.jsee</code>）。</li>
-<li>點擊「巨集」&gt;「自訂」。<br><img loading="lazy" decoding="async" src="20240912095550018.png"></li>
-<li>點擊新增，把剛才存好的 <code>.jsee</code> 檔加進去。<br><img loading="lazy" decoding="async" src="20240912095851185.png"></li>
+<li>點擊「巨集」&gt;「自訂」。<br>
+<img loading="lazy" decoding="async" src="20240912095550018.png" alt=""></li>
+<li>點擊新增，把剛才存好的 <code>.jsee</code> 檔加進去。<br>
+<img loading="lazy" decoding="async" src="20240912095851185.png" alt=""></li>
 </ol>
-<h2 id="4-實用提醒"><a href="#4-實用提醒" class="headerlink" title="4. 實用提醒"></a>4. 實用提醒</h2><ul>
+<h2 id="4-實用提醒">4. 實用提醒</h2>
+<ul>
 <li>幫這兩個腳本各設一組快捷鍵，用起來會快很多。</li>
 <li>處理超大檔案時，可以考慮調高 EmEditor 的記憶體使用上限。</li>
 <li>超大型 JSON 可以搭配 EmEditor 的「大檔案控制器」分段處理。</li>
@@ -208,15 +214,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

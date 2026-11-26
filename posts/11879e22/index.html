@@ -125,16 +125,14 @@
         <p>9 月 17 日修派工單列表，本機開得好好的，測試機一進頁面就報「查詢派工單失敗」。連日期都還沒選。</p>
 <p>翻後端紀錄，真正的錯誤是這句：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">將 varchar 資料類型轉換成 datetime 資料類型時，產生超出範圍的值。</span><br></pre></td></tr></table></figure>
-
 <p>沒選日期也會碰到日期轉換，因為前端會自動補當年度的查詢區間。其中一段條件長這樣：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OccurTime <span class="operator">&lt;=</span> <span class="string">&#x27;2026/12/31 23:59:59&#x27;</span></span><br></pre></td></tr></table></figure>
-
 <p><code>OccurTime</code> 欄位是 <code>datetime</code>，比較時 SQL Server 需要把右邊的字串轉成日期。12 月 31 日這個值沒問題，解析規則卻會讓轉換失敗。</p>
-<h2 id="換成連字號，一樣失敗"><a href="#換成連字號，一樣失敗" class="headerlink" title="換成連字號，一樣失敗"></a>換成連字號，一樣失敗</h2><p>排查紀錄裡最值得留下的是這組對照：把斜線換成連字號，甚至拿掉時間，都沒過。最後差別落在日期與時間中間那個 <code>T</code>。</p>
+<h2 id="換成連字號，一樣失敗">換成連字號，一樣失敗</h2>
+<p>排查紀錄裡最值得留下的是這組對照：把斜線換成連字號，甚至拿掉時間，都沒過。最後差別落在日期與時間中間那個 <code>T</code>。</p>
 <p>當時開發環境的連線使用 <code>ymd</code>，測試環境卻是 <code>dmy</code>。對這次的 <code>datetime</code> 轉換來說，同一串年月日會得到不同結果。</p>
 <p>下面是整理文章時重跑的測試。只處理常數，不需要建立資料表。請用一條獨立的測試連線執行，跑完關閉；<code>SET DATEFORMAT</code> 會影響這條連線後續的敘述。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> DATEFORMAT dmy;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    s <span class="keyword">AS</span> input,</span><br><span class="line">    ISDATE(s) <span class="keyword">AS</span> valid_datetime,</span><br><span class="line">    <span class="keyword">CASE</span> <span class="keyword">WHEN</span> ISDATE(s) <span class="operator">=</span> <span class="number">1</span></span><br><span class="line">         <span class="keyword">THEN</span> <span class="keyword">CONVERT</span>(<span class="type">varchar</span>(<span class="number">23</span>), <span class="keyword">CONVERT</span>(datetime, s), <span class="number">121</span>)</span><br><span class="line">         <span class="keyword">ELSE</span> <span class="keyword">NULL</span></span><br><span class="line">    <span class="keyword">END</span> <span class="keyword">AS</span> parsed</span><br><span class="line"><span class="keyword">FROM</span> (<span class="keyword">VALUES</span></span><br><span class="line">    (<span class="string">&#x27;2026/12/31 23:59:59&#x27;</span>),</span><br><span class="line">    (<span class="string">&#x27;2026-12-31 23:59:59&#x27;</span>),</span><br><span class="line">    (<span class="string">&#x27;2026-12-31&#x27;</span>),</span><br><span class="line">    (<span class="string">&#x27;2026-12-31T23:59:59&#x27;</span>),</span><br><span class="line">    (<span class="string">&#x27;20261231 23:59:59&#x27;</span>),</span><br><span class="line">    (<span class="string">&#x27;2026-01-02&#x27;</span>)</span><br><span class="line">) <span class="keyword">AS</span> v(s);</span><br></pre></td></tr></table></figure>
-
 <p>這裡用 <code>ISDATE</code> 判斷這幾個字串能不能轉成 <code>datetime</code>，讓失敗項目顯示 <code>NULL</code>，方便放在同一張表比較。它不適合拿來當所有日期型別的通用驗證器。</p>
 <p>實測引擎版本是 SQL Server 2022（16.0.1000.6），結果如下：</p>
 <table>
@@ -144,7 +142,8 @@
 <th><code>datetime</code> 轉換結果</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><code>2026/12/31 23:59:59</code></td>
 <td>無法轉換</td>
 </tr>
@@ -168,27 +167,28 @@
 <td><code>2026-01-02</code></td>
 <td><strong>2026-02-01 00:00:00.000</strong></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>最後一列比報錯還麻煩。我想查 1 月 2 日，它會讀成 2 月 1 日，整條 SQL 照樣執行。只拿月、日都小於 13 的日期做測試，還可能以為修好了。</p>
 <p>Microsoft 的 <a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/sql/t-sql/data-types/datetime-transact-sql?view=sql-server-ver17#iso-8601-format">datetime 文件</a> 有明列不受 <code>SET DATEFORMAT</code> 與 <code>SET LANGUAGE</code> 影響的字串格式，包括 <code>yyyy-MM-ddTHH:mm:ss[.mmm]</code>。這次統一採用帶 <code>T</code> 的寫法；<code>yyyyMMdd</code> 也是可用的選擇。</p>
-<p>這張表的目標型別是 <code>datetime</code>。同樣在 <code>dmy</code> 下，我重跑 <code>CONVERT(date, &#39;2026-12-31&#39;)</code> 與 <code>CONVERT(datetime2, &#39;2026-12-31&#39;)</code> 都成功。這只能說明這個字串在這兩種型別的結果，不能推成「換成 datetime2 就不受 DATEFORMAT 影響」。斜線格式或其他輸入仍要確認解析規則。</p>
-<h2 id="要查出錯的那條連線"><a href="#要查出錯的那條連線" class="headerlink" title="要查出錯的那條連線"></a>要查出錯的那條連線</h2><p>遇到本機正常、測試機失敗，很容易開始比資料或比程式版本。這次需要多比一項：連線的日期解析設定。</p>
+<p>這張表的目標型別是 <code>datetime</code>。同樣在 <code>dmy</code> 下，我重跑 <code>CONVERT(date, '2026-12-31')</code> 與 <code>CONVERT(datetime2, '2026-12-31')</code> 都成功。這只能說明這個字串在這兩種型別的結果，不能推成「換成 datetime2 就不受 DATEFORMAT 影響」。斜線格式或其他輸入仍要確認解析規則。</p>
+<h2 id="要查出錯的那條連線">要查出錯的那條連線</h2>
+<p>遇到本機正常、測試機失敗，很容易開始比資料或比程式版本。這次需要多比一項：連線的日期解析設定。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> @<span class="variable">@LANGUAGE</span> <span class="keyword">AS</span> session_language;</span><br><span class="line">DBCC USEROPTIONS <span class="keyword">WITH</span> NO_INFOMSGS;</span><br></pre></td></tr></table></figure>
-
 <p>看結果裡的 <code>language</code> 與 <code>dateformat</code>。如果在 SSMS 開新連線查，只能證明那條 SSMS 連線的設定。要確認應用程式的狀態，得讓診斷敘述在實際出錯的連線上執行，或重現它的登入與初始化設定。<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/sql/t-sql/database-console-commands/dbcc-useroptions-transact-sql?view=sql-server-ver17">DBCC USEROPTIONS 回傳的是目前連線啟用的選項</a>。</p>
 <p>登入的預設語言會影響初始日期格式，但連線還能執行 <code>SET LANGUAGE</code> 或 <code>SET DATEFORMAT</code>。後者會覆寫語言帶入的日期順序，所以只看帳號預設語言不夠。<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/sql/t-sql/statements/set-dateformat-transact-sql?view=sql-server-ver17">Microsoft 的 SET DATEFORMAT 說明</a> 也特別區分：它改的是字串轉日期的解析方式，不會改資料庫裡日期的儲存格式。</p>
 <p>這次還有一層干擾。既有資料存取元件會先用 .NET 的 <code>DataTable.Select(filter)</code> 檢查篩選條件。依當時的排查紀錄，這關接受了原本的日期字串，送到 SQL Server 才失敗。</p>
 <p>同一份 filter，經過兩套解析規則。前一道檢查通過，沒有替後一道保證什麼。</p>
-<h2 id="這次先修共用的日期輸出"><a href="#這次先修共用的日期輸出" class="headerlink" title="這次先修共用的日期輸出"></a>這次先修共用的日期輸出</h2><p>既有介面接收的是 filter 字串，這次修正在共用的 <code>sqlDateTime</code>／<code>safeDateRange</code>：把日期與時間之間統一改成 <code>T</code>。筆記記錄了 10 處自行組日期條件的修改，App 端也同步處理。</p>
+<h2 id="這次先修共用的日期輸出">這次先修共用的日期輸出</h2>
+<p>既有介面接收的是 filter 字串，這次修正在共用的 <code>sqlDateTime</code>／<code>safeDateRange</code>：把日期與時間之間統一改成 <code>T</code>。筆記記錄了 10 處自行組日期條件的修改，App 端也同步處理。</p>
 <p>以下摘錄修正後 helper 的呼叫結果，保留原本介面的行為，包括秒級的迄日上限。<code>23:59:59</code> 仍有漏掉小數秒資料的限制，下一節會處理：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">sqlDateTime</span>(<span class="string">&#x27;2026/12/31 23:59:59&#x27;</span>)</span><br><span class="line"><span class="comment">// &#x27;2026-12-31T23:59:59&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="title function_">sqlDateTime</span>(<span class="string">&#x27;2026-1-5&#x27;</span>)</span><br><span class="line"><span class="comment">// &#x27;2026-01-05T00:00:00&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="title function_">safeDateRange</span>(<span class="string">&#x27;OccurTime&#x27;</span>, <span class="string">&#x27;2026-01-01&#x27;</span>, <span class="string">&#x27;2026-12-31&#x27;</span>)</span><br><span class="line"><span class="comment">// &quot;OccurTime &gt;= &#x27;2026-01-01T00:00:00&#x27; AND OccurTime &lt;= &#x27;2026-12-31T23:59:59&#x27;&quot;</span></span><br></pre></td></tr></table></figure>
-
 <p>這段需搭配專案原本的 helper 才能執行，功能限於整理字串；日期驗證與後端參數化查詢仍要另外處理。</p>
 <p>原始碼裡也補了一支回歸 scenario，檢查 helper 的輸出、掃描仍自行拼接的日期字面，並呼叫 API 驗證帶 <code>T</code> 的區間能通過 filter 檢查與資料庫查詢。整理本文時，我另用上面的常數查詢重驗 SQL Server 的解析結果；這不等於重跑整個系統的驗收。</p>
-<h2 id="能改後端時，直接傳日期參數"><a href="#能改後端時，直接傳日期參數" class="headerlink" title="能改後端時，直接傳日期參數"></a>能改後端時，直接傳日期參數</h2><p>如果能調整查詢介面，我會讓前端只送起訖日期，由後端解析、驗證，再以日期型別參數交給 SQL Server。這樣就不用讓資料庫猜日期字串的順序。</p>
+<h2 id="能改後端時，直接傳日期參數">能改後端時，直接傳日期參數</h2>
+<p>如果能調整查詢介面，我會讓前端只送起訖日期，由後端解析、驗證，再以日期型別參數交給 SQL Server。這樣就不用讓資料庫猜日期字串的順序。</p>
 <p>例如舊欄位仍是 <code>datetime</code>，可以明確指定 <code>SqlDbType.DateTime</code>。下面是整理過的 .NET Framework 示範，假設已有開啟的 <code>SqlConnection</code>；資料表名稱是示意，並非這次部署的程式碼。</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Data;</span><br><span class="line"><span class="keyword">using</span> System.Data.SqlClient;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">DispatchQueries</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="built_in">int</span> <span class="title">CountForYear</span>(<span class="params">SqlConnection connection, <span class="built_in">int</span> year</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (year &lt; <span class="number">1753</span> || year &gt; <span class="number">9998</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentOutOfRangeException(<span class="string">&quot;year&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> start = <span class="keyword">new</span> DateTime(year, <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">var</span> endExclusive = start.AddYears(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> command = connection.CreateCommand())</span><br><span class="line">        &#123;</span><br><span class="line">            command.CommandText = <span class="string">@&quot;</span></span><br><span class="line"><span class="string">                SELECT COUNT(*) FROM dbo.DispatchData</span></span><br><span class="line"><span class="string">                WHERE OccurTime &gt;= @start</span></span><br><span class="line"><span class="string">                  AND OccurTime &lt; @endExclusive&quot;</span>;</span><br><span class="line"></span><br><span class="line">            command.Parameters.Add(<span class="string">&quot;@start&quot;</span>, SqlDbType.DateTime).Value = start;</span><br><span class="line">            command.Parameters.Add(<span class="string">&quot;@endExclusive&quot;</span>, SqlDbType.DateTime).Value = endExclusive;</span><br><span class="line">            <span class="keyword">return</span> (<span class="built_in">int</span>)command.ExecuteScalar();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>參數的值是 <code>DateTime</code> 物件；如果仍把日期字串塞進字串型別參數，轉換問題可能還在。型別要和欄位及需求配合，<code>datetime2</code> 欄位則可使用 <code>SqlDbType.DateTime2</code>。<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/configuring-parameters-and-parameter-data-types">ADO.NET 參數文件</a> 有列出指定型別與型別推斷的規則。</p>
 <p>範例也順手避開原本的另一個邊界：<code>&lt;= 23:59:59</code> 會漏掉當天最後一秒內帶小數秒的資料。查整年用「大於等於今年年初、小於明年年初」，就不用猜最後一刻應該補多少個 9。這是後續改造的建議，和這次已完成的日期格式修正分開看。</p>
 <p>這次最容易漏掉的地方，是畫面還沒選日期，程式就已經替我組好一段日期 SQL。本機又剛好讀得懂，錯誤一直藏到測試機才出現。下次再碰到同樣的環境差異，我會早一點把實際送出的 filter 和連線設定一起攤開。</p>
@@ -282,15 +282,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
     
       <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
     
     </ul>
   </section>

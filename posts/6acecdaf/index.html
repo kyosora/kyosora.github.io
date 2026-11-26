@@ -123,29 +123,34 @@
       <div class="prose" id="article">
         <p>Mojo 常被說成「Python 的寫法、C 等級的速度」，但這句話少講了很多條件。它最常見的兩個賣點——比 Python 快幾萬倍、完全相容 Python——前者是真的但前提很窄，後者其實是早期說法、Modular 後來自己已經修正。</p>
 <p>先把 Mojo 是什麼講清楚，再一條一條看這些數字和說法的前提。</p>
-<h2 id="Mojo-是什麼"><a href="#Mojo-是什麼" class="headerlink" title="Mojo 是什麼"></a>Mojo 是什麼</h2><p>Mojo 由 Chris Lattner 主導開發。他做的東西你大概天天間接在用——LLVM 是一票現代編譯器和語言共用的底層基礎設施，而 Lattner 正是 LLVM 的作者，也是 Swift 語言的設計者。他的公司 Modular 想解決的問題是：AI 和高效能運算長年卡在「Python 好寫但慢、C++ 快但難寫」的二選一，Mojo 想兩邊都要。</p>
+<h2 id="Mojo-是什麼">Mojo 是什麼</h2>
+<p>Mojo 由 Chris Lattner 主導開發。他做的東西你大概天天間接在用——LLVM 是一票現代編譯器和語言共用的底層基礎設施，而 Lattner 正是 LLVM 的作者，也是 Swift 語言的設計者。他的公司 Modular 想解決的問題是：AI 和高效能運算長年卡在「Python 好寫但慢、C++ 快但難寫」的二選一，Mojo 想兩邊都要。</p>
 <p>做法是語法走 Python 風格，讓熟悉 Python 的人快速上手；底層接 MLIR，能編譯成接近原生的機器碼，還內建型別系統和向量化支援。</p>
-<h2 id="「快幾萬倍」的前提"><a href="#「快幾萬倍」的前提" class="headerlink" title="「快幾萬倍」的前提"></a>「快幾萬倍」的前提</h2><p>先說那個最聳動的數字。Modular 官方拿來宣傳的招牌是 Mandelbrot 計算，Mojo 比 Python 快約 35000 倍。</p>
+<h2 id="「快幾萬倍」的前提">「快幾萬倍」的前提</h2>
+<p>先說那個最聳動的數字。Modular 官方拿來宣傳的招牌是 Mandelbrot 計算，Mojo 比 Python 快約 35000 倍。</p>
 <p>這數字是真的，但怎麼來的要看清楚。35000 倍不是「把 Python 程式丟進 Mojo 就有」，而是一層層疊加最佳化的結果：先把 Python 移植成 Mojo（這步大概 46 倍），再手動加上型別、向量化（SIMD）、平行化，才一路堆到幾萬倍。而且 Mandelbrot 是純數值密集運算，本來就是這類最佳化最吃香的場景。</p>
 <p>換成一般業務邏輯，多半到不了這個量級。所以看到「快 N 倍」的標題，先問一句：哪個 benchmark、做了多少手動最佳化。</p>
-<h2 id="「完全相容-Python」也要打折"><a href="#「完全相容-Python」也要打折" class="headerlink" title="「完全相容 Python」也要打折"></a>「完全相容 Python」也要打折</h2><p>Mojo 早期確實用「Python 超集合（superset）」行銷，意思是任何 Python 程式都該能直接當 Mojo 跑。但 Modular 後來自己修正了這個說法——截至 2024 年，Mojo 還缺 class、繼承這些 Python 動態特性，遠不是把 .py 改個副檔名就能跑。</p>
+<h2 id="「完全相容-Python」也要打折">「完全相容 Python」也要打折</h2>
+<p>Mojo 早期確實用「Python 超集合（superset）」行銷，意思是任何 Python 程式都該能直接當 Mojo 跑。但 Modular 後來自己修正了這個說法——截至 2024 年，Mojo 還缺 class、繼承這些 Python 動態特性，遠不是把 .py 改個副檔名就能跑。</p>
 <p>真正要用既有 Python 套件時，Mojo 的做法是透過 interop 去呼叫 Python runtime，而不是原生執行。這跟「完全相容」是兩回事。</p>
-<h2 id="語法的真實樣子"><a href="#語法的真實樣子" class="headerlink" title="語法的真實樣子"></a>語法的真實樣子</h2><p>最直接的證據就在語法。Python 定義函式用 <code>def</code>、型別標註可有可無：</p>
+<h2 id="語法的真實樣子">語法的真實樣子</h2>
+<p>最直接的證據就在語法。Python 定義函式用 <code>def</code>、型別標註可有可無：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Python</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">x, y</span>):</span><br><span class="line">    <span class="keyword">return</span> x + y</span><br></pre></td></tr></table></figure>
-
 <p>Mojo 的高效能函式用 <code>fn</code>，而且強制型別標註：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># Mojo：fn 強制型別，這本身就說明它不是「語法完全相同」</span><br><span class="line">fn add(x: Int, y: Int) -&gt; Int:</span><br><span class="line">    return x + y</span><br></pre></td></tr></table></figure>
-
 <p>變數宣告也不一樣。Mojo 早期有 <code>let</code>（不可變）和 <code>var</code>（可變）兩種，但 <code>let</code> 在 2024 年初就被移除了——照著舊教學寫 <code>let</code>，在當前版本根本編譯不過，只剩 <code>var</code>。光這幾點，就知道「無痛把 Python 程式搬過來」是不存在的。</p>
-<h2 id="平行運算的坑"><a href="#平行運算的坑" class="headerlink" title="平行運算的坑"></a>平行運算的坑</h2><p>效能來自你願意進到這些底層控制——而一旦開始用平行化壓榨多核心，就會遇到傳統系統程式設計的老問題。</p>
+<h2 id="平行運算的坑">平行運算的坑</h2>
+<p>效能來自你願意進到這些底層控制——而一旦開始用平行化壓榨多核心，就會遇到傳統系統程式設計的老問題。</p>
 <p>Mojo 提供平行化機制把迴圈切塊丟到多核心跑，但如果你在平行迴圈裡直接對同一個變數累加，會踩到 race condition——多個執行緒同時寫同一塊記憶體，結果不可預期。</p>
 <p>正確做法是每個執行緒先算自己那塊的部分和、寫進各自的位置，全部跑完再序列地加總起來。共享寫入這件事，平行運算裡永遠要小心。</p>
-<h2 id="適合誰，不適合誰"><a href="#適合誰，不適合誰" class="headerlink" title="適合誰，不適合誰"></a>適合誰，不適合誰</h2><p>簡單給個判斷：</p>
+<h2 id="適合誰，不適合誰">適合誰，不適合誰</h2>
+<p>簡單給個判斷：</p>
 <ul>
 <li>適合：數值密集運算、AI kernel、想自己碰 SIMD 和平行化壓效能的人。</li>
 <li>不適合：期待把現成的完整 Python 專案直接搬過來跑、或重度依賴動態特性和大量第三方套件的人。</li>
 </ul>
-<h2 id="收尾"><a href="#收尾" class="headerlink" title="收尾"></a>收尾</h2><p>Mojo 是個有意思的語言，Lattner 的履歷也讓它值得認真看待。但截至 2024 年它還很早期——標準函式庫在長、語法還在變（<code>let</code> 被拿掉就是例子）、生態也還薄。</p>
+<h2 id="收尾">收尾</h2>
+<p>Mojo 是個有意思的語言，Lattner 的履歷也讓它值得認真看待。但截至 2024 年它還很早期——標準函式庫在長、語法還在變（<code>let</code> 被拿掉就是例子）、生態也還薄。</p>
 <p>把前提補回來看，Mojo 比較像一個面向高效能 Python 使用者的新語言，而不是 Python 的加速開關。可以追蹤、可以玩，但別被「快幾萬倍」「完全相容 Python」這種行銷句沖昏頭——它們都有前提，補回去你才知道它現在真正能做什麼。</p>
 
       </div>
@@ -213,18 +218,18 @@
       </li>
     
       <li>
-        <a href="/posts/2a83fb82/">
-          <img src="/images/posts/legacy-2a83fb82-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
-          <span class="related-title">圖解 C# yield - 5分鐘讓你輕鬆掌握迭代器</span>
-          <span class="related-date">2024-12-19</span>
-        </a>
-      </li>
-    
-      <li>
         <a href="/posts/8df7e6a/">
           <img src="/images/posts/legacy-8df7e6a-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
           <span class="related-title">使用 Python 和 FFmpeg 打造簡易影片轉換器</span>
           <span class="related-date">2024-09-26</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/ce7143a6/">
+          <img src="/images/posts/legacy-ce7143a6-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">深入解析:使用Python構建全面的市場風險監測工具</span>
+          <span class="related-date">2024-08-06</span>
         </a>
       </li>
     
@@ -237,15 +242,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

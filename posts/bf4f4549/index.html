@@ -117,19 +117,26 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="當你的網站顯示-401-3-錯誤"><a href="#當你的網站顯示-401-3-錯誤" class="headerlink" title="當你的網站顯示 401.3 錯誤"></a>當你的網站顯示 401.3 錯誤</h2><p>IIS 網站部署後出現：</p>
+        <h2 id="當你的網站顯示-401-3-錯誤">當你的網站顯示 401.3 錯誤</h2>
+<p>IIS 網站部署後出現：</p>
 <blockquote>
-<p>HTTP 錯誤 401.3 - Unauthorized<br>因為網頁伺服器上此資源的存取控制清單 (ACL) 設定或加密設定的緣故，您沒有檢視此目錄或網頁的權限。</p>
+<p>HTTP 錯誤 401.3 - Unauthorized<br>
+因為網頁伺服器上此資源的存取控制清單 (ACL) 設定或加密設定的緣故，您沒有檢視此目錄或網頁的權限。</p>
 </blockquote>
-<h2 id="HTTP-401-3-是什麼"><a href="#HTTP-401-3-是什麼" class="headerlink" title="HTTP 401.3 是什麼"></a>HTTP 401.3 是什麼</h2><p>HTTP 401.3 是 IIS 特有的狀態碼，表示「由於 ACL 限制，請求被拒絕」。與一般的 401（認證失敗）不同，401.3 明確指出這是<strong>檔案系統權限問題</strong>，不是網站認證設定的問題。</p>
+<h2 id="HTTP-401-3-是什麼">HTTP 401.3 是什麼</h2>
+<p>HTTP 401.3 是 IIS 特有的狀態碼，表示「由於 ACL 限制，請求被拒絕」。與一般的 401（認證失敗）不同，401.3 明確指出這是<strong>檔案系統權限問題</strong>，不是網站認證設定的問題。</p>
 <p>IIS 想提供你請求的資源，但它持有的身分沒有足夠的 NTFS 權限來讀取那些檔案。</p>
-<h2 id="IUSR-是什麼"><a href="#IUSR-是什麼" class="headerlink" title="IUSR 是什麼"></a>IUSR 是什麼</h2><p>IUSR（Internet User）是 IIS 的預設匿名存取帳戶。每當訪客在未登入的狀態下存取網站，IIS 就以 IUSR 的身分去讀取網站資源。如果網站資料夾的 NTFS ACL 沒有賦予 IUSR 讀取權限，就會觸發 401.3。</p>
-<h2 id="授予-IUSR-適當的權限"><a href="#授予-IUSR-適當的權限" class="headerlink" title="授予 IUSR 適當的權限"></a>授予 IUSR 適當的權限</h2><h3 id="1-找到你的網站根目錄"><a href="#1-找到你的網站根目錄" class="headerlink" title="1. 找到你的網站根目錄"></a>1. 找到你的網站根目錄</h3><p>首先，找到你的網站檔案所在的實體路徑。通常是在：</p>
+<h2 id="IUSR-是什麼">IUSR 是什麼</h2>
+<p>IUSR（Internet User）是 IIS 的預設匿名存取帳戶。每當訪客在未登入的狀態下存取網站，IIS 就以 IUSR 的身分去讀取網站資源。如果網站資料夾的 NTFS ACL 沒有賦予 IUSR 讀取權限，就會觸發 401.3。</p>
+<h2 id="授予-IUSR-適當的權限">授予 IUSR 適當的權限</h2>
+<h3 id="1-找到你的網站根目錄">1. 找到你的網站根目錄</h3>
+<p>首先，找到你的網站檔案所在的實體路徑。通常是在：</p>
 <ul>
 <li><code>C:\inetpub\wwwroot\你的網站名稱</code></li>
 <li>或是你自訂的其他位置</li>
 </ul>
-<h3 id="2-設定資料夾權限"><a href="#2-設定資料夾權限" class="headerlink" title="2. 設定資料夾權限"></a>2. 設定資料夾權限</h3><ol>
+<h3 id="2-設定資料夾權限">2. 設定資料夾權限</h3>
+<ol>
 <li>在檔案總管中，右鍵點選該資料夾</li>
 <li>選擇「內容」</li>
 <li>切換到「安全性」頁籤</li>
@@ -139,39 +146,49 @@
 <li>點選「檢查名稱」，系統會自動找到完整的帳戶名稱</li>
 <li>點選「確定」</li>
 </ol>
-<h3 id="3-設定適當的權限級別"><a href="#3-設定適當的權限級別" class="headerlink" title="3. 設定適當的權限級別"></a>3. 設定適當的權限級別</h3><p>對於 IUSR 帳戶，通常建議設定以下權限：</p>
+<h3 id="3-設定適當的權限級別">3. 設定適當的權限級別</h3>
+<p>對於 IUSR 帳戶，通常建議設定以下權限：</p>
 <ul>
 <li>✅ 讀取與執行</li>
 <li>✅ 列出資料夾內容</li>
 <li>✅ 讀取</li>
 </ul>
 <p>對於大多數靜態網站而言，這些權限已經足夠。如果你的網站需要上傳功能或寫入操作，你可能還需要加上「寫入」權限，但僅限於需要的特定資料夾，避免賦予過多不必要的權限。</p>
-<h3 id="4-應用變更"><a href="#4-應用變更" class="headerlink" title="4. 應用變更"></a>4. 應用變更</h3><p>點選「確定」數次，確保所有變更都已被應用。</p>
-<h3 id="5-驗證結果"><a href="#5-驗證結果" class="headerlink" title="5. 驗證結果"></a>5. 驗證結果</h3><p>NTFS/ACL 權限變更是即時生效的——Windows 核心在每次開啟檔案時都會重新讀取 ACL，不需要重啟 IIS。直接重新整理瀏覽器即可確認錯誤是否消失。</p>
+<h3 id="4-應用變更">4. 應用變更</h3>
+<p>點選「確定」數次，確保所有變更都已被應用。</p>
+<h3 id="5-驗證結果">5. 驗證結果</h3>
+<p>NTFS/ACL 權限變更是即時生效的——Windows 核心在每次開啟檔案時都會重新讀取 ACL，不需要重啟 IIS。直接重新整理瀏覽器即可確認錯誤是否消失。</p>
 <blockquote>
 <p><strong>注意</strong>：若你同時調整了應用程式集區身分或 IIS 設定檔，才需要執行 <code>iisreset</code> 讓 IIS 重新載入組態。只改 NTFS 權限不需要這個步驟，在正式環境更應避免非必要的全服務重啟。</p>
 </blockquote>
 <p>完成以上步驟後，再次訪問你的網站，401.3 錯誤應該已經消失了。</p>
-<h2 id="IUSR-vs-IIS-IUSRS"><a href="#IUSR-vs-IIS-IUSRS" class="headerlink" title="IUSR vs. IIS_IUSRS"></a>IUSR vs. IIS_IUSRS</h2><h3 id="IIS-IUSRS-是什麼"><a href="#IIS-IUSRS-是什麼" class="headerlink" title="IIS_IUSRS 是什麼"></a>IIS_IUSRS 是什麼</h3><p><strong>IIS_IUSRS</strong> 是 Windows 安全群組，代表所有 IIS Worker Process 的執行身分。IIS 7 之後改為動態注入：Worker Process 啟動時，WAS（Windows Process Activation Service）會自動把 IIS_IUSRS 的 SID 加進處理程序的存取權杖，應用程式集區帳戶不需要被靜態加入群組。它取代了 IIS 6 時代的 IIS_WPG 群組。</p>
+<h2 id="IUSR-vs-IIS-IUSRS">IUSR vs. IIS_IUSRS</h2>
+<h3 id="IIS-IUSRS-是什麼">IIS_IUSRS 是什麼</h3>
+<p><strong>IIS_IUSRS</strong> 是 Windows 安全群組，代表所有 IIS Worker Process 的執行身分。IIS 7 之後改為動態注入：Worker Process 啟動時，WAS（Windows Process Activation Service）會自動把 IIS_IUSRS 的 SID 加進處理程序的存取權杖，應用程式集區帳戶不需要被靜態加入群組。它取代了 IIS 6 時代的 IIS_WPG 群組。</p>
 <p>兩者的定位差異：</p>
 <ul>
 <li><strong>IUSR</strong>：匿名訪客的執行身分，只在啟用匿名驗證時用到</li>
 <li><strong>IIS_IUSRS</strong>：涵蓋所有應用程式集區身分的群組，授權對象是「IIS Worker Process 本身」</li>
 </ul>
-<h3 id="何時只需要-IUSR"><a href="#何時只需要-IUSR" class="headerlink" title="何時只需要 IUSR"></a>何時只需要 IUSR</h3><ul>
+<h3 id="何時只需要-IUSR">何時只需要 IUSR</h3>
+<ul>
 <li>網站只使用匿名驗證</li>
 <li>應用程式集區使用預設身分（ApplicationPoolIdentity）</li>
 <li>遵循最小權限原則</li>
 </ul>
 <p>大多數靜態網站或簡單動態網站都屬於這種情況。</p>
-<h3 id="何時需要授權-IIS-IUSRS"><a href="#何時需要授權-IIS-IUSRS" class="headerlink" title="何時需要授權 IIS_IUSRS"></a>何時需要授權 IIS_IUSRS</h3><ul>
+<h3 id="何時需要授權-IIS-IUSRS">何時需要授權 IIS_IUSRS</h3>
+<ul>
 <li>使用自訂應用程式集區身分，且希望以群組統一授權而非逐帳戶設定</li>
 <li>網站結構複雜，有多個子應用程式分屬不同集區</li>
 <li>需要「一次設定涵蓋所有集區身分」的管理便利性</li>
 </ul>
 <p>注意：Windows 驗證或表單驗證走的是 Kerberos/NTLM 或 FormsAuthentication，和 IUSR/IIS_IUSRS 無關——授權方式本身不影響這兩個帳戶是否需要。</p>
-<h3 id="建議"><a href="#建議" class="headerlink" title="建議"></a>建議</h3><p>先從最小權限開始（只加 IUSR）。需要涵蓋 Worker Process 本身的存取時再考慮 IIS_IUSRS。</p>
-<h2 id="進階：其他需要確認的設定"><a href="#進階：其他需要確認的設定" class="headerlink" title="進階：其他需要確認的設定"></a>進階：其他需要確認的設定</h2><h3 id="1-檢查應用程式集區身分"><a href="#1-檢查應用程式集區身分" class="headerlink" title="1. 檢查應用程式集區身分"></a>1. 檢查應用程式集區身分</h3><p>應用程式集區（Application Pool）的執行身分也會影響檔案存取權限：</p>
+<h3 id="建議">建議</h3>
+<p>先從最小權限開始（只加 IUSR）。需要涵蓋 Worker Process 本身的存取時再考慮 IIS_IUSRS。</p>
+<h2 id="進階：其他需要確認的設定">進階：其他需要確認的設定</h2>
+<h3 id="1-檢查應用程式集區身分">1. 檢查應用程式集區身分</h3>
+<p>應用程式集區（Application Pool）的執行身分也會影響檔案存取權限：</p>
 <ol>
 <li>開啟 IIS 管理員</li>
 <li>在左側樹狀目錄中找到「應用程式集區」</li>
@@ -180,21 +197,27 @@
 <li>檢查「身分」設定</li>
 </ol>
 <p>如果你使用自訂身分，確保該帳戶也具有網站資料夾的適當權限。</p>
-<h3 id="2-特殊資料夾的權限設定"><a href="#2-特殊資料夾的權限設定" class="headerlink" title="2. 特殊資料夾的權限設定"></a>2. 特殊資料夾的權限設定</h3><p>除了網站根目錄外，有些特殊資料夾需要額外的權限：</p>
+<h3 id="2-特殊資料夾的權限設定">2. 特殊資料夾的權限設定</h3>
+<p>除了網站根目錄外，有些特殊資料夾需要額外的權限：</p>
 <ul>
 <li><strong>暫存檔資料夾</strong>：需要寫入權限</li>
 <li><strong>上傳資料夾</strong>：需要寫入權限</li>
 <li><strong>日誌資料夾</strong>：需要修改（Modify）權限</li>
 <li><strong>App_Data 等應用程式資料夾</strong>：需要修改（Modify）權限，讓應用程式可以讀寫刪；不需要完全控制（Full Control）——後者還包含修改 ACL 的能力，遵循最小權限原則應避免</li>
 </ul>
-<h3 id="3-使用命令列快速設定權限"><a href="#3-使用命令列快速設定權限" class="headerlink" title="3. 使用命令列快速設定權限"></a>3. 使用命令列快速設定權限</h3><p>如果你管理多個站點或需要頻繁設定權限，使用命令列可以提高效率：</p>
+<h3 id="3-使用命令列快速設定權限">3. 使用命令列快速設定權限</h3>
+<p>如果你管理多個站點或需要頻繁設定權限，使用命令列可以提高效率：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">icacls &quot;C:\inetpub\wwwroot\你的網站路徑&quot; /grant IUSR:(OI)(CI)RX /T</span><br></pre></td></tr></table></figure>
-
 <p><code>(OI)(CI)</code> 讓權限套用到子資料夾與檔案，<code>RX</code> 是「讀取與執行」，<code>/T</code> 遞迴套用。帳戶名稱不加引號；若路徑包含空格，路徑本身用雙引號包即可。</p>
-<h2 id="安全性提醒"><a href="#安全性提醒" class="headerlink" title="安全性提醒"></a>安全性提醒</h2><h3 id="最小權限原則"><a href="#最小權限原則" class="headerlink" title="最小權限原則"></a>最小權限原則</h3><p>只賦予必要的最低權限。網站只需要讀取就不要加寫入；上傳資料夾只給寫入，不給執行。</p>
-<h3 id="定期審查權限"><a href="#定期審查權限" class="headerlink" title="定期審查權限"></a>定期審查權限</h3><p>定期檢查網站資料夾的 ACL，確認沒有遺留不必要的授權（例如 Everyone 或 Users 群組）。</p>
-<h3 id="考慮停用匿名驗證"><a href="#考慮停用匿名驗證" class="headerlink" title="考慮停用匿名驗證"></a>考慮停用匿名驗證</h3><p>如果網站包含敏感資訊，可以停用匿名驗證，改用 Windows 驗證或表單驗證——這樣 IUSR 就完全不在攻擊面上了。</p>
-<h2 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h2><p>HTTP 401.3 是 ACL 問題，不是認證問題。排查順序：確認網站資料夾有 IUSR 的讀取權限 → 確認應用程式集區身分也有對應授權 → 檢查是否有 Explicit Deny 或繼承封鎖。大多數情況下加了 IUSR 讀取與執行即可解決。</p>
+<h2 id="安全性提醒">安全性提醒</h2>
+<h3 id="最小權限原則">最小權限原則</h3>
+<p>只賦予必要的最低權限。網站只需要讀取就不要加寫入；上傳資料夾只給寫入，不給執行。</p>
+<h3 id="定期審查權限">定期審查權限</h3>
+<p>定期檢查網站資料夾的 ACL，確認沒有遺留不必要的授權（例如 Everyone 或 Users 群組）。</p>
+<h3 id="考慮停用匿名驗證">考慮停用匿名驗證</h3>
+<p>如果網站包含敏感資訊，可以停用匿名驗證，改用 Windows 驗證或表單驗證——這樣 IUSR 就完全不在攻擊面上了。</p>
+<h2 id="總結">總結</h2>
+<p>HTTP 401.3 是 ACL 問題，不是認證問題。排查順序：確認網站資料夾有 IUSR 的讀取權限 → 確認應用程式集區身分也有對應授權 → 檢查是否有 Explicit Deny 或繼承封鎖。大多數情況下加了 IUSR 讀取與執行即可解決。</p>
 
       </div>
       
@@ -242,15 +265,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

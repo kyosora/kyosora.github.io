@@ -124,24 +124,29 @@
       <div class="prose" id="article">
         <p>資安弱掃跑完，報告上一條紅字：偵測到過時的 SSL/TLS 協定。很多人看到就把 TLS 1.0、1.1、1.2 全關掉，只留 TLS 1.3——想說版本越新越安全。</p>
 <p>問題就出在這：弱掃從來沒叫你關 TLS 1.2。把 1.2 一起關掉、只留 1.3，在 Windows 伺服器環境幾乎一定出事——網站連不上、SQL Server 連不上、舊的內部系統全掛。下面拆解為什麼，以及正確的做法。</p>
-<h2 id="先搞清楚：弱掃到底要你關什麼"><a href="#先搞清楚：弱掃到底要你關什麼" class="headerlink" title="先搞清楚：弱掃到底要你關什麼"></a>先搞清楚：弱掃到底要你關什麼</h2><p>弱掃報告寫「過時的 SSL/TLS 協定」，指的幾乎都是 SSL 2.0/3.0 和 TLS 1.0、1.1。這幾個有已知的結構性弱點（POODLE、BEAST 那一掛），該關。</p>
+<h2 id="先搞清楚：弱掃到底要你關什麼">先搞清楚：弱掃到底要你關什麼</h2>
+<p>弱掃報告寫「過時的 SSL/TLS 協定」，指的幾乎都是 SSL 2.0/3.0 和 TLS 1.0、1.1。這幾個有已知的結構性弱點（POODLE、BEAST 那一掛），該關。</p>
 <p>TLS 1.2 不在這個清單裡。它到現在仍然安全、主流、被廣泛支援。常見的合規型弱掃通常不會要你停用 TLS 1.2。</p>
 <p>合規也不能只看版本號。PCI DSS 的核心措辭是使用「強式密碼學」，PCI SSC 已明確把 SSL／early TLS 排除在外，並長期建議遷移到 TLS 1.2 以上；它沒有普遍要求所有環境只能使用 TLS 1.3。實際是否合規仍要一起看 cipher suite、系統用途與適用版本，不能把一句「1.2 或更高」當成完整稽核規則。</p>
-<h2 id="為什麼「只留-1-3」會弄掛系統"><a href="#為什麼「只留-1-3」會弄掛系統" class="headerlink" title="為什麼「只留 1.3」會弄掛系統"></a>為什麼「只留 1.3」會弄掛系統</h2><p>撇開合規不談，純粹從技術可行性看，在 Windows 伺服器環境只留 TLS 1.3 也行不通。一層一層看。</p>
-<h3 id="作業系統這層"><a href="#作業系統這層" class="headerlink" title="作業系統這層"></a>作業系統這層</h3><p>TLS 1.3 在 Windows 的 Schannel 裡，只有 Windows 11 和 Windows Server 2022 之後才原生支援。Windows Server 2019、2016 連這個協定都沒有。</p>
+<h2 id="為什麼「只留-1-3」會弄掛系統">為什麼「只留 1.3」會弄掛系統</h2>
+<p>撇開合規不談，純粹從技術可行性看，在 Windows 伺服器環境只留 TLS 1.3 也行不通。一層一層看。</p>
+<h3 id="作業系統這層">作業系統這層</h3>
+<p>TLS 1.3 在 Windows 的 Schannel 裡，只有 Windows 11 和 Windows Server 2022 之後才原生支援。Windows Server 2019、2016 連這個協定都沒有。</p>
 <p>所以如果你的機器是 Server 2019，在登錄檔裡「啟用 TLS 1.3」是沒有意義的——系統根本不會拿它協商。你以為開了，其實沒開；接著又把 1.2 關了，這台機器一個現代協定都不剩。</p>
-<h3 id="資料庫這層"><a href="#資料庫這層" class="headerlink" title="資料庫這層"></a>資料庫這層</h3><p>SQL Server 更要小心。TLS 1.3 的基本條件包含 SQL Server 2022 CU1 以上、Windows Server 2022、TCP/IP、有效的伺服器憑證，以及支援 TDS 8.0 的驅動程式；用戶端採 <code>Encrypt=Strict</code> 才會走 TDS 8.0。少看驅動程式或憑證，伺服器版本升上去仍可能連不上。SQL Server 2019 與更早版本不支援 TLS 1.3。</p>
+<h3 id="資料庫這層">資料庫這層</h3>
+<p>SQL Server 更要小心。TLS 1.3 的基本條件包含 SQL Server 2022 CU1 以上、Windows Server 2022、TCP/IP、有效的伺服器憑證，以及支援 TDS 8.0 的驅動程式；用戶端採 <code>Encrypt=Strict</code> 才會走 TDS 8.0。少看驅動程式或憑證，伺服器版本升上去仍可能連不上。SQL Server 2019 與更早版本不支援 TLS 1.3。</p>
 <p>更關鍵的一點：就算 SQL Server 2022 已經支援 TLS 1.3，微軟文件仍明確寫著：SQL Server 的衛星服務（satellite services）啟動時需要 TLS 1.2，不要在這台機器上停用 TLS 1.2。文件沒列出是哪些服務，所以別去賭哪個服務沒差。在有 SQL Server 的環境裡，TLS 1.2 基本上動不得。</p>
-<h3 id="應用程式執行環境這層"><a href="#應用程式執行環境這層" class="headerlink" title="應用程式執行環境這層"></a>應用程式執行環境這層</h3><p>往上到應用層，同樣卡版本：</p>
+<h3 id="應用程式執行環境這層">應用程式執行環境這層</h3>
+<p>往上到應用層，同樣卡版本：</p>
 <ul>
 <li>Java 要 JDK 11 以上才預設支援 TLS 1.3。Java 8 從 8u261 起才補進 TLS 1.3，但當時<strong>用戶端預設關閉</strong>，要用 <code>-Djdk.tls.client.protocols=&quot;TLSv1.3,TLSv1.2&quot;</code>，或在程式裡指定 TLSv1.3 的 <code>SSLContext</code>／<code>SSLParameters</code> 才會開，之後的更新才改成預設開啟。Java 8 程式要連只開 1.3 的伺服器，先確認實際的 update 版本和啟動參數。</li>
 <li>.NET Framework 依賴 Windows Schannel，不能只看 Framework 版本。微軟目前的相容表顯示：Windows 10 上最高仍是 TLS 1.2；Windows 11 上，目標 .NET Framework 4.6.2 以上可由作業系統協商 TLS 1.3。應用程式若把 <code>SecurityProtocol</code> 寫死成舊版本，作業系統支援也救不了。</li>
 </ul>
 <p>只要環境裡還有一個沒跨過這條線的元件，「只留 1.3」就會在那裡斷掉。</p>
-<h2 id="正確的做法：淘汰舊的，守住-1-2"><a href="#正確的做法：淘汰舊的，守住-1-2" class="headerlink" title="正確的做法：淘汰舊的，守住 1.2"></a>正確的做法：淘汰舊的，守住 1.2</h2><p>目標講清楚：要關的是 SSL 和 TLS 1.0、1.1；要保留的是 TLS 1.2；TLS 1.3 是有條件才加開，不是拿來取代 1.2。</p>
+<h2 id="正確的做法：淘汰舊的，守住-1-2">正確的做法：淘汰舊的，守住 1.2</h2>
+<p>目標講清楚：要關的是 SSL 和 TLS 1.0、1.1；要保留的是 TLS 1.2；TLS 1.3 是有條件才加開，不是拿來取代 1.2。</p>
 <p>先查目前的協定狀態（這步只看現狀、不改設定）：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 列出 Schannel 底下所有 TLS/SSL 協定的啟用狀態</span></span><br><span class="line">reg query <span class="string">&quot;HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols&quot;</span> /s</span><br></pre></td></tr></table></figure>
-
 <p>真正要停用 1.0/1.1 時，得在每個協定的 Server 和 Client 兩個子機碼都寫兩個 <code>DWORD</code> 值：<code>Enabled = 0</code>、<code>DisabledByDefault = 1</code>。手動改登錄檔很容易漏，型別建錯（建成字串）設定還會無效。我的建議是直接用 <a href="/posts/8a3be9f2/">IIS Crypto</a> 這類工具套用 best practice 範本，它會把協定和 cipher suite 一起處理好，比手刻登錄檔安全。</p>
 <p>這裡有個容易忽略的坑：關掉舊協定後，仍可能因為兩端沒有共同的 cipher suite 而握手失敗。你以為是 TLS 版本問題，其實是 cipher 沒交集。IIS Crypto 可以一起調整協定與 cipher，但套範本前仍要保留匯出檔並在測試環境驗證，別把「Best Practices」按鈕當成所有舊系統都適用的答案。</p>
 <p>執行順序我會這樣排：</p>
@@ -154,18 +159,20 @@
 <p>改完怎麼確認有沒有生效？對外網站可以用 <a target="_blank" rel="noopener" href="https://www.ssllabs.com/ssltest/">SSL Labs</a> 掃一遍看實際協商到哪個版本；內網服務用 <code>openssl s_client -connect 主機:443 -tls1_2</code> 指定協定測試，能握手成功就代表這個版本還通。</p>
 <p>反過來測舊協定有個陷阱：OpenSSL 3.x 常因為用戶端自己的安全等級或系統加密原則，不肯送出 TLS 1.0／1.1，在<strong>用戶端</strong>就失敗（例如 <code>no protocols available</code>），根本沒送到伺服器。這種「失敗」證明不了伺服器已經關掉 1.0。要先把用戶端的安全等級降下來再測：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl s_client -connect 主機:443 -tls1 -cipher <span class="string">&quot;DEFAULT:@SECLEVEL=0&quot;</span></span><br></pre></td></tr></table></figure>
-
 <p>就算確定錯誤是伺服器回的，也要分清楚：<code>protocol_version</code> 才直接代表版本被拒；<code>handshake_failure</code> 也可能只是 cipher 沒交集。有些發行版的系統加密原則連降等級都開不了，所以我會再用 <code>nmap --script ssl-enum-ciphers -p 443 主機</code> 交叉確認，它自己組 TLS 握手，一次列出伺服器接受的協定與 cipher。</p>
 <p>TLS 1.3 什麼時候加開？等 OS、資料庫、驅動程式與應用框架都跟上，再把 1.3 和 1.2 並存。握手測試要涵蓋網站、排程、備份、SSIS／SSAS 與舊用戶端，不能只用瀏覽器連首頁就宣布完成。</p>
-<h2 id="版本依據"><a href="#版本依據" class="headerlink" title="版本依據"></a>版本依據</h2><ul>
+<h2 id="版本依據">版本依據</h2>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/windows/win32/secauthn/protocols-in-tls-ssl--schannel-ssp-">Microsoft：Windows Schannel 的 TLS 支援版本</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.oracle.com/java/technologies/javase/8u261-relnotes.html">Oracle：JDK 8u261 版本說明（TLS 1.3 用戶端預設關閉）</a></li>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/sql/relational-databases/security/networking/tls-1-3">Microsoft：SQL Server 的 TLS 1.3 支援</a></li>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/dotnet/framework/network-programming/tls">Microsoft：.NET Framework TLS 最佳實務與版本表</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.pcisecuritystandards.org/pdfs/PCI_SSC_Migrating_from_SSL_and_Early_TLS_Resource_Guide.pdf">PCI SSC：Migrating from SSL and Early TLS</a></li>
 </ul>
-<h2 id="收尾"><a href="#收尾" class="headerlink" title="收尾"></a>收尾</h2><p>現階段在 Windows 伺服器環境，我會把目標定成淘汰 1.0／1.1、守住 1.2，再視整條連線鏈加開 1.3。SQL Server 官方目前仍要求保留 TLS 1.2 給衛星服務使用，因此「只留 1.3」甚至不該是通用終點。看到弱掃報告先確認它掃到哪個端點、哪個協定與哪組 cipher，再決定要關什麼。</p>
-<h2 id="相關文章"><a href="#相關文章" class="headerlink" title="相關文章"></a>相關文章</h2><p>協定版本真的把舊程式卡死的案例：<a href="/posts/be6334f9/">國土測繪中心 WMS 改成最低 TLS 1.2，舊 .NET 程式的底圖整片空白</a>。憑證信任也一樣，Windows 和 Java、Node 各用各的信任庫：<a href="/posts/5ba8c54d/">eMudhra 憑證外洩：Windows 擋了，Java、Node 照樣放行</a>。</p>
+<h2 id="收尾">收尾</h2>
+<p>現階段在 Windows 伺服器環境，我會把目標定成淘汰 1.0／1.1、守住 1.2，再視整條連線鏈加開 1.3。SQL Server 官方目前仍要求保留 TLS 1.2 給衛星服務使用，因此「只留 1.3」甚至不該是通用終點。看到弱掃報告先確認它掃到哪個端點、哪個協定與哪組 cipher，再決定要關什麼。</p>
+<h2 id="相關文章">相關文章</h2>
+<p>協定版本真的把舊程式卡死的案例：<a href="/posts/be6334f9/">國土測繪中心 WMS 改成最低 TLS 1.2，舊 .NET 程式的底圖整片空白</a>。憑證信任也一樣，Windows 和 Java、Node 各用各的信任庫：<a href="/posts/5ba8c54d/">eMudhra 憑證外洩：Windows 擋了，Java、Node 照樣放行</a>。</p>
 
       </div>
       
@@ -256,15 +263,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
     
     </ul>
   </section>

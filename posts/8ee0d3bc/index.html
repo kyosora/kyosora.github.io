@@ -118,32 +118,34 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="為什麼要換"><a href="#為什麼要換" class="headerlink" title="為什麼要換"></a>為什麼要換</h2><p>.NET Core 之後，Microsoft 把 System.Text.Json 直接內建進框架，不用另外裝 NuGet 套件，少一個外部相依。效能上，官方 benchmark 顯示序列化速度比 Newtonsoft.Json 快約 2 倍，記憶體分配也更省。對大多數 Web API 專案來說，日常夠用。</p>
+        <h2 id="為什麼要換">為什麼要換</h2>
+<p>.NET Core 之後，Microsoft 把 System.Text.Json 直接內建進框架，不用另外裝 NuGet 套件，少一個外部相依。效能上，官方 benchmark 顯示序列化速度比 Newtonsoft.Json 快約 2 倍，記憶體分配也更省。對大多數 Web API 專案來說，日常夠用。</p>
 <p>真正讓人猶豫的是行為差異。兩套函式庫有幾個預設值不一樣，遷移時踩到的坑大多出在這裡。我前後把幾個中型 API 專案換過來，下面這幾個點是實際撞到、查到根因才搞定的。</p>
 <hr>
-<h2 id="坑一：JSON-輸出變成小駝峰"><a href="#坑一：JSON-輸出變成小駝峰" class="headerlink" title="坑一：JSON 輸出變成小駝峰"></a>坑一：JSON 輸出變成小駝峰</h2><h3 id="問題現象"><a href="#問題現象" class="headerlink" title="問題現象"></a>問題現象</h3><p>把序列化從 Newtonsoft.Json 換成 System.Text.Json 之後，原本 <code>&quot;UserName&quot;</code> 這類 Pascal Case 輸出，跑到 ASP.NET Core Web API 回傳時突然變成 <code>&quot;userName&quot;</code>，前端開始炸。</p>
-<h3 id="真正的原因"><a href="#真正的原因" class="headerlink" title="真正的原因"></a>真正的原因</h3><p>這個問題有個很容易踩的誤區：System.Text.Json 函式庫本身的預設 <code>PropertyNamingPolicy</code> 是 <code>null</code>，也就是保持原始屬性名稱不變。你單獨呼叫 <code>JsonSerializer.Serialize()</code> 不帶 options，輸出會是 <code>&quot;UserName&quot;</code>，不會變小駝峰。</p>
-<p>問題出在 ASP.NET Core Web API 的 pipeline。<code>AddControllers()</code> 內部預設會把 <code>PropertyNamingPolicy</code> 設成 <code>JsonNamingPolicy.CamelCase</code>，所以從 Controller 回傳的 JSON 才會變 camelCase。踩坑的點是 ASP.NET Core 的預設，不是 System.Text.Json 本身。我一開始也以為是函式庫的鍋，寫了一段純序列化的測試才確認原始屬性名根本沒被動過。</p>
-<h3 id="解法"><a href="#解法" class="headerlink" title="解法"></a>解法</h3><p>想讓 API 回傳 PascalCase（和 Newtonsoft.Json 舊行為一致），在 <code>Program.cs</code> 調整：</p>
+<h2 id="坑一：JSON-輸出變成小駝峰">坑一：JSON 輸出變成小駝峰</h2>
+<h3 id="問題現象">問題現象</h3>
+<p>把序列化從 Newtonsoft.Json 換成 System.Text.Json 之後，原本 <code>&quot;UserName&quot;</code> 這類 Pascal Case 輸出，跑到 <a target="_blank" rel="noopener" href="http://ASP.NET">ASP.NET</a> Core Web API 回傳時突然變成 <code>&quot;userName&quot;</code>，前端開始炸。</p>
+<h3 id="真正的原因">真正的原因</h3>
+<p>這個問題有個很容易踩的誤區：System.Text.Json 函式庫本身的預設 <code>PropertyNamingPolicy</code> 是 <code>null</code>，也就是保持原始屬性名稱不變。你單獨呼叫 <code>JsonSerializer.Serialize()</code> 不帶 options，輸出會是 <code>&quot;UserName&quot;</code>，不會變小駝峰。</p>
+<p>問題出在 <a target="_blank" rel="noopener" href="http://ASP.NET">ASP.NET</a> Core Web API 的 pipeline。<code>AddControllers()</code> 內部預設會把 <code>PropertyNamingPolicy</code> 設成 <code>JsonNamingPolicy.CamelCase</code>，所以從 Controller 回傳的 JSON 才會變 camelCase。踩坑的點是 <a target="_blank" rel="noopener" href="http://ASP.NET">ASP.NET</a> Core 的預設，不是 System.Text.Json 本身。我一開始也以為是函式庫的鍋，寫了一段純序列化的測試才確認原始屬性名根本沒被動過。</p>
+<h3 id="解法">解法</h3>
+<p>想讓 API 回傳 PascalCase（和 Newtonsoft.Json 舊行為一致），在 <code>Program.cs</code> 調整：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">builder.Services.AddControllers()</span><br><span class="line">    .AddJsonOptions(options =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        options.JsonSerializerOptions.PropertyNamingPolicy = <span class="literal">null</span>; <span class="comment">// 保持原始屬性名稱</span></span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
-
 <p>如果只是在非 Web 情境做序列化，直接帶 options 就好：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Text.Json;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> options = <span class="keyword">new</span> JsonSerializerOptions</span><br><span class="line">&#123;</span><br><span class="line">    PropertyNamingPolicy = <span class="literal">null</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">string</span> json = JsonSerializer.Serialize(myObject, options);</span><br></pre></td></tr></table></figure>
-
 <hr>
-<h2 id="坑二：日期時間格式"><a href="#坑二：日期時間格式" class="headerlink" title="坑二：日期時間格式"></a>坑二：日期時間格式</h2><p>System.Text.Json 預設按 ISO 8601-1:2019 extended profile 輸出，例如 <code>&quot;2024-06-27T18:43:20+08:00&quot;</code>。Newtonsoft.Json 預設也是 ISO 8601，例如 <code>&quot;2024-06-27T18:43:20+08:00&quot;</code>，這部分通常沒差。</p>
+<h2 id="坑二：日期時間格式">坑二：日期時間格式</h2>
+<p>System.Text.Json 預設按 ISO 8601-1:2019 extended profile 輸出，例如 <code>&quot;2024-06-27T18:43:20+08:00&quot;</code>。Newtonsoft.Json 預設也是 ISO 8601，例如 <code>&quot;2024-06-27T18:43:20+08:00&quot;</code>，這部分通常沒差。</p>
 <p>差別在自訂格式。Newtonsoft.Json 允許用 <code>DateFormatString</code> 直接指定格式字串（如 <code>&quot;yyyy-MM-dd&quot;</code>），System.Text.Json 沒有對應的設定選項，要寫自訂 <code>JsonConverter</code>。</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Globalization;</span><br><span class="line"><span class="keyword">using</span> System.Text.Json;</span><br><span class="line"><span class="keyword">using</span> System.Text.Json.Serialization;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">DateOnlyJsonConverter</span> : <span class="title">JsonConverter</span>&lt;<span class="title">DateTime</span>&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">string</span> Format = <span class="string">&quot;yyyy-MM-dd&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> DateTime <span class="title">Read</span>(<span class="params"><span class="keyword">ref</span> Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> DateTime.ParseExact(reader.GetString()!, Format, CultureInfo.InvariantCulture);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">Write</span>(<span class="params">Utf8JsonWriter writer, DateTime <span class="keyword">value</span>, JsonSerializerOptions options</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        writer.WriteStringValue(<span class="keyword">value</span>.ToString(Format, CultureInfo.InvariantCulture));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>註冊方式：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> options = <span class="keyword">new</span> JsonSerializerOptions();</span><br><span class="line">options.Converters.Add(<span class="keyword">new</span> DateOnlyJsonConverter());</span><br></pre></td></tr></table></figure>
-
-<p>或在 ASP.NET Core：</p>
+<p>或在 <a target="_blank" rel="noopener" href="http://ASP.NET">ASP.NET</a> Core：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">builder.Services.AddControllers()</span><br><span class="line">    .AddJsonOptions(opts =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        opts.JsonSerializerOptions.Converters.Add(<span class="keyword">new</span> DateOnlyJsonConverter());</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
-
 <p>順帶一提，.NET 6 之後有了 <code>DateOnly</code> / <code>TimeOnly</code> 型別，如果你的場景就是「只要日期不要時間」，直接用 <code>DateOnly</code> 比硬寫 converter 處理 <code>DateTime</code> 乾淨很多。</p>
 <hr>
-<h2 id="坑三：null-值處理"><a href="#坑三：null-值處理" class="headerlink" title="坑三：null 值處理"></a>坑三：null 值處理</h2><p>序列化這一邊，兩套函式庫的預設結果一樣：null 屬性都會被寫進 JSON。底層機制不同，但輸出看起來相同。</p>
+<h2 id="坑三：null-值處理">坑三：null 值處理</h2>
+<p>序列化這一邊，兩套函式庫的預設結果一樣：null 屬性都會被寫進 JSON。底層機制不同，但輸出看起來相同。</p>
 <p>反序列化才是會咬人的地方。先看序列化的對照：</p>
 <table>
 <thead>
@@ -153,7 +155,8 @@
 <th>System.Text.Json</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>預設</td>
 <td><code>NullValueHandling.Include</code>（寫入 null）</td>
 <td><code>DefaultIgnoreCondition = Never</code>（寫入 null）</td>
@@ -163,42 +166,42 @@
 <td><code>NullValueHandling.Ignore</code></td>
 <td><code>DefaultIgnoreCondition = WhenWritingNull</code></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>反序列化遇到 JSON 裡的 <code>null</code> 要塞進非可空的「實值型別」（value type，如 <code>int</code>、<code>DateTime</code>），兩套的行為要分情況講，這是遷移時最容易誤判的一點：</p>
 <ul>
-<li>Newtonsoft.Json 預設（<code>NullValueHandling.Include</code>）也會丟例外，訊息類似 <code>Error converting value &#123;null&#125; to type &#39;System.Int32&#39;</code>。它「不丟例外」只發生在一個特定組合：<code>NullValueHandling</code> 設成 <code>Ignore</code>，且 JSON 裡是 null 對上非可空實值型別，此時 Newtonsoft 會直接略過、保留該屬性原本的值。</li>
+<li>Newtonsoft.Json 預設（<code>NullValueHandling.Include</code>）也會丟例外，訊息類似 <code>Error converting value &#123;null&#125; to type 'System.Int32'</code>。它「不丟例外」只發生在一個特定組合：<code>NullValueHandling</code> 設成 <code>Ignore</code>，且 JSON 裡是 null 對上非可空實值型別，此時 Newtonsoft 會直接略過、保留該屬性原本的值。</li>
 <li>System.Text.Json 在同樣的情境下還是會丟 <code>JsonException</code>，沒有對應的「靜默略過」開關。</li>
 </ul>
 <p>換句話講，如果你原本的 Newtonsoft 專案靠 <code>NullValueHandling.Ignore</code> 默默吃掉這些 null，遷移到 System.Text.Json 之後就會冒出反序列化例外。官方文件對此的建議很直接：把目標屬性改成可空（<code>int</code> 改 <code>int?</code>），或為該型別寫一個能處理 null 的 converter。遷移後若出現莫名的反序列化例外，先往這裡查。</p>
 <p>忽略 null 屬性的序列化設定方式：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Text.Json;</span><br><span class="line"><span class="keyword">using</span> System.Text.Json.Serialization;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> options = <span class="keyword">new</span> JsonSerializerOptions</span><br><span class="line">&#123;</span><br><span class="line">    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
 <p>順帶補一句：上面講的「丟例外」針對的是實值型別。非可空的「參考型別」（reference type）預設兩邊都不會丟，要到 .NET 9 開了 <code>RespectNullableAnnotations</code> 才會對參考型別的 nullable 標註動真格。日常遷移踩到的幾乎都是實值型別這一種。</p>
 <hr>
-<h2 id="坑四：多型與繼承"><a href="#坑四：多型與繼承" class="headerlink" title="坑四：多型與繼承"></a>坑四：多型與繼承</h2><p>Newtonsoft.Json 靠 <code>TypeNameHandling</code> 處理多型，System.Text.Json 的對應方式依 .NET 版本不同。</p>
+<h2 id="坑四：多型與繼承">坑四：多型與繼承</h2>
+<p>Newtonsoft.Json 靠 <code>TypeNameHandling</code> 處理多型，System.Text.Json 的對應方式依 .NET 版本不同。</p>
 <p>.NET 7 以上內建 <code>[JsonPolymorphic]</code> / <code>[JsonDerivedType]</code>，夠用：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Text.Json.Serialization;</span><br><span class="line"></span><br><span class="line">[<span class="meta">JsonPolymorphic(TypeDiscriminatorPropertyName = <span class="string">&quot;$type&quot;</span>)</span>]</span><br><span class="line">[<span class="meta">JsonDerivedType(typeof(Dog), typeDiscriminator: <span class="string">&quot;dog&quot;</span>)</span>]</span><br><span class="line">[<span class="meta">JsonDerivedType(typeof(Cat), typeDiscriminator: <span class="string">&quot;cat&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title">Animal</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> Name &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125; = <span class="built_in">string</span>.Empty;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Dog</span> : <span class="title">Animal</span> &#123; <span class="keyword">public</span> <span class="built_in">string</span> Breed &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125; = <span class="built_in">string</span>.Empty; &#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Cat</span> : <span class="title">Animal</span> &#123; <span class="keyword">public</span> <span class="built_in">bool</span> IsIndoor &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125; &#125;</span><br></pre></td></tr></table></figure>
-
 <p>.NET 6 以下沒有原生支援，要自己寫 <code>JsonConverter&lt;T&gt;</code> 覆蓋 <code>Read</code> / <code>Write</code>，工作量不低。我在一個還卡在 .NET 6 的專案上手寫過一次，光是處理 discriminator 讀寫和 fallback 就花掉大半天，這是 .NET 6 以下版本遷移時最麻煩的部分。</p>
 <p>順帶提醒：<code>TypeNameHandling.All</code> / <code>Auto</code> 在 Newtonsoft 上是著名的反序列化攻擊面，遷移正好是把這個拔掉的好時機，別只是想著怎麼「等價搬過去」。</p>
 <hr>
-<h2 id="坑五：循環引用"><a href="#坑五：循環引用" class="headerlink" title="坑五：循環引用"></a>坑五：循環引用</h2><p>這是遷移 EF Core 專案時真的很容易爆的問題，得先把兩邊的預設搞清楚。</p>
+<h2 id="坑五：循環引用">坑五：循環引用</h2>
+<p>這是遷移 EF Core 專案時真的很容易爆的問題，得先把兩邊的預設搞清楚。</p>
 <p>關鍵在於：Newtonsoft.Json 預設遇到循環引用也是丟例外。它的 <code>ReferenceLoopHandling</code> 預設值是 <code>Error</code>，碰到 <code>Order</code> → <code>OrderItem</code> → <code>Order</code> 這種雙向導覽屬性，會丟 <code>JsonSerializationException: Self referencing loop detected for property</code>。很多人以為 Newtonsoft「天生就會略過循環」，那是因為專案裡早就設了 <code>ReferenceLoopHandling.Ignore</code>（EF Core 專案幾乎是標配），不是預設行為。</p>
 <p>System.Text.Json 預設碰到循環同樣丟例外，訊息是 <code>JsonException: A possible object cycle was detected</code>。真正的遷移差異不是「一邊丟一邊不丟」，而是你原本在 Newtonsoft 設好的 <code>ReferenceLoopHandling.Ignore</code> 沒有自動帶過來，得在 System.Text.Json 這邊重新設一次對應選項。</p>
 <p>System.Text.Json 有兩種處理方式。</p>
 <p>方式一：<code>ReferenceHandler.IgnoreCycles</code>（.NET 6 以上，推薦）。循環引用的屬性會輸出為 <code>null</code>，JSON 結構乾淨，大多數情境夠用：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Text.Json;</span><br><span class="line"><span class="keyword">using</span> System.Text.Json.Serialization;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> options = <span class="keyword">new</span> JsonSerializerOptions</span><br><span class="line">&#123;</span><br><span class="line">    ReferenceHandler = ReferenceHandler.IgnoreCycles</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
 <p>要注意它和 Newtonsoft 的 <code>ReferenceLoopHandling.Ignore</code> 不完全相同：Newtonsoft 是直接略過那個造成循環的物件參考，System.Text.Json 則是把循環位置塞成 <code>null</code> token。輸出形狀會有差，前端要先確認接得住 null。</p>
 <p>方式二：<code>ReferenceHandler.Preserve</code>（.NET 5 以上）。用 <code>$id</code>、<code>$ref</code> 等 metadata 保留完整引用關係，可以完整反序列化回來，但 JSON 結構變複雜，非 System.Text.Json 的反序列化端不一定讀得懂：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> options = <span class="keyword">new</span> JsonSerializerOptions</span><br><span class="line">&#123;</span><br><span class="line">    ReferenceHandler = ReferenceHandler.Preserve</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
 <p>遷移 EF Core 專案時，建議優先試 <code>IgnoreCycles</code>，確認前端或下游系統能接受 null 再上線。我自己踩過的彎路是：一開始為了「完整保留結構」選了 <code>Preserve</code>，結果前端那邊用的不是 .NET，根本解析不了 <code>$ref</code>，最後還是退回 <code>IgnoreCycles</code> 加上幾個 DTO。早知道一開始就該回傳專用 DTO 而不是直接序列化 Entity。</p>
 <hr>
-<h2 id="遷移步驟整理"><a href="#遷移步驟整理" class="headerlink" title="遷移步驟整理"></a>遷移步驟整理</h2><ol>
+<h2 id="遷移步驟整理">遷移步驟整理</h2>
+<ol>
 <li>盤點現有用法：搜尋 <code>JsonConvert.</code>、<code>JObject</code>、<code>JArray</code>、<code>[JsonProperty]</code> 等，列出需要處理的點。</li>
 <li>替換套件引用：移除 <code>Newtonsoft.Json</code>，改用內建 <code>System.Text.Json</code>（<code>using System.Text.Json;</code>）。</li>
-<li>確認命名策略：在 ASP.NET Core 的 <code>AddJsonOptions</code> 設定 <code>PropertyNamingPolicy</code>。</li>
+<li>確認命名策略：在 <a target="_blank" rel="noopener" href="http://ASP.NET">ASP.NET</a> Core 的 <code>AddJsonOptions</code> 設定 <code>PropertyNamingPolicy</code>。</li>
 <li>日期格式：有非標準日期格式就補自訂 <code>JsonConverter</code>，或考慮換用 <code>DateOnly</code> / <code>TimeOnly</code>。</li>
 <li>null 處理：確認 <code>DefaultIgnoreCondition</code> 設定符合預期，特別注意反序列化遇到 null 對非可空實值型別的嚴格性。</li>
 <li>多型序列化：.NET 7 以上改用 <code>[JsonPolymorphic]</code>；.NET 6 以下評估是否值得手寫 converter 或保留 Newtonsoft.Json。</li>
@@ -206,9 +209,11 @@
 <li>跑完整測試：尤其是反序列化路徑，System.Text.Json 比 Newtonsoft.Json 嚴格很多。</li>
 </ol>
 <hr>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>把幾個中型 API 專案換完，最花時間的不是寫 converter，而是搞清楚每個「預設值」到底是誰設的。命名策略其實是 ASP.NET Core pipeline 在動手腳、循環引用兩邊預設都丟例外（差的是你原本設過的 <code>Ignore</code> 沒帶過來）、null 對非可空實值型別兩邊也都會丟。把這三個「以為有差、其實是設定差」的點理清楚，剩下的就是體力活。</p>
+<h2 id="結語">結語</h2>
+<p>把幾個中型 API 專案換完，最花時間的不是寫 converter，而是搞清楚每個「預設值」到底是誰設的。命名策略其實是 <a target="_blank" rel="noopener" href="http://ASP.NET">ASP.NET</a> Core pipeline 在動手腳、循環引用兩邊預設都丟例外（差的是你原本設過的 <code>Ignore</code> 沒帶過來）、null 對非可空實值型別兩邊也都會丟。把這三個「以為有差、其實是設定差」的點理清楚，剩下的就是體力活。</p>
 <p>實際成果是：兩個 .NET 8 專案完全拔掉 Newtonsoft.Json，少一個相依、序列化路徑的記憶體分配也降下來。.NET 7 以上的專案基本上沒理由繼續掛著 Newtonsoft.Json；.NET 6 以下如果有複雜的多型需求，保留 Newtonsoft.Json 是合理選擇，不必為了「官方推薦」硬換。</p>
-<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ul>
+<h2 id="參考資料">參考資料</h2>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/migrate-from-newtonsoft">Microsoft Learn: Migrate from Newtonsoft.Json to System.Text.Json</a></li>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/preserve-references">System.Text.Json: Preserve references and handle circular references</a></li>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/dotnet/standard/datetime/system-text-json-support">DateTime and DateTimeOffset support in System.Text.Json</a></li>
@@ -303,15 +308,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

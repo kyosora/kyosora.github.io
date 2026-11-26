@@ -125,35 +125,36 @@
 <p><strong>2026-07 更新：</strong> Notion 現在建議使用官方託管的 MCP Server，透過 OAuth 授權。舊版 <code>@notionhq/notion-mcp-server</code> 仍可自架，但官方已停止積極維護，不該再當一般使用者的預設方案。</p>
 </blockquote>
 <p>在 Notion 和 Claude Code 之間來回複製貼上，很快就會變成一件純手工工作。接上 Notion MCP（Model Context Protocol）後，Claude Code 可以搜尋頁面、建立內容、更新資料庫項目；每次寫入前仍應該先確認目標頁面和修改範圍。</p>
-<h2 id="什麼是-Notion-MCP？"><a href="#什麼是-Notion-MCP？" class="headerlink" title="什麼是 Notion MCP？"></a>什麼是 Notion MCP？</h2><p>Notion MCP 是 Notion 官方提供的遠端 MCP Server，端點是 <code>https://mcp.notion.com/mcp</code>。它把 Notion 的搜尋、讀取與寫入能力提供給支援 MCP 的工具。</p>
+<h2 id="什麼是-Notion-MCP？">什麼是 Notion MCP？</h2>
+<p>Notion MCP 是 Notion 官方提供的遠端 MCP Server，端點是 <code>https://mcp.notion.com/mcp</code>。它把 Notion 的搜尋、讀取與寫入能力提供給支援 MCP 的工具。</p>
 <p>這裡要分清楚兩件事：MCP 負責連接工具；真正能看到哪些內容，仍取決於完成 OAuth 授權的 Notion 使用者本來就有的權限。接上 MCP 不會自動繞過工作區權限。</p>
-<h2 id="開始前的準備"><a href="#開始前的準備" class="headerlink" title="開始前的準備"></a>開始前的準備</h2><p>需要準備的東西：</p>
+<h2 id="開始前的準備">開始前的準備</h2>
+<p>需要準備的東西：</p>
 <ul>
 <li>Claude Code，或其他支援遠端 HTTP MCP 的用戶端</li>
 <li>一個 Notion 帳戶</li>
 <li>基本的終端機操作能力</li>
 <li>大約 5 分鐘</li>
 </ul>
-<h2 id="第一步：把官方-Notion-MCP-加進-Claude-Code"><a href="#第一步：把官方-Notion-MCP-加進-Claude-Code" class="headerlink" title="第一步：把官方 Notion MCP 加進 Claude Code"></a>第一步：把官方 Notion MCP 加進 Claude Code</h2><p>在終端機執行：</p>
+<h2 id="第一步：把官方-Notion-MCP-加進-Claude-Code">第一步：把官方 Notion MCP 加進 Claude Code</h2>
+<p>在終端機執行：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">claude mcp add --transport http notion https://mcp.notion.com/mcp</span><br></pre></td></tr></table></figure>
-
 <p>預設會加在目前專案。想讓所有專案都能用，可加上 <code>--scope user</code>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">claude mcp add --scope user --transport http notion https://mcp.notion.com/mcp</span><br></pre></td></tr></table></figure>
-
 <p>這裡不需要建立 Internal Integration、不需要複製 <code>ntn_</code> token，也不用在本機跑 <code>npx</code> 套件。</p>
-<h2 id="第二步：完成-OAuth-授權"><a href="#第二步：完成-OAuth-授權" class="headerlink" title="第二步：完成 OAuth 授權"></a>第二步：完成 OAuth 授權</h2><p>在 Claude Code 裡輸入：</p>
+<h2 id="第二步：完成-OAuth-授權">第二步：完成 OAuth 授權</h2>
+<p>在 Claude Code 裡輸入：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/mcp</span><br></pre></td></tr></table></figure>
-
 <p>選擇 <code>notion</code>，瀏覽器會開啟 Notion 的 OAuth 頁面。確認工作區與授權內容後同意連線，再回到 Claude Code 檢查狀態是否為已連線。</p>
 <p>官方託管版採使用者 OAuth，不是舊版 Integration token。因此也沒有「逐頁 Connect to Integration」這個步驟；Claude Code 能存取的範圍跟授權帳號的 Notion 權限一致。</p>
-<h2 id="第三步：先用唯讀任務驗證"><a href="#第三步：先用唯讀任務驗證" class="headerlink" title="第三步：先用唯讀任務驗證"></a>第三步：先用唯讀任務驗證</h2><p>第一次不要直接叫它批次改資料。先測一個可核對的查詢：</p>
+<h2 id="第三步：先用唯讀任務驗證">第三步：先用唯讀任務驗證</h2>
+<p>第一次不要直接叫它批次改資料。先測一個可核對的查詢：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">搜尋標題包含「週報」的 Notion 頁面，只列出標題與連結，不要修改內容。</span><br></pre></td></tr></table></figure>
-
 <p>確認它找到正確的頁面，再試小範圍寫入：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在「測試頁」底部新增一個未勾選待辦：「確認 Notion MCP 寫入正常」。執行前先告訴我要修改哪一頁。</span><br></pre></td></tr></table></figure>
-
 <p>這個順序很重要。搜尋結果同名、資料庫欄位映射錯誤，通常比連不上更麻煩。</p>
-<h2 id="實際可以做什麼"><a href="#實際可以做什麼" class="headerlink" title="實際可以做什麼"></a>實際可以做什麼</h2><p>串接完成後，直接跟 Claude 說你要做什麼就好。幾個常用的方向：</p>
+<h2 id="實際可以做什麼">實際可以做什麼</h2>
+<p>串接完成後，直接跟 Claude 說你要做什麼就好。幾個常用的方向：</p>
 <ul>
 <li>「幫我在個人筆記頁面建立一篇關於今天學到的 Python 技巧的筆記」</li>
 <li>「把我昨天的會議記錄整理成待辦事項，新增到專案管理資料庫」</li>
@@ -161,31 +162,38 @@
 <li>「建立本月的工作計劃，包含優先級和預計完成時間」</li>
 </ul>
 <p>Claude Code 會透過 MCP 呼叫 Notion。能不能完成某個動作，仍取決於目前工具支援範圍與你的工作區權限；不要把「已連線」理解成所有 Notion 功能都能操作。</p>
-<h2 id="常見問題排除"><a href="#常見問題排除" class="headerlink" title="常見問題排除"></a>常見問題排除</h2><h3 id="mcp-顯示未連線？"><a href="#mcp-顯示未連線？" class="headerlink" title="/mcp 顯示未連線？"></a><code>/mcp</code> 顯示未連線？</h3><ul>
+<h2 id="常見問題排除">常見問題排除</h2>
+<h3 id="mcp-顯示未連線？"><code>/mcp</code> 顯示未連線？</h3>
+<ul>
 <li>用 <code>claude mcp list</code> 確認 <code>notion</code> 是否存在</li>
 <li>確認 URL 是官方端點 <code>https://mcp.notion.com/mcp</code></li>
 <li>重新執行 <code>/mcp</code> 完成 OAuth；公司網路若擋瀏覽器回呼，換網路或請網管檢查</li>
 </ul>
-<h3 id="Claude-說找不到頁面？"><a href="#Claude-說找不到頁面？" class="headerlink" title="Claude 說找不到頁面？"></a>Claude 說找不到頁面？</h3><ul>
+<h3 id="Claude-說找不到頁面？">Claude 說找不到頁面？</h3>
+<ul>
 <li>先在 Notion 介面確認目前授權帳號真的看得到該頁</li>
 <li>用完整標題、資料庫名稱或頁面 URL 縮小搜尋範圍</li>
 <li>剛修改的內容可能需要稍等索引更新；精確操作時直接給頁面 URL 比模糊搜尋可靠</li>
 </ul>
-<h3 id="一定要用-token-做無人值守流程？"><a href="#一定要用-token-做無人值守流程？" class="headerlink" title="一定要用 token 做無人值守流程？"></a>一定要用 token 做無人值守流程？</h3><p>官方託管的 Notion MCP 需要使用者完成 OAuth，不支援 bearer token。完全無人值守的工作可考慮 Notion API，或舊版開源 MCP Server；但後者已停止積極維護，要自己承擔版本與安全更新。不要為了省一次 OAuth，把未維護的套件當預設。</p>
-<h2 id="安全性注意事項"><a href="#安全性注意事項" class="headerlink" title="安全性注意事項"></a>安全性注意事項</h2><ul>
+<h3 id="一定要用-token-做無人值守流程？">一定要用 token 做無人值守流程？</h3>
+<p>官方託管的 Notion MCP 需要使用者完成 OAuth，不支援 bearer token。完全無人值守的工作可考慮 Notion API，或舊版開源 MCP Server；但後者已停止積極維護，要自己承擔版本與安全更新。不要為了省一次 OAuth，把未維護的套件當預設。</p>
+<h2 id="安全性注意事項">安全性注意事項</h2>
+<ul>
 <li>只連官方端點；不要把 OAuth 授權交給來路不明的 MCP Server</li>
 <li>寫入、移動或刪除前，要求工具先列出目標與變更摘要</li>
 <li>共用工作區先拿測試頁驗證，別一開始就對正式資料庫做批次修改</li>
 <li>不再使用時，從 Notion 的連線設定撤銷授權</li>
 </ul>
-<h2 id="進一步的用法"><a href="#進一步的用法" class="headerlink" title="進一步的用法"></a>進一步的用法</h2><p>幾個值得試試的方向：</p>
+<h2 id="進一步的用法">進一步的用法</h2>
+<p>幾個值得試試的方向：</p>
 <ul>
 <li>讓 Claude 替你批次整理筆記格式，比如統一把散落各處的會議記錄整理成固定模板</li>
 <li>用 Claude Code 跨頁面搜尋與彙整資料，再附上來源頁面連結</li>
 <li>搭配 Claude Code 的程式碼能力，讓它直接把分析結果寫回 Notion 頁面</li>
 </ul>
 <p>我會把 Notion MCP 當成「有權限的編輯工具」，不會當成聊天外掛。查詢可以放寬，寫入要縮小範圍；先報告要改什麼，再執行，出錯時才有地方回頭。</p>
-<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ul>
+<h2 id="參考資料">參考資料</h2>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://developers.notion.com/guides/mcp/overview">Notion MCP 官方說明</a></li>
 <li><a target="_blank" rel="noopener" href="https://developers.notion.com/guides/mcp/get-started-with-mcp">連接官方 Notion MCP</a></li>
 <li><a target="_blank" rel="noopener" href="https://github.com/makenotion/notion-mcp-server">舊版開源 MCP Server（README 寫明已不積極維護）</a></li>
@@ -282,15 +290,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

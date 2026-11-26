@@ -124,7 +124,8 @@
       <div class="prose" id="article">
         <p>十月中，一台放在現場的 Win11 主機對外連線時好時壞。我從 AnyDesk 連進去，想調一下路由的優先順序，下了一行 <code>Remove-NetRoute</code>，畫面就凍住了。</p>
 <p>後面的事一件接一件：重開機沒救回來；現場補閘道時打錯一個數字；網路通了，AnyDesk 用 ID 還是連不上。一個月後，同一台主機因為無線電換了 USB 孔，又出了一次狀況。</p>
-<h2 id="三張網卡，三條預設路由"><a href="#三張網卡，三條預設路由" class="headerlink" title="三張網卡，三條預設路由"></a>三張網卡，三條預設路由</h2><p>這台主機接了三張網卡（公網 IP 換成了文件用的保留位址）：</p>
+<h2 id="三張網卡，三條預設路由">三張網卡，三條預設路由</h2>
+<p>這台主機接了三張網卡（公網 IP 換成了文件用的保留位址）：</p>
 <table>
 <thead>
 <tr>
@@ -135,7 +136,8 @@
 <th>用途</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>乙太網路（Intel I219-LM）</td>
 <td>21</td>
 <td>203.0.113.31/24</td>
@@ -156,11 +158,11 @@
 <td>192.168.10.1</td>
 <td>另一台無線電的 USB 網卡</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>兩台無線電（MOTOTRBO）用 USB 接上電腦時，會自己當 DHCP 伺服器，發 IP，也發預設閘道。路由表裡因此有三條 <code>0.0.0.0/0</code>，只有一條真的通到外面。</p>
 <p>Windows 選路時，先找跟目的 IP 相符、前綴最長的路由。這三條都是 <code>/0</code>，前綴一樣長，才輪到比 RouteMetric 加上 InterfaceMetric 的總和，越小越優先。微軟在 <code>New-NetRoute</code> 的文件裡寫的就是這個加總。查的時候我會把兩個數字加起來排序：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-NetRoute</span> <span class="literal">-DestinationPrefix</span> <span class="number">0.0</span>.<span class="number">0.0</span>/<span class="number">0</span> |</span><br><span class="line">  <span class="built_in">Select-Object</span> ifIndex, InterfaceAlias, NextHop, RouteMetric, InterfaceMetric,</span><br><span class="line">    <span class="selector-tag">@</span>&#123; n = <span class="string">&#x27;Total&#x27;</span>; e = &#123; <span class="variable">$_</span>.RouteMetric + <span class="variable">$_</span>.InterfaceMetric &#125; &#125; |</span><br><span class="line">  <span class="built_in">Sort-Object</span> Total</span><br></pre></td></tr></table></figure>
-
 <p>當時的分數：</p>
 <table>
 <thead>
@@ -171,7 +173,8 @@
 <th>總和</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>無線電（ifIndex 20）</td>
 <td>0</td>
 <td>55</td>
@@ -189,44 +192,47 @@
 <td>25</td>
 <td>281</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>這三張卡當時都開著 Automatic Metric。微軟 KB 299540 有一張 Windows 10 以後「其他介面類型」的對照表：200 Mb/s 以上、未滿 2 Gb/s 對應 25；4 Mb/s 以上、未滿 20 Mb/s 對應 55。外網卡在這一項其實贏了，輸在 RouteMetric：DHCP 給的那兩條是 0，外網這條是 256。</p>
 <p>兩條無線電路由都是 55，都排在外網的 281 前面。哪一條連線當時實際走了哪張卡，我沒有記下來，只知道對外連線時好時壞。</p>
-<h2 id="想把-256-改成-0，結果把出口拔了"><a href="#想把-256-改成-0，結果把出口拔了" class="headerlink" title="想把 256 改成 0，結果把出口拔了"></a>想把 256 改成 0，結果把出口拔了</h2><p>Claude Code 看了路由表，說外網那條的 256 不正常。我也覺得只要把 256 壓下來，外網就會贏，打算先刪掉、再用 RouteMetric 0 加回來。第一步是這一行：</p>
+<h2 id="想把-256-改成-0，結果把出口拔了">想把 256 改成 0，結果把出口拔了</h2>
+<p>Claude Code 看了路由表，說外網那條的 256 不正常。我也覺得只要把 256 壓下來，外網就會贏，打算先刪掉、再用 RouteMetric 0 加回來。第一步是這一行：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Remove-NetRoute</span> <span class="literal">-InterfaceIndex</span> <span class="number">21</span> <span class="literal">-DestinationPrefix</span> <span class="number">0.0</span>.<span class="number">0.0</span>/<span class="number">0</span> <span class="literal">-Confirm</span>:<span class="variable">$false</span></span><br></pre></td></tr></table></figure>
-
 <p>按下去，AnyDesk 就斷了。</p>
 <p>這一行只帶了「哪張網卡」和「哪個目的地」兩個條件，刪掉的是外網卡唯一的預設路由。準備加回來的那一行，再也送不進去了。</p>
 <p>改 metric 其實不需要刪。<code>Set-NetRoute</code> 就有 <code>-RouteMetric</code> 參數，可以原地改數字。</p>
-<h2 id="重開機也救不回來"><a href="#重開機也救不回來" class="headerlink" title="重開機也救不回來"></a>重開機也救不回來</h2><p>斷線之後，Claude Code 說重開機閘道就會回來。現場人員照著重開，閘道沒有回來，白跑了一趟。那句話是憑印象講的。</p>
+<h2 id="重開機也救不回來">重開機也救不回來</h2>
+<p>斷線之後，Claude Code 說重開機閘道就會回來。現場人員照著重開，閘道沒有回來，白跑了一趟。那句話是憑印象講的。</p>
 <p>Windows 的路由存在兩個地方：ActiveStore 是現在生效的那份，PersistentStore 是開機時載入的那份。<code>New-NetRoute</code> 的文件寫，不指定的話兩邊各存一份；<code>Remove-NetRoute</code> 的 <code>-PolicyStore</code> 則是篩選條件，預設值是空的。</p>
 <p>寫這篇時，我請 Claude Code 在我的電腦上用 <code>-WhatIf</code> 跑給我看（只列出會做什麼，不會真的刪）。這台有張代理工具的虛擬網卡，它的預設路由兩個 store 都有：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">PS&gt; Remove-NetRoute -InterfaceIndex 7 -DestinationPrefix 0.0.0.0/0 -WhatIf</span><br><span class="line">What if: Performing operation &quot;Remove&quot; on Target &quot;NetRoute -DestinationPrefix 0.0.0.0/0 -InterfaceIndex 7 -NextHop 198.18.2.1 -Store Active&quot;</span><br><span class="line">What if: Performing operation &quot;Remove&quot; on Target &quot;NetRoute -DestinationPrefix 0.0.0.0/0 -InterfaceIndex 7 -NextHop 198.18.2.1 -Store Persistent&quot;</span><br><span class="line"></span><br><span class="line">PS&gt; Remove-NetRoute -InterfaceIndex 7 -DestinationPrefix 0.0.0.0/0 -PolicyStore ActiveStore -WhatIf</span><br><span class="line">What if: Performing operation &quot;Remove&quot; on Target &quot;NetRoute -DestinationPrefix 0.0.0.0/0 -InterfaceIndex 7 -NextHop 198.18.2.1 -Store Active&quot;</span><br></pre></td></tr></table></figure>
-
 <p>同一台電腦上，<code>Get-NetRoute -DestinationPrefix 0.0.0.0/0</code> 不帶 <code>-PolicyStore</code>，就 ifIndex 7 這條預設路由來看，只列出 ActiveStore 那份。<strong>一般查詢看不到持久那份，同樣的條件交給 <code>Remove-NetRoute</code>，卻把 Active 和 Persistent 一起列進去。</strong></p>
 <p>這是事後在另一台電腦上的預演。十月現場能確定的是：重開之後閘道沒有回來，現場人員最後打開網卡內容，把預設閘道重新填回去。刪除前兩個 store 各有什麼，當時沒有留下對照。</p>
 <p>至於 256 從哪來：<code>New-NetRoute</code> 不指定 RouteMetric 時，預設就是 256，但單看這個數字，判斷不出這條路由當初是怎麼加的。Claude Code 對 256 的說法前後換過一次，先說不正常，後來又說是手動設閘道的正常值，兩次都沒有依據。</p>
-<h2 id="閘道打錯一碼：「無法辨識的網路」"><a href="#閘道打錯一碼：「無法辨識的網路」" class="headerlink" title="閘道打錯一碼：「無法辨識的網路」"></a>閘道打錯一碼：「無法辨識的網路」</h2><p>現場人員把閘道填回去時，第一段打錯了一個數字，畫面上是「無法辨識的網路」。對照主機的 IP 是 <code>/24</code>，填進去的閘道根本不在這個網段裡。</p>
+<h2 id="閘道打錯一碼：「無法辨識的網路」">閘道打錯一碼：「無法辨識的網路」</h2>
+<p>現場人員把閘道填回去時，第一段打錯了一個數字，畫面上是「無法辨識的網路」。對照主機的 IP 是 <code>/24</code>，填進去的閘道根本不在這個網段裡。</p>
 <p>我從外面測：上游閘道有回 ping，主機沒有回；主機上預期有服務的幾個 TCP port，我也一一測過，全部逾時。</p>
 <p>閘道在網卡內容裡直接改正就好，改欄位是取代，不必先刪再加。改完我確認錯的那個閘道沒留下殘留路由，兩個 store 都要查：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">foreach</span> (<span class="variable">$s</span> <span class="keyword">in</span> <span class="string">&#x27;ActiveStore&#x27;</span>, <span class="string">&#x27;PersistentStore&#x27;</span>) &#123;</span><br><span class="line">    <span class="built_in">Get-NetRoute</span> <span class="literal">-NextHop</span> <span class="string">&#x27;&lt;打錯的閘道&gt;&#x27;</span> <span class="literal">-PolicyStore</span> <span class="variable">$s</span> <span class="literal">-ErrorAction</span> SilentlyContinue |</span><br><span class="line">        <span class="built_in">Format-Table</span> DestinationPrefix, NextHop, InterfaceAlias, Store</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>兩個 store 都沒有列出任何東西。要注意 <code>-ErrorAction SilentlyContinue</code>：查不到時 <code>Get-NetRoute</code> 會報錯（中文版是「找不到內容 &#39;NextHop&#39; 等於 … 的 MSFT_NetRoute 物件」），我把它壓掉了，所以空白輸出也可能是查詢本身出錯。要分辨這兩種情況，拿掉這個參數再跑一次。</p>
-<h2 id="能上網了，AnyDesk-用-ID-還是連不上"><a href="#能上網了，AnyDesk-用-ID-還是連不上" class="headerlink" title="能上網了，AnyDesk 用 ID 還是連不上"></a>能上網了，AnyDesk 用 ID 還是連不上</h2><p>閘道改對後主機能上網，用 AnyDesk ID 卻還是連不上，原因當時沒有查到。從外面測，TCP 7070 已經通了。7070 是 AnyDesk 直接連線的預設 port，我在 AnyDesk 位址欄輸入主機的 IP，這次成功連回桌面。這條路要對方的設定開著「允許直接連線」才走得通。</p>
-<h2 id="連回主機後，我把兩張無線電的-metric-調高"><a href="#連回主機後，我把兩張無線電的-metric-調高" class="headerlink" title="連回主機後，我把兩張無線電的 metric 調高"></a>連回主機後，我把兩張無線電的 metric 調高</h2><p>排序問題改用 metric 解決：</p>
+<p>兩個 store 都沒有列出任何東西。要注意 <code>-ErrorAction SilentlyContinue</code>：查不到時 <code>Get-NetRoute</code> 會報錯（中文版是「找不到內容 ‘NextHop’ 等於 … 的 MSFT_NetRoute 物件」），我把它壓掉了，所以空白輸出也可能是查詢本身出錯。要分辨這兩種情況，拿掉這個參數再跑一次。</p>
+<h2 id="能上網了，AnyDesk-用-ID-還是連不上">能上網了，AnyDesk 用 ID 還是連不上</h2>
+<p>閘道改對後主機能上網，用 AnyDesk ID 卻還是連不上，原因當時沒有查到。從外面測，TCP 7070 已經通了。7070 是 AnyDesk 直接連線的預設 port，我在 AnyDesk 位址欄輸入主機的 IP，這次成功連回桌面。這條路要對方的設定開著「允許直接連線」才走得通。</p>
+<h2 id="連回主機後，我把兩張無線電的-metric-調高">連回主機後，我把兩張無線電的 metric 調高</h2>
+<p>排序問題改用 metric 解決：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 當時下的指令：外網卡優先，兩張無線電往後排</span></span><br><span class="line"><span class="built_in">Set-NetIPInterface</span> <span class="literal">-InterfaceIndex</span> <span class="number">21</span> <span class="literal">-AutomaticMetric</span> Disabled <span class="literal">-InterfaceMetric</span> <span class="number">10</span></span><br><span class="line"><span class="built_in">Set-NetIPInterface</span> <span class="literal">-InterfaceIndex</span> <span class="number">20</span> <span class="literal">-AutomaticMetric</span> Disabled <span class="literal">-InterfaceMetric</span> <span class="number">500</span></span><br><span class="line"><span class="built_in">Set-NetIPInterface</span> <span class="literal">-InterfaceIndex</span> <span class="number">5</span>  <span class="literal">-AutomaticMetric</span> Disabled <span class="literal">-InterfaceMetric</span> <span class="number">600</span></span><br></pre></td></tr></table></figure>
-
 <p>上面是我當時下的原樣。你如果只打算調 IPv4，請加上 <code>-AddressFamily IPv4</code>，ifIndex 也要先查自己主機的。</p>
 <p>改完，外網是 256 + 10 = 266，兩台無線電是 500 和 600，預設路由輪到外網。無線電的軟體照樣抓得到機器，因為 <code>192.168.10.0/24</code>、<code>192.168.11.0/24</code> 這兩條直連網段的前綴比 <code>/0</code> 長，跟無線電通訊本來就走它們，不受預設路由的排名影響。</p>
 <p>微軟在 KB 299540 裡也提醒，一般不建議在私有網段的網卡上設預設閘道。比較正規的做法是把無線電網卡的 IPv4 改成手動、閘道留空。軟體如果只跟 USB 直連網段上的無線電通訊，保留直連路由就夠；要經過無線電再到別的網段，才需要替那個網段加路由。這次我們先用 metric 解決。</p>
-<h2 id="一個月後：換了-USB-孔，Windows-多出兩張網卡"><a href="#一個月後：換了-USB-孔，Windows-多出兩張網卡" class="headerlink" title="一個月後：換了 USB 孔，Windows 多出兩張網卡"></a>一個月後：換了 USB 孔，Windows 多出兩張網卡</h2><p>11 月中，要在同一台主機上裝 Tailscale，怎樣都登不進 tailnet。</p>
+<h2 id="一個月後：換了-USB-孔，Windows-多出兩張網卡">一個月後：換了 USB 孔，Windows 多出兩張網卡</h2>
+<p>11 月中，要在同一台主機上裝 Tailscale，怎樣都登不進 tailnet。</p>
 <p>我回頭查路由表，才發現兩台無線電換過 USB 孔，Windows 把它們當成新裝置，建了兩張新網卡（<code>MOTOTRBO Radio #5</code>、<code>#6</code>）。新網卡回到自動 metric，總分又變成 0 + 55 = 55，外網卡是 256 + 10 = 266。十月調的是舊網卡的 ifIndex，對新網卡完全沒作用。</p>
 <p>當時我查了 <code>Find-NetRoute -RemoteIPAddress 1.1.1.1</code>，Windows 選的是外網卡。但我沒有記下 Tailscale 登入時連的目的 IP，這次查詢還原不了它走的路。能確定的是，新網卡的總分是 55，調高之後 Tailscale 隨即上線。</p>
 <p>修法改成用網卡描述來篩，不寫死 ifIndex。現場跑的是縮成一行的版本，這裡展開方便讀：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-NetAdapter</span> | <span class="built_in">Where-Object</span> InterfaceDescription <span class="operator">-like</span> <span class="string">&#x27;MOTOTRBO*&#x27;</span> | <span class="built_in">ForEach-Object</span> &#123;</span><br><span class="line">    <span class="built_in">Set-NetIPInterface</span> <span class="literal">-InterfaceIndex</span> <span class="variable">$_</span>.ifIndex <span class="literal">-AddressFamily</span> IPv4 `</span><br><span class="line">        <span class="literal">-AutomaticMetric</span> Disabled <span class="literal">-InterfaceMetric</span> <span class="number">500</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>要再往前一步，得把這段做成開機和網路變動時自動跑的排程。這一步我還沒做，目前再換 USB 孔，仍要手動重跑。</p>
-<h2 id="之後在遠端動路由，我守這幾條"><a href="#之後在遠端動路由，我守這幾條" class="headerlink" title="之後在遠端動路由，我守這幾條"></a>之後在遠端動路由，我守這幾條</h2><ul>
+<h2 id="之後在遠端動路由，我守這幾條">之後在遠端動路由，我守這幾條</h2>
+<ul>
 <li>能調 metric 就不刪路由。<code>Set-NetIPInterface</code> 調 InterfaceMetric，<code>Set-NetRoute</code> 調 RouteMetric，路由都還在。只是回程一換，現在這條遠端連線仍可能當場中斷。</li>
 <li>非刪不可時，帶 <code>-PolicyStore ActiveStore</code>，再加 <code>-NextHop</code> 這類條件縮小範圍，先用 <code>-WhatIf</code> 看會刪哪幾條。<code>-WhatIf</code> 只預覽目標，預演不了改完之後連不連得回來。</li>
 <li>動手前先確認退路：現場有人、有獨立的管理通道，或在主機上排好一個到時間就把設定改回去的工作。</li>
@@ -270,6 +276,11 @@
       <span class="neighbour-title">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</span>
     </a>
     
+    <a class="neighbour neighbour--newer" href="/posts/7175f458/">
+      <span class="neighbour-label">下一篇</span>
+      <span class="neighbour-title">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</span>
+    </a>
+    
   </nav>
   
 
@@ -295,18 +306,18 @@
       </li>
     
       <li>
-        <a href="/posts/2a032167/">
-          <img src="/images/posts/legacy-2a032167-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
-          <span class="related-title">以為是 App Pool 的鍋，結果 IUSR 被 Windows 偷走了</span>
-          <span class="related-date">2026-04-23</span>
+        <a href="/posts/4f8c5648/">
+          <img src="/images/posts/bat-errorlevel-negative-exit-code-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</span>
+          <span class="related-date">2026-11-26</span>
         </a>
       </li>
     
       <li>
-        <a href="/posts/901fe680/">
-          <img src="/images/posts/legacy-901fe680-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
-          <span class="related-title">Windows遠端桌面連線重置帳密教學</span>
-          <span class="related-date">2025-01-03</span>
+        <a href="/posts/7463bf4c/">
+          <img src="/images/posts/windows-openssh-key-only-four-machines-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</span>
+          <span class="related-date">2026-11-12</span>
         </a>
       </li>
     
@@ -319,11 +330,11 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
     
       <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     

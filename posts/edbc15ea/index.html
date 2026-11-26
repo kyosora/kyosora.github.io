@@ -111,7 +111,7 @@
     <aside class="post-aside">
       <details class="toc-box" open>
         <summary>目錄</summary>
-        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%95%8F%E9%A1%8C%E8%83%8C%E6%99%AF"><span class="toc-text">問題背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#httpOnlyCookies"><span class="toc-text">httpOnlyCookies</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AF-httpOnlyCookies"><span class="toc-text">什麼是 httpOnlyCookies?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E9%87%8D%E8%A6%81"><span class="toc-text">為什麼重要?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8web-config%E4%B8%AD%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="toc-text">在web.config中的配置:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#requireSSL"><span class="toc-text">requireSSL</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AF-requireSSL"><span class="toc-text">什麼是 requireSSL?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E9%87%8D%E8%A6%81-1"><span class="toc-text">為什麼重要?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8web-config%E4%B8%AD%E7%9A%84%E9%85%8D%E7%BD%AE-1"><span class="toc-text">在web.config中的配置:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E4%BD%B3%E5%AF%A6%E8%B8%90"><span class="toc-text">最佳實踐</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B5%90%E8%AB%96"><span class="toc-text">結論</span></a></li></ol></nav>
+        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%95%8F%E9%A1%8C%E8%83%8C%E6%99%AF"><span class="toc-text">問題背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#httpOnlyCookies"><span class="toc-text">httpOnlyCookies</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AF-httpOnlyCookies"><span class="toc-text">什麼是 httpOnlyCookies?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E9%87%8D%E8%A6%81"><span class="toc-text">為什麼重要?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8web-config%E4%B8%AD%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="toc-text">在web.config中的配置:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#requireSSL"><span class="toc-text">requireSSL</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AF-requireSSL"><span class="toc-text">什麼是 requireSSL?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E9%87%8D%E8%A6%81-2"><span class="toc-text">為什麼重要?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8web-config%E4%B8%AD%E7%9A%84%E9%85%8D%E7%BD%AE-2"><span class="toc-text">在web.config中的配置:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E4%BD%B3%E5%AF%A6%E8%B8%90"><span class="toc-text">最佳實踐</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B5%90%E8%AB%96"><span class="toc-text">結論</span></a></li></ol></nav>
       </details>
     </aside>
     
@@ -119,23 +119,32 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>本文介紹 IIS（Internet Information Services）中兩個關鍵的 Cookie 安全設定：httpOnlyCookies 和 requireSSL，說明各自的作用與 web.config 寫法。</p>
-<h2 id="問題背景"><a href="#問題背景" class="headerlink" title="問題背景"></a>問題背景</h2><p>最近，專案在進行弱點掃描時發現了一個與 ASP.NET_SessionId 有關的弱點。掃描結果顯示，這個重要的 Session ID 缺少必要的安全 Flag。因此，我決定仔細研究 IIS 中 Cookie 的安全設定，特別是 httpOnlyCookies 和 requireSSL 這兩個選項。</p>
-<h2 id="httpOnlyCookies"><a href="#httpOnlyCookies" class="headerlink" title="httpOnlyCookies"></a>httpOnlyCookies</h2><h3 id="什麼是-httpOnlyCookies"><a href="#什麼是-httpOnlyCookies" class="headerlink" title="什麼是 httpOnlyCookies?"></a>什麼是 httpOnlyCookies?</h3><p>httpOnlyCookies 是一個安全特性，用於防止客戶端腳本存取受保護的 cookie。當啟用此選項時，cookie 只能透過 HTTP(S) 協議傳輸，而不能被客戶端腳本（如 JavaScript）存取。</p>
-<h3 id="為什麼重要"><a href="#為什麼重要" class="headerlink" title="為什麼重要?"></a>為什麼重要?</h3><p>啟用 httpOnlyCookies 可以顯著降低跨站腳本（XSS）攻擊的風險。攻擊者即使成功注入惡意腳本，也無法直接讀取或操作受保護的 cookie，從而保護了敏感資訊，如 Session ID。</p>
-<h3 id="在web-config中的配置"><a href="#在web-config中的配置" class="headerlink" title="在web.config中的配置:"></a>在web.config中的配置:</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpCookies</span> <span class="attr">httpOnlyCookies</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="requireSSL"><a href="#requireSSL" class="headerlink" title="requireSSL"></a>requireSSL</h2><h3 id="什麼是-requireSSL"><a href="#什麼是-requireSSL" class="headerlink" title="什麼是 requireSSL?"></a>什麼是 requireSSL?</h3><p>requireSSL 是一個安全設置，讓 ASP.NET 在送出 <code>Set-Cookie</code> 回應標頭時自動加上 <strong>Secure 旗標</strong>。瀏覽器收到帶有 Secure 旗標的 cookie 之後，只會在 HTTPS 連線下才回傳該 cookie，HTTP 明文連線則完全不送出。弱點掃描報告常見的「Secure flag missing」警告，正是靠這個設定來修補。</p>
-<h3 id="為什麼重要-1"><a href="#為什麼重要-1" class="headerlink" title="為什麼重要?"></a>為什麼重要?</h3><p>啟用 requireSSL 可以防止中間人攻擊和 cookie 劫持。一旦加上 Secure 旗標，包含 Session ID 等敏感資訊的 cookie 就不會出現在明文的 HTTP 流量裡，大幅降低網路側錄竊取的風險。</p>
+<h2 id="問題背景">問題背景</h2>
+<p>最近，專案在進行弱點掃描時發現了一個與 ASP.NET_SessionId 有關的弱點。掃描結果顯示，這個重要的 Session ID 缺少必要的安全 Flag。因此，我決定仔細研究 IIS 中 Cookie 的安全設定，特別是 httpOnlyCookies 和 requireSSL 這兩個選項。</p>
+<h2 id="httpOnlyCookies">httpOnlyCookies</h2>
+<h3 id="什麼是-httpOnlyCookies">什麼是 httpOnlyCookies?</h3>
+<p>httpOnlyCookies 是一個安全特性，用於防止客戶端腳本存取受保護的 cookie。當啟用此選項時，cookie 只能透過 HTTP(S) 協議傳輸，而不能被客戶端腳本（如 JavaScript）存取。</p>
+<h3 id="為什麼重要">為什麼重要?</h3>
+<p>啟用 httpOnlyCookies 可以顯著降低跨站腳本（XSS）攻擊的風險。攻擊者即使成功注入惡意腳本，也無法直接讀取或操作受保護的 cookie，從而保護了敏感資訊，如 Session ID。</p>
+<h3 id="在web-config中的配置">在web.config中的配置:</h3>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpCookies</span> <span class="attr">httpOnlyCookies</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="requireSSL">requireSSL</h2>
+<h3 id="什麼是-requireSSL">什麼是 requireSSL?</h3>
+<p>requireSSL 是一個安全設置，讓 <a target="_blank" rel="noopener" href="http://ASP.NET">ASP.NET</a> 在送出 <code>Set-Cookie</code> 回應標頭時自動加上 <strong>Secure 旗標</strong>。瀏覽器收到帶有 Secure 旗標的 cookie 之後，只會在 HTTPS 連線下才回傳該 cookie，HTTP 明文連線則完全不送出。弱點掃描報告常見的「Secure flag missing」警告，正是靠這個設定來修補。</p>
+<h3 id="為什麼重要-2">為什麼重要?</h3>
+<p>啟用 requireSSL 可以防止中間人攻擊和 cookie 劫持。一旦加上 Secure 旗標，包含 Session ID 等敏感資訊的 cookie 就不會出現在明文的 HTTP 流量裡，大幅降低網路側錄竊取的風險。</p>
 <blockquote>
 <p><strong>實務注意</strong>：若 web.config 同時有 <code>&lt;forms&gt;</code> 表單驗證設定，<code>&lt;httpCookies requireSSL=&quot;true&quot;&gt;</code> 並不會自動覆蓋 forms 的 cookie 行為——需要在 <code>&lt;forms&gt;</code> 元素上也加 <code>requireSSL=&quot;true&quot;</code>，否則表單驗證的 cookie 仍不會帶 Secure 旗標。另外，在純 HTTP 的開發或測試環境下啟用此設定，會導致登入後 cookie 無法正常傳遞，造成 Session 失效。</p>
 </blockquote>
-<h3 id="在web-config中的配置-1"><a href="#在web-config中的配置-1" class="headerlink" title="在web.config中的配置:"></a>在web.config中的配置:</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpCookies</span> <span class="attr">requireSSL</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="最佳實踐"><a href="#最佳實踐" class="headerlink" title="最佳實踐"></a>最佳實踐</h2><ol>
+<h3 id="在web-config中的配置-2">在web.config中的配置:</h3>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpCookies</span> <span class="attr">requireSSL</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="最佳實踐">最佳實踐</h2>
+<ol>
 <li>生產環境始終啟用 httpOnlyCookies 和 requireSSL。</li>
 <li>全站走 HTTPS，特別是涉及敏感資料的頁面。若有 <code>&lt;forms&gt;</code> 表單驗證設定，需在 <code>&lt;forms&gt;</code> 元素上也加 <code>requireSSL=&quot;true&quot;</code>，否則表單驗證的 cookie 不會帶 Secure 旗標。</li>
 </ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>正確設定 httpOnlyCookies 和 requireSSL 可以防止常見的 XSS 與連線劫持攻擊，保護 Session ID 等敏感資料。需要注意的是，httpOnlyCookies 會讓 JavaScript 完全讀不到受保護的 cookie，若業務上確實需要前端腳本讀取某個 cookie（例如 CSRF token 的傳遞方式），應將該 cookie 排除在 HttpOnly 保護範圍之外，而非整站停用此設定。</p>
+<h2 id="結論">結論</h2>
+<p>正確設定 httpOnlyCookies 和 requireSSL 可以防止常見的 XSS 與連線劫持攻擊，保護 Session ID 等敏感資料。需要注意的是，httpOnlyCookies 會讓 JavaScript 完全讀不到受保護的 cookie，若業務上確實需要前端腳本讀取某個 cookie（例如 CSRF token 的傳遞方式），應將該 cookie 排除在 HttpOnly 保護範圍之外，而非整站停用此設定。</p>
 
       </div>
       
@@ -187,15 +196,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

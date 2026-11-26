@@ -114,32 +114,37 @@
     <aside class="post-aside">
       <details class="toc-box" open>
         <summary>目錄</summary>
-        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E8%A9%A2%E8%B3%87%E6%96%99%E8%A1%A8%E8%88%87%E6%AA%A2%E8%A6%96%E8%A1%A8%E7%9A%84%E4%BF%AE%E6%94%B9%E6%99%82%E9%96%93"><span class="toc-text">查詢資料表與檢視表的修改時間</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E8%A9%A2%E8%AA%AA%E6%98%8E"><span class="toc-text">查詢說明</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E8%A9%A2%E9%A0%90%E5%AD%98%E7%A8%8B%E5%BA%8F%E7%9A%84%E4%BF%AE%E6%94%B9%E6%99%82%E9%96%93"><span class="toc-text">查詢預存程序的修改時間</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E8%A9%A2%E8%AA%AA%E6%98%8E-1"><span class="toc-text">查詢說明</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%A6%E9%9A%9B%E6%87%89%E7%94%A8%E7%AF%84%E4%BE%8B"><span class="toc-text">實際應用範例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85"><span class="toc-text">注意事項</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B5%90%E8%AA%9E"><span class="toc-text">結語</span></a></li></ol></nav>
+        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">查詢資料表與檢視表的修改時間</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E8%A9%A2%E8%AA%AA%E6%98%8E"><span class="toc-text">查詢說明</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">查詢預存程序的修改時間</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E8%A9%A2%E8%AA%AA%E6%98%8E-2"><span class="toc-text">查詢說明</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">實際應用範例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">注意事項</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">結語</span></a></li></ol></nav>
       </details>
     </aside>
     
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在進行資料庫開發與維護時，經常需要知道資料表、檢視表或預存程序最後的修改時間。這些資訊在追蹤系統變更、問題排除、版本控制時都用得上。本文介紹幾個實用的 SQL 查詢，讓你快速掌握資料庫物件的時間資訊。</p>
-<h2 id="查詢資料表與檢視表的修改時間"><a href="#查詢資料表與檢視表的修改時間" class="headerlink" title="查詢資料表與檢視表的修改時間"></a>查詢資料表與檢視表的修改時間</h2><p>以下是查詢資料表與檢視表修改時間的SQL：</p>
+        <h2>前言</h2>
+<p>在進行資料庫開發與維護時，經常需要知道資料表、檢視表或預存程序最後的修改時間。這些資訊在追蹤系統變更、問題排除、版本控制時都用得上。本文介紹幾個實用的 SQL 查詢，讓你快速掌握資料庫物件的時間資訊。</p>
+<h2>查詢資料表與檢視表的修改時間</h2>
+<p>以下是查詢資料表與檢視表修改時間的SQL：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> [name]           <span class="comment">-- 物件名稱</span></span><br><span class="line">      ,create_date     <span class="comment">-- 建立時間</span></span><br><span class="line">      ,modify_date     <span class="comment">-- 修改時間</span></span><br><span class="line">      ,type_desc       <span class="comment">-- 物件類型</span></span><br><span class="line"><span class="keyword">FROM</span> sys.all_objects </span><br><span class="line"><span class="keyword">WHERE</span> type_desc <span class="operator">=</span> <span class="string">&#x27;USER_TABLE&#x27;</span>    <span class="comment">-- 使用者資料表</span></span><br><span class="line">   <span class="keyword">OR</span> type_desc <span class="operator">=</span> <span class="string">&#x27;VIEW&#x27;</span>          <span class="comment">-- 檢視表</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> modify_date <span class="keyword">DESC</span>         <span class="comment">-- 依修改時間排序</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="查詢說明"><a href="#查詢說明" class="headerlink" title="查詢說明"></a>查詢說明</h3><ul>
+<h3 id="查詢說明">查詢說明</h3>
+<ul>
 <li><code>sys.all_objects</code>: SQL Server 的目錄檢視，涵蓋使用者物件（sys.objects）與系統物件（sys.system_objects）的聯集；若只想查使用者自建物件，改用 <code>sys.objects</code> 更精準，且不必擔心帶出系統物件</li>
-<li><code>type_desc</code>: 物件類型描述<ul>
-<li>&#39;USER_TABLE&#39;: 使用者建立的資料表</li>
-<li>&#39;VIEW&#39;: 檢視表</li>
+<li><code>type_desc</code>: 物件類型描述
+<ul>
+<li>‘USER_TABLE’: 使用者建立的資料表</li>
+<li>‘VIEW’: 檢視表</li>
 </ul>
 </li>
 <li><code>ORDER BY modify_date DESC</code>: 依修改時間降冪排序，最新的排在最前面</li>
 </ul>
-<h2 id="查詢預存程序的修改時間"><a href="#查詢預存程序的修改時間" class="headerlink" title="查詢預存程序的修改時間"></a>查詢預存程序的修改時間</h2><p>如果要查詢預存程序的修改時間，可以使用以下查詢：</p>
+<h2>查詢預存程序的修改時間</h2>
+<p>如果要查詢預存程序的修改時間，可以使用以下查詢：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> [name]           <span class="comment">-- 預存程序名稱</span></span><br><span class="line">      ,create_date     <span class="comment">-- 建立時間</span></span><br><span class="line">      ,modify_date     <span class="comment">-- 修改時間</span></span><br><span class="line"><span class="keyword">FROM</span> sys.all_objects </span><br><span class="line"><span class="keyword">WHERE</span> type_desc <span class="operator">=</span> <span class="string">&#x27;SQL_STORED_PROCEDURE&#x27;</span>    <span class="comment">-- 限定查詢預存程序</span></span><br><span class="line">  <span class="keyword">AND</span> <span class="built_in">SUBSTRING</span>([name], <span class="number">1</span>, <span class="number">3</span>) <span class="keyword">NOT</span> <span class="keyword">IN</span> (<span class="string">&#x27;sp_&#x27;</span>, <span class="string">&#x27;dt_&#x27;</span>, <span class="string">&#x27;xp_&#x27;</span>)  <span class="comment">-- 排除系統預存程序</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="查詢說明-1"><a href="#查詢說明-1" class="headerlink" title="查詢說明"></a>查詢說明</h3><ul>
-<li><code>type_desc = &#39;SQL_STORED_PROCEDURE&#39;</code>: 只查詢以 T-SQL 撰寫的預存程序</li>
-<li><code>SUBSTRING([name], 1, 3) NOT IN (&#39;sp_&#39;, &#39;dt_&#39;, &#39;xp_&#39;)</code>: <ul>
+<h3 id="查詢說明-2">查詢說明</h3>
+<ul>
+<li><code>type_desc = 'SQL_STORED_PROCEDURE'</code>: 只查詢以 T-SQL 撰寫的預存程序</li>
+<li><code>SUBSTRING([name], 1, 3) NOT IN ('sp_', 'dt_', 'xp_')</code>:
+<ul>
 <li>過濾掉慣例上屬於系統或工具的命名前綴</li>
 <li><code>sp_</code> 是 SQL Server 系統預存程序的慣用前綴；<code>dt_</code> 是早期資料庫圖表工具的歷史殘留</li>
 <li>注意：<code>xp_</code>（擴充預存程序）在目錄檢視中的 <code>type_desc</code> 是 <code>EXTENDED_STORED_PROCEDURE</code>，不是 <code>SQL_STORED_PROCEDURE</code>，因此已被前一個條件排除，這裡的 <code>xp_</code> 過濾實際上不會命中任何資料列，但加上無妨</li>
@@ -147,47 +152,56 @@
 </ul>
 </li>
 </ul>
-<h2 id="實際應用範例"><a href="#實際應用範例" class="headerlink" title="實際應用範例"></a>實際應用範例</h2><p>這些查詢在以下情況特別有用：</p>
+<h2>實際應用範例</h2>
+<p>這些查詢在以下情況特別有用：</p>
 <ol>
-<li><p>系統維護</p>
+<li>
+<p>系統維護</p>
 <ul>
 <li>追蹤最近被修改的物件</li>
 <li>確認系統更新是否成功部署</li>
 </ul>
 </li>
-<li><p>問題排查</p>
+<li>
+<p>問題排查</p>
 <ul>
 <li>當系統發生異常時</li>
 <li>可以快速檢查是否有物件被意外修改</li>
 </ul>
 </li>
-<li><p>部署驗證</p>
+<li>
+<p>部署驗證</p>
 <ul>
 <li>確認最近部署的預存程序是否如預期更新</li>
 <li>找出非預期被改動的物件（<code>modify_date</code> 只反映 DDL 異動，不追蹤統計資料更新或索引重建時間）</li>
 </ul>
 </li>
-<li><p>版本控制</p>
+<li>
+<p>版本控制</p>
 <ul>
 <li>確認程式碼部署狀態</li>
 <li>驗證物件是否為最新版本</li>
 </ul>
 </li>
 </ol>
-<h2 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h2><ol>
-<li><p>執行權限</p>
+<h2>注意事項</h2>
+<ol>
+<li>
+<p>執行權限</p>
 <ul>
 <li>查詢目錄檢視（sys.all_objects / sys.objects）只需對對應物件擁有任一權限，或具備 VIEW DEFINITION 權限即可看到該物件的後設資料列</li>
 <li>不必使用 db_owner 等級帳號；以最小必要權限操作符合安全最佳實踐</li>
 </ul>
 </li>
-<li><p>效能考量</p>
+<li>
+<p>效能考量</p>
 <ul>
 <li>這些查詢通常執行很快</li>
 <li>但在大型資料庫中，建議加上適當的WHERE條件限制範圍</li>
 </ul>
 </li>
-<li><p>時間準確性</p>
+<li>
+<p>時間準確性</p>
 <ul>
 <li><code>modify_date</code> 會在物件定義（DDL）變更時更新</li>
 <li>純資料異動（INSERT/UPDATE/DELETE）不會影響此時間</li>
@@ -195,7 +209,8 @@
 </ul>
 </li>
 </ol>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p><code>sys.all_objects</code> 加上 <code>modify_date</code> 排序，是快速定位「誰最近被動過」的直接手段。注意它只反映 DDL 異動，統計資料更新要查 <code>STATS_DATE()</code>，索引重建時間則沒有直接系統欄位可查。</p>
+<h2>結語</h2>
+<p><code>sys.all_objects</code> 加上 <code>modify_date</code> 排序，是快速定位「誰最近被動過」的直接手段。注意它只反映 DDL 異動，統計資料更新要查 <code>STATS_DATE()</code>，索引重建時間則沒有直接系統欄位可查。</p>
 
       </div>
       
@@ -286,15 +301,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -125,7 +125,8 @@
         <p>2026 年 5 月 19 日那一週，微軟做了兩件看起來無關、其實是同一件事的事。</p>
 <p>第一件：The Information 報導微軟 Experiences + Devices 事業群取消大部分內部 Claude Code 授權，要求工程師在 2026 年 6 月 30 日前全面遷移到 GitHub Copilot CLI。第二件：同一週外流的內部備忘錄警告 GitHub 面臨「生存級風險」，因為 Cursor、Anthropic 的 Claude Code、OpenAI 等自主編程工具「削弱了把程式碼持續上傳到 GitHub 倉庫的必要性」。</p>
 <p>兩件事被各家媒體分開報導，但拼起來才看得到全貌。我認為這不是兩個故事，是同一個故事的因和果。</p>
-<h2 id="六個月內從試用到強制下線"><a href="#六個月內從試用到強制下線" class="headerlink" title="六個月內從試用到強制下線"></a>六個月內從試用到強制下線</h2><p>先把時間線釘好：</p>
+<h2 id="六個月內從試用到強制下線">六個月內從試用到強制下線</h2>
+<p>先把時間線釘好：</p>
 <ul>
 <li><strong>2025 年 12 月</strong>：微軟開始邀請「數千名」內部開發者試用 Claude Code</li>
 <li><strong>2026 年 1 月</strong>：試用擴展至 Experiences + Devices 事業群全體，涵蓋 Windows、Microsoft 365、Outlook、Teams、Surface 工程團隊</li>
@@ -135,23 +136,27 @@
 <li><strong>2026 年 6 月 30 日</strong>：微軟財年結束日，也是 Claude Code 內部完全停用的硬截止日</li>
 </ul>
 <p>六個月。從「邀請試用」到「強制下線」，時程比一般企業淘汰開發工具快得多。一般情況下大型企業導入新工具的試錯期都用「年」算，這次走完整個 lifecycle 只用了半年，而且不是工具自己掛掉——是被決策層掐掉的。</p>
-<h2 id="微軟給的理由——sandbox-比-autonomous-安全"><a href="#微軟給的理由——sandbox-比-autonomous-安全" class="headerlink" title="微軟給的理由——sandbox 比 autonomous 安全"></a>微軟給的理由——sandbox 比 autonomous 安全</h2><p>微軟的官方說法來自執行副總裁 Rajesh Jha：「Copilot CLI 給了我們特別重要的東西——一個我們可以直接與 GitHub 一起塑造的產品，服務微軟的儲存庫、工作流程、安全預期和工程需求。」</p>
+<h2 id="微軟給的理由——sandbox-比-autonomous-安全">微軟給的理由——sandbox 比 autonomous 安全</h2>
+<p>微軟的官方說法來自執行副總裁 Rajesh Jha：「Copilot CLI 給了我們特別重要的東西——一個我們可以直接與 GitHub 一起塑造的產品，服務微軟的儲存庫、工作流程、安全預期和工程需求。」</p>
 <p>技術上，Copilot CLI 對指定目錄外的寫入設明確確認關卡，治理邊界比 Claude Code 的 autonomous execution model 清楚——Claude Code agent 拿到任務後自己決定要動哪些檔案、跑哪些指令，介入點較少。對企業 IT 來說，這是兩種完全不同的責任歸屬模型。</p>
 <p>這個說法在表面上站得住腳。微軟管著上百個 production codebase，加上 SOX 合規、機密程式碼隔離、供應鏈安全審查，autonomous agent 確實會踩很多既有的安全紅線。我自己在公司導 AI 工具的時候，IT 部門也是第一時間拿 sandbox 邊界當必要條件，這不是微軟特別保守，是企業 IT 的標準直覺。</p>
 <p>平心而論，微軟立場合理的部分是：當你的程式碼觸及作業系統核心、企業帳務、或客戶 PII 的時候，agent 自己決定要動哪些檔案本來就是一條紅線。Copilot CLI 強制每一步寫入都要明確確認，這對審計流程確實比較好接。</p>
 <p>但這個解釋有個盲點：如果 sandbox vs autonomous 真的是核心問題，為什麼是 2025 年 12 月才開始大規模試用、半年後才強制下線？Claude Code 的執行模型從第一天就是 autonomous，這不是 2026 年新出現的特性。如果安全是首要原因，這條紅線在 12 月邀請試用之前就該畫好。</p>
-<h2 id="91-工程師已經用-Copilot，微軟還是讓數千人試用-Claude-Code"><a href="#91-工程師已經用-Copilot，微軟還是讓數千人試用-Claude-Code" class="headerlink" title="91% 工程師已經用 Copilot，微軟還是讓數千人試用 Claude Code"></a>91% 工程師已經用 Copilot，微軟還是讓數千人試用 Claude Code</h2><p>我認為真正的轉折在這個數字：根據微軟自己公開的 2025 年資料，91% 的工程團隊使用 GitHub Copilot。這是一個已經接近天花板的內部覆蓋率。</p>
+<h2 id="91-工程師已經用-Copilot，微軟還是讓數千人試用-Claude-Code">91% 工程師已經用 Copilot，微軟還是讓數千人試用 Claude Code</h2>
+<p>我認為真正的轉折在這個數字：根據微軟自己公開的 2025 年資料，91% 的工程團隊使用 GitHub Copilot。這是一個已經接近天花板的內部覆蓋率。</p>
 <p>然後 Claude Code 進來了——而且微軟自己主動發出邀請，2025/12 起讓數千名 E+D 工程師試用、2026/01 擴展至整個事業群。即使 Copilot 覆蓋率已高，微軟仍願意打開這個試用通道，這本身就代表內部對「現有工具是否夠用」存在懷疑。</p>
 <p>把這兩件事放在一起讀：當你公司已經有 91% 工程師在用自家 AI 工具、卻還是要替數千人開外部競品的試用權限——這不是邊緣使用者偷渡，這是高層認可的內部評測。如果評測結果是「Copilot CLI 完勝」，2026 年 6 月底的硬截止日就不會存在；繼續用就好。</p>
 <p>至少從遷移壓力來看，微軟不希望 Claude Code 繼續成為內部工作流的選項。Rajesh Jha 那句「我們可以直接與 GitHub 一起塑造的產品」要這樣讀：重點不是「塑造」，重點是「我們的」。</p>
-<h2 id="「生存級風險」到底在指什麼"><a href="#「生存級風險」到底在指什麼" class="headerlink" title="「生存級風險」到底在指什麼"></a>「生存級風險」到底在指什麼</h2><p>同一週洩出的另一份備忘錄就更直白。微軟內部用「生存級風險」（existential risk）形容 GitHub 的處境。這個詞在企業內部備忘錄裡很重——通常只給「業務本身有可能消失」的情境。</p>
+<h2 id="「生存級風險」到底在指什麼">「生存級風險」到底在指什麼</h2>
+<p>同一週洩出的另一份備忘錄就更直白。微軟內部用「生存級風險」（existential risk）形容 GitHub 的處境。這個詞在企業內部備忘錄裡很重——通常只給「業務本身有可能消失」的情境。</p>
 <p>GitHub 目前的體量沒有要崩。Microsoft 2026 Q2 財報（2026 年 1 月）透露 GitHub Copilot 付費訂閱數約 470 萬、年增 75%，Copilot 自身 ARR 接近 10 億美元；GitHub 整體註冊使用者超過 1.5 億。這不是會明天消失的業務。所以「生存級風險」指的是什麼？</p>
 <p>備忘錄裡那句話是關鍵：「削弱了把程式碼持續上傳到 GitHub 倉庫的必要性」。</p>
 <p>老實說我第一次讀這句話也愣了一下，因為它的字面意思是「AI 會殺掉 git 託管」，這聽起來像 2025 年某個 Hacker News thread 的科幻假設。但仔細想其實是另一個意思。</p>
 <p>當 AI agent 直接在 IDE 裡從規格寫到 PR、commit message 由 LLM 生成、code review 由另一個 agent 跑——「人類開發者打開 GitHub 網頁去 review 一個 PR」的這個動作，會變得越來越少。不是 git 儲存庫消失，是 GitHub 作為「工作流前端」的價值在被掏空。</p>
 <p>而 GitHub 的商業模式是 per-seat 訂閱。Copilot Enterprise 一個席位 39 美元/月；如果連 GitHub Enterprise Cloud 的 21 美元也算進去，企業採購看到的是一整包席位成本，而不是單一工具費。當 AI agent 變成主要的程式碼編輯者，公司還要為每個人類工程師付這整包嗎？或者 agent 才是真正的使用者，計費單位應該換成 token / API call？</p>
 <p>這就是「生存級風險」的真意——不是 Git 會死，是 per-seat 訂閱模式會死。GitHub 已經宣布 2026 年 6 月 1 日全面改 usage-based billing、每月送固定 AI credits——這個切換不是巧合，是同一個壓力下的提前止血。</p>
-<h2 id="為什麼這兩件事是同一件事"><a href="#為什麼這兩件事是同一件事" class="headerlink" title="為什麼這兩件事是同一件事"></a>為什麼這兩件事是同一件事</h2><p>把兩條線拼回去：</p>
+<h2 id="為什麼這兩件事是同一件事">為什麼這兩件事是同一件事</h2>
+<p>把兩條線拼回去：</p>
 <ol>
 <li>微軟內部最強的 AI coding 工具是 Anthropic 做的，不是自家做的</li>
 <li>GitHub 的訂閱模式被 AI agent 工作流威脅</li>
@@ -159,7 +164,8 @@
 </ol>
 <p>如果繼續讓工程師在 Claude Code 裡寫程式、再透過某個外掛或 wrapper 推回 GitHub，那「程式碼到底是在哪個工作流裡產生的」這件事就不歸微軟管了。微軟真正要守住的是程式碼產生發生在自己的工具底下——這樣下一季財報才講得出 GitHub 在 AI coding 鏈條的關鍵位置。</p>
 <p>這是企業政治決策，不是技術決策。承認這一點對微軟一點壞處都沒有——任何上規模的公司面對「員工偏好競爭對手產品」這種狀況，反應都會差不多。差別只是有沒有公開承認。</p>
-<h2 id="對不在微軟工作的我們有什麼意義"><a href="#對不在微軟工作的我們有什麼意義" class="headerlink" title="對不在微軟工作的我們有什麼意義"></a>對不在微軟工作的我們有什麼意義</h2><p>說回我們這些不在微軟工作的人。這件事的訊號是什麼？</p>
+<h2 id="對不在微軟工作的我們有什麼意義">對不在微軟工作的我們有什麼意義</h2>
+<p>說回我們這些不在微軟工作的人。這件事的訊號是什麼？</p>
 <p><strong>第一個訊號：當 AI 編程工具的差距大到內部測試輸給競品時，企業的反應是政治性的，不是技術性的。</strong> 如果你在公司裡推某個工具，準備好被反問「為什麼不用自家有的」。技術優勢有時候不是賣點，是麻煩。</p>
 <p><strong>第二個訊號：per-seat 訂閱會被重新評估。</strong> GitHub 改成使用量計費只是開始。下一波會輪到 IDE 訂閱、CI/CD 訂閱、code review 工具訂閱。如果你在做開發者工具，現在就要想清楚未來的計費單位是「人」還是「token」。</p>
 <p><strong>對你公司導入 AI coding 工具時的實際建議：</strong> 不要只比模型能力。先把這幾題問清楚——權限邊界誰定、agent 動了哪些檔案誰負責 log、PR 來自 agent 還是人類能不能分流 review、計費出問題的時候對 supplier 還是內部 cost center。這些 governance 細節，在工具決定之後再補通常已經來不及。</p>
@@ -256,15 +262,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

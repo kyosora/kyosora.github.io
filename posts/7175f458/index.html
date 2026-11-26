@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽 | kyosora 筆記</title>
+<meta name="description" content="Win11 25H2 的 QTTabBar 分頁列不見了？查了載入紀錄、刪掉優先權 15 的 feature flag 還是救不回來；改把自製的懸停預覽工具 HoverPeek 重構變快，附解碼加速與三個卡死的實測。">
+<link rel="canonical" href="https://kyosora.github.io/posts/7175f458/">
+
+<meta name="author" content="kyosora">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f4f6f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1820" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽">
+<meta property="og:description" content="Win11 25H2 的 QTTabBar 分頁列不見了？查了載入紀錄、刪掉優先權 15 的 feature flag 還是救不回來；改把自製的懸停預覽工具 HoverPeek 重構變快，附解碼加速與三個卡死的實測。">
+<meta property="og:url" content="https://kyosora.github.io/posts/7175f458/">
+
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/images/posts/qttabbar-win11-25h2-feature-flag-hoverpeek-cover.webp">
+<meta name="twitter:image" content="https://kyosora.github.io/images/posts/qttabbar-win11-25h2-feature-flag-hoverpeek-cover.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="article:published_time" content="2026-11-26T08:15:00.000Z">
+<meta property="article:modified_time" content="2026-11-26T08:15:00.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:section" content="程式設計">
+<meta property="article:tag" content="效能優化">
+<meta property="article:tag" content="QTTabBar">
+<meta property="article:tag" content="Windows 11">
+<meta property="article:tag" content="HoverPeek">
+<meta property="article:tag" content="WPF">
+<meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k">
+<meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E">
+<meta name="baidu-site-verification" content="code-pE5rnuxcfD">
+<link rel="icon" href="/images/favicon.png">
+<link rel="alternate" type="application/atom+xml" title="kyosora 筆記" href="/atom.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&amp;display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/css/kyosora.css?v=4bf38b40">
+
+<script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽","description":"Win11 25H2 的 QTTabBar 分頁列不見了？查了載入紀錄、刪掉優先權 15 的 feature flag 還是救不回來；改把自製的懸停預覽工具 HoverPeek 重構變快，附解碼加速與三個卡死的實測。","url":"https://kyosora.github.io/posts/7175f458/","mainEntityOfPage":"https://kyosora.github.io/posts/7175f458/","image":"https://kyosora.github.io/images/posts/qttabbar-win11-25h2-feature-flag-hoverpeek-cover.webp","datePublished":"2026-11-26T08:15:00.000Z","dateModified":"2026-11-26T08:15:00.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"程式設計","keywords":"效能優化, QTTabBar, Windows 11, HoverPeek, WPF"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"程式設計","item":"https://kyosora.github.io/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/"},{"@type":"ListItem","position":3,"name":"Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽","item":"https://kyosora.github.io/posts/7175f458/"}]}]}</script>
+
+</head>
+<body class="kind-post">
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
+<symbol id="i-rss" viewBox="0 0 24 24"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.2"/></symbol>
+</svg>
+
+<a class="skip" href="#main">跳到內文</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/">kyosora 筆記</a>
+    <nav class="nav" aria-label="主要選單">
+      
+      <a href="/">首頁</a>
+      
+      <a href="/archives/">歸檔</a>
+      
+      <a href="/categories/">分類</a>
+      
+      <a href="/tags/">標籤</a>
+      
+      <a href="/about/">關於</a>
+      
+    </nav>
+    <div class="tools">
+      <button class="tool" type="button" data-action="search" aria-label="搜尋文章（快捷鍵 /）" title="搜尋（/）"><svg class="icon"><use href="#i-search"/></svg></button>
+      <button class="tool tool--text" type="button" data-action="translate" aria-label="切換成簡體中文" title="繁簡切換">簡</button>
+      <button class="tool" type="button" data-action="theme" aria-label="切換深色模式" title="深淺色切換"><svg class="icon icon-moon"><use href="#i-moon"/></svg><svg class="icon icon-sun"><use href="#i-sun"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<article class="post">
+  <header class="post-head">
+    
+    <figure class="post-banner"><img src="/images/posts/qttabbar-win11-25h2-feature-flag-hoverpeek-cover.webp" alt="" width="1536" height="1024" fetchpriority="high" decoding="async"></figure>
+    
+    <div class="wrap post-head-inner">
+      
+<nav class="crumbs" aria-label="目前位置">
+  <ol>
+  
+    <li><a href="/">首頁</a></li>
+  
+    <li><a href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a></li>
+  
+  </ol>
+</nav>
+
+
+      <h1 class="post-title">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</h1>
+      <p class="post-meta">
+        <span>發布於 <time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></span>
+        
+        <span>約 10 分鐘讀完</span>
+        <span class="views" data-views hidden></span>
+      </p>
+    </div>
+  </header>
+
+  <div class="wrap post-layout">
+    
+    <aside class="post-aside">
+      <details class="toc-box" open>
+        <summary>目錄</summary>
+        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E7%9C%8B%E5%85%A9%E5%80%8B%E5%85%83%E4%BB%B6%E6%9C%80%E5%BE%8C%E4%B8%80%E6%AC%A1%E7%95%99%E4%B8%8B%E7%B4%80%E9%8C%84%E7%9A%84%E6%99%82%E9%96%93"><span class="toc-text">先看兩個元件最後一次留下紀錄的時間</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E5%80%8B-feature%EF%BC%8C%E8%A2%AB%E6%9B%B4%E9%AB%98%E7%9A%84%E5%84%AA%E5%85%88%E6%AC%8A%E9%96%8B%E8%91%97"><span class="toc-text">三個 feature，被更高的優先權開著</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E5%BB%BA%E5%B7%A5%E5%85%B7%E5%88%97%E7%89%88%E9%9D%A2%E5%BE%8C%EF%BC%8C%E6%88%91%E5%8F%88%E6%9F%A5%E4%BA%86%E5%93%AA%E4%BA%9B%E5%9C%B0%E6%96%B9"><span class="toc-text">重建工具列版面後，我又查了哪些地方</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E8%A6%81%E7%9A%84%E5%85%B6%E5%AF%A6%E5%8F%AA%E6%98%AF%E9%A0%90%E8%A6%BD"><span class="toc-text">我要的其實只是預覽</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E4%BA%86%E4%B8%80%E9%99%A3%E5%AD%90%E6%89%8D%E7%88%86%E5%87%BA%E4%BE%86%E7%9A%84%E4%B8%89%E5%80%8B%E5%8D%A1%E6%AD%BB"><span class="toc-text">用了一陣子才爆出來的三個卡死</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E9%A0%AD%E7%9C%8B"><span class="toc-text">回頭看</span></a></li></ol></nav>
+      </details>
+    </aside>
+    
+
+    <div class="post-main">
+      <div class="prose" id="article">
+        <p>我的一台 Win11 25H2（26200.9457），檔案總管裡 QTTabBar 的分頁列不見了，把 QTTabBar 升到 1.6.4 也一樣。</p>
+<p>我前後追了兩輪。第一輪查到三個 feature 被一組優先權更高的設定開著，刪掉之後重開，三個 feature 都顯示停用。第二輪才確認：旗標關了，分頁列還是沒出來。最後我放棄了，回頭重構三月用 AI 寫的 HoverPeek，因為我一開始要的就只是 QTTabBar 的懸停預覽。</p>
+<p>前半寫 QTTabBar 我查到哪裡、試了什麼都沒用；後半寫 HoverPeek v1.3 怎麼變快，又在哪裡卡死過。</p>
+<h2 id="先看兩個元件最後一次留下紀錄的時間">先看兩個元件最後一次留下紀錄的時間</h2>
+<p>QTTabBar 有兩個元件：AutoLoader 是 BHO，負責在檔案總管開啟時把分頁列叫出來；分頁列本身是一個 Explorer band。</p>
+<p>Windows 會在 <code>HKCU\Software\Microsoft\Windows\CurrentVersion\Ext\Stats\&#123;CLSID&#125;\iexplore</code> 底下記一個 <code>Time</code>，格式是 SYSTEMTIME（UTC），跟這個元件被檔案總管載入的時間有關。QTTabBar 的 CLSID 第四段是 <code>A777</code> 的是 AutoLoader，<code>A333</code> 的是分頁列：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$base</span> = <span class="string">&#x27;HKCU:\Software\Microsoft\Windows\CurrentVersion\Ext\Stats&#x27;</span></span><br><span class="line"><span class="built_in">Get-ChildItem</span> <span class="variable">$base</span> | <span class="built_in">ForEach-Object</span> &#123;</span><br><span class="line">    <span class="variable">$t</span> = (<span class="built_in">Get-ItemProperty</span> (<span class="built_in">Join-Path</span> <span class="variable">$_</span>.PSPath <span class="string">&#x27;iexplore&#x27;</span>) <span class="literal">-ErrorAction</span> SilentlyContinue).Time</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$t</span> <span class="operator">-and</span> <span class="variable">$t</span>.Length <span class="operator">-ge</span> <span class="number">16</span>) &#123;</span><br><span class="line">        <span class="comment"># SYSTEMTIME：8 個 UInt16，依序是年、月、星期、日、時、分、秒、毫秒（UTC）</span></span><br><span class="line">        <span class="variable">$f</span> = <span class="number">0</span>..<span class="number">7</span> | <span class="built_in">ForEach-Object</span> &#123; [<span class="type">BitConverter</span>]::ToUInt16(<span class="variable">$t</span>, <span class="variable">$_</span> * <span class="number">2</span>) &#125;</span><br><span class="line">        [<span class="type">pscustomobject</span>]<span class="selector-tag">@</span>&#123;</span><br><span class="line">            Clsid      = <span class="variable">$_</span>.PSChildName</span><br><span class="line">            RecordedTimeUtc = (<span class="built_in">Get-Date</span> <span class="literal">-Year</span> <span class="variable">$f</span>[<span class="number">0</span>] <span class="literal">-Month</span> <span class="variable">$f</span>[<span class="number">1</span>] <span class="literal">-Day</span> <span class="variable">$f</span>[<span class="number">3</span>] <span class="literal">-Hour</span> <span class="variable">$f</span>[<span class="number">4</span>] <span class="literal">-Minute</span> <span class="variable">$f</span>[<span class="number">5</span>] <span class="literal">-Second</span> <span class="variable">$f</span>[<span class="number">6</span>]).ToString(<span class="string">&#x27;yyyy-MM-dd HH:mm:ss&#x27;</span>) + <span class="string">&#x27; UTC&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125; | <span class="built_in">Format-Table</span> <span class="literal">-AutoSize</span></span><br></pre></td></tr></table></figure>
+<p>出問題的那台，我開啟檔案總管後，<code>A777</code> 的 <code>Time</code> 仍會更新；<code>A333</code> 最後一筆停在 2026-02-02。我無法從這個日期判定分頁列何時開始失效。能確定的是，我在升級 QTTabBar 之前就看不到分頁列了，升到 1.6.4 後也沒有恢復。</p>
+<p>寫這篇時，我在另一台 26200.9974 上也跑過同一段腳本，兩個元件的時間都停在 2 月 13 日；那台我沒有繼續追。</p>
+<h2 id="三個-feature，被更高的優先權開著">三個 feature，被更高的優先權開著</h2>
+<p>QTTabBar 社群（indiff 維護的分支）有兩張 issue 記錄了這件事。#429 有人回報，2025 年 12 月的 KB5072033（26200.7462）之後分頁列消失，用 ViVeTool 停用三個 feature（<code>57048216</code>、<code>57048237</code>、<code>58988972</code>）再重開就恢復了。到了 2026 年 3 月的 KB5079473（26200.8037）之後，#432 有人說重跑同樣三行沒用，也有人說仍然有效。</p>
+<p>我這台的情況是，這三個 feature 在 <code>HKLM\SYSTEM\CurrentControlSet\Control\FeatureManagement\Overrides\15</code> 底下還各有一筆設定。Feature 設定有優先權，ViVeTool 原始碼裡的列舉寫得很清楚：<code>User</code> 是 8，<code>ImageOverride</code> 是 15。<code>vivetool /disable</code> 寫的是 8，比 15 低。</p>
+<table>
+<thead>
+<tr>
+<th>ViVeTool ID</th>
+<th>Overrides\15 底下的 key 名</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>57048216</td>
+<td>815149711</td>
+</tr>
+<tr>
+<td>57048237</td>
+<td>1519792783</td>
+</tr>
+<tr>
+<td>58988972</td>
+<td>1482552975</td>
+</tr>
+</tbody>
+</table>
+<p>這三個 key 的擁有者是 SYSTEM，只有 TrustedInstaller 有完整控制權，Administrators 只能讀。我先 <code>reg export</code> 備份整個 <code>Overrides\15</code>，再取得擁有權、刪掉這三個 key（<code>Overrides\8</code> 沒動），補跑一次 ViVeTool，重開機。之後查這三個 feature，都是 <code>User (8) Disabled</code>。</p>
+<p><strong>三個 feature 都停用了，分頁列還是沒有出來。</strong> 取得擁有權的腳本我就不貼了：要動 SYSTEM 擁有的登錄機碼，最後還沒用。</p>
+<h2 id="重建工具列版面後，我又查了哪些地方">重建工具列版面後，我又查了哪些地方</h2>
+<ul>
+<li>檔案總管存工具列版面的 <code>ITBar7Layout</code> 裡，我查到的時候沒有 QTTabBar 的 CLSID。我備份後刪掉，讓檔案總管重建。</li>
+<li>刪掉 <code>HKCU\Software\QTTabBar\ActivationDate</code>。這個值存在時，AutoLoader 只會在第一次自動啟用分頁列。刪掉後 AutoLoader 確實重跑了，但 <code>A333</code> 一直沒有新的時間紀錄。</li>
+<li>打開選項裡的「Enable QTTabBar on every Explorer window (experimental)」，hook 程式庫有載入，畫面上還是什麼都沒有。</li>
+<li>列舉檔案總管的子視窗：我檢查到的 <code>ShellTabWindowClass &gt; WorkerW &gt; ReBarWindow32</code> 不是隱藏，就是高度為 0，裡面找不到任何 WindowsForms 視窗。</li>
+</ul>
+<p>查到這裡，我仍沒能讓這台的分頁列顯示出來。我推測 26200.9457 的檔案總管已經不再顯示舊式的 band 容器，但手上的紀錄證明不了這一點。</p>
+<p>社群還有別的路。#429 有人回報，他在 26200.8037 用 QTTabBar 2048 Beta2，搭配 Windhawk 的「Classic Explorer navigation bar」模組（設成 Classic ribbon UI (no tabs)），再用 ViVeTool 停用 <code>57048216</code> 和 <code>57048237</code>，可以用，但分頁列只能放在視窗底部。#432 另一位留言者刪過 <code>Overrides\8</code> 和 <code>Overrides\15</code> 底下的機碼，也裝了 Windhawk，能叫出側邊列和底部列，但關掉檔案總管後就重置。也有人用 ExplorerPatcher、StartAllBack 換回 Win10 風格的檔案總管。這些我都沒試。</p>
+<h2 id="我要的其實只是預覽">我要的其實只是預覽</h2>
+<p>QTTabBar 我用最多的是懸停預覽：滑鼠停在檔案上，圖片、影片、文字就浮出來。三月它的預覽功能壞掉時，我已經用 AI 寫過一個替代品 <a target="_blank" rel="noopener" href="https://github.com/kyosora/HoverPeek">HoverPeek</a>（當時的經過寫在<a href="/posts/3cec7cfd/">這篇</a>）。這次分頁列也沒了，我決定不再跟檔案總管的內部結構搏鬥，把力氣花在自己能控制的工具上。</p>
+<p>v1.2 的 HoverPeek，從停下游標到預覽淡入完成，大約 750 到 850 毫秒：固定等 500 毫秒，解碼 100 到 200 毫秒，再淡入 150 毫秒。</p>
+<p>我本來以為，光是從檔案總管找出游標下的檔案就很花時間，量起來只要 6 到 9 毫秒（UI Automation 加 Shell COM）。真正浪費的是圖片：先解出全解析度，用高品質濾鏡縮小，再編成 PNG 交給 WPF，WPF 又把 PNG 解一次。那 500 毫秒的等待，期間也什麼事都沒做。</p>
+<p>這次重構跟三月一樣，大部分程式碼是 Claude Code 寫的，v1.3 的 commit 上看得到它的 co-author。改了三件事：</p>
+<ul>
+<li>等待期間就先開工：游標停穩 60 毫秒就在背景找檔案、解碼，滿 400 毫秒才顯示預覽，這時多半已經算好了。同一個檔案的並行請求共用同一次解碼；檔案沒改、結果還在最近 24 筆快取裡的話，移回去後滿 400 毫秒就直接用快取結果，不必再解碼。</li>
+<li>縮小解碼：JPEG 可以在解碼階段就以 1/8、2/8……的比例縮小，不必先解出全尺寸。縮好的像素直接交給 WPF，不再繞一圈 PNG。我測的圖片解碼流程快了 2.4 到 13 倍。</li>
+<li>先拿 Windows 的縮圖頂著：呼叫 <code>IShellItemImageFactory</code> 時帶 <code>SIIGBF_THUMBNAILONLY</code> 和 <code>SIIGBF_INCACHEONLY</code>，只要縮圖、只查 Shell 既有的快取，不要求它現做。Windows 已經有快取縮圖時，我量到取圖約 5 到 15 毫秒，清晰版好了再換掉。</li>
+</ul>
+<p>淡入時間也從 150 毫秒縮到 60 毫秒。從停下游標到淡入完成的整段時間，我沒有用同一個口徑重新量測，上面都是分段的數字。</p>
+<p>縮小解碼有一個坑。SkiaSharp 的 <code>GetScaledDimensions</code> 回傳的是「最接近」的級距，可能比你要的還小：6000px 的照片要縮到 800px，最接近的是 1/8，也就是 750px。小於目標時直接退回全尺寸解碼，一張 8MB 的 JPEG 要 112 毫秒；往上找一級（2/8）只要 67 毫秒。這是 benchmark 出現「螢幕縮放 100% 反而比 150% 慢」才抓到的：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">internal</span> <span class="keyword">static</span> SKSizeI <span class="title">ChooseDecodeSize</span>(<span class="params">SKCodec codec, <span class="built_in">int</span> targetW, <span class="built_in">int</span> targetH</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> source = codec.Info;</span><br><span class="line">    <span class="comment">// 從 1/8 往上找第一個不小於目標的級距；</span></span><br><span class="line">    <span class="comment">// 若 codec 對每個比例都回傳原尺寸，就落到原尺寸</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> eighths = <span class="number">1</span>; eighths &lt; <span class="number">8</span>; eighths++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> size = codec.GetScaledDimensions(eighths / <span class="number">8f</span>);</span><br><span class="line">        <span class="keyword">if</span> (size.Width &gt;= targetW &amp;&amp; size.Height &gt;= targetH)</span><br><span class="line">            <span class="keyword">return</span> size;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> SKSizeI(source.Width, source.Height);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="用了一陣子才爆出來的三個卡死">用了一陣子才爆出來的三個卡死</h2>
+<p>v1.3 發出去，用了不到一天就卡死了，接著修出 v1.3.2。三個問題都是實際用到才遇上的。</p>
+<p><strong>一行 104 萬字元的 JSON。</strong> 壓縮過的 JSON、JS 常常整份只有一行。預覽讀的是前 1MB，讀檔只要 2 到 4 毫秒，卡住的是 AvalonEdit 和 TextBox 在 UI 執行緒上排版這一行。實際卡死的是兩個壓縮過的 JSON，我在不顯示視窗的情況下用同樣兩個檔案重跑排版，花了 59.9 秒。要限制的是行長，不是讀取量：現在每行最多顯示 2000 字元，超過就截斷並標示原因。</p>
+<p><strong>2.3MB 的 GIF 吃掉 7.6GB 記憶體。</strong> 這個 GIF 是 1080p、300 格，存在磁碟上只有 2.3MB。舊版用的 WpfAnimatedGif 會在 UI 執行緒一次解碼、合成所有影格，實測記憶體用到 7.6GB，UI 卡了 19.9 秒。改成背景用 Skia 逐格解碼、縮到顯示尺寸再交給 UI 之後，同一個檔案的最長卡頓降到 28 毫秒，記憶體只多了 4MB。</p>
+<p><strong>HoverPeek 一卡，整台電腦的滑鼠跟著頓。</strong> 低階滑鼠 hook（<code>WH_MOUSE_LL</code>）的回呼在安裝它的執行緒上執行，Windows 每次滑鼠移動都要等它返回。原本 hook 裝在 UI 執行緒，排版一卡住，滑鼠事件也被拖住。微軟文件寫得很直接：回呼超過 <code>LowLevelHooksTimeout</code>，Windows 7 以後會直接把 hook 移除，程式不會收到任何通知。hook 被移除後，HoverPeek 就收不到觸發預覽的滑鼠事件，直到重新安裝 hook。同一份文件也建議把低階 hook 放在專屬執行緒上，耗時的工作交出去，讓回呼盡快返回。現在 HoverPeek 就是這樣做：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> thread = <span class="keyword">new</span> Thread(() =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    _hook.Install();                       <span class="comment">// 回呼會在這條執行緒上執行</span></span><br><span class="line">    _dispatcher = Dispatcher.CurrentDispatcher;</span><br><span class="line">    ready.SetResult(<span class="literal">null</span>);</span><br><span class="line">    Dispatcher.Run();                      <span class="comment">// 訊息迴圈：LL hook 的回呼靠它派送</span></span><br><span class="line">&#125;)</span><br><span class="line">&#123;</span><br><span class="line">    IsBackground = <span class="literal">true</span>,</span><br><span class="line">    Name = <span class="string">&quot;HoverPeek.MouseHook&quot;</span>,</span><br><span class="line">&#125;;</span><br><span class="line">thread.SetApartmentState(ApartmentState.STA);</span><br><span class="line">thread.Start();</span><br></pre></td></tr></table></figure>
+<p>（實際檔案還有安裝失敗時把例外丟回呼叫端、逾時檢查和 Dispose，這裡只留骨架。）</p>
+<p>UI 卡住時，日誌也寫不出東西，因為卡住的就是要寫日誌的那條執行緒。所以 v1.3.2 加了一個看門狗執行緒，每秒排一個小工作給 UI，超過 3 秒沒被執行，就記下當時正在預覽的檔案路徑。</p>
+<h2 id="回頭看">回頭看</h2>
+<p>QTTabBar 的懸停預覽，是我用過最順手的檔案總管功能。這次連分頁列都救不回來，有點可惜。</p>
+<p>追的過程不算白費。下次檔案總管又有東西消失，我會先看 <code>Ext\Stats</code> 的最後一筆時間紀錄，再看 <code>Overrides</code> 底下有沒有更高優先權的設定。但再追下去，就是跟每個月的累積更新拔河。</p>
+<p>HoverPeek 也靠 UI Automation 和 Shell COM 判斷游標下是哪個檔案，哪天微軟改了這一層，它一樣會壞。差別在於，到時候修的人是我。</p>
+
+      </div>
+      
+<footer class="post-end">
+  
+  <ul class="post-tags" aria-label="標籤">
+    <li><a href="/tags/%E6%95%88%E8%83%BD%E5%84%AA%E5%8C%96/">效能優化</a></li><li><a href="/tags/QTTabBar/">QTTabBar</a></li><li><a href="/tags/Windows-11/">Windows 11</a></li><li><a href="/tags/HoverPeek/">HoverPeek</a></li><li><a href="/tags/WPF/">WPF</a></li>
+  </ul>
+  
+
+  <section class="license" aria-label="版權資訊">
+    <p>作者 <a href="/about/">kyosora</a>。本文網址 <a href="https://kyosora.github.io/posts/7175f458/">https://kyosora.github.io/posts/7175f458/</a></p>
+    <p>以 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license noopener" target="_blank">CC BY-NC-SA 4.0</a> 授權，轉載請註明出處。</p>
+  </section>
+
+  <div class="share" aria-label="分享這篇文章">
+    <span class="share-label">分享</span>
+    
+    <a class="chip" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fkyosora.github.io%2Fposts%2F7175f458%2F" target="_blank" rel="noopener nofollow">Facebook</a>
+    
+    <a class="chip" href="https://x.com/intent/post?url=https%3A%2F%2Fkyosora.github.io%2Fposts%2F7175f458%2F&amp;text=Win11%2025H2%20%E7%9A%84%20QTTabBar%20%E5%88%86%E9%A0%81%E5%88%97%E6%95%91%E4%B8%8D%E5%9B%9E%E4%BE%86%EF%BC%8C%E6%88%91%E6%94%B9%E7%94%A8%20HoverPeek%20%E5%81%9A%E6%87%B8%E5%81%9C%E9%A0%90%E8%A6%BD" target="_blank" rel="noopener nofollow">X</a>
+    
+    <a class="chip" href="https://social-plugins.line.me/lineit/share?url=https%3A%2F%2Fkyosora.github.io%2Fposts%2F7175f458%2F" target="_blank" rel="noopener nofollow">LINE</a>
+    
+    <button class="chip" type="button" data-action="copy-link" data-url="https://kyosora.github.io/posts/7175f458/">複製連結</button>
+    <button class="chip" type="button" data-action="native-share" data-url="https://kyosora.github.io/posts/7175f458/" data-title="Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽" hidden>更多分享方式</button>
+  </div>
+
+  
+  <nav class="neighbours" aria-label="前後篇">
+    
+    <a class="neighbour neighbour--older" href="/posts/7d2b90da/">
+      <span class="neighbour-label">前一篇</span>
+      <span class="neighbour-title">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</span>
+    </a>
+    
+    <a class="neighbour neighbour--newer" href="/posts/4f8c5648/">
+      <span class="neighbour-label">下一篇</span>
+      <span class="neighbour-title">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</span>
+    </a>
+    
+  </nav>
+  
+
+  
+  <section class="related" aria-labelledby="related-title">
+    <h2 id="related-title">相關文章</h2>
+    <ul class="related-list">
+    
+      <li>
+        <a href="/posts/b225451/">
+          <img src="/images/posts/hexo-view-transition-found-image-bloat-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">Hexo blog 想加 iOS 風炫過場？跑半天 morph 沒成，反而發現自己藏了 84MB 圖片巨石</span>
+          <span class="related-date">2026-06-22</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/84f27add/">
+          <img src="/images/posts/legacy-84f27add-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">告別Python套件地獄：為何資深工程師都在改用uv取代venv和conda？</span>
+          <span class="related-date">2025-04-18</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/2a83fb82/">
+          <img src="/images/posts/legacy-2a83fb82-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">圖解 C# yield - 5分鐘讓你輕鬆掌握迭代器</span>
+          <span class="related-date">2024-12-19</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/6acecdaf/">
+          <img src="/images/posts/legacy-6acecdaf-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">Mojo 號稱比 Python 快幾萬倍：拆解這個數字，認識這個語言真正的樣子</span>
+          <span class="related-date">2024-08-22</span>
+        </a>
+      </li>
+    
+    </ul>
+  </section>
+  
+
+  
+  <section class="recent" aria-labelledby="recent-title">
+    <h2 id="recent-title">最近寫的</h2>
+    <ul>
+    
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
+    
+      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
+    
+    </ul>
+  </section>
+  
+
+  
+<section class="comments" id="comments" aria-labelledby="comments-title">
+  <h2 id="comments-title">留言</h2>
+  <div class="giscus-slot" data-giscus><p class="comments-note">往下捲到這裡才會載入留言區（使用 GitHub 帳號留言）。</p></div>
+</section>
+
+
+</footer>
+
+    </div>
+  </div>
+</article>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>© 2024–2026 kyosora。文章以 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license noopener" target="_blank">CC BY-NC-SA 4.0</a> 授權。</p>
+    <p class="footer-links"><a href="/atom.xml">RSS 訂閱</a><a href="https://github.com/kyosora" rel="noopener" target="_blank">GitHub</a><a href="/about/">關於我</a></p>
+  </div>
+</footer>
+
+<dialog class="search" id="search" aria-label="搜尋文章">
+  <form class="search-bar" role="search">
+    <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+    <input type="search" name="q" placeholder="搜尋標題與內文" aria-label="搜尋關鍵字" autocomplete="off" enterkeyhint="search">
+    <button class="tool" type="button" data-close aria-label="關閉搜尋"><svg class="icon"><use href="#i-close"/></svg></button>
+  </form>
+  <p class="search-status" role="status" aria-live="polite"></p>
+  <ol class="search-results"></ol>
+</dialog>
+
+<script>window.KY={"search":"/search.json","twcn":"/js/ky-twcn.js?v=eba49651","codeHeight":400,"mermaid":null,"giscus":{"data-repo":"kyosora/kyosora.github.io","data-repo-id":"R_kgDOLJYL_w","data-category-id":"DIC_kwDOLJYL_84C516C","data-mapping":"pathname","data-input-position":"top","data-lang":"zh-TW","data-reactions-enabled":"1","light":"light","dark":"dark"},"views":{"endpoint":"https://kyosora-views.coasta98381.workers.dev","minSeconds":15,"since":"2026-11","path":"/posts/7175f458/"}}</script>
+<script src="/js/kyosora.js?v=0f20e8d5" defer></script>
+
+</body>
+</html>

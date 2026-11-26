@@ -120,58 +120,74 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="為什麼要移動-Ollama-模型？"><a href="#為什麼要移動-Ollama-模型？" class="headerlink" title="為什麼要移動 Ollama 模型？"></a>為什麼要移動 Ollama 模型？</h2><p>Ollama 預設把所有模型檔案丟在 C 槽，下載幾個大模型之後系統碟就開始告急。本教學帶你把模型搬到 D 槽，並在確認搬移成功後刪掉 C 槽的舊資料，真正把空間釋出來。</p>
-<h2 id="移動前的準備工作"><a href="#移動前的準備工作" class="headerlink" title="移動前的準備工作"></a>移動前的準備工作</h2><ol>
+        <h2 id="為什麼要移動-Ollama-模型？">為什麼要移動 Ollama 模型？</h2>
+<p>Ollama 預設把所有模型檔案丟在 C 槽，下載幾個大模型之後系統碟就開始告急。本教學帶你把模型搬到 D 槽，並在確認搬移成功後刪掉 C 槽的舊資料，真正把空間釋出來。</p>
+<h2 id="移動前的準備工作">移動前的準備工作</h2>
+<ol>
 <li>確認 D 槽有足夠空間</li>
 <li>在右下角系統匣對 Ollama 圖示按右鍵選「Quit Ollama」，確認背景程序完全停止（直接關視窗不夠，背景程序還在跑）</li>
 <li>若有自訂 Modelfile 或用 <code>ollama create</code> 建立的本地模型，先把 Modelfile 另存備份；官方預建模型可隨時用 <code>ollama pull</code> 重下，不需額外備份</li>
 </ol>
-<h2 id="詳細移動步驟"><a href="#詳細移動步驟" class="headerlink" title="詳細移動步驟"></a>詳細移動步驟</h2><h3 id="步驟一：建立新的存放位置"><a href="#步驟一：建立新的存放位置" class="headerlink" title="步驟一：建立新的存放位置"></a>步驟一：建立新的存放位置</h3><ol>
-<li>在 D 槽建立新的資料夾：<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> D:\Ollama\models</span><br></pre></td></tr></table></figure></li>
+<h2 id="詳細移動步驟">詳細移動步驟</h2>
+<h3 id="步驟一：建立新的存放位置">步驟一：建立新的存放位置</h3>
+<ol>
+<li>在 D 槽建立新的資料夾：</li>
 </ol>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> D:\Ollama\models</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>注意這裡多建了一層 <code>models</code>。Ollama 真正的模型檔放在 <code>.ollama\models</code> 底下（裡面有 <code>blobs\</code> 和 <code>manifests\</code> 兩個子資料夾），稍後的環境變數要對準這一層，否則 Ollama 會在錯誤的路徑找不到模型。</p>
 </blockquote>
-<h3 id="步驟二：移動現有模型"><a href="#步驟二：移動現有模型" class="headerlink" title="步驟二：移動現有模型"></a>步驟二：移動現有模型</h3><ol>
-<li><p>打開檔案總管，預設模型位置在：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\[使用者名稱]\.ollama\models</span><br></pre></td></tr></table></figure></li>
-<li><p>建議用 <code>robocopy</code> 複製。<code>/Z</code> 可斷點續傳；<code>/R:3 /W:5</code> 是失敗重試三次、每次等五秒；<code>/COPY:DAT</code> 只複製資料本體、屬性和時間戳，略過 ACL，一般使用者執行不會遇到權限問題：</p>
-</li>
+<h3 id="步驟二：移動現有模型">步驟二：移動現有模型</h3>
+<ol>
+<li>打開檔案總管，預設模型位置在：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\[使用者名稱]\.ollama\models</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>建議用 <code>robocopy</code> 複製。<code>/Z</code> 可斷點續傳；<code>/R:3 /W:5</code> 是失敗重試三次、每次等五秒；<code>/COPY:DAT</code> 只複製資料本體、屬性和時間戳，略過 ACL，一般使用者執行不會遇到權限問題：</li>
 </ol>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">robocopy &quot;C:\Users\[使用者名稱]\.ollama\models&quot; &quot;D:\Ollama\models&quot; /E /<span class="built_in">COPY</span>:DAT /Z /R:<span class="number">3</span> /W:<span class="number">5</span></span><br></pre></td></tr></table></figure>
-
 <p>複製完成後，<code>D:\Ollama\models</code> 底下應該要有 <code>blobs\</code> 和 <code>manifests\</code>，路徑長這樣：<code>D:\Ollama\models\blobs</code>、<code>D:\Ollama\models\manifests</code>。佔最多空間的是 <code>blobs\</code>，模型權重都在那裡。</p>
 <p><code>.ollama</code> 目錄底下還有 <code>id_ed25519</code>、<code>id_ed25519.pub</code>、<code>history</code> 這些檔案，那是金鑰和執行紀錄，不是模型，不用搬。</p>
-<h3 id="步驟三：設定環境變數"><a href="#步驟三：設定環境變數" class="headerlink" title="步驟三：設定環境變數"></a>步驟三：設定環境變數</h3><ol>
+<h3 id="步驟三：設定環境變數">步驟三：設定環境變數</h3>
+<ol>
 <li>按下 Windows + R</li>
 <li>輸入 <code>sysdm.cpl</code> 開啟系統內容</li>
 <li>切換到「進階」頁籤</li>
 <li>點選「環境變數」</li>
-<li>在「使用者變數」區域中新增（Ollama 官方文件就是建議改使用者變數）：<ul>
+<li>在「使用者變數」區域中新增（Ollama 官方文件就是建議改使用者變數）：
+<ul>
 <li>變數名稱：<code>OLLAMA_MODELS</code></li>
 <li>變數值：<code>D:\Ollama\models</code></li>
 </ul>
 </li>
 </ol>
 <p>變數值一定要指到 <code>models</code> 這一層，不是 <code>D:\Ollama</code>。Ollama 會直接把這個路徑當成存放 <code>blobs\</code> 和 <code>manifests\</code> 的目錄；如果填成 <code>D:\Ollama</code>，它會去找 <code>D:\Ollama\blobs</code>，結果就是 <code>ollama list</code> 一片空白。</p>
-<h3 id="步驟四：驗證設定"><a href="#步驟四：驗證設定" class="headerlink" title="步驟四：驗證設定"></a>步驟四：驗證設定</h3><ol>
+<h3 id="步驟四：驗證設定">步驟四：驗證設定</h3>
+<ol>
 <li>環境變數改完後，在右下角系統匣對 Ollama 圖示按右鍵選「Quit Ollama」，再從開始選單重新開啟，新的環境變數才會被讀到。不放心就直接重開機。</li>
-<li>執行以下指令確認模型可以正常使用：<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ollama list</span><br></pre></td></tr></table></figure>
-如果清單列出搬移前的那些模型，就代表 <code>OLLAMA_MODELS</code> 已經指對地方了。</li>
+<li>執行以下指令確認模型可以正常使用：</li>
 </ol>
-<h3 id="步驟五：確認無誤後刪除-C-槽舊資料"><a href="#步驟五：確認無誤後刪除-C-槽舊資料" class="headerlink" title="步驟五：確認無誤後刪除 C 槽舊資料"></a>步驟五：確認無誤後刪除 C 槽舊資料</h3><p><code>ollama list</code> 能正常列出模型之後，才刪除 C 槽的舊資料夾：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ollama list</span><br></pre></td></tr></table></figure>
+<p>如果清單列出搬移前的那些模型，就代表 <code>OLLAMA_MODELS</code> 已經指對地方了。</p>
+<h3 id="步驟五：確認無誤後刪除-C-槽舊資料">步驟五：確認無誤後刪除 C 槽舊資料</h3>
+<p><code>ollama list</code> 能正常列出模型之後，才刪除 C 槽的舊資料夾：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">rmdir</span> /S /Q &quot;C:\Users\[使用者名稱]\.ollama\models&quot;</span><br></pre></td></tr></table></figure>
-
 <p>這一步才是 C 槽真正釋出空間的關鍵——很多人搬完就以為結束，沒刪舊資料，C 槽一點都沒少。</p>
-<h2 id="常見問題解答"><a href="#常見問題解答" class="headerlink" title="常見問題解答"></a>常見問題解答</h2><h3 id="Q1：移動後模型無法使用怎麼辦？"><a href="#Q1：移動後模型無法使用怎麼辦？" class="headerlink" title="Q1：移動後模型無法使用怎麼辦？"></a>Q1：移動後模型無法使用怎麼辦？</h3><p>先確認 <code>OLLAMA_MODELS</code> 是否正確設定為 <code>D:\Ollama\models</code>（不是上一層 <code>D:\Ollama</code>）。確認無誤後若還是不行，直接重開機讓環境變數確實生效。</p>
-<h3 id="Q2：要如何確認移動成功？"><a href="#Q2：要如何確認移動成功？" class="headerlink" title="Q2：要如何確認移動成功？"></a>Q2：要如何確認移動成功？</h3><p>比對 <code>D:\Ollama\models</code> 和原本 <code>C:\Users\[使用者名稱]\.ollama\models</code> 兩個資料夾的大小，應該要相近（主要看 <code>blobs\</code> 那一包）。不要拿整個 <code>.ollama</code> 來比，因為裡面還夾著金鑰和執行紀錄這些非模型檔案，比起來反而對不上。最直接的驗證還是跑一次 <code>ollama list</code>，能列出模型就代表成功。</p>
-<h3 id="Q3：移動過程中可以取消嗎？"><a href="#Q3：移動過程中可以取消嗎？" class="headerlink" title="Q3：移動過程中可以取消嗎？"></a>Q3：移動過程中可以取消嗎？</h3><p>環境變數改完之前都可以取消，回頭繼續就好。最怕的是複製到一半取消：<code>blobs\</code> 裡的模型檔可能只複製了部分，<code>ollama list</code> 雖然列得出來，但跑模型時會報錯。遇到這種情況，把 <code>D:\Ollama\models\blobs\</code> 清空，重新用 <code>robocopy</code> 跑一次（指令有 <code>/R:3</code> 重試參數），或是直接 <code>ollama pull &lt;模型名稱&gt;</code> 重新下載也行。</p>
-<h2 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h2><ul>
+<h2 id="常見問題解答">常見問題解答</h2>
+<h3 id="Q1：移動後模型無法使用怎麼辦？">Q1：移動後模型無法使用怎麼辦？</h3>
+<p>先確認 <code>OLLAMA_MODELS</code> 是否正確設定為 <code>D:\Ollama\models</code>（不是上一層 <code>D:\Ollama</code>）。確認無誤後若還是不行，直接重開機讓環境變數確實生效。</p>
+<h3 id="Q2：要如何確認移動成功？">Q2：要如何確認移動成功？</h3>
+<p>比對 <code>D:\Ollama\models</code> 和原本 <code>C:\Users\[使用者名稱]\.ollama\models</code> 兩個資料夾的大小，應該要相近（主要看 <code>blobs\</code> 那一包）。不要拿整個 <code>.ollama</code> 來比，因為裡面還夾著金鑰和執行紀錄這些非模型檔案，比起來反而對不上。最直接的驗證還是跑一次 <code>ollama list</code>，能列出模型就代表成功。</p>
+<h3 id="Q3：移動過程中可以取消嗎？">Q3：移動過程中可以取消嗎？</h3>
+<p>環境變數改完之前都可以取消，回頭繼續就好。最怕的是複製到一半取消：<code>blobs\</code> 裡的模型檔可能只複製了部分，<code>ollama list</code> 雖然列得出來，但跑模型時會報錯。遇到這種情況，把 <code>D:\Ollama\models\blobs\</code> 清空，重新用 <code>robocopy</code> 跑一次（指令有 <code>/R:3</code> 重試參數），或是直接 <code>ollama pull &lt;模型名稱&gt;</code> 重新下載也行。</p>
+<h2 id="注意事項">注意事項</h2>
+<ul>
 <li>移動過程中請勿關機或重新啟動電腦</li>
 <li>確保有足夠的磁碟空間</li>
 <li>大模型動輒 4–8 GB，搬移前先備份自訂 Modelfile，省去萬一出錯重下的時間</li>
 </ul>
-<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
+<h2 id="參考資源">參考資源</h2>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://github.com/ollama/ollama">Ollama 官方文件</a></li>
 <li><a target="_blank" rel="noopener" href="https://github.com/ollama/ollama/blob/main/docs/configuration.md">Ollama 環境變數設定說明</a></li>
 </ul>
@@ -249,15 +265,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -124,7 +124,8 @@
       <div class="prose" id="article">
         <p>Flashpoint 的 2026 全球威脅情報報告揭露了一個數字：2025 年 11 月到 12 月之間，地下論壇裡關於「用 AI 做壞事」的討論從 36.2 萬則暴增到超過 600 萬則。漲幅 1,500%。</p>
 <p>這不再是「用 ChatGPT 寫釣魚信」的等級。攻擊者已經建出了全自動化的 agentic 攻擊框架——能自主執行偵察、產生釣魚內容、測試竊取的憑證、輪換基礎設施，整個過程不需要人類持續介入。</p>
-<h2 id="從好奇到量產：地下論壇裡發生了什麼"><a href="#從好奇到量產：地下論壇裡發生了什麼" class="headerlink" title="從好奇到量產：地下論壇裡發生了什麼"></a>從好奇到量產：地下論壇裡發生了什麼</h2><p>Flashpoint 的研究團隊分析了 2025 年 1 月到 7 月間數十個網路犯罪論壇的對話。活動集中在 XSS、BreachForums、Dread 和 Exploit.in 這幾個知名平台。</p>
+<h2 id="從好奇到量產：地下論壇裡發生了什麼">從好奇到量產：地下論壇裡發生了什麼</h2>
+<p>Flashpoint 的研究團隊分析了 2025 年 1 月到 7 月間數十個網路犯罪論壇的對話。活動集中在 XSS、BreachForums、Dread 和 <a target="_blank" rel="noopener" href="http://Exploit.in">Exploit.in</a> 這幾個知名平台。</p>
 <p>四個主題佔據了絕大部分討論：</p>
 <ol>
 <li><strong>劫持主流 AI 服務</strong>：繞過 ChatGPT、Claude 的安全限制，讓它們產生惡意內容</li>
@@ -133,17 +134,19 @@
 <li><strong>討論操作風險</strong>：用 AI 攻擊時如何避免被追蹤</li>
 </ol>
 <p>到了 11、12 月，討論量的爆發意味著社群從「研究探索」轉入了「工業化生產」。</p>
-<h2 id="Agentic-攻擊框架的實際結構"><a href="#Agentic-攻擊框架的實際結構" class="headerlink" title="Agentic 攻擊框架的實際結構"></a>Agentic 攻擊框架的實際結構</h2><p>傳統的網路攻擊是線性的：人類駭客做偵察、找漏洞、寫 exploit、手動執行。Agentic 攻擊框架把這整條鏈自動化了。</p>
+<h2 id="Agentic-攻擊框架的實際結構">Agentic 攻擊框架的實際結構</h2>
+<p>傳統的網路攻擊是線性的：人類駭客做偵察、找漏洞、寫 exploit、手動執行。Agentic 攻擊框架把這整條鏈自動化了。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">┌──────────────────────────────────────────┐</span><br><span class="line">│            Agentic Attack Chain           │</span><br><span class="line">├──────────────────────────────────────────┤</span><br><span class="line">│                                          │</span><br><span class="line">│  偵察 Agent                               │</span><br><span class="line">│  ├─ 自動掃描目標的公開資訊                   │</span><br><span class="line">│  ├─ 分析員工社群媒體（LinkedIn、X）          │</span><br><span class="line">│  └─ 建立目標組織的人員和系統關係圖             │</span><br><span class="line">│           │                              │</span><br><span class="line">│           ▼                              │</span><br><span class="line">│  釣魚 Agent                               │</span><br><span class="line">│  ├─ 根據偵察結果產生個人化釣魚內容            │</span><br><span class="line">│  ├─ 即時調整：第一封沒回？自動換策略          │</span><br><span class="line">│  └─ 持續學習哪種措辭最有效                   │</span><br><span class="line">│           │                              │</span><br><span class="line">│           ▼                              │</span><br><span class="line">│  憑證測試 Agent                            │</span><br><span class="line">│  ├─ 自動測試竊取的帳號密碼                   │</span><br><span class="line">│  ├─ 輪換 IP 和代理伺服器避免封鎖             │</span><br><span class="line">│  └─ 成功登入後自動提取有價值的資料            │</span><br><span class="line">│           │                              │</span><br><span class="line">│           ▼                              │</span><br><span class="line">│  基礎設施 Agent                            │</span><br><span class="line">│  ├─ 自動輪換 C2 伺服器                     │</span><br><span class="line">│  ├─ 清除鑑識痕跡                           │</span><br><span class="line">│  └─ 在被偵測前自動遷移                      │</span><br><span class="line">│                                          │</span><br><span class="line">└──────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
-
 <p>每個環節都是獨立的 agent，彼此協調但不需要人類指揮。失敗了會自動調整策略重試。</p>
-<h3 id="真實案例"><a href="#真實案例" class="headerlink" title="真實案例"></a>真實案例</h3><p>報告裡提到了幾個已經被觀察到的 agentic 攻擊行為：</p>
+<h3 id="真實案例">真實案例</h3>
+<p>報告裡提到了幾個已經被觀察到的 agentic 攻擊行為：</p>
 <ul>
 <li><strong>FANCY BEAR</strong>（俄羅斯背景威脅行為者）部署了 LLM 驅動的惡意軟體 LAMEHUG，自動化偵察和文件收集</li>
 <li><strong>PUNK SPIDER</strong>（網路犯罪組織）用 AI 產生的腳本加速憑證傾倒，並自動清除鑑識證據</li>
 <li>有攻擊者鎖定 FortiGate 防火牆，在取得存取權後用 agentic 方式自動化橫向移動和偵察</li>
 </ul>
-<h2 id="自適應釣魚：為什麼比傳統釣魚危險十倍"><a href="#自適應釣魚：為什麼比傳統釣魚危險十倍" class="headerlink" title="自適應釣魚：為什麼比傳統釣魚危險十倍"></a>自適應釣魚：為什麼比傳統釣魚危險十倍</h2><p>傳統釣魚是撒網式的——同一封信寄給幾千人，命中率低但靠量取勝。</p>
+<h2 id="自適應釣魚：為什麼比傳統釣魚危險十倍">自適應釣魚：為什麼比傳統釣魚危險十倍</h2>
+<p>傳統釣魚是撒網式的——同一封信寄給幾千人，命中率低但靠量取勝。</p>
 <p>Agentic 釣魚是自適應的。AI agent 會：</p>
 <ol>
 <li>根據目標的社群媒體、職位、近期活動，產生高度個人化的訊息</li>
@@ -152,29 +155,34 @@
 <li>同時對數千個目標執行，每個目標收到的內容都不同</li>
 </ol>
 <p>這是一個<strong>回饋迴圈</strong>。每次失敗都在改善下次攻擊的成功率。傳統的安全意識培訓——「不要點來路不明的連結」——在面對持續進化的個人化攻擊時，效果會大幅下降。</p>
-<h2 id="數字的規模"><a href="#數字的規模" class="headerlink" title="數字的規模"></a>數字的規模</h2><p>Flashpoint 觀察到 2025 年有超過 1,110 萬台機器被資訊竊取程式感染，產生了 33 億筆被洩漏的憑證和雲端 token。</p>
+<h2 id="數字的規模">數字的規模</h2>
+<p>Flashpoint 觀察到 2025 年有超過 1,110 萬台機器被資訊竊取程式感染，產生了 33 億筆被洩漏的憑證和雲端 token。</p>
 <p>33 億。這些洩漏的憑證就是 agentic 攻擊框架的彈藥庫。自動化的憑證測試 agent 可以日夜不停地用這些資料嘗試登入各種服務。</p>
-<h2 id="防禦者該做什麼"><a href="#防禦者該做什麼" class="headerlink" title="防禦者該做什麼"></a>防禦者該做什麼</h2><p>如果你是開發者或維運工程師，以下是具體的防禦措施：</p>
-<h3 id="1-假設你的使用者憑證已經被洩漏"><a href="#1-假設你的使用者憑證已經被洩漏" class="headerlink" title="1. 假設你的使用者憑證已經被洩漏"></a>1. 假設你的使用者憑證已經被洩漏</h3><p>33 億筆洩漏的憑證不是假設，是現實。</p>
+<h2 id="防禦者該做什麼">防禦者該做什麼</h2>
+<p>如果你是開發者或維運工程師，以下是具體的防禦措施：</p>
+<h3 id="1-假設你的使用者憑證已經被洩漏">1. 假設你的使用者憑證已經被洩漏</h3>
+<p>33 億筆洩漏的憑證不是假設，是現實。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ✅ 在登入流程中檢查已知洩漏的憑證</span></span><br><span class="line"><span class="comment"># 使用 Have I Been Pwned API 或類似服務</span></span><br><span class="line"><span class="keyword">import</span> httpx</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">check_compromised_password</span>(<span class="params">password_hash: <span class="built_in">str</span></span>) -&gt; <span class="built_in">bool</span>:</span><br><span class="line">    prefix = password_hash[:<span class="number">5</span>]</span><br><span class="line">    resp = <span class="keyword">await</span> httpx.get(</span><br><span class="line">        <span class="string">f&quot;https://api.pwnedpasswords.com/range/<span class="subst">&#123;prefix&#125;</span>&quot;</span></span><br><span class="line">    )</span><br><span class="line">    suffix = password_hash[<span class="number">5</span>:].upper()</span><br><span class="line">    <span class="keyword">return</span> suffix <span class="keyword">in</span> resp.text</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-MFA-不是選項，是基線"><a href="#2-MFA-不是選項，是基線" class="headerlink" title="2. MFA 不是選項，是基線"></a>2. MFA 不是選項，是基線</h3><p>Agentic 攻擊框架可以自動測試帳號密碼，但很難自動化繞過硬體安全金鑰或 TOTP。</p>
+<h3 id="2-MFA-不是選項，是基線">2. MFA 不是選項，是基線</h3>
+<p>Agentic 攻擊框架可以自動測試帳號密碼，但很難自動化繞過硬體安全金鑰或 TOTP。</p>
 <ul>
 <li>對內部系統強制 MFA</li>
 <li>對外部使用者至少提供 MFA 選項並強力推薦</li>
 <li>優先選擇 FIDO2/WebAuthn，而不是 SMS OTP</li>
 </ul>
-<h3 id="3-監控異常的自動化行為模式"><a href="#3-監控異常的自動化行為模式" class="headerlink" title="3. 監控異常的自動化行為模式"></a>3. 監控異常的自動化行為模式</h3><p>Agentic 攻擊的特徵是：高速、有規律、24 小時不停。</p>
+<h3 id="3-監控異常的自動化行為模式">3. 監控異常的自動化行為模式</h3>
+<p>Agentic 攻擊的特徵是：高速、有規律、24 小時不停。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ✅ 偵測 agentic 行為模式的簡化邏輯</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">detect_agentic_pattern</span>(<span class="params">login_attempts: <span class="built_in">list</span>[<span class="built_in">dict</span>]</span>) -&gt; <span class="built_in">bool</span>:</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(login_attempts) &lt; <span class="number">10</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 檢查時間間隔是否異常規律（人類不會精確地每 2.3 秒試一次）</span></span><br><span class="line">    intervals = [</span><br><span class="line">        login_attempts[i+<span class="number">1</span>][<span class="string">&quot;timestamp&quot;</span>] - login_attempts[i][<span class="string">&quot;timestamp&quot;</span>]</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(login_attempts) - <span class="number">1</span>)</span><br><span class="line">    ]</span><br><span class="line">    avg = <span class="built_in">sum</span>(intervals) / <span class="built_in">len</span>(intervals)</span><br><span class="line">    variance = <span class="built_in">sum</span>((x - avg) ** <span class="number">2</span> <span class="keyword">for</span> x <span class="keyword">in</span> intervals) / <span class="built_in">len</span>(intervals)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 極低的變異數 = 自動化行為</span></span><br><span class="line">    <span class="keyword">return</span> variance &lt; <span class="number">0.5</span> <span class="keyword">and</span> <span class="built_in">len</span>(login_attempts) &gt; <span class="number">50</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="4-對你的-AI-agent-也要做安全設計"><a href="#4-對你的-AI-agent-也要做安全設計" class="headerlink" title="4. 對你的 AI agent 也要做安全設計"></a>4. 對你的 AI agent 也要做安全設計</h3><p>如果你正在建 AI agent 產品，你的 agent 也可能被武器化或被攻擊。</p>
+<h3 id="4-對你的-AI-agent-也要做安全設計">4. 對你的 AI agent 也要做安全設計</h3>
+<p>如果你正在建 AI agent 產品，你的 agent 也可能被武器化或被攻擊。</p>
 <ul>
 <li>限制 agent 的操作範圍（最小權限原則）</li>
 <li>敏感操作強制人工確認</li>
 <li>記錄所有 agent 操作的完整日誌</li>
 <li>對 agent 的輸入做注入檢測</li>
 </ul>
-<h2 id="這個趨勢的走向"><a href="#這個趨勢的走向" class="headerlink" title="這個趨勢的走向"></a>這個趨勢的走向</h2><p>1,500% 的討論量成長代表 agentic 攻擊已過了概念驗證階段，正在被工業化。攻擊者的效率提升速度可能比防禦者更快，因為他們沒有合規、審計、「先讓法務看一下」這些摩擦力。</p>
+<h2 id="這個趨勢的走向">這個趨勢的走向</h2>
+<p>1,500% 的討論量成長代表 agentic 攻擊已過了概念驗證階段，正在被工業化。攻擊者的效率提升速度可能比防禦者更快，因為他們沒有合規、審計、「先讓法務看一下」這些摩擦力。</p>
 <p>對做安全相關開發的人來說，2026 年的挑戰已經落地：AI 確定會被用來攻擊，問題只剩你的防禦系統能不能跟上 agentic 攻擊的自動化和自適應速度。</p>
 <hr>
 <p><em>攻擊者的 AI agent 已經 24 小時在跑了。你的防禦還在等人類上班？</em></p>
@@ -268,15 +276,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

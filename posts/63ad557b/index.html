@@ -127,8 +127,8 @@
 <p>所以這篇主要想回答一件事：4GB 顯卡的筆電，能不能把繁體中文 PDF 的表格轉成欄位沒有錯位的 Markdown。整個過程我讓 Claude Code 動手，我在旁邊看、做決定。</p>
 <p>環境先講：Windows 11、Git Bash、uv 0.6.11、Python 3.12，對照組是 markitdown 0.1.8。下面的指令都是在 Git Bash 裡跑的。</p>
 <span id="more"></span>
-
-<h2 id="裝之前先被擋了兩次"><a href="#裝之前先被擋了兩次" class="headerlink" title="裝之前先被擋了兩次"></a>裝之前先被擋了兩次</h2><p>第一次是 README。Claude Code 讀安裝說明時停下來回報：裡面有一段叫你「複製給你的 agent」的訊息，內容是要 agent 執行 <code>npx skills add</code> 裝一個全域 skill，然後在全域記憶寫入一條偏好，大意是「以後凡是要讀 PDF、圖片、Office 文件，一律優先用 mineru」。</p>
+<h2 id="裝之前先被擋了兩次">裝之前先被擋了兩次</h2>
+<p>第一次是 README。Claude Code 讀安裝說明時停下來回報：裡面有一段叫你「複製給你的 agent」的訊息，內容是要 agent 執行 <code>npx skills add</code> 裝一個全域 skill，然後在全域記憶寫入一條偏好，大意是「以後凡是要讀 PDF、圖片、Office 文件，一律優先用 mineru」。</p>
 <p>這段沒有藏起來，是寫給人看的安裝捷徑。但它要改的是 agent 的長期記憶，裝完之後每個專案讀文件都會先走它。我只是想試一個工具，沒打算讓它變成預設值，所以這段跳過，只裝 PyPI 套件。</p>
 <p>第二次是掃描。我用 SkillSpector 掃了整個 repo，結果是 100 分、CRITICAL、DO NOT INSTALL，343 筆命中。數量最多的幾類讀下來，是拿 skill 的尺去量一個 1,149 個檔案的 ML 專案：</p>
 <ul>
@@ -138,11 +138,11 @@
 </ul>
 <p>剩下的是 <code>eval</code>、<code>subprocess</code> 這類寫法、依賴套件的漏洞公告、讀環境變數等等，我沒有每一筆都看完。我決定往下追的是遙測，因為它跟「裝了會不會往外送東西」直接相關。安裝後的 <code>mineru/doclib/telemetry/service.py</code> 有這幾行：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">flush_once</span>(<span class="params">self</span>) -&gt; TelemetryFlushResult:</span><br><span class="line">    <span class="comment"># if await self.store.consent_state() != CONSENT_ENABLED:  (recover after prerelease)</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">await</span> <span class="variable language_">self</span>.store.consent_state() == CONSENT_DISABLED:</span><br><span class="line">        <span class="keyword">return</span> TelemetryFlushResult(status=<span class="string">&quot;disabled&quot;</span>)</span><br></pre></td></tr></table></figure>
-
 <p>同意狀態有三種：未設定、啟用、停用。被註解掉的那行是「沒啟用就不送」，現在生效的是「明確停用才不送」。同一個檔案裡負責累計統計的 <code>_record</code> 用的也是同一個條件，往下則是組出 payload、送到 <code>constants.py</code> 寫死的 <code>https://mineru.net/metrics/v2/metrics</code>。</p>
 <p>所以照 4.0.10 的程式碼讀，沒回答過同意提示的人，統計一樣會累計、一樣會進到上傳那段。註解寫著 prerelease 之後會改回來。要說清楚的是，這是讀程式碼的結論：我沒有啟動服務去抓封包，也沒有逐行驗證它聲明的「不收文件內容、檔名、路徑」。</p>
 <p>（這算一個彎路：我本來想裝完直接跑 <code>mineru telemetry disable</code> 了事，結果它回「本地 mineru 服务未运行」。要先啟動常駐服務才能關遙測，這個順序有點妙。）</p>
-<h2 id="兩個指令長得很像，差在有沒有常駐服務"><a href="#兩個指令長得很像，差在有沒有常駐服務" class="headerlink" title="兩個指令長得很像，差在有沒有常駐服務"></a>兩個指令長得很像，差在有沒有常駐服務</h2><p>卡在遙測那裡才搞懂，4.0 裝完會有兩個主要指令：</p>
+<h2 id="兩個指令長得很像，差在有沒有常駐服務">兩個指令長得很像，差在有沒有常駐服務</h2>
+<p>卡在遙測那裡才搞懂，4.0 裝完會有兩個主要指令：</p>
 <table>
 <thead>
 <tr>
@@ -152,7 +152,8 @@
 <th>遙測</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><code>mineru</code></td>
 <td>文件庫：掃描、快取、搜尋、給 agent 分頁讀</td>
 <td>要</td>
@@ -164,20 +165,19 @@
 <td>不用</td>
 <td>套件的 <code>kit/</code> 目錄裡搜不到 telemetry</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>我只要轉檔，所以全程用 <code>mineru-kit</code>，沒啟動過服務。跑完去看資料目錄，只有模型和一個設定檔，沒有產生遙測用的資料庫。</p>
 <p>安裝本身很快：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">uv venv .venv --python 3.12</span><br><span class="line"><span class="built_in">source</span> .venv/Scripts/activate   <span class="comment"># Git Bash；PowerShell 用 .venv\Scripts\Activate.ps1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 版本條件要加引號，不然 &gt; 和 &lt; 會被 shell 當成重新導向</span></span><br><span class="line">uv pip install <span class="string">&quot;mineru&gt;=4.0,&lt;5&quot;</span> <span class="string">&quot;markitdown[pdf]&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 模型和設定都放到指定目錄，不要塞進使用者家目錄</span></span><br><span class="line"><span class="built_in">export</span> MINERU_HOME=<span class="string">&quot;D:/tmp/mineru-blog/home&quot;</span></span><br><span class="line">mineru-kit models download --tier standard</span><br></pre></td></tr></table></figure>
-
 <p>我裝到的是 MinerU 4.0.10，之後的版本行為可能不同。兩個套件一起裝了 41 秒，虛擬環境約 700MB。模型下載 1 分 20 秒，共 2.0GB：一包 819MB 的 ONNX 小模型（版面、表格、OCR），一包 1.2GB 的 GGUF 視覺語言模型。</p>
 <p><code>mineru-kit models show</code> 會告訴你它幫這台機器選了什麼：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">生效的小模型后端: onnx</span><br><span class="line">生效的 VLM 引擎: llama-cpp</span><br><span class="line">模型档位:</span><br><span class="line">  basic: MinerU-4_models_onnx</span><br><span class="line">  standard: MinerU-4_models_onnx, MinerU2.5-Pro-2605-1.2B-GGUF</span><br></pre></td></tr></table></figure>
-
 <p>README 寫的 8GB 門檻是 PyTorch 路線。我這台自動被分到 ONNX 加 llama.cpp，那條路線的說明是「CPU 可跑」。</p>
-<h2 id="同一份-PDF，四種轉法"><a href="#同一份-PDF，四種轉法" class="headerlink" title="同一份 PDF，四種轉法"></a>同一份 PDF，四種轉法</h2><p>測試檔用臺北市政府主計處公開的〈114 年 9 月臺北市物價變動概況〉新聞稿，9 頁，前 5 頁是內文和折線圖，後面 4 張統計表。表格有合併儲存格、兩層表頭、直書的分類標籤，很典型的公部門格式。</p>
+<h2 id="同一份-PDF，四種轉法">同一份 PDF，四種轉法</h2>
+<p>測試檔用臺北市政府主計處公開的〈114 年 9 月臺北市物價變動概況〉新聞稿，9 頁，前 5 頁是內文和折線圖，後面 4 張統計表。表格有合併儲存格、兩層表頭、直書的分類標籤，很典型的公部門格式。</p>
 <p>MinerU 4.0 有四個檔位，我跑了本機能跑的三個，加上 markitdown 當對照：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">markitdown taipei.pdf -o markitdown.md</span><br><span class="line">mineru-kit parse taipei.pdf -o flash.md    --tier flash</span><br><span class="line">mineru-kit parse taipei.pdf -o basic.md    --tier basic</span><br><span class="line">mineru-kit parse taipei.pdf -o standard.md --tier standard</span><br></pre></td></tr></table></figure>
-
 <p>怎麼算轉得好不好？這四張表的資料列都是「一個名稱加九個數字」。我讓 Claude Code 寫了一小段腳本，數每個輸出裡「九個數字各自落在獨立儲存格」的列有幾列，四張表合計 89 列。MinerU 輸出的是 HTML 表格、markitdown 是管線表格，兩種各寫一個解析，判準相同。</p>
 <p>這個數字能證明的事很有限：它只確認一列裡有九格各放一個數字。欄位有沒有對到正確的表頭、數字有沒有抄錯、列名對不對，它都抓不到，要另外核對。MinerU 的統計還多一條限制（非數字的欄位只能有一到兩格），markitdown 那邊沒加，所以對 markitdown 是比較寬鬆的。</p>
 <table>
@@ -189,7 +189,8 @@
 <th>發生什麼事</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>markitdown</td>
 <td>22 秒</td>
 <td>57</td>
@@ -213,20 +214,19 @@
 <td>89</td>
 <td>89 列都過關</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>basic 在表 1 壞得很有特色。那張表左邊有一欄直書的「基本分類」跨了幾十列，basic 把整組列名擠進同一格：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">| 蔬菜水果外食費肉類水產品蛋類穀類及其製品其他食品調味品… | 22.6721.69114.4326.98… |</span><br></pre></td></tr></table></figure>
-
 <p>數字全黏在一起，這種輸出丟進資料庫只會更慘。standard 多跑一個視覺語言模型（log 裡多一段 <code>VLM Predict</code>），同一張表的欄位就分開了：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">| 蔬菜   | 22.67  | 124.17 | -9.70 | -0.27 | 1.29  | 0.03  | 107.59 | 3.96  | 0.09 |</span><br><span class="line">| 水果   | 21.69  | 128.14 | 5.70  | 0.13  | -8.23 | -0.23 | 136.54 | 11.55 | 0.28 |</span><br><span class="line">| 外食費 | 114.43 | 118.78 | 0.16  | 0.02  | 4.29  | 0.51  | 117.49 | 4.16  | 0.50 |</span><br></pre></td></tr></table></figure>
-
 <p>過關不代表數字對。表 2 的 20 列，Claude Code 把原頁轉成圖片逐格比對，180 個數字全對。這一步是它做的，我沒有自己再對一次；其他三張表也沒有逐格核對。</p>
 <p>中間有一段虛驚。standard 的輸出裡，下跌項目那列寫的是「平均漲幅(%)」，其中一格是 <code>-4.1</code>，旁邊都是兩位小數。我第一個念頭是視覺模型在亂改數字，這種錯最可怕，因為看起來很合理。回頭放大原始 PDF，原檔就是寫「平均漲幅」，那格也真的是 <code>-4.1</code>。模型照抄了，是我多疑。</p>
 <p>數 MinerU 輸出的腳本長這樣。這是整理過的版本，少了前面說的那條額外限制；markitdown 的版本是把 <code>|</code> 開頭的行切開，套同一個數字判準。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> html, io, re</span><br><span class="line"></span><br><span class="line">NUM = re.<span class="built_in">compile</span>(<span class="string">r&quot;^-?[\d,]+\.\d+$&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">tables</span>(<span class="params">path</span>):</span><br><span class="line">    text = io.<span class="built_in">open</span>(path, encoding=<span class="string">&quot;utf-8&quot;</span>).read()</span><br><span class="line">    <span class="keyword">for</span> m <span class="keyword">in</span> re.finditer(<span class="string">r&quot;&lt;table.*?&lt;/table&gt;&quot;</span>, text, flags=re.S):</span><br><span class="line">        <span class="keyword">yield</span> [</span><br><span class="line">            [html.unescape(re.sub(<span class="string">r&quot;&lt;.*?&gt;&quot;</span>, <span class="string">&quot;&quot;</span>, c)).strip()</span><br><span class="line">             <span class="keyword">for</span> c <span class="keyword">in</span> re.findall(<span class="string">r&quot;&lt;t[dh][^&gt;]*&gt;(.*?)&lt;/t[dh]&gt;&quot;</span>, row, flags=re.S)]</span><br><span class="line">            <span class="keyword">for</span> row <span class="keyword">in</span> re.findall(<span class="string">r&quot;&lt;tr.*?&lt;/tr&gt;&quot;</span>, m.group(<span class="number">0</span>), flags=re.S)</span><br><span class="line">        ]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i, tb <span class="keyword">in</span> <span class="built_in">enumerate</span>(tables(<span class="string">&quot;standard.md&quot;</span>), <span class="number">1</span>):</span><br><span class="line">    <span class="comment"># 只驗分欄：一格剛好是一個數字的欄位要有九個。像 22.6721.69 這種黏在一起的不會過</span></span><br><span class="line">    ok = [r <span class="keyword">for</span> r <span class="keyword">in</span> tb <span class="keyword">if</span> <span class="built_in">sum</span>(<span class="number">1</span> <span class="keyword">for</span> c <span class="keyword">in</span> r <span class="keyword">if</span> NUM.<span class="keyword">match</span>(c)) == <span class="number">9</span>]</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;表<span class="subst">&#123;i&#125;</span>: 總列 <span class="subst">&#123;<span class="built_in">len</span>(tb)&#125;</span>  過關 <span class="subst">&#123;<span class="built_in">len</span>(ok)&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
-
 <p>MinerU 的表格輸出是 HTML 的 <code>&lt;table&gt;</code>，帶 <code>rowspan</code> 和 <code>colspan</code>，所以合併儲存格的結構留得住。Markdown 的管線表格做不到這點。</p>
-<h2 id="4GB-顯卡撐得住嗎"><a href="#4GB-顯卡撐得住嗎" class="headerlink" title="4GB 顯卡撐得住嗎"></a>4GB 顯卡撐得住嗎</h2><p>這份文件、這台機器，撐得住。跑 standard 時我讓它每秒記一次 <code>nvidia-smi</code>：</p>
+<h2 id="4GB-顯卡撐得住嗎">4GB 顯卡撐得住嗎</h2>
+<p>這份文件、這台機器，撐得住。跑 standard 時我讓它每秒記一次 <code>nvidia-smi</code>：</p>
 <ul>
 <li>開跑前，其他程式已經佔掉 1,288 MiB</li>
 <li>尖峰 3,429 MiB，GPU 使用率最高 98%</li>
@@ -235,8 +235,8 @@
 <p>整張卡的用量多了大約 2.1GB，這是前後差值，模型和推論暫存都算在裡面。每秒取樣一次也可能漏掉更短的尖峰，頁面更大或更複雜時我沒測。瀏覽器開很多分頁、已經佔掉 2GB 以上的話就會很擠，跑之前關一關。</p>
 <p>速度是另一回事。9 頁花 107 秒，其中模型推論 88 秒，換算一頁快 10 秒。幾十頁的文件可以接受。一千頁照比例推算大約要三個小時，這是線性外推，長文件我沒實測。比較實際的做法是用 <code>--pages</code> 只挑有表格的頁：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mineru-kit parse report.pdf -o tables.md --tier standard --pages 6-9</span><br></pre></td></tr></table></figure>
-
-<h2 id="掃描檔才是分水嶺"><a href="#掃描檔才是分水嶺" class="headerlink" title="掃描檔才是分水嶺"></a>掃描檔才是分水嶺</h2><p>公部門另一種常見的 PDF 是掃描檔，整頁是一張圖。我把測試檔的第 1、6、7 頁轉成 150 dpi 的純圖片 PDF，再跑一輪。</p>
+<h2 id="掃描檔才是分水嶺">掃描檔才是分水嶺</h2>
+<p>公部門另一種常見的 PDF 是掃描檔，整頁是一張圖。我把測試檔的第 1、6、7 頁轉成 150 dpi 的純圖片 PDF，再跑一輪。</p>
 <table>
 <thead>
 <tr>
@@ -245,7 +245,8 @@
 <th>結果</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>markitdown</td>
 <td>—</td>
 <td>輸出 0 bytes</td>
@@ -265,17 +266,20 @@
 <td>146 秒</td>
 <td>2 張表，68 列都過關</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>OCR 的部分，我拿第一頁開頭一段和原檔的文字層比對，只比中文字和數字，共 300 個字。三個檔位都是 0 個錯字。</p>
 <p>這個結果的適用範圍很窄。樣本只有 300 字；而且這是電腦產生的 PDF 直接轉成圖，沒有真實掃描會有的歪斜、底色和雜訊。實體掃描件、手寫、傳真品質的我都沒測。</p>
 <p>就這次測的版本來說，兩個工具的差別在這裡：有文字層的 PDF，markitdown 很快，但表格要倒進資料庫還得清；沒有文字層的，它這次直接交白卷。</p>
-<h2 id="還沒解決的幾件事"><a href="#還沒解決的幾件事" class="headerlink" title="還沒解決的幾件事"></a>還沒解決的幾件事</h2><p>standard 也沒有到完美，用之前要知道這幾點。</p>
+<h2 id="還沒解決的幾件事">還沒解決的幾件事</h2>
+<p>standard 也沒有到完美，用之前要知道這幾點。</p>
 <p><strong>直書的分類標籤會黏進列名。</strong> 表 2 左邊直書的「商品性質別」五個字，被拆開黏到各列前面，「外食費」變成「性外食費」，「服務類」變成「商服務類」。數字沒錯，但列名要自己清，文字版的 basic 和 standard 都一樣。</p>
 <p><strong>全形標點被換成半形。</strong> 原檔有 44 個全形冒號「：」，MinerU 三個檔位的輸出全變成半形 <code>:</code>。拿來餵 LLM 沒差，要原文照登就得注意。</p>
 <p><strong>偶爾冒出 LaTeX。</strong> 掃描版有一處「下跌0.56%」被寫成 <code>$0.56\%$</code>，整份只有這一處。</p>
 <p><strong>圖片是 base64 內嵌。</strong> 9 頁轉出來的 <code>.md</code> 有 800KB，扣掉圖片的實際文字只有 2 萬字左右。把檔案當純文字整份送給 LLM 的話，大部分 token 會花在 base64 上，先把 <code>data:image</code> 那幾段濾掉。</p>
 <p>另外兩件跟品質無關：CLI 的訊息是簡體中文；授權是自訂的 MinerU Open Source License，以 Apache 2.0 為底加了附加條款，要放進商用產品前自己讀一遍。</p>
-<h2 id="我之後會怎麼用"><a href="#我之後會怎麼用" class="headerlink" title="我之後會怎麼用"></a>我之後會怎麼用</h2><p>我的結論是分流，不會全部換掉：</p>
+<h2 id="我之後會怎麼用">我之後會怎麼用</h2>
+<p>我的結論是分流，不會全部換掉：</p>
 <ul>
 <li>只要內文、不在乎表格的 PDF，繼續用 markitdown，快，裝起來也小</li>
 <li>要拿表格裡的數字，或者檔案沒有文字層，用 <code>mineru-kit parse --tier standard</code>，挑頁跑，列名自己再清一次</li>
@@ -349,15 +353,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

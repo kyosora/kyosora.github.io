@@ -122,15 +122,16 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <p>2026-06-01 早上，甲方把一份 ZAP 弱掃報告丟過來，四條中風險全是 CSP（Content Security Policy，瀏覽器用來限制頁面能載入哪些來源的一層 HTTP header 防護）相關，附帶一句「中風險都要修」。最難纏的一條是 <code>style-src &#39;unsafe-inline&#39;</code>。</p>
+        <p>2026-06-01 早上，甲方把一份 ZAP 弱掃報告丟過來，四條中風險全是 CSP（Content Security Policy，瀏覽器用來限制頁面能載入哪些來源的一層 HTTP header 防護）相關，附帶一句「中風險都要修」。最難纏的一條是 <code>style-src 'unsafe-inline'</code>。</p>
 <p>我把報告丟給 Claude Code，請它評估。那天它給的結論是：這條技術上修不乾淨，只能寫一封信去說服甲方接受。兩天後，我們把它從正式機完全拿掉了，全站 94 個頁面實測零影響。</p>
 <p>中間發生的事，比結論本身有意思——因為它一開始錯得很徹底，而我差點就照單全收了。</p>
-<h2 id="先搞清楚-V3-到底還剩幾條"><a href="#先搞清楚-V3-到底還剩幾條" class="headerlink" title="先搞清楚 V3 到底還剩幾條"></a>先搞清楚 V3 到底還剩幾條</h2><p>Claude Code 先把我們 Vue 3 專案正式機的 <code>Web.config</code> 拉出來對。弱掃報告裡那串髒兮兮的 CSP 其實是同台 server 上舊版 AngularJS 站台的，不是 V3 的。V3 的狀況比我以為的好：</p>
+<h2 id="先搞清楚-V3-到底還剩幾條">先搞清楚 V3 到底還剩幾條</h2>
+<p>Claude Code 先把我們 Vue 3 專案正式機的 <code>Web.config</code> 拉出來對。弱掃報告裡那串髒兮兮的 CSP 其實是同台 server 上舊版 AngularJS 站台的，不是 V3 的。V3 的狀況比我以為的好：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">script-src &#x27;self&#x27; &#x27;wasm-unsafe-eval&#x27;</span><br><span class="line">style-src  &#x27;self&#x27; &#x27;unsafe-inline&#x27; https://fonts.googleapis.com</span><br><span class="line">img-src    &#x27;self&#x27; data: blob: https://js.arcgis.com https://wmts.nlsc.gov.tw ...</span><br><span class="line">connect-src &#x27;self&#x27; https://wragis.e-land.gov.tw https://js.arcgis.com ...</span><br></pre></td></tr></table></figure>
-
 <p>它指出：<code>script-src</code> 已經乾淨——沒有 <code>unsafe-inline</code>、沒有 <code>unsafe-eval</code>，只有 <code>wasm-unsafe-eval</code>（這是給 WebAssembly 用的，跟能執行任意字串的 <code>eval</code> 是兩回事）。<code>img-src</code> 和 <code>connect-src</code> 也早就是明確白名單，不是 <code>https:</code> 那種等於開大門的萬用字元。</p>
-<p>四條中風險，V3 自動消掉三條。剩下唯一一條，就是 <code>style-src &#39;unsafe-inline&#39;</code>。</p>
-<h2 id="第一階段：它認定這是-Vue-的結構性依賴"><a href="#第一階段：它認定這是-Vue-的結構性依賴" class="headerlink" title="第一階段：它認定這是 Vue 的結構性依賴"></a>第一階段：它認定這是 Vue 的結構性依賴</h2><p>Claude Code 的判斷很直覺，我聽起來也合理：Vue 的 <code>:style</code> binding 會在 DOM 上產生 <code>style=&quot;...&quot;</code> 屬性，只要專案裡有任何一個 <code>:style</code>，CSP 的 <code>style-src</code> 就不能拿掉 <code>unsafe-inline</code>，不然樣式會被擋。</p>
+<p>四條中風險，V3 自動消掉三條。剩下唯一一條，就是 <code>style-src 'unsafe-inline'</code>。</p>
+<h2 id="第一階段：它認定這是-Vue-的結構性依賴">第一階段：它認定這是 Vue 的結構性依賴</h2>
+<p>Claude Code 的判斷很直覺，我聽起來也合理：Vue 的 <code>:style</code> binding 會在 DOM 上產生 <code>style=&quot;...&quot;</code> 屬性，只要專案裡有任何一個 <code>:style</code>，CSP 的 <code>style-src</code> 就不能拿掉 <code>unsafe-inline</code>，不然樣式會被擋。</p>
 <p>它去盤點專案裡的 xgis 框架元件，數出 24 個 <code>:style</code>，照能不能 class 化分了難度級別：</p>
 <ul>
 <li>簡單的（顏色、縮排）→ 改成 CSS class 或 <code>data-</code> 屬性</li>
@@ -141,7 +142,8 @@
 <p>於是它幫我擬了一封給甲方的「缺失改善說明」，論述核心是：<code>style-src</code> 的 <code>unsafe-inline</code> 因 CSP 規格限制無法移除——nonce（每次請求產生的一次性隨機 token，用來放行特定 inline 內容）這個機制只能套用在 <code>&lt;style&gt;</code> 元素上，套不到元素的 <code>style=&quot;&quot;</code> 屬性，而前端執行期的動態樣式必然產生這種屬性。</p>
 <p>這封信寫得不錯。它還特別提醒我一個寫作判斷：不能寫「實務上不可能拿掉」，會被懂行的資安顧問一句「那你上 nonce 啊」打回來，所以改成「規格限制」這個防守得住的版本。我看了挺滿意，也信了。</p>
 <p>問題是，整封信建立在一個錯誤的前提上。</p>
-<h2 id="轉折：我一句追問，把它問醒了"><a href="#轉折：我一句追問，把它問醒了" class="headerlink" title="轉折：我一句追問，把它問醒了"></a>轉折：我一句追問，把它問醒了</h2><p>我補了一個問題：「v-show 是不是也會被擋？」</p>
+<h2 id="轉折：我一句追問，把它問醒了">轉折：我一句追問，把它問醒了</h2>
+<p>我補了一個問題：「v-show 是不是也會被擋？」</p>
 <p><code>v-show</code> 是靠切換 <code>display: none</code> 來顯示/隱藏元素的指令。Claude Code 回得很快，大意是：會，它產生的就是行內樣式。然後它 grep 了一下，給了一個斬釘截鐵的數字——57 個。接著一句話我印象很深：</p>
 <blockquote>
 <p><code>style-src unsafe-inline</code> 在 Vue 3 裡是結構性依賴，不是選擇性的。React、Angular 也一樣。</p>
@@ -155,11 +157,11 @@
 <p>它回去翻 CSP 規格，然後改口了，大意是：剛才講得太武斷，要更正。<code>style-src</code> 會管這些樣式來源：</p>
 <ul>
 <li>HTML 裡的 <code>style=&quot;...&quot;</code> 屬性</li>
-<li>JavaScript 用 <code>setAttribute(&#39;style&#39;, ...)</code> 寫入、或經 <code>innerHTML</code> 帶進來的 <code>style</code> 屬性</li>
+<li>JavaScript 用 <code>setAttribute('style', ...)</code> 寫入、或經 <code>innerHTML</code> 帶進來的 <code>style</code> 屬性</li>
 <li><code>&lt;style&gt;...&lt;/style&gt;</code> 元素與外部樣式表來源</li>
 </ul>
-<p>但 JavaScript 直接透過 CSSOM 改樣式，例如 <code>element.style.display = &#39;none&#39;</code>、<code>style.setProperty(...)</code>，主流瀏覽器不會用 <code>style-src</code> 擋掉。關鍵不是「靜態還是動態」，而是這段樣式是被當成 <code>style</code> 屬性重新解析，還是直接寫進 CSSOM。</p>
-<p>這個 Vue 3 專案裡，<code>v-show</code> 走 <code>el.style.display = &#39;none&#39;</code>，<code>:style</code> binding 主要以 property assignment 或 <code>setProperty(...)</code> 更新單一屬性。連先前判定「無解」的 <code>ModalPopup</code> 拖曳座標，也走 <code>el.style.setProperty(&#39;--modal-x&#39;, x + &#39;px&#39;)</code>。這些路徑在我們的 Chrome／IIS build 實測沒有被擋；如果元件改走 <code>setAttribute(&#39;style&#39;, ...)</code>，或用 <code>innerHTML</code>／<code>v-html</code> 塞進帶 <code>style=&quot;...&quot;</code> 的 HTML，就會被擋。</p>
+<p>但 JavaScript 直接透過 CSSOM 改樣式，例如 <code>element.style.display = 'none'</code>、<code>style.setProperty(...)</code>，主流瀏覽器不會用 <code>style-src</code> 擋掉。關鍵不是「靜態還是動態」，而是這段樣式是被當成 <code>style</code> 屬性重新解析，還是直接寫進 CSSOM。</p>
+<p>這個 Vue 3 專案裡，<code>v-show</code> 走 <code>el.style.display = 'none'</code>，<code>:style</code> binding 主要以 property assignment 或 <code>setProperty(...)</code> 更新單一屬性。連先前判定「無解」的 <code>ModalPopup</code> 拖曳座標，也走 <code>el.style.setProperty('--modal-x', x + 'px')</code>。這些路徑在我們的 Chrome／IIS build 實測沒有被擋；如果元件改走 <code>setAttribute('style', ...)</code>，或用 <code>innerHTML</code>／<code>v-html</code> 塞進帶 <code>style=&quot;...&quot;</code> 的 HTML，就會被擋。</p>
 <p>它最後補了一句：「我剛說 57 個全死是錯的，對不起。」</p>
 <p>三大框架真實的狀況是這樣：</p>
 <table>
@@ -170,7 +172,8 @@
 <th>需要 style-src unsafe-inline？</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>React</td>
 <td><code>style=&#123;&#123; &#125;&#125;</code></td>
 <td>框架常用單一 property 寫入；仍須測試第三方元件和直接操作 DOM 的程式碼，SSR（Next.js 等）輸出在 HTML 裡的 <code>style</code> 屬性會被擋</td>
@@ -185,18 +188,21 @@
 <td><code>:style</code>、<code>v-show</code></td>
 <td>本專案 build 實測不需要；不代表所有 Vue 版本與套件組合都相同，Nuxt 這類 SSR 輸出的 <code>style</code> 屬性一樣會被擋</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>回頭看，它那句「Angular 也一樣」其實矇對了一半：Angular 確實不容易拿掉，但原因是元件樣式注入的 <code>&lt;style&gt;</code>，跟 <code>:style</code> 綁定無關。純靜態代管（例如 IIS 直接丟 build 產物）沒辦法每個請求產生新 nonce；理論上還能把每段元件樣式算成 hash 列進 CSP，但每次改樣式都要重算、維護成本很高，所以 Angular 專案在這種部署下多半還是留著 <code>unsafe-inline</code>。</p>
 <p>那真兇是誰？Claude Code 推論：執行期動態注入 <code>&lt;style&gt;</code> 元素的東西——<code>&lt;style&gt;</code> 元素受 <code>style-src</code> 管。在這個專案裡最大嫌疑只有一個，地圖元件的渲染引擎 ArcGIS JavaScript API。它說，把 <code>unsafe-inline</code> 拿掉、開地圖頁看 console 噴什麼，幾乎肯定是 ArcGIS。</p>
 <p>在動手拔之前，得先認一筆帳。第一階段它為了「減少 <code>:style</code> 用量」改的那三個元件——<code>LoadingOverlay</code>、<code>FileUpload</code>、<code>TreeView</code>——從 CSP 角度來看是白改的。它們的 <code>:style</code> 本來就走 CSSOM，本來就不會觸發任何 violation。功能沒改壞，但動機是錯的。在搞清楚一個機制到底管什麼之前就動手，改的全是無用功——這筆帳它跟我都有份。</p>
-<h2 id="第二階段：直接拔掉測，結果又踩一個坑"><a href="#第二階段：直接拔掉測，結果又踩一個坑" class="headerlink" title="第二階段：直接拔掉測，結果又踩一個坑"></a>第二階段：直接拔掉測，結果又踩一個坑</h2><p>我的反應很乾脆：「拿掉，直接測看看就知道了。」</p>
+<h2 id="第二階段：直接拔掉測，結果又踩一個坑">第二階段：直接拔掉測，結果又踩一個坑</h2>
+<p>我的反應很乾脆：「拿掉，直接測看看就知道了。」</p>
 <p>Claude Code 把 <code>Web.config</code> 的 <code>unsafe-inline</code> 拿掉，然後犯了第二個錯——它去改 <code>vite.config.js</code> 裡那份 dev server 的 CSP，想用 Playwright 在開發環境跑一輪頁面巡覽。</p>
 <p>結果一團糟。截圖裡整個版面垮成裸 HTML，Bootstrap 樣式全失效，登入表單的按鈕都點不準。Playwright 收集到 81 個 CSP violation，全部來自一個來源：<code>/@vite/client</code>。</p>
 <p>它盯著那 81 個假陽性想了一下才通：dev 模式下，vite 是用「動態注入 <code>&lt;style&gt;</code> 元素」的方式把所有 CSS（含 Bootstrap、scoped style）塞進頁面的。一拿掉 <code>unsafe-inline</code>，這些 <code>&lt;style&gt;</code> 全被 CSP 擋掉，整站 CSS 當然就垮了。但這是 vite 開發伺服器的特性，正式機 build 之後 CSS 是打包成外部 <code>.css</code> 檔、用 <code>&lt;link&gt;</code> 載入，完全沒這問題。</p>
 <p>所以 dev 環境根本沒辦法驗證正式機的 CSP。那 81 個 violation 一個都不算數。</p>
 <p>（這個坑其實它之前就該記得——dev 正常、build 壞掉的「本機無法重現」類陷阱，這專案踩過不只一次。）</p>
 <p>它把 <code>vite.config.js</code> 改回去（dev 必須保留 <code>unsafe-inline</code>，否則開發時版面會垮），換成正確的驗證環境：用 <code>npm run build</code> 的產物，掛在本機 IIS（<code>localhost:56961</code>，實體路徑指向專案根目錄，套用改過的真 <code>Web.config</code>，而且同源 API 能登入）。這套環境跑出來的任何 violation，才是正式機真的會發生的。</p>
-<h2 id="結局：94-個頁面，真相一次說清楚"><a href="#結局：94-個頁面，真相一次說清楚" class="headerlink" title="結局：94 個頁面，真相一次說清楚"></a>結局：94 個頁面，真相一次說清楚</h2><p>換對環境之後，第一次 IIS 實測就乾淨得漂亮。</p>
+<h2 id="結局：94-個頁面，真相一次說清楚">結局：94 個頁面，真相一次說清楚</h2>
+<p>換對環境之後，第一次 IIS 實測就乾淨得漂亮。</p>
 <p>登入成功，落在 <code>/sys/user</code>。GIS 地圖頁完整載入，ArcGIS 的 500 多個 esri/calcite 元件全到位。整輪只有 3 個 violation，而且全部來自 ArcGIS 內部：</p>
 <ol>
 <li><code>script-src eval</code> ← <code>typedArrayUtil.js</code></li>
@@ -207,11 +213,11 @@
 <p>0 個來自這次巡覽到的 Vue app 路徑。這證實的是「目前 build、瀏覽器與 94 個測試頁面可以移除」，不是替所有 Vue 專案下規格結論。</p>
 <p>接著我說「除了 GIS，其他也檢查檢查」，它寫了支全站稽核腳本，登入後逐頁巡覽 93 個頁面——統計圖表、LayerEditor、所有模組的 CRUD 列表，還特地對 5 個頁面開 modal（測那個它曾判定「無解」的拖曳定位）。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">巡覽頁數: 93（含統計圖表、LayerEditor、所有 CRUD、5 頁開 modal）</span><br><span class="line">CSP violation 總數: 0</span><br><span class="line">未捕捉 JS 例外: 0</span><br><span class="line">其他 console error: 0</span><br></pre></td></tr></table></figure>
-
 <p>加上 GIS 主地圖頁，總共覆蓋 94 個頁面/功能。除了 ArcGIS 那 3 個（地圖底圖、圖層、marker、widget UI 全部正常，零 JS 例外）之外，整個 Vue 應用零 violation。</p>
-<p><code>style-src &#39;unsafe-inline&#39;</code>，真的拿掉了。</p>
-<h2 id="帶得走的幾個技術要點"><a href="#帶得走的幾個技術要點" class="headerlink" title="帶得走的幾個技術要點"></a>帶得走的幾個技術要點</h2><p>如果你也在跟弱掃報告裡的 <code>style-src unsafe-inline</code> 纏鬥，這次排查留下幾條可以直接用的結論：</p>
-<p><strong>第一，搞清楚 <code>style-src</code> 的邊界。</strong> 它會擋 <code>&lt;style&gt;</code>、不符來源的外部樣式表，以及被當成 HTML 屬性解析的 <code>style=&quot;...&quot;</code>（包括 <code>setAttribute(&#39;style&#39;, ...)</code> 和 <code>innerHTML</code> 帶進來的）。直接寫 CSSOM 的不會擋：<code>element.style.xxx</code>、<code>style.setProperty()</code>，連 <code>style.cssText</code> 也不會。MDN 的 style-src 頁面說 <code>cssText</code> 會被擋，但複查時讓 Claude Code 用 <code>&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;style-src &#39;self&#39;&quot;&gt;</code> 在 Chromium 157 和 Firefox 150 實測，兩邊都沒擋，以實測為準。</p>
+<p><code>style-src 'unsafe-inline'</code>，真的拿掉了。</p>
+<h2 id="帶得走的幾個技術要點">帶得走的幾個技術要點</h2>
+<p>如果你也在跟弱掃報告裡的 <code>style-src unsafe-inline</code> 纏鬥，這次排查留下幾條可以直接用的結論：</p>
+<p><strong>第一，搞清楚 <code>style-src</code> 的邊界。</strong> 它會擋 <code>&lt;style&gt;</code>、不符來源的外部樣式表，以及被當成 HTML 屬性解析的 <code>style=&quot;...&quot;</code>（包括 <code>setAttribute('style', ...)</code> 和 <code>innerHTML</code> 帶進來的）。直接寫 CSSOM 的不會擋：<code>element.style.xxx</code>、<code>style.setProperty()</code>，連 <code>style.cssText</code> 也不會。MDN 的 style-src 頁面說 <code>cssText</code> 會被擋，但複查時讓 Claude Code 用 <code>&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;style-src 'self'&quot;&gt;</code> 在 Chromium 157 和 Firefox 150 實測，兩邊都沒擋，以實測為準。</p>
 <table>
 <thead>
 <tr>
@@ -219,7 +225,8 @@
 <th>受 style-src 管？</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>HTML 裡寫死的 <code>&lt;div style=&quot;color:red&quot;&gt;</code></td>
 <td>是（需要 unsafe-inline 或 hash）</td>
 </tr>
@@ -228,30 +235,34 @@
 <td>是</td>
 </tr>
 <tr>
-<td><code>setAttribute(&#39;style&#39;, &#39;color:red&#39;)</code>、<code>innerHTML</code> 帶進來的 <code>style</code> 屬性</td>
+<td><code>setAttribute('style', 'color:red')</code>、<code>innerHTML</code> 帶進來的 <code>style</code> 屬性</td>
 <td>是</td>
 </tr>
 <tr>
-<td><code>element.style.color = &#39;red&#39;</code>、<code>style.setProperty()</code>、<code>style.cssText = ...</code></td>
+<td><code>element.style.color = 'red'</code>、<code>style.setProperty()</code>、<code>style.cssText = ...</code></td>
 <td>主流瀏覽器不會擋（<code>cssText</code> 這項與 MDN 說法相反，依 Chromium 157、Firefox 150 實測）</td>
 </tr>
 <tr>
 <td>Vue <code>:style</code>／<code>v-show</code></td>
 <td>取決於實際寫入路徑；本文專案 build 實測未被擋</td>
 </tr>
-</tbody></table>
-<p><strong>第二，先找實際 violation 的來源，不要先怪框架。</strong> 執行期注入 <code>&lt;style&gt;</code>、寫 <code>style</code> attribute 的第三方 library 都可能是來源，Angular 的元件樣式也屬於這一類。我們這次看到的是 ArcGIS 的少數行內屬性；Calcite 使用 Shadow DOM 不代表自動豁免 CSP，只能說這次測試沒有看到那些元件樣式造成 violation。固定內容的 <code>&lt;style&gt;</code> 可用 hash；若要讓 hash 套到 <code>style=&quot;&quot;</code> 屬性，還要搭配 CSP 的 <code>&#39;unsafe-hashes&#39;</code>，而動態內容通常無法事先列出穩定 hash。</p>
+</tbody>
+</table>
+<p><strong>第二，先找實際 violation 的來源，不要先怪框架。</strong> 執行期注入 <code>&lt;style&gt;</code>、寫 <code>style</code> attribute 的第三方 library 都可能是來源，Angular 的元件樣式也屬於這一類。我們這次看到的是 ArcGIS 的少數行內屬性；Calcite 使用 Shadow DOM 不代表自動豁免 CSP，只能說這次測試沒有看到那些元件樣式造成 violation。固定內容的 <code>&lt;style&gt;</code> 可用 hash；若要讓 hash 套到 <code>style=&quot;&quot;</code> 屬性，還要搭配 CSP 的 <code>'unsafe-hashes'</code>，而動態內容通常無法事先列出穩定 hash。</p>
 <p><strong>第三，CSP 一定要在 build 產物 + 真實 server 上驗證。</strong> 開發伺服器（vite、webpack-dev-server 之類）為了 HMR 會用注入 <code>&lt;style&gt;</code> 的方式載 CSS，在這種環境測 <code>style-src</code> 只會拿到一堆 dev-only 的假陽性。我們在 dev 拿到 81 個 violation，在 IIS build 只剩 3 個——差距全是工具雜訊。</p>
 <p>如果你要的是 CSP 的通論配置與分階段導入，我之前寫過一篇 <a href="/posts/67b75693/">Content Security Policy 安全性與實用性平衡指南</a>，那篇談的是怎麼從零配起；這篇談的是一條具體的中風險怎麼從「以為修不了」變成「拿掉了」。</p>
-<h2 id="附：可以直接複製的弱掃改善說明範本"><a href="#附：可以直接複製的弱掃改善說明範本" class="headerlink" title="附：可以直接複製的弱掃改善說明範本"></a>附：可以直接複製的弱掃改善說明範本</h2><p>故事的結局讓那封信整個升級了。原本準備的是「風險接受」版（請甲方接受這條無法移除），實測之後可以直接改寫成「已移除」版——對審查單位來說，這是最有力的回覆，因為你不是請他們網開一面，而是真的把洞補了。</p>
+<h2 id="附：可以直接複製的弱掃改善說明範本">附：可以直接複製的弱掃改善說明範本</h2>
+<p>故事的結局讓那封信整個升級了。原本準備的是「風險接受」版（請甲方接受這條無法移除），實測之後可以直接改寫成「已移除」版——對審查單位來說，這是最有力的回覆，因為你不是請他們網開一面，而是真的把洞補了。</p>
 <p>下面這份可以直接填：</p>
 <blockquote>
-<p>缺失項目：Content-Security-Policy <code>style-src</code> 含 <code>&#39;unsafe-inline&#39;</code></p>
+<p>缺失項目：Content-Security-Policy <code>style-src</code> 含 <code>'unsafe-inline'</code></p>
 <p>處置方式：已移除</p>
-<p>本系統正式機 <code>Web.config</code> 之 CSP 設定，已將 <code>style-src</code> 之 <code>&#39;unsafe-inline&#39;</code> 移除，現行政策為 <code>style-src &#39;self&#39; https://fonts.googleapis.com</code>。</p>
-<p>相容性驗證：<br>移除後經自動化工具（Playwright）對全站 94 個頁面/功能進行 <code>securitypolicyviolation</code> 事件稽核，涵蓋所有模組之列表、表單、統計圖表、彈出視窗及地圖頁。結果：前端應用程式碼產生之 CSP 違規數為 0、未捕捉 JavaScript 例外為 0，各功能版面與互動正常。</p>
+<p>本系統正式機 <code>Web.config</code> 之 CSP 設定，已將 <code>style-src</code> 之 <code>'unsafe-inline'</code> 移除，現行政策為 <code>style-src 'self' https://fonts.googleapis.com</code>。</p>
+<p>相容性驗證：<br>
+移除後經自動化工具（Playwright）對全站 94 個頁面/功能進行 <code>securitypolicyviolation</code> 事件稽核，涵蓋所有模組之列表、表單、統計圖表、彈出視窗及地圖頁。結果：前端應用程式碼產生之 CSP 違規數為 0、未捕捉 JavaScript 例外為 0，各功能版面與互動正常。</p>
 <p>說明：本系統目前使用之 Vue 3 build，<code>:style</code>、<code>v-show</code> 等路徑經由 CSSOM 寫入樣式，不經 <code>style</code> 屬性解析；依本次目標瀏覽器實測，未產生遭 CSP 攔截之行為。這是對目前版本與測試範圍的相容性結論，不主張所有 Vue 或第三方元件都具備相同行為。</p>
-<p>殘餘事項說明（地圖元件）：<br>第三方地圖函式庫（ArcGIS JavaScript API 4.x）於地圖頁面執行期，會設定少數 inline style 屬性，因而觸發 <code>style-src-attr</code>。本次測試中，這些屬性遭攔截後，已覆蓋的底圖、圖層、標記及操作介面仍可正常使用；但畫面正常不足以證明函式庫對所有功能都有正式降級保證。建議把 violation、已測功能與未測狀態一併列為殘餘風險，並在 ArcGIS 升版或地圖功能異動後重新執行稽核。</p>
+<p>殘餘事項說明（地圖元件）：<br>
+第三方地圖函式庫（ArcGIS JavaScript API 4.x）於地圖頁面執行期，會設定少數 inline style 屬性，因而觸發 <code>style-src-attr</code>。本次測試中，這些屬性遭攔截後，已覆蓋的底圖、圖層、標記及操作介面仍可正常使用；但畫面正常不足以證明函式庫對所有功能都有正式降級保證。建議把 violation、已測功能與未測狀態一併列為殘餘風險，並在 ArcGIS 升版或地圖功能異動後重新執行稽核。</p>
 </blockquote>
 <p>把「94」換成你自己實測的頁數，把「ArcGIS」換成 console 報告裡實際出現的來源。重點是先做完實測，再寫這封信，而且要列出未覆蓋範圍；頁數本身不能取代功能覆蓋與版本資訊。</p>
 <p>規格邊界可對照 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/style-src">MDN：CSP style-src</a> 與 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/style-src-attr">MDN：style-src-attr</a>（<code>cssText</code> 那段例外見上文實測）；Angular 的 nonce 設定見 <a target="_blank" rel="noopener" href="https://angular.dev/best-practices/security">Angular 官方 Security 指南</a>。</p>
@@ -259,7 +270,8 @@
 <p>寫到這裡，最該記下來的其實不是哪個 CSP 指令怎麼設。是那句「那豈不是只有原生能做到」。</p>
 <p>我用 AI 寫 code 一年多，最大的體會是：它會用非常篤定的語氣，給你一個錯誤的結構性判斷。「57 個全死」「三大框架都一樣」這種話，它講得比我還有把握，還附上數字、附上橫向對比，聽起來無懈可擊。真正打破它的，往往不是更強的技術，而是一個聽起來很外行的常識追問——這怎麼可能全世界都這樣？</p>
 <p>Claude Code 後來把整件事查得乾乾淨淨：94 頁實測、找出真兇、把給甲方的信也寫好。它確實很強。但那個「等一下，這不合理」的瞬間，目前還是得靠人。那 57 個被它判「全死」的 <code>v-show</code>，最後一個都沒死。</p>
-<h2 id="相關文章"><a href="#相關文章" class="headerlink" title="相關文章"></a>相關文章</h2><p>AI 的篤定換到 agent 身上，會直接變成動作：<a href="/posts/c0ce374e/">廠商文件裡一個沒人註冊的套件名，讓 AI agent 四分鐘內在 Fortune 500 跑了別人的程式碼</a>。</p>
+<h2 id="相關文章">相關文章</h2>
+<p>AI 的篤定換到 agent 身上，會直接變成動作：<a href="/posts/c0ce374e/">廠商文件裡一個沒人註冊的套件名，讓 AI agent 四分鐘內在 Fortune 500 跑了別人的程式碼</a>。</p>
 
       </div>
       
@@ -342,15 +354,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

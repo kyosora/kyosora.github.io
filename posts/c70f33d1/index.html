@@ -125,21 +125,22 @@
 <p>但兩個對話仍共用同一套模型。把上下文清空，沒有把裁判換掉。</p>
 <p>Sword 團隊 9 月分享的研究，正好戳中這個盲點：評分條件即使可以用程式驗證，模型仍可能對自己的錯誤比較寬容。我認為最值得追的問題，是這種偏好會怎麼混進日常的 prompt A/B 測試、程式碼審查和品質報表。以下依據的是 <a target="_blank" rel="noopener" href="https://arxiv.org/html/2604.06996v3">8 月 3 日的論文 v3</a>。</p>
 <span id="more"></span>
-
-<h2 id="先別把「選自己」當成有偏見"><a href="#先別把「選自己」當成有偏見" class="headerlink" title="先別把「選自己」當成有偏見"></a>先別把「選自己」當成有偏見</h2><p>假設模型 A 寫出正確答案，模型 B 答錯，A 當裁判時選了 A。這完全合理。單看自選率，就會把能力好的模型也一起判成偏心。</p>
+<h2 id="先別把「選自己」當成有偏見">先別把「選自己」當成有偏見</h2>
+<p>假設模型 A 寫出正確答案，模型 B 答錯，A 當裁判時選了 A。這完全合理。單看自選率，就會把能力好的模型也一起判成偏心。</p>
 <p>比較有說服力的問法是：<strong>已經知道答案不合格時，裁判對誰比較容易放行？</strong></p>
 <p>Pombal、Rei 與 Martins 的研究用 IFEval 指令檢查及 LiveCodeBench 測試結果作為客觀參照。在 LiveCodeBench 裡，GPT-5 對自己的失敗測試誤放行 128／337 次，約 37.98%；對非同家族模型，逐模型計算後的平均誤放行率約 1.88%。論文用未四捨五入的數值算出 20.15 倍。同一張表裡，它對所有受測模型輸出的逐條測試判定準確率（MRA）仍約 97%。<a target="_blank" rel="noopener" href="https://arxiv.org/html/2604.06996v3">論文表 1、附錄 L</a></p>
 <p>這裡的分母只包含實際失敗的測試，不能解讀成所有答案有 38% 被放水；20.15 也不是加了 20 分。它描述的是特定模型、資料集與評測設定下，兩組誤放行率的比值。</p>
 <p>我在意的是兩個指標能同時成立：整體平均很好，特定失敗子群的誤放行率卻很高。只看儀表板上的平均分數，很容易錯過這件事。</p>
-<h2 id="客觀條件，也可能交給了一個會判錯的裁判"><a href="#客觀條件，也可能交給了一個會判錯的裁判" class="headerlink" title="客觀條件，也可能交給了一個會判錯的裁判"></a>客觀條件，也可能交給了一個會判錯的裁判</h2><p>「回答只能有三個項目」很客觀。「這段程式對指定輸入會得到什麼輸出」也有可驗證答案。但如果實際評分仍是請 LLM 閱讀文字、推測是否合格，客觀條件並不保證判斷正確。</p>
+<h2 id="客觀條件，也可能交給了一個會判錯的裁判">客觀條件，也可能交給了一個會判錯的裁判</h2>
+<p>「回答只能有三個項目」很客觀。「這段程式對指定輸入會得到什麼輸出」也有可驗證答案。但如果實際評分仍是請 LLM 閱讀文字、推測是否合格，客觀條件並不保證判斷正確。</p>
 <p>研究觀察到的自我偏好，在控制判斷難度等因素後仍存在；多模型投票能減輕，未完全消除。它沒有證明模型有意識地護短，也無法替每個新版本保證相同程度的偏好。<a target="_blank" rel="noopener" href="https://arxiv.org/html/2604.06996v3">研究結果與限制</a></p>
 <p>這讓我更傾向把可機械判定的部分先交回程式。</p>
 <p>例如一個回傳建議清單的功能，規格要求合法 JSON、恰好三個項目，每項都有非空白標題。下面是我整理的教學範例，沒有呼叫模型，也不是論文原始程式：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">valid_shape</span>(<span class="params">raw</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        data = json.loads(raw)</span><br><span class="line">    <span class="keyword">except</span> json.JSONDecodeError:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> <span class="built_in">isinstance</span>(data, <span class="built_in">dict</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    items = data.get(<span class="string">&quot;items&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        <span class="built_in">isinstance</span>(items, <span class="built_in">list</span>)</span><br><span class="line">        <span class="keyword">and</span> <span class="built_in">len</span>(items) == <span class="number">3</span></span><br><span class="line">        <span class="keyword">and</span> <span class="built_in">all</span>(</span><br><span class="line">            <span class="built_in">isinstance</span>(item, <span class="built_in">dict</span>)</span><br><span class="line">            <span class="keyword">and</span> <span class="built_in">isinstance</span>(item.get(<span class="string">&quot;title&quot;</span>), <span class="built_in">str</span>)</span><br><span class="line">            <span class="keyword">and</span> <span class="built_in">bool</span>(item[<span class="string">&quot;title&quot;</span>].strip())</span><br><span class="line">            <span class="keyword">for</span> item <span class="keyword">in</span> items</span><br><span class="line">        )</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">good = json.dumps(&#123;<span class="string">&quot;items&quot;</span>: [&#123;<span class="string">&quot;title&quot;</span>: x&#125; <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="string">&quot;A&quot;</span>, <span class="string">&quot;B&quot;</span>, <span class="string">&quot;C&quot;</span>]]&#125;)</span><br><span class="line"><span class="keyword">assert</span> valid_shape(good)</span><br><span class="line"><span class="keyword">assert</span> <span class="keyword">not</span> valid_shape(<span class="string">&#x27;&#123;&quot;items&quot;: [&#123;&quot;title&quot;: &quot;A&quot;&#125;]&#125;&#x27;</span>)</span><br><span class="line"><span class="keyword">assert</span> <span class="keyword">not</span> valid_shape(<span class="string">&#x27;```json\n&#x27;</span> + good + <span class="string">&#x27;\n```&#x27;</span>)</span><br></pre></td></tr></table></figure>
-
 <p>它只驗證明列的資料形狀，允許額外欄位，也不會判斷建議是否有用。這個邊界很重要：格式合格與內容合格應該各有結果，不能混成一句「品質 9 分」。</p>
 <p>如果產品真的禁止額外欄位，或要求三個標題不得重複，就把規則補進 validator。不要讓裁判臨場決定規格。</p>
-<h2 id="換一家模型有幫助，仍要留下校準資料"><a href="#換一家模型有幫助，仍要留下校準資料" class="headerlink" title="換一家模型有幫助，仍要留下校準資料"></a>換一家模型有幫助，仍要留下校準資料</h2><p>我在先前的 <a href="/posts/8f5af7ee/">skill A/B 盲測</a>裡，讓 Claude 產生回答、Codex 評分。這種分工能避開同一模型同時產生回答又判分的一部分問題，但「換一家就消除了同源偏好」說得太滿。模型之間可能共享訓練資料或有蒸餾關係，品牌名稱無法證明錯誤彼此獨立。</p>
+<h2 id="換一家模型有幫助，仍要留下校準資料">換一家模型有幫助，仍要留下校準資料</h2>
+<p>我在先前的 <a href="/posts/8f5af7ee/">skill A/B 盲測</a>裡，讓 Claude 產生回答、Codex 評分。這種分工能避開同一模型同時產生回答又判分的一部分問題，但「換一家就消除了同源偏好」說得太滿。模型之間可能共享訓練資料或有蒸餾關係，品牌名稱無法證明錯誤彼此獨立。</p>
 <p>這次研究也提醒我，增加裁判人數之外，應該先準備一批人能判清楚的校準案例。像是格式正確但漏掉必要步驟、內容完整卻答非所問，以及兩份品質接近、文風不同的回答。</p>
 <p>每次換裁判版本或評分 prompt，重跑同一批案例。看看它漏掉了哪些錯誤，會不會特別放過某種回答，再決定能交給它多少工作。</p>
 <p>我會至少保留這幾個欄位：</p>
@@ -150,7 +151,8 @@
 <th>用途</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>題目、候選答案與匿名 ID</td>
 <td>能回頭檢查原始內容</td>
 </tr>
@@ -170,17 +172,19 @@
 <td>人工分歧與無法判定原因</td>
 <td>保留不確定性，避免硬湊出勝者</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>這是我的實務建議，沒有宣稱照做就能重現論文結果。尤其把所有「其他模型」混在一起算一個比率，會讓樣本多的模型主導數字；至少先逐模型看，再決定怎麼彙總。</p>
-<h2 id="拆成評分細項有用，但別期待一個-prompt-治百病"><a href="#拆成評分細項有用，但別期待一個-prompt-治百病" class="headerlink" title="拆成評分細項有用，但別期待一個 prompt 治百病"></a>拆成評分細項有用，但別期待一個 prompt 治百病</h2><p>另一篇 Yang 等人的研究，先以參照裁判建立品質相近的回答配對，再估計偏好；作者對四個高偏好模型測試多維度分項評估，自我偏好指標平均降低 31.5%。這是另一套實驗與指標，不能拿來說 Sword 的 20.15 倍一定會下降三成。<a target="_blank" rel="noopener" href="https://arxiv.org/html/2604.22891v4">多維度評估研究，v4</a></p>
+<h2 id="拆成評分細項有用，但別期待一個-prompt-治百病">拆成評分細項有用，但別期待一個 prompt 治百病</h2>
+<p>另一篇 Yang 等人的研究，先以參照裁判建立品質相近的回答配對，再估計偏好；作者對四個高偏好模型測試多維度分項評估，自我偏好指標平均降低 31.5%。這是另一套實驗與指標，不能拿來說 Sword 的 20.15 倍一定會下降三成。<a target="_blank" rel="noopener" href="https://arxiv.org/html/2604.22891v4">多維度評估研究，v4</a></p>
 <p>這份研究的「品質相近」仍依賴參照模型的評分，再以人工樣本檢查一致性。它提供一種測量方法，沒有建立永遠正確的裁判。分項評估值得試，效果仍得在自己的任務上驗證。</p>
 <p>以技術回答為例，我會把下面這種契約交給裁判，並在外層驗證輸出欄位。這是示範格式，沒有在真實模型上量測改善幅度：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;criterion&quot;</span><span class="punctuation">:</span> <span class="string">&quot;是否說明修改後如何驗證問題已解決&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;allowed_verdicts&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;pass&quot;</span><span class="punctuation">,</span> <span class="string">&quot;fail&quot;</span><span class="punctuation">,</span> <span class="string">&quot;uncertain&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;required_output&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;verdict&quot;</span><span class="punctuation">:</span> <span class="string">&quot;pass、fail 或 uncertain&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;evidence&quot;</span><span class="punctuation">:</span> <span class="string">&quot;候選答案中的相關原句；沒有就填空字串&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;reason&quot;</span><span class="punctuation">:</span> <span class="string">&quot;原句為何滿足或未滿足這條標準&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p>「引用原句」讓審查者比較容易追問判斷依據，卻不保證模型引用正確。回傳 JSON 也只處理資料格式，不能替內容背書。</p>
 <p>另一個需要先決定的細節是 <code>uncertain</code>。我會把它送去人工複查，報表另列占比；若直接當成半分，分數就混進了尚未驗證的假設。</p>
 <p>至於 A/B 比較，交換顯示順序可以檢查位置敏感性。若 A 放前面就贏、放後面就輸，我會先標記結果不穩定。兩次都選同一份，則只能說通過了這次順序檢查，還沒證明裁判公平。</p>
-<h2 id="評分過關，還缺一次外部驗證"><a href="#評分過關，還缺一次外部驗證" class="headerlink" title="評分過關，還缺一次外部驗證"></a>評分過關，還缺一次外部驗證</h2><p>想像一個 prompt 修改，把回答變得更像裁判喜歡的風格：段落更工整、口氣更肯定、解釋更長。裁判分數升高，使用者解決問題的成功率卻沒變。團隊若只盯著分數，就可能持續往這個方向調整。</p>
+<h2 id="評分過關，還缺一次外部驗證">評分過關，還缺一次外部驗證</h2>
+<p>想像一個 prompt 修改，把回答變得更像裁判喜歡的風格：段落更工整、口氣更肯定、解釋更長。裁判分數升高，使用者解決問題的成功率卻沒變。團隊若只盯著分數，就可能持續往這個方向調整。</p>
 <p>這是我會防的失敗情境，不是這次實驗已量到的產品結果。</p>
 <p>因此，程式能驗證的地方，我會保留測試結果；需要人判斷的地方，固定抽樣複核，並把裁判分歧一起看。裁判與作者分開，有助於多看到一些問題；獨立對話、不同模型或多數決，都沒有免除查證的工作。</p>
 <p>下次看到 AI 說自己的版本比較好，我會先找它指出的具體差異，再查那個差異是否真的讓任務做得更好。分數可以幫我縮小檢查範圍，但我不想讓它替我省掉這一步。</p>
@@ -235,15 +239,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

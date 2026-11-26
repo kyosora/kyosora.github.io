@@ -119,16 +119,17 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>Go 是 Google 於 2009 年釋出的靜態強型別語言，編譯速度快、垃圾回收輕量、內建並發原語。定位是系統程式設計與後端服務，不是「靜態語言的安全性加上動態語言的高效性」——它本質上就是靜態語言，只是刻意把複雜度壓低。</p>
-<h2 id="先備知識"><a href="#先備知識" class="headerlink" title="先備知識"></a>先備知識</h2><p>Go 不適合作為第一門語言。建議先有任何一門語言的基礎，理解變數、迴圈、函式的概念。若尚未有程式基礎，先補 Python 或 JavaScript。</p>
-<h2 id="安裝環境"><a href="#安裝環境" class="headerlink" title="安裝環境"></a>安裝環境</h2><p>前往 <a target="_blank" rel="noopener" href="https://go.dev/dl/">go.dev/dl</a> 下載對應平台的安裝包。安裝完成後執行：</p>
+<h2 id="先備知識">先備知識</h2>
+<p>Go 不適合作為第一門語言。建議先有任何一門語言的基礎，理解變數、迴圈、函式的概念。若尚未有程式基礎，先補 Python 或 JavaScript。</p>
+<h2 id="安裝環境">安裝環境</h2>
+<p>前往 <a target="_blank" rel="noopener" href="https://go.dev/dl/">go.dev/dl</a> 下載對應平台的安裝包。安裝完成後執行：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go version</span><br></pre></td></tr></table></figure>
-
 <p>確認輸出版本號即安裝成功。</p>
 <p><strong>關於 GOPATH 與 Go Modules</strong>：Go 1.11 引入 Modules，1.16 起預設啟用。現代專案用 <code>go mod init</code> 初始化模組，原始碼放在任何目錄都行，不再需要把程式碼塞進 <code>$GOPATH/src</code>。<code>$GOPATH</code> 仍然存在，但現在只作為模組快取（<code>$GOPATH/pkg/mod</code>）和已安裝工具（<code>$GOPATH/bin</code>）的存放位置，不需手動設定。</p>
 <p>新建一個最小模組：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> myapp &amp;&amp; <span class="built_in">cd</span> myapp</span><br><span class="line">go mod init github.com/yourname/myapp</span><br></pre></td></tr></table></figure>
-
-<h2 id="語言基礎"><a href="#語言基礎" class="headerlink" title="語言基礎"></a>語言基礎</h2><p>這是學習重心，建議按以下順序推進，每一塊都要動手寫程式碼，不能只讀。</p>
+<h2 id="語言基礎">語言基礎</h2>
+<p>這是學習重心，建議按以下順序推進，每一塊都要動手寫程式碼，不能只讀。</p>
 <p><strong>語法與型別</strong>：Go 的型別推斷（<code>:=</code>）讓宣告很簡潔，但要清楚什麼時候用 <code>var</code>、什麼時候用 <code>:=</code>。基本型別包括 <code>int</code>、<code>float64</code>、<code>string</code>、<code>bool</code>，以及固定長度的陣列（array）。</p>
 <p><strong>切片（slice）</strong>：Go 最常用的資料結構，底層是陣列的動態視窗。要理解 <code>len</code>、<code>cap</code>、<code>append</code> 的行為，以及切片共享底層陣列可能帶來的副作用。</p>
 <p><strong>Map</strong>：鍵值對結構，讀取不存在的 key 會回傳零值而不是報錯，建議養成用 <code>val, ok := m[key]</code> 的二值寫法。</p>
@@ -138,16 +139,23 @@
 <p><strong>並發</strong>：goroutine 是 Go 的輕量執行緒，<code>go func()</code> 就能啟動。channel 是 goroutine 之間通訊的管道，分有緩衝和無緩衝。<code>select</code> 用於同時等待多個 channel。<code>sync</code> 套件的 <code>WaitGroup</code>、<code>Mutex</code> 處理同步與互斥。並發是 Go 的強項，也是最容易出 race condition 的地方，記得用 <code>go test -race</code> 檢查。</p>
 <p><strong>標準庫入門</strong>：<code>fmt</code>、<code>os</code>、<code>io</code>、<code>bufio</code>、<code>net/http</code> 是最常用的幾個，先把這些讀熟。</p>
 <p><strong>推薦書籍</strong>：Donovan &amp; Kernighan 合著的《The Go Programming Language》（<a target="_blank" rel="noopener" href="https://gopl.io/">gopl.io</a>，中文版稱《Go語言聖經》）是最紮實的入門書，語言本質講得清楚。Mark Summerfield 的《Programming in Go》（2012年）實務導向，但出版時 Go Modules 尚未存在，書中的 GOPATH 工作流已不適用現代開發，參考時要留意。</p>
-<h2 id="Go-Web-開發"><a href="#Go-Web-開發" class="headerlink" title="Go Web 開發"></a>Go Web 開發</h2><h3 id="標準庫-HTTP"><a href="#標準庫-HTTP" class="headerlink" title="標準庫 HTTP"></a>標準庫 HTTP</h3><p>Go 的 <code>net/http</code> 套件本身功能完整，不一定需要框架。理解 <code>http.Handler</code>、<code>http.HandlerFunc</code>、<code>ServeMux</code> 的運作方式，對之後使用任何框架都有幫助。</p>
-<h3 id="常用-Web-框架"><a href="#常用-Web-框架" class="headerlink" title="常用 Web 框架"></a>常用 Web 框架</h3><ul>
+<h2 id="Go-Web-開發">Go Web 開發</h2>
+<h3 id="標準庫-HTTP">標準庫 HTTP</h3>
+<p>Go 的 <code>net/http</code> 套件本身功能完整，不一定需要框架。理解 <code>http.Handler</code>、<code>http.HandlerFunc</code>、<code>ServeMux</code> 的運作方式，對之後使用任何框架都有幫助。</p>
+<h3 id="常用-Web-框架">常用 Web 框架</h3>
+<ul>
 <li><strong>Gin</strong>：路由效能高，中介層（middleware）生態成熟，是目前最普遍的選擇。</li>
 <li><strong>Echo</strong>：API 設計簡潔，效能與 Gin 相近。</li>
 <li><strong>Beego</strong>：全棧框架，內建 ORM 和 CLI 工具，適合快速搭建完整 MVC 應用，但相對重。</li>
 </ul>
-<h3 id="資料庫"><a href="#資料庫" class="headerlink" title="資料庫"></a>資料庫</h3><p>標準庫 <code>database/sql</code> 提供統一介面，搭配各資料庫的 driver 使用。GORM 是最常用的 ORM，sqlx 則是輕量封裝，保留 SQL 控制彈性。</p>
-<h3 id="中介層常見用途"><a href="#中介層常見用途" class="headerlink" title="中介層常見用途"></a>中介層常見用途</h3><p>日誌記錄、身份驗證（JWT）、請求限流、CORS 處理，通常以 middleware chain 的方式掛載。</p>
-<h3 id="定時與非同步任務"><a href="#定時與非同步任務" class="headerlink" title="定時與非同步任務"></a>定時與非同步任務</h3><p>標準庫的 <code>time.Ticker</code> 和 <code>time.AfterFunc</code> 處理簡單定時邏輯；需要持久化的延遲任務佇列，Go 標準庫沒有內建，要搭配外部套件如 <a target="_blank" rel="noopener" href="https://github.com/hibiken/asynq">asynq</a> 或 <a target="_blank" rel="noopener" href="https://github.com/RichardKnop/machinery">machinery</a>。</p>
-<h3 id="微服務"><a href="#微服務" class="headerlink" title="微服務"></a>微服務</h3><p>gRPC 是 Go 微服務間常用的通訊協定，搭配 Protocol Buffers 定義介面。</p>
+<h3 id="資料庫">資料庫</h3>
+<p>標準庫 <code>database/sql</code> 提供統一介面，搭配各資料庫的 driver 使用。GORM 是最常用的 ORM，sqlx 則是輕量封裝，保留 SQL 控制彈性。</p>
+<h3 id="中介層常見用途">中介層常見用途</h3>
+<p>日誌記錄、身份驗證（JWT）、請求限流、CORS 處理，通常以 middleware chain 的方式掛載。</p>
+<h3 id="定時與非同步任務">定時與非同步任務</h3>
+<p>標準庫的 <code>time.Ticker</code> 和 <code>time.AfterFunc</code> 處理簡單定時邏輯；需要持久化的延遲任務佇列，Go 標準庫沒有內建，要搭配外部套件如 <a target="_blank" rel="noopener" href="https://github.com/hibiken/asynq">asynq</a> 或 <a target="_blank" rel="noopener" href="https://github.com/RichardKnop/machinery">machinery</a>。</p>
+<h3 id="微服務">微服務</h3>
+<p>gRPC 是 Go 微服務間常用的通訊協定，搭配 Protocol Buffers 定義介面。</p>
 <p>框架選擇：</p>
 <ul>
 <li><strong>go-zero</strong> 和 <strong>Kratos</strong>：目前活躍度高、社群資源豐富，是新專案的主流選擇。</li>
@@ -155,8 +163,10 @@
 <li><strong>go-micro</strong>：授權已從 Apache-2.0 改為 BSL（Business Source License），商業使用有限制，使用前需確認授權條款，或改用社群維護的 fork。</li>
 </ul>
 <p>Web 開發入門，官方的 <a target="_blank" rel="noopener" href="https://gobyexample.com/">Go by Example</a> 程式碼片段導向，適合查語法；官方文件 <a target="_blank" rel="noopener" href="https://go.dev/doc/">go.dev/doc</a> 的 Tour 也值得過一遍。</p>
-<h2 id="專案實戰"><a href="#專案實戰" class="headerlink" title="專案實戰"></a>專案實戰</h2><p>語法看完之後，最好找一個真實問題動手做。常見起手方向：命令列工具（<code>cobra</code> 是主流 CLI 框架）、REST API 服務、或為現有開源專案貢獻 issue fix。選自己有興趣的領域，能維持動力繼續寫下去。</p>
-<h2 id="持續追蹤"><a href="#持續追蹤" class="headerlink" title="持續追蹤"></a>持續追蹤</h2><p>Go 每年約發布兩個版本。官方部落格 <a target="_blank" rel="noopener" href="https://go.dev/blog/">go.dev/blog</a> 是最直接的消息來源，每次版本發布都會有 release notes 說明新特性與破壞性變更。</p>
+<h2 id="專案實戰">專案實戰</h2>
+<p>語法看完之後，最好找一個真實問題動手做。常見起手方向：命令列工具（<code>cobra</code> 是主流 CLI 框架）、REST API 服務、或為現有開源專案貢獻 issue fix。選自己有興趣的領域，能維持動力繼續寫下去。</p>
+<h2 id="持續追蹤">持續追蹤</h2>
+<p>Go 每年約發布兩個版本。官方部落格 <a target="_blank" rel="noopener" href="https://go.dev/blog/">go.dev/blog</a> 是最直接的消息來源，每次版本發布都會有 release notes 說明新特性與破壞性變更。</p>
 
       </div>
       
@@ -223,15 +233,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

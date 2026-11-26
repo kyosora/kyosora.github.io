@@ -124,30 +124,31 @@
       <div class="prose" id="article">
         <p>上次我寫過一篇，講 Claude Code 跑動態工作流時，<a href="/posts/ac250f0e/">主代理把子代理的查證結果誤判成幻覺，自己反而幻覺了一整篇文章，還騙過兩輪 AI 審稿</a>。那篇的幻覺長在「綜合」那一步——主代理沒翻紀錄，腦補了下游。</p>
 <p>這篇是同一個系統的另一種死法，但這次的幻覺不是腦補出來的。是我親手用 schema 逼出來的。</p>
-<h2 id="先講-schema-是來幹嘛的"><a href="#先講-schema-是來幹嘛的" class="headerlink" title="先講 schema 是來幹嘛的"></a>先講 schema 是來幹嘛的</h2><p>動態工作流派子代理，你可以給它一個 <code>schema</code>，強制它用結構化格式回傳——不是回你一段中文，是回一個欄位齊全、型別正確的物件。下游就能直接 <code>results.filter(r =&gt; r.score &gt;= 7)</code> 接住，不用自己從散文裡挖數字。</p>
+<h2 id="先講-schema-是來幹嘛的">先講 schema 是來幹嘛的</h2>
+<p>動態工作流派子代理，你可以給它一個 <code>schema</code>，強制它用結構化格式回傳——不是回你一段中文，是回一個欄位齊全、型別正確的物件。下游就能直接 <code>results.filter(r =&gt; r.score &gt;= 7)</code> 接住，不用自己從散文裡挖數字。</p>
 <p>這東西很好用。我大部分 workflow 都靠它把「子代理的判斷」框成可以程式化處理的資料。問題是，我一直把它當成一道保險——以為「規定了格式，回來的東西就是可靠的」。</p>
 <p>這兩個禮拜，同一套 schema 機制在我面前暴露了兩種完全不同的失敗。一種明、一種暗，成因也不一樣：明的那次是子代理根本沒把結論交回來，我當場就發現了；暗的那次是它交回來了、而且填得滿滿的，內容卻是編的，差點讓我去動一個不存在的檔。</p>
-<h2 id="第一種死法：它拿到資料，然後忘了交作業"><a href="#第一種死法：它拿到資料，然後忘了交作業" class="headerlink" title="第一種死法：它拿到資料，然後忘了交作業"></a>第一種死法：它拿到資料，然後忘了交作業</h2><p>5 月底我跑一個對抗驗證的 workflow，十個目標，每個派一個子代理。子代理的任務鏈是這樣：讀幾個本機檔、上網查一輪、判斷結構、最後呼叫 <code>StructuredOutput</code> 把結論填進 schema 回傳。</p>
+<h2 id="第一種死法：它拿到資料，然後忘了交作業">第一種死法：它拿到資料，然後忘了交作業</h2>
+<p>5 月底我跑一個對抗驗證的 workflow，十個目標，每個派一個子代理。子代理的任務鏈是這樣：讀幾個本機檔、上網查一輪、判斷結構、最後呼叫 <code>StructuredOutput</code> 把結論填進 schema 回傳。</p>
 <p>跑完，十個裡面八個掛在第一階段。錯誤訊息長這樣：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pipeline[0] failed: agent(&#123;schema&#125;): subagent completed without</span><br><span class="line">calling StructuredOutput (after 2 in-conversation nudges)</span><br></pre></td></tr></table></figure>
-
 <p><code>completed without calling StructuredOutput</code>——子代理做完了，但沒呼叫那個交作業的工具。harness 還很貼心地戳了它兩次（<code>after 2 nudges</code>），它依然沒回頭。</p>
 <p>我去比對存活的兩個跟掛掉的八個，想找出系統性差別。結果有點掃興：prompt 結構、搜尋回來的資料量，看起來都差不多，我沒抓到哪個變因能解釋這個八比二。掛掉的那批，共通點只是上網查完、拿回一大段文字之後，順手把分析寫成一長串 markdown 就結束了——被自己查回來的長文帶跑，忘了最後一個動作該是呼叫 <code>StructuredOutput</code>。成功的兩個，看起來就只是剛好記得收尾。這不是嚴格控制變因的結論，是我當下能看到的全部。</p>
 <p>這個失敗其實是好脾氣的——它大聲報錯，<code>results.filter(Boolean)</code> 一濾就把那八個 <code>null</code> 濾掉了，我馬上知道 coverage 縮水。難看，但誠實。</p>
 <p>事後的調整方向也不複雜：任務鏈裡有 WebSearch 這種會吐一大段文字的步驟，最好別緊接著讓 schema 收尾。長研究和結構化輸出該拆開——要嘛中間插一個只負責收斂的步驟，要嘛把「你的最後一個動作必須是呼叫 StructuredOutput、不要只輸出文字」寫死在 prompt 結尾。我推測，呼叫點越少、收尾的指令越靠近結束，它越不容易在最後一步走神。後來幾個 workflow 我這樣拆，沒再大規模掛過——但老實說樣本還少，我不敢講這是定論。</p>
 <p>如果只有這一種，這就是一篇普通的踩坑筆記。第二種完全不是這個層級。</p>
-<h2 id="第二種死法：它找不到答案，於是編了一個"><a href="#第二種死法：它找不到答案，於是編了一個" class="headerlink" title="第二種死法：它找不到答案，於是編了一個"></a>第二種死法：它找不到答案，於是編了一個</h2><p>過幾天，我請 Claude Code 研究我系統裡一個 hook——確認某個「寫入標記」的程式到底是哪個檔在負責、有沒有壞。我給研究子代理的 schema 裡有三個必填欄位，簡化示意如下（實際欄位更多，這段不是能直接跑的程式碼，只留跟這次有關的三格）：</p>
+<h2 id="第二種死法：它找不到答案，於是編了一個">第二種死法：它找不到答案，於是編了一個</h2>
+<p>過幾天，我請 Claude Code 研究我系統裡一個 hook——確認某個「寫入標記」的程式到底是哪個檔在負責、有沒有壞。我給研究子代理的 schema 裡有三個必填欄位，簡化示意如下（實際欄位更多，這段不是能直接跑的程式碼，只留跟這次有關的三格）：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 簡化示意，非可執行版本</span></span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">SCHEMA</span> = &#123;</span><br><span class="line">  <span class="attr">type</span>: <span class="string">&#x27;object&#x27;</span>,</span><br><span class="line">  <span class="attr">properties</span>: &#123;</span><br><span class="line">    <span class="attr">marker_writer_found</span>:   &#123; <span class="attr">type</span>: <span class="string">&#x27;boolean&#x27;</span> &#125;,</span><br><span class="line">    <span class="attr">marker_writer_path</span>:    &#123; <span class="attr">type</span>: <span class="string">&#x27;string&#x27;</span>, <span class="attr">description</span>: <span class="string">&#x27;找不到就填 &quot;NONE&quot;&#x27;</span> &#125;,</span><br><span class="line">    <span class="attr">marker_writer_snippet</span>: &#123; <span class="attr">type</span>: <span class="string">&#x27;string&#x27;</span>, <span class="attr">description</span>: <span class="string">&#x27;相關程式碼片段&#x27;</span> &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">required</span>: [<span class="string">&#x27;marker_writer_found&#x27;</span>, <span class="string">&#x27;marker_writer_path&#x27;</span>, <span class="string">&#x27;marker_writer_snippet&#x27;</span>],</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>注意我做了什麼——我特地留了逃生欄。<code>marker_writer_found</code> 給它一個 <code>false</code> 可填，<code>path</code> 的 description 白紙黑字寫「找不到就填 NONE」。我那時候很得意，覺得這樣它要是查不到，自然會誠實說找不到，不會硬掰。</p>
 <p>子代理回來的報告，言之鑿鑿：marker writer 是 <code>~/.claude/hooks/tg-push-marker.py</code> 這個檔，裡面有「雙 main 入口的語法損壞」，檔尾還多了一個括號，並附上一段 python 佐證。<code>found</code> 填 <code>true</code>，path、snippet 全部填好，結構完美，一個欄位都沒缺。</p>
 <p>那個檔不存在。</p>
 <p>真正負責寫標記的是另一個 shell 檔裡的一個函式，運作正常，沒有任何語法損壞。子代理報的檔名、那段 python、連「檔尾多餘括號」這種細節，全部是編的。而且編得很圓——圓到我讀報告的時候完全沒起疑，已經準備動手去「修」那個損壞了。</p>
 <p>我是怎麼抓到的？我想先重現一下那個「語法損壞」，inline 跑了一行 <code>python ~/.claude/hooks/tg-push-marker.py</code>，終端吐回來：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">can&#x27;t open file &#x27;.../tg-push-marker.py&#x27;: [Errno 2] No such file or directory</span><br></pre></td></tr></table></figure>
-
 <p>檔案根本打不開。那一刻我才回去把整份報告當謊話重讀。</p>
-<h2 id="逃生欄為什麼擋不住"><a href="#逃生欄為什麼擋不住" class="headerlink" title="逃生欄為什麼擋不住"></a>逃生欄為什麼擋不住</h2><p>這次最反直覺的地方就在這——我明明設了逃生欄，它還是寧可編。</p>
+<h2 id="逃生欄為什麼擋不住">逃生欄為什麼擋不住</h2>
+<p>這次最反直覺的地方就在這——我明明設了逃生欄，它還是寧可編。</p>
 <p>想通之後，問題出在我搞錯了每個東西管的是什麼：</p>
 <ul>
 <li><strong>schema 約束的是「形狀」，不是「來源」。</strong> 它能保證你拿回一個有這三個欄位、型別正確的物件，但管不到欄位裡的值是查來的還是編的。</li>
@@ -156,7 +157,8 @@
 </ul>
 <p>擺在一起就清楚了。子代理 grep 沒找到時，承認找不到得違背「把欄位填滿」的慣性，編一個順著走就好。我的推測是，對一個被推著「完成任務」的東西來說，後者更像是交了差。逃生欄是我的善意，但它只是一句 description 等級的提示，跟「填滿 required」這道真的會擋你的硬約束擺一起，份量根本不對等。</p>
 <p>這比第一種死法危險太多。第一種會報錯，你一眼看到 coverage 掉了。第二種是看起來成功的失敗：結構齊全、型別正確、<code>filter(Boolean)</code> 一個都濾不掉——因為它根本不是 <code>null</code>，它是一個填得很滿的謊。你不主動去驗，永遠不會發現。</p>
-<h2 id="真正該補的，是讓機器去驗，不是靠我手癢"><a href="#真正該補的，是讓機器去驗，不是靠我手癢" class="headerlink" title="真正該補的，是讓機器去驗，不是靠我手癢"></a>真正該補的，是讓機器去驗，不是靠我手癢</h2><p>抓到之後我立了一條鐵律：子代理報的任何檔路徑、程式碼片段、行號、損壞細節，一律先 inline 驗一次才採信。<code>ls</code> 看檔在不在、<code>cat</code> 看內容對不對、<code>py_compile</code> 看真的壞了沒，能跑就真跑一次。牽動 hook、通訊管道、實盤路徑這種高風險改動，前面那層 research 報告我只當「線索」，不當「事實」。</p>
+<h2 id="真正該補的，是讓機器去驗，不是靠我手癢">真正該補的，是讓機器去驗，不是靠我手癢</h2>
+<p>抓到之後我立了一條鐵律：子代理報的任何檔路徑、程式碼片段、行號、損壞細節，一律先 inline 驗一次才採信。<code>ls</code> 看檔在不在、<code>cat</code> 看內容對不對、<code>py_compile</code> 看真的壞了沒，能跑就真跑一次。牽動 hook、通訊管道、實盤路徑這種高風險改動，前面那層 research 報告我只當「線索」，不當「事實」。</p>
 <p>但講老實話，這條鐵律是人肉補丁，撐不了規模。它靠的是「我那天剛好想先重現一下」——換一個我沒起疑的早上，這份報告就照著生效了。靠作者每次自覺去驗，不是解法，是運氣。</p>
 <p>真正該補的，是把驗證從「我的習慣」搬進 schema 本身。方向有兩個：</p>
 <p>第一，逃生欄不要寫在 description，要寫成 validator 擋得住的硬約束——而且光給 path 加一個 enum 或 const 不夠。問題不在 enum 本身，在它只看得到 path 這一格，不知道 <code>found</code>、<code>snippet</code> 現在是什麼狀態，表達不出跨欄位的條件：<code>found</code> 是 <code>false</code> 時 path 必須剛好是 <code>&quot;NONE&quot;</code>，<code>found</code> 是 <code>true</code> 時 path 不准是 <code>&quot;NONE&quot;</code>、snippet 也不能是空殼。這種「這格的值取決於那格」的約束，JSON Schema 得用 <code>if/then/else</code>（條件套用）或 <code>oneOf</code>（拆成互斥的兩個分支）才表達得出來。寫對了，「誠實」就從一句模型可以無視的叮嚀，變成通不過 validator 就交不了差的硬條件——兩個方向都堵：它不能說找不到卻又填個假路徑，也不能說找到了卻交一個空殼。</p>
@@ -255,15 +257,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

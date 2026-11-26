@@ -119,9 +119,11 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>JavaScript 是單執行緒語言，一次只能執行一個操作。如果所有事情都同步跑，任何耗時任務都會卡住整個程式——這就是事件循環（Event Loop）存在的原因，也是 <code>setTimeout</code> 能讓你「稍後再執行」的底層機制。</p>
-<h2 id="JavaScript-的單執行緒特性"><a href="#JavaScript-的單執行緒特性" class="headerlink" title="JavaScript 的單執行緒特性"></a>JavaScript 的單執行緒特性</h2><p>單執行緒的意思是：呼叫堆疊只有一條，同時只能有一段程式碼在跑。長時間的同步操作（例如複雜運算或等待 I/O）一旦佔住堆疊，使用者介面就會完全卡死、無法回應任何輸入。</p>
+<h2 id="JavaScript-的單執行緒特性">JavaScript 的單執行緒特性</h2>
+<p>單執行緒的意思是：呼叫堆疊只有一條，同時只能有一段程式碼在跑。長時間的同步操作（例如複雜運算或等待 I/O）一旦佔住堆疊，使用者介面就會完全卡死、無法回應任何輸入。</p>
 <p>非同步程式設計的核心思路是：<strong>把等待的部分交出去，主執行緒繼續跑其他的</strong>，等結果回來再接手。</p>
-<h2 id="事件循環的四個組件"><a href="#事件循環的四個組件" class="headerlink" title="事件循環的四個組件"></a>事件循環的四個組件</h2><p>理解事件循環前，先認識它的基本組成：</p>
+<h2 id="事件循環的四個組件">事件循環的四個組件</h2>
+<p>理解事件循環前，先認識它的基本組成：</p>
 <ol>
 <li><strong>呼叫堆疊（Call Stack）</strong>：記錄目前正在執行的函式，採後進先出（LIFO）結構。</li>
 <li><strong>Web API</strong>：瀏覽器提供的環境能力，包括計時器（<code>setTimeout</code>、<code>setInterval</code>）、網路請求（<code>fetch</code>）、DOM 事件等。這些操作不在 JS 引擎內跑，而是交給瀏覽器的底層執行緒處理。</li>
@@ -131,21 +133,22 @@
 <blockquote>
 <p>現代 JS 還有一條優先權更高的 <strong>Microtask Queue</strong>，專門處理 <code>Promise.then</code>、<code>queueMicrotask</code> 等。每次呼叫堆疊清空後，事件循環會<strong>先把 microtask queue 清空</strong>，才輪到回呼佇列。這篇聚焦 <code>setTimeout</code> 的 macrotask 行為，microtask 的細節值得另開一篇。</p>
 </blockquote>
-<h2 id="setTimeout-的運作流程"><a href="#setTimeout-的運作流程" class="headerlink" title="setTimeout 的運作流程"></a>setTimeout 的運作流程</h2><p><code>setTimeout(fn, delay)</code> 被呼叫後，執行路徑如下：</p>
+<h2 id="setTimeout-的運作流程">setTimeout 的運作流程</h2>
+<p><code>setTimeout(fn, delay)</code> 被呼叫後，執行路徑如下：</p>
 <ol>
 <li>JS 引擎把計時器交給 Web API，自己繼續往下跑。</li>
 <li>Web API 在背景計時，計時結束後把 <code>fn</code> 放進回呼佇列。</li>
 <li>事件循環發現呼叫堆疊清空，把 <code>fn</code> 取出推入堆疊執行。</li>
 </ol>
-<p>重點是：**<code>setTimeout</code> 的 delay 是「最少等這麼久」，不是「剛好等這麼久」**。如果堆疊上還有大量同步程式碼在跑，回呼只能繼續等在佇列裡。</p>
-<h2 id="範例：setTimeout-0-為什麼還是最後跑"><a href="#範例：setTimeout-0-為什麼還是最後跑" class="headerlink" title="範例：setTimeout 0 為什麼還是最後跑"></a>範例：setTimeout 0 為什麼還是最後跑</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;開始&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;setTimeout 回呼&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;結束&#x27;</span>);</span><br></pre></td></tr></table></figure>
-
+<p>重點是：<strong><code>setTimeout</code> 的 delay 是「最少等這麼久」，不是「剛好等這麼久」</strong>。如果堆疊上還有大量同步程式碼在跑，回呼只能繼續等在佇列裡。</p>
+<h2 id="範例：setTimeout-0-為什麼還是最後跑">範例：setTimeout 0 為什麼還是最後跑</h2>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;開始&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;setTimeout 回呼&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;結束&#x27;</span>);</span><br></pre></td></tr></table></figure>
 <p>輸出：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">開始</span><br><span class="line">結束</span><br><span class="line">setTimeout 回呼</span><br></pre></td></tr></table></figure>
-
 <p>delay 設 0 也一樣：回呼先進 Web API、再進回呼佇列，要等到呼叫堆疊完全清空才有機會執行。所以它永遠跑在當下這批同步程式碼之後。</p>
 <p>另外，瀏覽器對 <code>setTimeout</code> 有一個最小延遲限制（HTML 規範定義的巢狀呼叫超過 5 層後最低 4ms），就算你寫 0，實際延遲也不會低於這個門檻。</p>
-<h2 id="事件循環讓-JS-能做非阻塞-I-O"><a href="#事件循環讓-JS-能做非阻塞-I-O" class="headerlink" title="事件循環讓 JS 能做非阻塞 I/O"></a>事件循環讓 JS 能做非阻塞 I/O</h2><p>靠著這個機制，JS 可以在等待網路回應、使用者點擊、計時器的同時，繼續處理其他事情，介面也不會失去回應。這就是為什麼單執行緒的 JS 在前端能應付複雜的互動場景。</p>
+<h2 id="事件循環讓-JS-能做非阻塞-I-O">事件循環讓 JS 能做非阻塞 I/O</h2>
+<p>靠著這個機制，JS 可以在等待網路回應、使用者點擊、計時器的同時，繼續處理其他事情，介面也不會失去回應。這就是為什麼單執行緒的 JS 在前端能應付複雜的互動場景。</p>
 
       </div>
       
@@ -236,15 +239,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -25,8 +25,8 @@
 <meta property="article:modified_time" content="2026-06-22T03:03:29.000Z">
 <meta property="article:author" content="kyosora">
 <meta property="article:section" content="AI工具實戰">
-<meta property="article:tag" content="LLM">
 <meta property="article:tag" content="Claude">
+<meta property="article:tag" content="LLM">
 <meta property="article:tag" content="Gemini">
 <meta property="article:tag" content="GPT-5.6">
 <meta property="article:tag" content="AI模型">
@@ -43,7 +43,7 @@
 <script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"六月 AI 模型大戰前夕：GPT-5.6、Gemini 3.5 Pro、Claude Mythos 同時壓境，開發者怎麼準備？","description":"GPT-5.6、Gemini 3.5 Pro、Claude Mythos 六月可能同時壓境，模型名稱、API 規格、token 單價恐怕一起變動，留給開發者的切換視窗很短。比起比跑分，更該先問自己：架構裡寫死了幾處模型名、錯誤碼與串流格式？提供 adapter 抽象層備戰清單與各家最新情報分析。","url":"https://kyosora.github.io/posts/ae04c230/","mainEntityOfPage":"https://kyosora.github.io/posts/ae04c230/","image":"https://kyosora.github.io/images/posts/june-2026-ai-model-war-preview-cover.webp","datePublished":"2026-05-27T07:00:00.000Z","dateModified":"2026-06-22T03:03:29.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI工具實戰","keywords":"LLM, Claude, Gemini, GPT-5.6, AI模型"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI工具實戰","item":"https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"},{"@type":"ListItem","position":3,"name":"六月 AI 模型大戰前夕：GPT-5.6、Gemini 3.5 Pro、Claude Mythos 同時壓境，開發者怎麼準備？","item":"https://kyosora.github.io/posts/ae04c230/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"六月 AI 模型大戰前夕：GPT-5.6、Gemini 3.5 Pro、Claude Mythos 同時壓境，開發者怎麼準備？","description":"GPT-5.6、Gemini 3.5 Pro、Claude Mythos 六月可能同時壓境，模型名稱、API 規格、token 單價恐怕一起變動，留給開發者的切換視窗很短。比起比跑分，更該先問自己：架構裡寫死了幾處模型名、錯誤碼與串流格式？提供 adapter 抽象層備戰清單與各家最新情報分析。","url":"https://kyosora.github.io/posts/ae04c230/","mainEntityOfPage":"https://kyosora.github.io/posts/ae04c230/","image":"https://kyosora.github.io/images/posts/june-2026-ai-model-war-preview-cover.webp","datePublished":"2026-05-27T07:00:00.000Z","dateModified":"2026-06-22T03:03:29.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI工具實戰","keywords":"Claude, LLM, Gemini, GPT-5.6, AI模型"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI工具實戰","item":"https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"},{"@type":"ListItem","position":3,"name":"六月 AI 模型大戰前夕：GPT-5.6、Gemini 3.5 Pro、Claude Mythos 同時壓境，開發者怎麼準備？","item":"https://kyosora.github.io/posts/ae04c230/"}]}]}</script>
 
 </head>
 <body class="kind-post">
@@ -125,10 +125,10 @@
         <p>2026 年 5 月最後一週，GPT-5.6 在 Codex 後端日誌裡被挖出來、Anthropic 的 Mythos 推翻了一個近 80 年的數學猜想、WWDC 很可能揭露 Gemini 驅動的新 Siri。如果這些消息有一半成真，六月的模型名稱、API 規格、token 單價會同時變動，留給開發者的切換視窗很短。</p>
 <p>我三月寫過一篇<a href="/posts/d2eaf73a/">模型大亂鬥</a>，當時的結論是「沒有全能冠軍」——這句話到現在還適用。這次要聊的不是跑分比較，而是一個更實際的問題：你的系統架構裡，模型名稱寫死了幾處？錯誤碼寫死了幾處？stream chunk 格式寫死了幾處？</p>
 <p>備戰清單放前面，後面的情報分析都服務這份清單。</p>
-<h2 id="開發者備戰清單（六月前完成）"><a href="#開發者備戰清單（六月前完成）" class="headerlink" title="開發者備戰清單（六月前完成）"></a>開發者備戰清單（六月前完成）</h2><p><strong>1. 把 LLM 呼叫抽象出來</strong></p>
+<h2 id="開發者備戰清單（六月前完成）">開發者備戰清單（六月前完成）</h2>
+<p><strong>1. 把 LLM 呼叫抽象出來</strong></p>
 <p>如果你的程式碼裡直接寫死 <code>openai.chat.completions.create()</code>，六月切模型會很痛苦。不需要複雜框架，一個 adapter 層就夠。核心是把模型選擇和業務邏輯分開。</p>
 <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 這是整理過的示意，實際版本會更簡單</span></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">Message</span> &#123; <span class="attr">role</span>: <span class="built_in">string</span>; <span class="attr">content</span>: <span class="built_in">string</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">PROVIDERS</span> = &#123;</span><br><span class="line">  <span class="attr">coding</span>: &#123; <span class="attr">model</span>: <span class="string">&#x27;claude-sonnet-4-6&#x27;</span>, <span class="attr">maxContext</span>: <span class="number">200_000</span> &#125;,</span><br><span class="line">  <span class="attr">analysis</span>: &#123; <span class="attr">model</span>: <span class="string">&#x27;gpt-5.5&#x27;</span>, <span class="attr">maxContext</span>: <span class="number">1_050_000</span> &#125;,</span><br><span class="line">  <span class="attr">costSensitive</span>: &#123; <span class="attr">model</span>: <span class="string">&#x27;qwen-3.7-max&#x27;</span>, <span class="attr">maxContext</span>: <span class="number">131_072</span> &#125;,</span><br><span class="line">&#125; <span class="keyword">as</span> <span class="keyword">const</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// router 是你選的多模型路由層（OpenRouter、LiteLLM、自己包的都行）</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">llmCall</span>(<span class="params"></span></span><br><span class="line"><span class="params">  <span class="attr">task</span>: keyof <span class="keyword">typeof</span> PROVIDERS,</span></span><br><span class="line"><span class="params">  <span class="attr">messages</span>: <span class="title class_">Message</span>[],</span></span><br><span class="line"><span class="params">  <span class="attr">opts</span>?: &#123; fallback?: keyof <span class="keyword">typeof</span> PROVIDERS; timeoutMs?: <span class="built_in">number</span> &#125;</span></span><br><span class="line"><span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> provider = <span class="variable constant_">PROVIDERS</span>[task]</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> router.<span class="title function_">complete</span>(&#123;</span><br><span class="line">      <span class="attr">model</span>: provider.<span class="property">model</span>,</span><br><span class="line">      messages,</span><br><span class="line">      <span class="attr">timeout</span>: opts?.<span class="property">timeoutMs</span> ?? <span class="number">30_000</span>,</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">    <span class="keyword">if</span> (opts?.<span class="property">fallback</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> router.<span class="title function_">complete</span>(&#123; <span class="attr">model</span>: <span class="variable constant_">PROVIDERS</span>[opts.<span class="property">fallback</span>].<span class="property">model</span>, messages &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">throw</span> err</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>切換模型不只是改一個字串。實際要驗的差異清單：</p>
 <ul>
 <li>tool calling schema 格式（OpenAI 和 Anthropic 的結構不同）</li>
@@ -143,7 +143,7 @@
 <p><strong>2. 壓力測試長上下文</strong></p>
 <p>150 萬 token 窗口聽起來很美。但長上下文不只是「塞得進去」的問題：</p>
 <ul>
-<li>推理品質在 50 萬 token 之後是否衰減？（所謂的 &quot;lost in the middle&quot; 問題）</li>
+<li>推理品質在 50 萬 token 之後是否衰減？（所謂的 “lost in the middle” 問題）</li>
 <li>延遲和成本能接受嗎？150 萬 input token 的單次呼叫，以 GPT-5.5 目前的定價算，光 input 就超過 10 美元</li>
 <li>什麼場景用完整上下文比 RAG 更值得？文件完整性要求高、跨段引用需要精確時，full-context 有優勢。延遲敏感、Token 預算有限時，RAG 仍然更實際</li>
 </ul>
@@ -160,7 +160,8 @@
 <th>來源</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>Qwen3.7-Max</td>
 <td>Code Arena 1541 分（非 Claude 陣營最高），隱式快取自動啟用</td>
 <td>阿里雲官方 2026/5/26</td>
@@ -175,14 +176,16 @@
 <td>1B 參數，INT4 量化後 0.5GB，可在手機和瀏覽器跑</td>
 <td>面壁智能 2026/5/26 開源</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>成本敏感 + 低敏感資料的場景適合考慮。使用邊界：跨境資料傳輸合規、供應商穩定度、企業採購審核流程。</p>
 <p><strong>4. 別急著 all-in——先建 eval 集</strong></p>
 <p>每家的 benchmark 都只能參考，你的任務分佈跟他們的測試集不會一樣。正式切換前，用自己場景的 eval 集跑兩週再決定。</p>
 <p>eval 集怎麼建？不需要很複雜：從你的生產日誌裡撈 50-100 筆有代表性的真實任務，固定輸入、記錄期望的輸出格式和品質標準，人工評分打 pass/fail。跑 eval 時固定 temperature、seed 和 prompt 版本，確保可重跑。新模型上線後跑一遍，看 pass rate、p95 延遲、單任務成本三個數字，資料會告訴你哪個模型在你的場景裡表現最好。</p>
 <hr>
 <p>以下是六月前後各家的動態整理。每段結尾會標出確認程度和建議動作時機。</p>
-<h2 id="OpenAI：GPT-5-6-iris-alpha"><a href="#OpenAI：GPT-5-6-iris-alpha" class="headerlink" title="OpenAI：GPT-5.6 iris-alpha"></a>OpenAI：GPT-5.6 iris-alpha</h2><p>多名開發者在 OpenAI Codex 的後端日誌裡獨立發現了未官宣的 GPT-5.6 模型，內部代號 iris-alpha（來源：IT 之家 2026/5/26 報導，引述多名開發者獨立發現）。</p>
+<h2 id="OpenAI：GPT-5-6-iris-alpha">OpenAI：GPT-5.6 iris-alpha</h2>
+<p>多名開發者在 OpenAI Codex 的後端日誌裡獨立發現了未官宣的 GPT-5.6 模型，內部代號 iris-alpha（來源：IT 之家 2026/5/26 報導，引述多名開發者獨立發現）。</p>
 <p>核心規格：</p>
 <ul>
 <li>上下文窗口 150 萬 token，較 GPT-5.5 的 105 萬提升 43%</li>
@@ -192,9 +195,11 @@
 </ul>
 <p>值得注意的是發現方式——不是 API changelog，是 Codex 後端日誌。這代表 OpenAI 已經在自家產品裡跑這個模型了。如果 90 萬 token 下仍能流暢回應的報告屬實，意味著 OpenAI 在長上下文的推理品質上有了實質進展，不只是把窗口數字拉大。</p>
 <blockquote>
-<p><strong>確認程度：</strong> 洩漏情報（多人獨立驗證，但非官方公告）<br><strong>建議動作：</strong> 不要基於洩漏資訊重寫架構。但如果你的應用涉及大量文件分析或整個程式碼庫的理解，值得留意正式發佈後的 benchmark 和定價。</p>
+<p><strong>確認程度：</strong> 洩漏情報（多人獨立驗證，但非官方公告）<br>
+<strong>建議動作：</strong> 不要基於洩漏資訊重寫架構。但如果你的應用涉及大量文件分析或整個程式碼庫的理解，值得留意正式發佈後的 benchmark 和定價。</p>
 </blockquote>
-<h2 id="Anthropic：Mythos-不只是解數學題"><a href="#Anthropic：Mythos-不只是解數學題" class="headerlink" title="Anthropic：Mythos 不只是解數學題"></a>Anthropic：Mythos 不只是解數學題</h2><p>2026/5/26，Anthropic 工程師 Sholto Douglas 在社群表示，Claude Mythos 在週末推翻了 Erdős 單位距離猜想——一個近 80 年的數學難題，OpenAI 曾將其列為 AI 數學能力的里程碑（來源：The Decoder 2026/5/26 報導）。Douglas 形容那是一個「巧妙簡潔的證明」。</p>
+<h2 id="Anthropic：Mythos-不只是解數學題">Anthropic：Mythos 不只是解數學題</h2>
+<p>2026/5/26，Anthropic 工程師 Sholto Douglas 在社群表示，Claude Mythos 在週末推翻了 Erdős 單位距離猜想——一個近 80 年的數學難題，OpenAI 曾將其列為 AI 數學能力的里程碑（來源：The Decoder 2026/5/26 報導）。Douglas 形容那是一個「巧妙簡潔的證明」。</p>
 <p>數學題是能力信號，但真正能落到工程流程的是安全掃描。Mythos 對開發者更直接的影響是 Project Glasswing——這對備戰清單第 4 點的 eval 流程最相關。Glasswing 從 2026 年 4 月啟動，約 50 家合作夥伴用 Mythos Preview 掃描關鍵軟體（來源：Anthropic 官方 2026/5/21 發佈的 Glasswing 進度更新）。幾個數字：</p>
 <ul>
 <li>超過 10,000 個高危或嚴重漏洞</li>
@@ -211,28 +216,34 @@
 <li>密鑰和客戶資料絕對不進 prompt</li>
 </ul>
 <blockquote>
-<p><strong>確認程度：</strong> Mythos 能力與 Glasswing 資料 — 官方發佈<br><strong>建議動作：</strong> 可以開始在 staging 環境測試 Claude 做 SAST 掃描。</p>
+<p><strong>確認程度：</strong> Mythos 能力與 Glasswing 資料 — 官方發佈<br>
+<strong>建議動作：</strong> 可以開始在 staging 環境測試 Claude 做 SAST 掃描。</p>
 </blockquote>
-<h2 id="Google-Apple：Gemini-3-5-Pro-和-1-2T-的-Siri-引擎"><a href="#Google-Apple：Gemini-3-5-Pro-和-1-2T-的-Siri-引擎" class="headerlink" title="Google + Apple：Gemini 3.5 Pro 和 1.2T 的 Siri 引擎"></a>Google + Apple：Gemini 3.5 Pro 和 1.2T 的 Siri 引擎</h2><p>Google 這邊有兩條線。</p>
+<h2 id="Google-Apple：Gemini-3-5-Pro-和-1-2T-的-Siri-引擎">Google + Apple：Gemini 3.5 Pro 和 1.2T 的 Siri 引擎</h2>
+<p>Google 這邊有兩條線。</p>
 <p>Gemini 3.5 Pro 預期 2026 年 6 月發佈（來源：Nathan Lambert Interconnects 2026/5/26 文章提及；Kim @kimmonismus 2026/5/25 推文交叉印證）。Google I/O 後，Sundar Pichai 受訪把方向講得很直——搜尋要從「給結果」變成「啟動任務」（來源：The Verge Decoder Podcast 2026/5/26）。Gemini Spark Agent平台是這個方向的產品化嘗試。</p>
 <p>另一條是 Apple：據報導，Apple 不只是把 Gemini 加到 Siri，而是用了一個定制版 1.2T 參數的 Google 模型重塑 Siri 核心（來源：Kim @kimmonismus 2026/5/25 推文，為單一二手來源，未經官方確認）。如果屬實，這個規模遠大於 Gemini 3.5 Flash 預估的 300B。</p>
 <p>Apple 的方案據稱是分層架構：簡單查詢走本地端側模型，複雜問題上雲端大模型。架構合理，但「什麼算簡單」的切分邏輯是使用體驗的關鍵。WWDC 預計六月初舉行。</p>
 <p>如果 WWDC 確認 Siri 能更可靠地呼叫 App Intents，iOS 開發者需要重新評估整合策略。後端開發者也值得留意——Apple Intelligence 對 API schema 的理解能力提升，意味著你的 API 文件品質會直接影響 Siri 能不能正確呼叫你的服務。</p>
 <blockquote>
-<p><strong>確認程度：</strong> WWDC — 已確認；Gemini 3.5 Pro — 高度可能（多來源交叉）；1.2T 定制模型 — 單一二手來源，未官方確認<br><strong>建議動作：</strong> WWDC 後第一週重新評估 Apple Intelligence 整合方案。</p>
+<p><strong>確認程度：</strong> WWDC — 已確認；Gemini 3.5 Pro — 高度可能（多來源交叉）；1.2T 定制模型 — 單一二手來源，未官方確認<br>
+<strong>建議動作：</strong> WWDC 後第一週重新評估 Apple Intelligence 整合方案。</p>
 </blockquote>
-<h2 id="xAI：Grok-Build-已經在跑了"><a href="#xAI：Grok-Build-已經在跑了" class="headerlink" title="xAI：Grok Build 已經在跑了"></a>xAI：Grok Build 已經在跑了</h2><p>其他家還在「即將發佈」，xAI 的 Grok Build 2026/5/25 已開放 Beta（來源：xAI 官方推文）。跟 Claude Code 走類似路線——不只是 chat，而是 CLI 工具直接進入開發者工作流程。同時 Grok 模型接進了開源編碼工具 OpenCode，用 OAuth 認證即可在終端裡呼叫。xAI 在模型排行上不是前三，但產品節奏確實激進。</p>
+<h2 id="xAI：Grok-Build-已經在跑了">xAI：Grok Build 已經在跑了</h2>
+<p>其他家還在「即將發佈」，xAI 的 Grok Build 2026/5/25 已開放 Beta（來源：xAI 官方推文）。跟 Claude Code 走類似路線——不只是 chat，而是 CLI 工具直接進入開發者工作流程。同時 Grok 模型接進了開源編碼工具 OpenCode，用 OAuth 認證即可在終端裡呼叫。xAI 在模型排行上不是前三，但產品節奏確實激進。</p>
 <blockquote>
-<p><strong>確認程度：</strong> 官方發佈<br><strong>建議動作：</strong> 有 SuperGrok 訂閱的話花半小時試用，跟現有工具比一下手感。不急。</p>
+<p><strong>確認程度：</strong> 官方發佈<br>
+<strong>建議動作：</strong> 有 SuperGrok 訂閱的話花半小時試用，跟現有工具比一下手感。不急。</p>
 </blockquote>
-<h2 id="回到清單"><a href="#回到清單" class="headerlink" title="回到清單"></a>回到清單</h2><p>六月之後回來看，這些消息裡一定有些是錯的。但不管哪些成真，備戰清單裡的四件事都不會白做。如果只能做一件，先做第一項——把模型名稱從業務邏輯裡抽出來，六月不管誰先出牌，你都能跟上。</p>
+<h2 id="回到清單">回到清單</h2>
+<p>六月之後回來看，這些消息裡一定有些是錯的。但不管哪些成真，備戰清單裡的四件事都不會白做。如果只能做一件，先做第一項——把模型名稱從業務邏輯裡抽出來，六月不管誰先出牌，你都能跟上。</p>
 
       </div>
       
 <footer class="post-end">
   
   <ul class="post-tags" aria-label="標籤">
-    <li><a href="/tags/LLM/">LLM</a></li><li><a href="/tags/Claude/">Claude</a></li><li><a href="/tags/Gemini/">Gemini</a></li><li><a href="/tags/GPT-5-6/">GPT-5.6</a></li><li><a href="/tags/AI%E6%A8%A1%E5%9E%8B/">AI模型</a></li>
+    <li><a href="/tags/Claude/">Claude</a></li><li><a href="/tags/LLM/">LLM</a></li><li><a href="/tags/Gemini/">Gemini</a></li><li><a href="/tags/GPT-5-6/">GPT-5.6</a></li><li><a href="/tags/AI%E6%A8%A1%E5%9E%8B/">AI模型</a></li>
   </ul>
   
 
@@ -316,15 +327,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

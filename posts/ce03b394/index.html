@@ -127,7 +127,8 @@
 <blockquote>
 <p><strong>注意</strong>：gws 迭代很快，截至 2026-06-18 已到 v0.22.5，<code>gws mcp</code> 子指令也已在 v0.8.0 移除。文章後段會說明現在的 AI agent 整合方式。</p>
 </blockquote>
-<h2 id="gws-是什麼"><a href="#gws-是什麼" class="headerlink" title="gws 是什麼"></a>gws 是什麼</h2><p>gws 用 Rust 寫的，最特別的地方是它的指令不是寫死的——而是從 Google Discovery Service 動態建構。Google 新增 API 端點時，gws 自動就能用，不需要更新軟體。</p>
+<h2 id="gws-是什麼">gws 是什麼</h2>
+<p>gws 用 Rust 寫的，最特別的地方是它的指令不是寫死的——而是從 Google Discovery Service 動態建構。Google 新增 API 端點時，gws 自動就能用，不需要更新軟體。</p>
 <p>目前支援的服務：</p>
 <ul>
 <li>Drive — 檔案管理</li>
@@ -139,34 +140,33 @@
 <li>Tasks — 待辦事項</li>
 </ul>
 <p>所有回應都是 JSON 格式，很適合寫腳本或讓 AI agent 呼叫。</p>
-<h2 id="安裝：npm-裝不起來（v0-4-x-時代的坑）"><a href="#安裝：npm-裝不起來（v0-4-x-時代的坑）" class="headerlink" title="安裝：npm 裝不起來（v0.4.x 時代的坑）"></a>安裝：npm 裝不起來（v0.4.x 時代的坑）</h2><p>官方文件說用 npm 裝：</p>
+<h2 id="安裝：npm-裝不起來（v0-4-x-時代的坑）">安裝：npm 裝不起來（v0.4.x 時代的坑）</h2>
+<p>官方文件說用 npm 裝：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g @googleworkspace/cli</span><br></pre></td></tr></table></figure>
-
 <p>在 Windows 上直接炸了：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Error fetching release: An error occurred untarring the artifact:</span><br><span class="line">stderr: tar: Cannot connect to C: resolve failed</span><br></pre></td></tr></table></figure>
-
 <p>npm 安裝腳本會從 GitHub Releases 下載壓縮檔，但 Windows 的 tar 處理路徑有問題，解壓失敗。這個問題在 v0.4.x 時期存在；<strong>目前版本（v0.22.5）npm 安裝行為可能已改善</strong>，但我沒有重驗，保守起見還是建議直接下載二進位檔。</p>
-<h3 id="解法：手動下載二進位檔"><a href="#解法：手動下載二進位檔" class="headerlink" title="解法：手動下載二進位檔"></a>解法：手動下載二進位檔</h3><p>v0.22.5 的 Windows 版本是 <code>.zip</code> 格式，不再是 <code>.tar.gz</code>：</p>
+<h3 id="解法：手動下載二進位檔">解法：手動下載二進位檔</h3>
+<p>v0.22.5 的 Windows 版本是 <code>.zip</code> 格式，不再是 <code>.tar.gz</code>：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># PowerShell 下載並解壓</span></span><br><span class="line"><span class="variable">$ver</span> = <span class="string">&quot;0.22.5&quot;</span></span><br><span class="line"><span class="variable">$url</span> = <span class="string">&quot;https://github.com/googleworkspace/cli/releases/download/v<span class="variable">$ver</span>/google-workspace-cli-x86_64-pc-windows-msvc.zip&quot;</span></span><br><span class="line"><span class="built_in">Invoke-WebRequest</span> <span class="literal">-Uri</span> <span class="variable">$url</span> <span class="literal">-OutFile</span> gws.zip</span><br><span class="line"><span class="built_in">Expand-Archive</span> gws.zip <span class="literal">-DestinationPath</span> gws<span class="literal">-extracted</span></span><br></pre></td></tr></table></figure>
-
 <p>或用 curl（Git Bash）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Git Bash</span></span><br><span class="line">ver=<span class="string">&quot;0.22.5&quot;</span></span><br><span class="line">curl -sL -o gws.zip <span class="string">&quot;https://github.com/googleworkspace/cli/releases/download/v<span class="variable">$&#123;ver&#125;</span>/google-workspace-cli-x86_64-pc-windows-msvc.zip&quot;</span></span><br><span class="line">unzip gws.zip -d gws-extracted</span><br></pre></td></tr></table></figure>
-
 <p>解壓後把 <code>gws.exe</code> 丟到 PATH 裡的任何目錄。我放在 Node.js 目錄，因為它已經在 PATH 中：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cp</span> gws-extracted/gws.exe <span class="string">&quot;/c/Program Files/nodejs/gws.exe&quot;</span></span><br></pre></td></tr></table></figure>
-
 <p>注意：如果你之前 npm 安裝失敗，它會留下壞掉的 shim 檔案（<code>gws</code>、<code>gws.cmd</code>、<code>gws.ps1</code>）。這些 shim 會攔截你的指令，導致 <code>Cannot find module run-gws.js</code> 錯誤。<strong>先刪掉它們</strong>，再放你的 <code>gws.exe</code>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">rm</span> <span class="string">&quot;/c/Program Files/nodejs/gws&quot;</span></span><br><span class="line"><span class="built_in">rm</span> <span class="string">&quot;/c/Program Files/nodejs/gws.cmd&quot;</span></span><br><span class="line"><span class="built_in">rm</span> <span class="string">&quot;/c/Program Files/nodejs/gws.ps1&quot;</span></span><br></pre></td></tr></table></figure>
-
 <p>驗證：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gws --version</span><br><span class="line"><span class="comment"># gws 0.22.5</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="認證設定：需要手動建-OAuth-Client"><a href="#認證設定：需要手動建-OAuth-Client" class="headerlink" title="認證設定：需要手動建 OAuth Client"></a>認證設定：需要手動建 OAuth Client</h2><p>gws 提供了 <code>gws auth setup</code> 自動設定，但它依賴 gcloud CLI。如果你沒裝 gcloud，它會提示你安裝。</p>
+<h2 id="認證設定：需要手動建-OAuth-Client">認證設定：需要手動建 OAuth Client</h2>
+<p>gws 提供了 <code>gws auth setup</code> 自動設定，但它依賴 gcloud CLI。如果你沒裝 gcloud，它會提示你安裝。</p>
 <p>就算裝了 gcloud 跑 <code>auth setup</code>，在 Step 5 建立 OAuth Client 時也會失敗——因為 Google Cloud 不允許 API 自動建立 OAuth Client ID，必須手動操作。</p>
-<h3 id="手動建立-OAuth-憑證"><a href="#手動建立-OAuth-憑證" class="headerlink" title="手動建立 OAuth 憑證"></a>手動建立 OAuth 憑證</h3><ol>
-<li><p>到 <a target="_blank" rel="noopener" href="https://console.cloud.google.com/">Google Cloud Console</a> 選擇或建立專案</p>
+<h3 id="手動建立-OAuth-憑證">手動建立 OAuth 憑證</h3>
+<ol>
+<li>
+<p>到 <a target="_blank" rel="noopener" href="https://console.cloud.google.com/">Google Cloud Console</a> 選擇或建立專案</p>
 </li>
-<li><p>設定 OAuth 同意畫面：</p>
+<li>
+<p>設定 OAuth 同意畫面：</p>
 <ul>
 <li>APIs &amp; Services → OAuth consent screen</li>
 <li>User Type 選 <strong>External</strong></li>
@@ -174,7 +174,8 @@
 <li>填入你的 email，一路 Save and Continue</li>
 </ul>
 </li>
-<li><p>建立 OAuth Client ID：</p>
+<li>
+<p>建立 OAuth Client ID：</p>
 <ul>
 <li>APIs &amp; Services → Credentials</li>
 <li>Create Credentials → OAuth client ID</li>
@@ -183,56 +184,52 @@
 <li>點 Create，記下 Client ID 和 Client Secret</li>
 </ul>
 </li>
-<li><p>設定環境變數後登入：</p>
+<li>
+<p>設定環境變數後登入：</p>
 </li>
 </ol>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> GOOGLE_WORKSPACE_CLI_CLIENT_ID=<span class="string">&quot;你的-client-id.apps.googleusercontent.com&quot;</span></span><br><span class="line"><span class="built_in">export</span> GOOGLE_WORKSPACE_CLI_CLIENT_SECRET=<span class="string">&quot;你的-client-secret&quot;</span></span><br><span class="line">gws auth login</span><br></pre></td></tr></table></figure>
-
 <p>瀏覽器會跳出 Google 登入頁面，授權後回到終端機會看到：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;status&quot;</span><span class="punctuation">:</span> <span class="string">&quot;success&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;message&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Authentication successful. Encrypted credentials saved.&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;scopes&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="string">&quot;https://www.googleapis.com/auth/drive&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;https://www.googleapis.com/auth/spreadsheets&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;https://www.googleapis.com/auth/gmail.modify&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;https://www.googleapis.com/auth/calendar&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;https://www.googleapis.com/auth/documents&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;https://www.googleapis.com/auth/presentations&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;https://www.googleapis.com/auth/tasks&quot;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p>看到 <code>success</code> 就以為搞定了？我也是。</p>
-<h2 id="最大的坑：加密憑證在-Git-Bash-下失效"><a href="#最大的坑：加密憑證在-Git-Bash-下失效" class="headerlink" title="最大的坑：加密憑證在 Git Bash 下失效"></a>最大的坑：加密憑證在 Git Bash 下失效</h2><p>登入成功後，執行任何 API 呼叫：</p>
+<h2 id="最大的坑：加密憑證在-Git-Bash-下失效">最大的坑：加密憑證在 Git Bash 下失效</h2>
+<p>登入成功後，執行任何 API 呼叫：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gws drive files list --params <span class="string">&#x27;&#123;&quot;pageSize&quot;: 3&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
-
 <p>結果：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;error&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;code&quot;</span><span class="punctuation">:</span> <span class="number">401</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;message&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Access denied. No credentials provided.&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;reason&quot;</span><span class="punctuation">:</span> <span class="string">&quot;authError&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p><code>auth status</code> 明明顯示 <code>token_valid: true</code>，但 API 呼叫就是 401。</p>
 <p>問題出在 gws 用 <strong>AES-256-GCM 加密</strong>儲存憑證（<code>credentials.enc</code>），解密金鑰原本設計存放在 <strong>Windows Credential Manager</strong>。但在早期版本（v0.4.x），當 Credential Manager 回傳失敗或查無條目時，CLI 不會重用既有金鑰，而是每次啟動都產生新的隨機金鑰寫入 <code>~/.config/gws/.encryption_key</code>——這樣 <code>auth login</code> 寫入時和後續 API 呼叫時用的金鑰不同，<code>credentials.enc</code> 就永遠解不開，導致 401。</p>
-<h3 id="解法一：auth-export-unmasked（v0-22-5-推薦）"><a href="#解法一：auth-export-unmasked（v0-22-5-推薦）" class="headerlink" title="解法一：auth export --unmasked（v0.22.5 推薦）"></a>解法一：<code>auth export --unmasked</code>（v0.22.5 推薦）</h3><p>新版本加了 <code>--unmasked</code> 旗標，可以直接匯出明文 token：</p>
+<h3 id="解法一：auth-export-unmasked（v0-22-5-推薦）">解法一：<code>auth export --unmasked</code>（v0.22.5 推薦）</h3>
+<p>新版本加了 <code>--unmasked</code> 旗標，可以直接匯出明文 token：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gws auth <span class="built_in">export</span> --unmasked &gt; ~/.config/gws/credentials.json</span><br></pre></td></tr></table></figure>
-
 <p>然後設定環境變數（Git Bash 裡路徑用<strong>正斜線</strong>，反斜線在 bash 字串裡會被解讀）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE=<span class="string">&quot;C:/Users/你的使用者/.config/gws/credentials.json&quot;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="解法二：Python-手動解密（v0-4-x-備用方案）"><a href="#解法二：Python-手動解密（v0-4-x-備用方案）" class="headerlink" title="解法二：Python 手動解密（v0.4.x 備用方案）"></a>解法二：Python 手動解密（v0.4.x 備用方案）</h3><p>如果你卡在舊版或 <code>auth export</code> 仍輸出遮蔽值，可以自己解密 <code>credentials.enc</code>。加密金鑰存在 <code>~/.config/gws/.encryption_key</code>：</p>
+<h3 id="解法二：Python-手動解密（v0-4-x-備用方案）">解法二：Python 手動解密（v0.4.x 備用方案）</h3>
+<p>如果你卡在舊版或 <code>auth export</code> 仍輸出遮蔽值，可以自己解密 <code>credentials.enc</code>。加密金鑰存在 <code>~/.config/gws/.encryption_key</code>：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> base64, json</span><br><span class="line"><span class="keyword">from</span> cryptography.hazmat.primitives.ciphers.aead <span class="keyword">import</span> AESGCM</span><br><span class="line"></span><br><span class="line"><span class="comment"># 讀取加密金鑰</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;C:/Users/你的使用者/.config/gws/.encryption_key&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    key = base64.b64decode(f.read().strip())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 讀取加密憑證</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;C:/Users/你的使用者/.config/gws/credentials.enc&#x27;</span>, <span class="string">&#x27;rb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    data = f.read()</span><br><span class="line"></span><br><span class="line"><span class="comment"># AES-256-GCM 解密：前 12 bytes 是 nonce</span></span><br><span class="line">nonce = data[:<span class="number">12</span>]</span><br><span class="line">ciphertext = data[<span class="number">12</span>:]</span><br><span class="line">aesgcm = AESGCM(key)</span><br><span class="line">plaintext = aesgcm.decrypt(nonce, ciphertext, <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 寫入明文 credentials.json</span></span><br><span class="line">creds = json.loads(plaintext)</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;C:/Users/你的使用者/.config/gws/credentials.json&#x27;</span>, <span class="string">&#x27;w&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    json.dump(creds, f, indent=<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
-
 <p>需要先裝 <code>cryptography</code> 套件：<code>pip install cryptography</code>。</p>
 <hr>
 <p>再試一次：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gws drive files list --params <span class="string">&#x27;&#123;&quot;pageSize&quot;: 3&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
-
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;files&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1G8UvtYMIIR5gFAqC...&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;kind&quot;</span><span class="punctuation">:</span> <span class="string">&quot;drive#file&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;mimeType&quot;</span><span class="punctuation">:</span> <span class="string">&quot;application/vnd.google-apps.spreadsheet&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;我的試算表&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p>終於正常了。</p>
-<h2 id="永久設定"><a href="#永久設定" class="headerlink" title="永久設定"></a>永久設定</h2><p>把環境變數寫進 <code>~/.bashrc</code>。<strong>路徑要用正斜線</strong>，不然 bash 會把反斜線當跳脫字元處理：</p>
+<h2 id="永久設定">永久設定</h2>
+<p>把環境變數寫進 <code>~/.bashrc</code>。<strong>路徑要用正斜線</strong>，不然 bash 會把反斜線當跳脫字元處理：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Google Workspace CLI</span></span><br><span class="line"><span class="built_in">export</span> GOOGLE_WORKSPACE_CLI_CLIENT_ID=<span class="string">&quot;你的-client-id.apps.googleusercontent.com&quot;</span></span><br><span class="line"><span class="built_in">export</span> GOOGLE_WORKSPACE_CLI_CLIENT_SECRET=<span class="string">&quot;你的-client-secret&quot;</span></span><br><span class="line"><span class="built_in">export</span> GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE=<span class="string">&quot;C:/Users/你的使用者/.config/gws/credentials.json&quot;</span></span><br></pre></td></tr></table></figure>
-
 <p>如果你主要用 PowerShell，改設定使用者層級環境變數：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="type">Environment</span>]::SetEnvironmentVariable(</span><br><span class="line">    <span class="string">&quot;GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE&quot;</span>,</span><br><span class="line">    <span class="string">&quot;C:\Users\你的使用者\.config\gws\credentials.json&quot;</span>,</span><br><span class="line">    <span class="string">&quot;User&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 列出 Drive 檔案</span></span><br><span class="line">gws drive files list --params <span class="string">&#x27;&#123;&quot;pageSize&quot;: 5&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出 Gmail 郵件</span></span><br><span class="line">gws gmail users.messages list --params <span class="string">&#x27;&#123;&quot;userId&quot;: &quot;me&quot;, &quot;maxResults&quot;: 5&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出行事曆</span></span><br><span class="line">gws calendar calendarList list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 建立 Google 試算表</span></span><br><span class="line">gws sheets spreadsheets create --json <span class="string">&#x27;&#123;&quot;properties&quot;: &#123;&quot;title&quot;: &quot;新試算表&quot;&#125;&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 預覽請求但不實際執行</span></span><br><span class="line">gws drive files list --dry-run</span><br></pre></td></tr></table></figure>
-
-<h2 id="AI-Agent-整合（v0-8-0-後的做法）"><a href="#AI-Agent-整合（v0-8-0-後的做法）" class="headerlink" title="AI Agent 整合（v0.8.0 後的做法）"></a>AI Agent 整合（v0.8.0 後的做法）</h2><p>原本 v0.4.x 到 v0.7.x 有 <code>gws mcp -s drive,gmail,calendar</code> 可以啟動 MCP 伺服器，<strong>v0.8.0 已移除</strong>，原因是一次暴露 200-400 個工具會讓 AI context window 爆炸，加上 MCP 工具命名格式和 Google 的 dot-notation API 名稱有衝突。</p>
+<h2 id="基本用法">基本用法</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 列出 Drive 檔案</span></span><br><span class="line">gws drive files list --params <span class="string">&#x27;&#123;&quot;pageSize&quot;: 5&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出 Gmail 郵件</span></span><br><span class="line">gws gmail users.messages list --params <span class="string">&#x27;&#123;&quot;userId&quot;: &quot;me&quot;, &quot;maxResults&quot;: 5&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出行事曆</span></span><br><span class="line">gws calendar calendarList list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 建立 Google 試算表</span></span><br><span class="line">gws sheets spreadsheets create --json <span class="string">&#x27;&#123;&quot;properties&quot;: &#123;&quot;title&quot;: &quot;新試算表&quot;&#125;&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 預覽請求但不實際執行</span></span><br><span class="line">gws drive files list --dry-run</span><br></pre></td></tr></table></figure>
+<h2 id="AI-Agent-整合（v0-8-0-後的做法）">AI Agent 整合（v0.8.0 後的做法）</h2>
+<p>原本 v0.4.x 到 v0.7.x 有 <code>gws mcp -s drive,gmail,calendar</code> 可以啟動 MCP 伺服器，<strong>v0.8.0 已移除</strong>，原因是一次暴露 200-400 個工具會讓 AI context window 爆炸，加上 MCP 工具命名格式和 Google 的 dot-notation API 名稱有衝突。</p>
 <p>目前主流有兩條路：</p>
 <p><strong>1. 用社群 MCP server（<a target="_blank" rel="noopener" href="https://github.com/conorbronsdon/gws-mcp-server">conorbronsdon/gws-mcp-server</a>）</strong></p>
 <p>精選 41 個高頻工具，不是把所有 API 一股腦丟進去。設定完之後 Claude Desktop 或 Claude Code 就能直接呼叫。</p>
 <p><strong>2. 直接讓 AI 呼叫 gws CLI</strong></p>
 <p>gws repo 本身附帶 100+ 個 <code>SKILL.md</code> 檔案，每支 API 一份，格式就是讓 LLM 讀的。把 skill 內容餵給 AI，讓它自己組 <code>gws</code> 指令再透過 shell 執行——不需要 MCP，直接 tool use 呼叫 bash。</p>
 <p>兩種方式各有取捨：MCP server 抽象度高，CLI 直呼方式更彈性。</p>
-<h2 id="踩坑總結"><a href="#踩坑總結" class="headerlink" title="踩坑總結"></a>踩坑總結</h2><table>
+<h2 id="踩坑總結">踩坑總結</h2>
+<table>
 <thead>
 <tr>
 <th>坑</th>
@@ -240,7 +237,8 @@
 <th>解法</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>npm 安裝失敗</td>
 <td>Windows tar 路徑解析問題</td>
 <td>手動下載 <code>.zip</code> 二進位檔</td>
@@ -270,7 +268,8 @@
 <td>v0.8.0 移除 MCP 子指令</td>
 <td>改用社群 MCP server 或直呼 CLI</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>gws 從 v0.4.2 到 v0.22.5，四個月跑了快 20 個 minor 版本，Windows 體驗比剛出時順很多，但認證這塊在不同環境下仍有雷，遇到 401 先試 <code>auth export --unmasked</code> 再說。</p>
 
       </div>
@@ -338,18 +337,18 @@
       </li>
     
       <li>
-        <a href="/posts/7d2b90da/">
-          <img src="/images/posts/windows-multi-nic-default-route-remove-netroute-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
-          <span class="related-title">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</span>
+        <a href="/posts/4f8c5648/">
+          <img src="/images/posts/bat-errorlevel-negative-exit-code-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</span>
           <span class="related-date">2026-11-26</span>
         </a>
       </li>
     
       <li>
-        <a href="/posts/41b99108/">
-          <img src="/images/posts/cursor-0day-git-exe-hijack-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
-          <span class="related-title">打開別人的 repo，Cursor 就替你跑了惡意程式：一個躺了七個月的 Windows 0day</span>
-          <span class="related-date">2026-07-15</span>
+        <a href="/posts/7d2b90da/">
+          <img src="/images/posts/windows-multi-nic-default-route-remove-netroute-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</span>
+          <span class="related-date">2026-11-26</span>
         </a>
       </li>
     
@@ -362,6 +361,8 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
@@ -369,8 +370,6 @@
       <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
     
       <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
     
     </ul>
   </section>

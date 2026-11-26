@@ -127,17 +127,17 @@
 <p>更糟的在 log 裡。這次修正的另一半是存檔：新版網頁會把完整時間送給 API，舊版只送日期。有人從網頁存檔，送出的卻是只有日期的舊格式，又把 9 筆巡查時間存成 00:00:00。修正明明上去了，使用者手上跑的還是舊程式。</p>
 <p>這是一套 Vue 2 的舊系統，沒有打包流程，頁面用 httpVueLoader 在執行期發 XHR 去抓 <code>.vue</code> 原始檔。檔名沒有 hash，載入時也不帶版本號。IIS 回 <code>.vue</code> 只附 <code>Last-Modified</code> 和 <code>ETag</code>，沒有 <code>Cache-Control</code>。</p>
 <p>我很快就猜到是快取。要證明、要修，中間還有一個補完設定才會碰到的坑：<strong>只補 header，已經快取舊檔的人仍可能一路用到新鮮期結束。</strong></p>
-<h2 id="伺服器是對的，這件事證明不了什麼"><a href="#伺服器是對的，這件事證明不了什麼" class="headerlink" title="伺服器是對的，這件事證明不了什麼"></a>伺服器是對的，這件事證明不了什麼</h2><p>MD5 對、乾淨瀏覽器正常，證明的都是伺服器上的檔案。使用者的瀏覽器跑哪一版，要看使用者送上來的東西。</p>
+<h2 id="伺服器是對的，這件事證明不了什麼">伺服器是對的，這件事證明不了什麼</h2>
+<p>MD5 對、乾淨瀏覽器正常，證明的都是伺服器上的檔案。使用者的瀏覽器跑哪一版，要看使用者送上來的東西。</p>
 <p>這個系統的寫入 API 每次都把整筆 JSON 記進當天的 log。網頁送的 payload 裡夾著一段只有網頁版才有的 <code>Action</code> 按鈕 HTML，App 送的沒有；舊版的巡查時間只有日期（像 <code>&quot;2026-11-18&quot;</code>），新版會帶上時間。</p>
 <p>那 9 筆全都帶著 <code>Action</code>，巡查時間也只有日期。從 log 可以確定，送出它們的是舊版網頁。</p>
 <p>舊版網頁怎麼還在？log 回答不了。一個部署前就開著、一直沒關的分頁，也送得出這種資料。讓我先往快取查的，是 <code>.vue</code> 的回應裡少了 <code>Cache-Control</code>。</p>
-<h2 id="沒有-Cache-Control，瀏覽器自己估能用多久"><a href="#沒有-Cache-Control，瀏覽器自己估能用多久" class="headerlink" title="沒有 Cache-Control，瀏覽器自己估能用多久"></a>沒有 Cache-Control，瀏覽器自己估能用多久</h2><p>IIS 的 <code>&lt;clientCache&gt;</code> 預設值是 <code>NoControl</code>，靜態檔不加 <code>Cache-Control</code>，也不加 <code>Expires</code>。我在本機用 IIS Express 開了一個最小站台，<code>.vue</code> 的回應長這樣：</p>
+<h2 id="沒有-Cache-Control，瀏覽器自己估能用多久">沒有 Cache-Control，瀏覽器自己估能用多久</h2>
+<p>IIS 的 <code>&lt;clientCache&gt;</code> 預設值是 <code>NoControl</code>，靜態檔不加 <code>Cache-Control</code>，也不加 <code>Expires</code>。我在本機用 IIS Express 開了一個最小站台，<code>.vue</code> 的回應長這樣：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Content-Length: 2</span><br><span class="line">Content-Type: text/plain</span><br><span class="line">Last-Modified: Thu, 26 Nov 2026 06:55:06 GMT</span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">ETag: &quot;1515bd11737ddd1:0&quot;</span><br><span class="line">Server: Microsoft-IIS/10.0</span><br><span class="line">X-Powered-By: ASP.NET</span><br><span class="line">Date: Thu, 26 Nov 2026 06:55:56 GMT</span><br></pre></td></tr></table></figure>
-
 <p>伺服器沒說這份檔案能用多久，HTTP 規範就讓瀏覽器自己估。RFC 9111 第 4.2.2 節允許快取在沒有明確期限時，自行指定一個「啟發式新鮮期」。回應帶 <code>Last-Modified</code> 的話，建議新鮮期不要超過「距上次修改」這段時間的某個比例，文中舉的典型值是 10%。</p>
 <p>我翻了三個引擎目前的原始碼：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Chromium：net/http/http_response_headers.cc</span></span><br><span class="line">lifetimes.freshness = (date_value - last_modified_value.<span class="built_in">value</span>()) / <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// WebKit：Source/WebCore/platform/network/CacheValidation.cpp</span></span><br><span class="line"><span class="keyword">return</span> (effectiveDate - *lastModified) * <span class="number">0.1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Firefox：netwerk/protocol/http/nsHttpResponseHead.cpp</span></span><br><span class="line">*result = (date - date2) / <span class="number">10</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">uint32_t</span> kOneWeek = <span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span> * <span class="number">7</span>;</span><br><span class="line">*result = std::<span class="built_in">min</span>(kOneWeek, *result);</span><br></pre></td></tr></table></figure>
-
 <p>以這種帶 <code>Last-Modified</code>、沒有明確期限的 <code>200</code> 靜態回應來說，三個引擎都取 10%。Chromium 和 WebKit 在這段計算沒有設天數上限，Firefox 最多 7 天。前兩個涵蓋了 Chrome、Edge、Safari，還有 Android 和 iOS 的 WebView。新鮮期內，瀏覽器直接用快取，不會回伺服器確認。</p>
 <p>算的是瀏覽器收到那份回應的當下：用回應裡的 <code>Date</code> 減 <code>Last-Modified</code>，再取 10%。</p>
 <table>
@@ -148,7 +148,8 @@
 <th>Firefox 的新鮮期</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>30 天</td>
 <td>3 天</td>
 <td>3 天</td>
@@ -168,34 +169,32 @@
 <td>約 110 天</td>
 <td>7 天</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>這是從收到回應那一刻起算的總長度，使用者還要卡多久，得再扣掉已經過去的時間。</p>
 <p>舊系統最容易在這裡中招。那些 <code>.vue</code> 好幾個月沒人動過，等於讓瀏覽器自己決定可以好幾週不回來問。而你要修 bug，改的偏偏就是這種放了很久的檔案。</p>
-<h2 id="按了-F5，為什麼-list-vue-還是舊的"><a href="#按了-F5，為什麼-list-vue-還是舊的" class="headerlink" title="按了 F5，為什麼 list.vue 還是舊的"></a>按了 F5，為什麼 list.vue 還是舊的</h2><p>Chrome 團隊 2017 年在官方部落格說明過重新整理的行為：一般重新整理只重新確認主文件，其餘資源照一般載入的規則走快取。httpVueLoader 抓的 <code>.vue</code> 不是主文件，還在新鮮期內，就直接從磁碟快取拿。</p>
+<h2 id="按了-F5，為什麼-list-vue-還是舊的">按了 F5，為什麼 list.vue 還是舊的</h2>
+<p>Chrome 團隊 2017 年在官方部落格說明過重新整理的行為：一般重新整理只重新確認主文件，其餘資源照一般載入的規則走快取。httpVueLoader 抓的 <code>.vue</code> 不是主文件，還在新鮮期內，就直接從磁碟快取拿。</p>
 <p>寫這篇時，我請 Claude Code 用 IIS Express 加 Playwright 重現了一次。先放 v1、把修改時間設成 180 天前，開頁；再換成 v2（修改時間是現在），按 F5，再重新開一次頁面：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1 first load            -&gt; 200 v1</span><br><span class="line">2 F5 after deploying v2 -&gt; 200 v1</span><br><span class="line">3 navigate again        -&gt; 200 v1</span><br></pre></td></tr></table></figure>
-
 <p>Chrome DevTools Protocol 回報後兩次的 <code>.vue</code> 都是 <code>fromDiskCache: true</code>。IIS Express 的 log 裡，<code>list.vue</code> 從頭到尾只收到第一次那個 GET。v2 已經在伺服器上，瀏覽器沒有來拿。</p>
 <p>（IIS 預設不認得 <code>.vue</code> 副檔名，會回 404.3。重現時要先在 <code>web.config</code> 補一行 <code>&lt;mimeMap fileExtension=&quot;.vue&quot; mimeType=&quot;text/plain&quot; /&gt;</code>。）</p>
-<h2 id="修法：只對放-vue-的資料夾關掉"><a href="#修法：只對放-vue-的資料夾關掉" class="headerlink" title="修法：只對放 .vue 的資料夾關掉"></a>修法：只對放 .vue 的資料夾關掉</h2><p>我不想動整個站台的快取行為，圖片和第三方套件沒必要每次都回來問。<code>web.config</code> 用 <code>&lt;location&gt;</code> 只罩住放 <code>.vue</code> 的資料夾：</p>
+<h2 id="修法：只對放-vue-的資料夾關掉">修法：只對放 .vue 的資料夾關掉</h2>
+<p>我不想動整個站台的快取行為，圖片和第三方套件沒必要每次都回來問。<code>web.config</code> 用 <code>&lt;location&gt;</code> 只罩住放 <code>.vue</code> 的資料夾：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 只影響 Survey 資料夾，站台其他靜態檔維持原樣 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">location</span> <span class="attr">path</span>=<span class="string">&quot;Survey&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">staticContent</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">clientCache</span> <span class="attr">cacheControlMode</span>=<span class="string">&quot;DisableCache&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">staticContent</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">location</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p><code>DisableCache</code> 送出的是 <code>Cache-Control: no-cache</code>。這個名字很容易誤會：<code>no-cache</code> 允許瀏覽器存，只是每次用之前都要先回伺服器確認。檔案沒變，IIS 回 304，只傳 header。真的不准存的是 <code>no-store</code>，那樣每次都要整份重新下載，這裡用不到。</p>
 <p>補上之後跑同一支重現腳本：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1 first load            -&gt; 200 v1</span><br><span class="line">2 F5 after deploying v2 -&gt; 200 v2</span><br><span class="line">3 navigate again        -&gt; 200 v2</span><br></pre></td></tr></table></figure>
-
 <p>IIS Express 的 log 依序是 200、200、304。最後一次 IIS 回 304，沒有重傳內容；瀏覽器確認快取還能用，沿用本機那份 v2，所以腳本看到的是 <code>200 v2</code>。站台根目錄的 <code>index.html</code> 還是沒有 <code>Cache-Control</code>，<code>&lt;location&gt;</code> 只管它包住的路徑。</p>
 <p>當時上正式機前，我也是先用 IIS Express 驗過 header。上線後確認時，狀態碼和 header 要一起看：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl.exe <span class="literal">-sI</span> https://your<span class="literal">-site</span>/YourApp/Survey/list.vue | findstr /i <span class="string">&quot;HTTP/ Cache-Control&quot;</span></span><br></pre></td></tr></table></figure>
-
 <p>本機驗證結果：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Cache-Control: no-cache</span><br></pre></td></tr></table></figure>
-
 <p>我會核對同一份回應的兩行：目標 <code>.vue</code> 回 <code>200</code>，而且 <code>Cache-Control</code> 的值是 <code>no-cache</code>。本機故意打錯路徑時也有這個欄位，只是回的是 <code>404</code> 和 <code>private</code>。只盯著有沒有 <code>Cache-Control</code>，網址打錯或被導去登入頁都可能看漏。</p>
-<h2 id="補了-header，已經中招的人還是舊的"><a href="#補了-header，已經中招的人還是舊的" class="headerlink" title="補了 header，已經中招的人還是舊的"></a>補了 header，已經中招的人還是舊的</h2><p>header 補上去，只解決了一半。</p>
+<h2 id="補了-header，已經中招的人還是舊的">補了 header，已經中招的人還是舊的</h2>
+<p>header 補上去，只解決了一半。</p>
 <p><code>no-cache</code> 是跟著新的回應送出去的。已經把舊檔存起來的瀏覽器，在啟發式新鮮期內根本不發請求，也就收不到這個 header。把重現的順序換一下：先讓瀏覽器在沒有 header 的狀態下快取 v1，再補上 <code>DisableCache</code>、部署 v2：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1 first load, no Cache-Control          -&gt; 200 v1</span><br><span class="line">2 F5 after deploying DisableCache + v2  -&gt; 200 v1</span><br><span class="line">3 navigate again                        -&gt; 200 v1</span><br><span class="line">4 hard reload (Ctrl+Shift+R)            -&gt; 200 v2</span><br><span class="line">5 normal F5 afterwards                  -&gt; 200 v2</span><br></pre></td></tr></table></figure>
-
 <p>第 2、3 步，IIS Express 都沒收到 <code>list.vue</code> 的請求。到第 4 步按 Ctrl+Shift+R（不讀快取的強制重新整理），IIS Express 才收到新的 <code>list.vue</code> 請求，回傳帶 <code>no-cache</code> 的 v2。第 5 步按一般 F5，IIS 回 304。</p>
 <p>所以當時兩件事一起做：</p>
 <ol>
@@ -204,15 +203,16 @@
 </ol>
 <p>版本號也有它的前提。寫這篇時又在本機驗了一次：入口 HTML 本身也沒有 <code>Cache-Control</code>，一樣會被啟發式快取。把 HTML 改成引用 <code>list.vue?v=2</code> 之後：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1 first load                              -&gt; 200 v1</span><br><span class="line">2 deploy ?v=2, open in a new tab          -&gt; 200 v1</span><br><span class="line">3 F5 on that tab                          -&gt; 200 v2</span><br></pre></td></tr></table></figure>
-
 <p>開新分頁（就像隔天從書籤點進來），瀏覽器連 HTML 都拿快取，裡面還是舊的引用。按 F5 會重新確認主文件，讀到新的引用，才換成 v2。<strong>瀏覽器要先讀到新版 HTML，才會去抓 <code>list.vue?v=2</code>。</strong> 這種網址固定的入口頁，我會設 <code>no-cache</code>，讓使用者從書籤進來時也會先確認一次。</p>
-<h2 id="被舊程式寫壞的-9-筆"><a href="#被舊程式寫壞的-9-筆" class="headerlink" title="被舊程式寫壞的 9 筆"></a>被舊程式寫壞的 9 筆</h2><p>資料用 log 還原。log 留著每筆建立當下的原始值，照著寫回去，守三條規矩：</p>
+<h2 id="被舊程式寫壞的-9-筆">被舊程式寫壞的 9 筆</h2>
+<p>資料用 log 還原。log 留著每筆建立當下的原始值，照著寫回去，守三條規矩：</p>
 <ul>
 <li>只送 <code>&#123;id, 欄位&#125;</code>，不送整筆，避免蓋掉其他欄位後來的修改</li>
 <li>寫之前先讀現值，確認還是被寫壞的那個值</li>
 <li>寫完讀回整列比對</li>
 </ul>
-<h2 id="靜態檔的-Cache-Control-怎麼選"><a href="#靜態檔的-Cache-Control-怎麼選" class="headerlink" title="靜態檔的 Cache-Control 怎麼選"></a>靜態檔的 Cache-Control 怎麼選</h2><p>什麼都不設，就是把決定權交給瀏覽器。我現在的建議是分三種：</p>
+<h2 id="靜態檔的-Cache-Control-怎麼選">靜態檔的 Cache-Control 怎麼選</h2>
+<p>什麼都不設，就是把決定權交給瀏覽器。我現在的建議是分三種：</p>
 <table>
 <thead>
 <tr>
@@ -221,7 +221,8 @@
 <th>IIS 設定</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>入口 HTML</td>
 <td>每次確認</td>
 <td><code>DisableCache</code></td>
@@ -236,9 +237,11 @@
 <td>長期快取</td>
 <td><code>UseMaxAge</code> 加大 <code>cacheControlMaxAge</code></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p><strong>內容會改、網址卻不會跟著換的檔案，別給長 <code>max-age</code>。</strong> 那等於把啟發式快取的問題自己寫死，期限還由你指定，連 Firefox 的一週上限都沒了。</p>
-<h2 id="這次記住的事"><a href="#這次記住的事" class="headerlink" title="這次記住的事"></a>這次記住的事</h2><p>「改版沒生效」先看回應 header 有沒有 <code>Cache-Control</code>。沒有的話，先假設使用者在跑舊檔，別急著懷疑程式。</p>
+<h2 id="這次記住的事">這次記住的事</h2>
+<p>「改版沒生效」先看回應 header 有沒有 <code>Cache-Control</code>。沒有的話，先假設使用者在跑舊檔，別急著懷疑程式。</p>
 <p>下次接手這種沒有打包流程的舊站，我會在第一次部署前，同時查入口 HTML 和一支實際載入的 <code>.vue</code>。這次新版已經上線，舊版網頁還是把 9 筆巡查時間寫成了午夜，最後得靠 log 還原。</p>
 
       </div>
@@ -290,6 +293,22 @@
     <ul class="related-list">
     
       <li>
+        <a href="/posts/9b217823/">
+          <img src="/images/posts/legacy-9b217823-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">當 IIS 遇到代理伺服器：如何在複雜網路環境下實現真實 IP 白名單控制</span>
+          <span class="related-date">2025-07-01</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/4f8c5648/">
+          <img src="/images/posts/bat-errorlevel-negative-exit-code-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</span>
+          <span class="related-date">2026-11-26</span>
+        </a>
+      </li>
+    
+      <li>
         <a href="/posts/11879e22/">
           <img src="/images/posts/sql-server-datetime-dateformat-trap-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
           <span class="related-title">SQL Server 日期轉換失敗？先查 DATEFORMAT</span>
@@ -305,22 +324,6 @@
         </a>
       </li>
     
-      <li>
-        <a href="/posts/9b217823/">
-          <img src="/images/posts/legacy-9b217823-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
-          <span class="related-title">當 IIS 遇到代理伺服器：如何在複雜網路環境下實現真實 IP 白名單控制</span>
-          <span class="related-date">2025-07-01</span>
-        </a>
-      </li>
-    
-      <li>
-        <a href="/posts/25b31ce7/">
-          <img src="/images/posts/legacy-25b31ce7-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
-          <span class="related-title">React 與 Vue 共存：Module Federation 怎麼切邊界</span>
-          <span class="related-date">2025-06-11</span>
-        </a>
-      </li>
-    
     </ul>
   </section>
   
@@ -330,6 +333,8 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
@@ -337,8 +342,6 @@
       <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
     
       <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
     
     </ul>
   </section>

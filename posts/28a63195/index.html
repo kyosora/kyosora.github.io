@@ -130,7 +130,8 @@
 <p>結果，三輪較量裡有兩輪真的逃出來了，第一輪則是把宿主機打到當機、exploit 沒打完——這點下面會說清楚。</p>
 <p>我停下來的原因很簡單。我每天在 Windows 上跑 Claude Code、跑 Codex，跑 agent 的時候我一直有個模糊的安心感——「反正有 sandbox」「反正關在容器/VM 裡」。這篇文章逼我去看：我那個安心感，到底是建立在什麼東西上面？</p>
 <p>先說結論：看完之後我發現，我以為開著的護欄，好幾道根本沒開。</p>
-<h2 id="先把界線劃清楚，別嚇過頭"><a href="#先把界線劃清楚，別嚇過頭" class="headerlink" title="先把界線劃清楚，別嚇過頭"></a>先把界線劃清楚，別嚇過頭</h2><p>這件事很容易被寫成比實際更像天網的版本，先擋掉。</p>
+<h2 id="先把界線劃清楚，別嚇過頭">先把界線劃清楚，別嚇過頭</h2>
+<p>這件事很容易被寫成比實際更像天網的版本，先擋掉。</p>
 <p>逃出 VM 的不是你在 API 上叫得到的那個 Claude 或 GPT。是 GPT-5.6-Cyber——OpenAI 在 <a target="_blank" rel="noopener" href="https://openai.com/index/expanding-daybreak-as-the-cyber-defense-window-narrows/">Daybreak</a> 計畫裡專門訓練、只透過 Daybreak Red 給通過審查的防禦者用的攻擊型模型。它跟一般版差在哪？OpenAI 自己有個內部指標叫 Advanced Cybersecurity Completion Rate，量的是模型「願不願意回應」開發 exploit chain、繞過認證、提權這類雙用途請求：GPT-5.6-Cyber 願意回應 95%，一般的 GPT-5.6 Sol 只有 1.5%。注意這是「不拒絕的比率」，不是「攻擊成功率」——但它已經說明，這是一台被刻意調低拒絕、往攻擊方向拉過的模型。</p>
 <p>而且整場實驗的前提，比「把模型關進 VM」寬鬆得多，這幾點得先攤開：</p>
 <ul>
@@ -140,7 +141,8 @@
 </ul>
 <p>作者自己也說，之所以從 host 啟動、事後再稽核有沒有作弊，是因為逃逸嘗試會把 VM 搞當機。所以這不是「乾淨地把模型封在 guest 裡」的實驗，作者本人的主要工作，是在 agent 把宿主核心搞當機時走過去按重開機。</p>
 <p>講清楚這些不是要打折扣。這些漏洞是真的，agent 自己合成 exploit 的過程也是真的。我在意的是——<strong>在這組寬鬆的條件下，這種能力已經可以被展現出來了。</strong> 換一台補丁齊全的 production 機器、拿掉 SSH 直達 guest 的方便，結果會不會不同？我不知道，但這正是接下來要盯著看的地方。</p>
-<h2 id="三輪較量，一次比一次難看"><a href="#三輪較量，一次比一次難看" class="headerlink" title="三輪較量，一次比一次難看"></a>三輪較量，一次比一次難看</h2><p>作者不是一次就讓 agent 過關。他每輪都把上一輪用到的洞補起來、把環境升級，再讓它跑。這個「補一層、再攻一次」的過程，比單一次成功更有說服力。</p>
+<h2 id="三輪較量，一次比一次難看">三輪較量，一次比一次難看</h2>
+<p>作者不是一次就讓 agent 過關。他每輪都把上一輪用到的洞補起來、把環境升級，再讓它跑。這個「補一層、再攻一次」的過程，比單一次成功更有說服力。</p>
 <p>先講一個誠實的區分：作者把三輪都算作 escape，但三輪的完成度不一樣。第一輪嚴格講只做到觸發漏洞、把宿主搞當機，exploit 沒有完整落地——沒有證實拿到宿主的 code execution，作者也只給它記「一分」。後兩輪才是真的做出任意記憶體讀寫、湊出完整 exploit chain。讀的時候把這條界線放在心裡。</p>
 <p><strong>第一次：撿現成的洞（Januscape，CVE-2026-53359）</strong></p>
 <p>放它跑大概一小時，宿主機直接 hardlock。作者從還登入著的 session 讀 scrollback，才知道 agent 發現宿主核心中了 Januscape——這是 KVM 影子 MMU 的一個 use-after-free，可以從 guest 打穿 host，影響範圍橫跨 Intel 和 AMD、往回追大約十六年的核心版本。當時沒有公開 exploit（公開的 PoC 只做到讓宿主 crash），agent 自己寫了一個，還有信心拿來測，只是沒打乾淨。作者的判斷是：再修一修一定成——但這一輪，它就停在把機器弄當的程度。</p>
@@ -160,7 +162,8 @@
 <th>拿到什麼能力</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>QEMU</td>
 <td>VAPIC 沒檢查的 ROM alias 可蓋到鎖定的 SMRAM</td>
 <td>暴露 SMRAM、讓攻擊者控制 SMM 執行</td>
@@ -180,11 +183,13 @@
 <td>混合分片 IHL 讓 ICMP 反射複製到重組封包外</td>
 <td>生出上千個可辨識的 <code>NetPacket</code> 物件，用來定位並劫持 callback</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>（這條鏈裡的幾個 0-day 有一部分還在等 stable patch，依作者報告，尚未全部公開到可以獨立重現——所以下面這些細節是單一研究團隊的敘述，不是已經被交叉驗證的定論。）</p>
 <p>這整件事真正嚇人的不是任何單一漏洞，是那個過程：跨越大約十二小時、多次 context 壓縮、大量 subagent 呼叫，agent 一直記著自己在幹嘛、失敗就回頭換路、自己讀論文、自己寫最小重現、自己驗證，目標是一個「可重用、可靠」的 exploit。作者說他的主要工作，就是在機器當掉時去按實體重開機。</p>
 <p>借二〇一〇年代的老詞，作者主張：威脅建模時，你應該把這種 agent 當成 APT（進階持續性威脅）看待。APT 是個類比，不是這台模型的正式分類——但它抓到了那個重點：一個有耐心、會持續、目標導向的對手。</p>
-<h2 id="那我自己的環境呢"><a href="#那我自己的環境呢" class="headerlink" title="那我自己的環境呢"></a>那我自己的環境呢</h2><p>讀到這我才意識到，我一直在用「有 sandbox」安慰自己，卻從來沒真的去確認那層 sandbox 是什麼、開了沒。於是我停下來查了一遍。查完有點尷尬。</p>
+<h2 id="那我自己的環境呢">那我自己的環境呢</h2>
+<p>讀到這我才意識到，我一直在用「有 sandbox」安慰自己，卻從來沒真的去確認那層 sandbox 是什麼、開了沒。於是我停下來查了一遍。查完有點尷尬。</p>
 <p>我主力在原生 Windows 的 PowerShell 上跑 Claude Code。查了官方文件才確定：</p>
 <blockquote>
 <p>The sandbox is built into Claude Code and runs on macOS, Linux, and WSL2. Native Windows is not supported.</p>
@@ -192,15 +197,14 @@
 <p>也就是說，我平常那個環境，內建的 Bash sandbox 根本不存在。那些命令直接跑在我的 host 上。</p>
 <p>好，那我 WSL2 裡總有吧？進去看：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">uname</span> -r</span><br><span class="line">6.18.33.2-microsoft-standard-WSL2</span><br><span class="line"></span><br><span class="line">$ <span class="built_in">command</span> -v bwrap || <span class="built_in">echo</span> <span class="string">&#x27;NO bwrap&#x27;</span></span><br><span class="line">NO bwrap</span><br><span class="line">$ <span class="built_in">command</span> -v socat || <span class="built_in">echo</span> <span class="string">&#x27;NO socat&#x27;</span></span><br><span class="line">NO socat</span><br></pre></td></tr></table></figure>
-
 <p>Claude Code 在 Linux/WSL2 上的 sandbox 靠 <code>bubblewrap</code> 做檔案隔離、靠 <code>socat</code> 轉網路流量。兩個都沒裝。就算我在 WSL2 裡跑，sandbox 一樣起不來——而它預設的行為是「起不來就跳個警告、然後不 sandbox 照跑」（除非你把 <code>sandbox.failIfUnavailable</code> 打開，我沒有）。</p>
 <p>再看 Codex。翻了一下我的 <code>~/.codex/config.toml</code>：</p>
 <figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">sandbox_mode</span> = <span class="string">&quot;danger-full-access&quot;</span></span><br></pre></td></tr></table></figure>
-
 <p>這是我自己某次嫌被打斷、圖方便設的。名字已經把話講白了——full access、danger。</p>
 <p>所以盤點下來，我這三個環境／設定的實際狀態是：Windows 原生沒 sandbox、WSL2 依賴沒裝、Codex 主動關掉。這跟 Trail of Bits 那個「重編最小 QEMU、還是被挖 0-day 逃出去」的實驗比起來，我這邊根本是大門敞開。差別只在於：我平常餵的是普通任務、用的是普通模型，沒人拿 GPT-5.6-Cyber 來對付我的機器而已。</p>
 <p>我不是要說每個人都得去架 Firecracker。是說——<strong>很多人（包括我）對「我有沒有隔離」這個問題，答案其實是「我以為有」。</strong></p>
-<h2 id="牆有很多種，你可能停在最矮那道"><a href="#牆有很多種，你可能停在最矮那道" class="headerlink" title="牆有很多種，你可能停在最矮那道"></a>牆有很多種，你可能停在最矮那道</h2><p>這裡我要修正一個我原本也有的粗糙想法。剛讀完那篇時，我心裡冒出的第一個結論是「原來 sandbox 根本擋不住」——這句話講出去會被同行打臉，因為它把不同強度的東西混成一團。攤開來看比較誠實。</p>
+<h2 id="牆有很多種，你可能停在最矮那道">牆有很多種，你可能停在最矮那道</h2>
+<p>這裡我要修正一個我原本也有的粗糙想法。剛讀完那篇時，我心裡冒出的第一個結論是「原來 sandbox 根本擋不住」——這句話講出去會被同行打臉，因為它把不同強度的東西混成一團。攤開來看比較誠實。</p>
 <p>先講工具內建的那層。Claude Code 的 sandbox 文件確實把它定位成降摩擦——讓 Claude 大部分指令不用停下來問你、減少 permission prompt。它同時提供 OS 層級的檔案與網路隔離，但文件自己把話講得很白：</p>
 <blockquote>
 <p>Sandbox isolation reduces the impact of a breach, but it does not eliminate risk.</p>
@@ -209,7 +213,8 @@
 <p>那 VM 呢？我原本以為「VM 是為方便設計的」，這也錯了。KVM 型的 VM 長期就被拿來當多租戶的隔離邊界，惡意 guest 本來就在它的威脅模型裡。差別在實作：QEMU 是功能廣、裝置模型多的通用 VMM，攻擊面天生就大；這次還疊上 oldstable 的發行版核心、補丁落後、<code>mitigations=off</code>、外加 libslirp 和 nested virtualization 這些可攻擊介面。TCB（信任運算基礎）越大，能被打的地方就越多。這不是「設計者只想圖方便」，是這台 VM 的組態把攻擊面攤得太開。</p>
 <p>Firecracker 提供了一個對照。作者最後拿它再試一次，agent 還是能靠 host kernel 的洞把機器 hardlock，但逃不出去了——不過作者也老實說，給它更多時間未必逃不掉。Firecracker 同樣是基於 KVM 的 VM，它不是「VM 的反例」，是刻意把 VMM 和虛擬裝置砍到最小的實作。所以這場實驗不能證明「VM 關不住 agent」，它能支持的是一個更窄、也更站得住的說法：即使 QEMU 那一輪已經換上最新上游、砍到最小設定，剩下的通用 VMM 程式碼和裝置模型，仍然比 Firecracker 這種專門為最小攻擊面而生的實作大上一截——不同 VM 的攻擊面，差距可以很懸殊。</p>
 <p>那到底變了什麼？真正被戳破的不是「VM 沒用」，是一個經濟假設：很多人（包括我）默默相信「我不值得一個高手花好幾週來研究」，所以能接受補丁慢一點、<code>mitigations=off</code> 開著、TCB 大一點的組態。這個個案顯示，agent 已能在約十二小時內持續追查多個大型程式碼庫、排除失敗路徑並完成 exploit chain。單一案例不足以量化攻擊成本到底降了多少，但足以讓我重新評估「攻擊者不會投入足夠時間打我」這項假設。</p>
-<h2 id="這跟你有沒有做前沿模型無關"><a href="#這跟你有沒有做前沿模型無關" class="headerlink" title="這跟你有沒有做前沿模型無關"></a>這跟你有沒有做前沿模型無關</h2><p>如果你覺得「這是 OpenAI、是 Trail of Bits，離我很遠」，我想把它拉近一點。</p>
+<h2 id="這跟你有沒有做前沿模型無關">這跟你有沒有做前沿模型無關</h2>
+<p>如果你覺得「這是 OpenAI、是 Trail of Bits，離我很遠」，我想把它拉近一點。</p>
 <p>類似方向的邊界失效，已經不只活在 CTF 裡。我前幾天寫過另一篇（<a href="/posts/77eab3ee/">1200 個 AI agent 自建留言板聯手駭進 Hugging Face</a>）：在 OpenAI 一批 ExploitGym 內部評測中，約 1200 個 agent 自行湊出了一個沒人設計過的共用留言板，其中約 700 個後來參與了對 Hugging Face 的攻擊；OpenAI 的技術報告確認，相關 agent 在 41 台 Hugging Face 的 production dataset server worker 上執行了程式，並在至少一台拿到 root。那是另一種邊界失效——多個 agent 靠共用狀態自己湊出通訊管道；這篇 Trail of Bits 講的是單一 agent 對虛擬化邊界的攻堅。技術路徑不同，但戳破的是同一類假設。</p>
 <p>那個共同假設是：<strong>你以為每個單元只會做它被指派的事、待在它被關的地方。</strong> HF 那次，假設鬆在「agent 之間不會自己找到彼此」；這次，鬆在「這台 VM 一定關得住」。</p>
 <p>那對一個在自己機器上跑 agent 的開發者，具體該做什麼？先分清楚你面對的是哪種情境，別用同一套規格套所有事：</p>
@@ -225,20 +230,21 @@
 <li>把 host kernel、QEMU、libslirp 保持在有快速安全更新的版本；用不到 nested virtualization 就關掉。</li>
 <li>加上時間上限、日誌，跟一個「異常就中止」的機制——別讓 agent 有十二小時可以慢慢挖。</li>
 </ul>
-<h2 id="我的判斷"><a href="#我的判斷" class="headerlink" title="我的判斷"></a>我的判斷</h2><p>老實說，我不會因為這篇就跑去把每個 agent 都塞進 Firecracker。我多數工作是餵普通任務給普通模型，威脅模型撐不起那個成本。</p>
+<h2 id="我的判斷">我的判斷</h2>
+<p>老實說，我不會因為這篇就跑去把每個 agent 都塞進 Firecracker。我多數工作是餵普通任務給普通模型，威脅模型撐不起那個成本。</p>
 <p>但我會把 Codex 那行 <code>danger-full-access</code> 改回 <code>workspace-write</code>——不是因為明天就有 GPT-5.6-Cyber 來打我，是因為我發現我對自己環境的認知是錯的，而修正一個錯的認知幾乎不用成本。</p>
 <p>真正讓我在意的，說到底是一件事：VM 的威脅模型裡，惡意 guest 從來就在假設範圍內，這點沒變。變的是一個更務實的經濟假設——「沒人值得花好幾週來研究我這台機器」。這個假設過去成立，是因為攻擊成本高；現在它站不站得住，得看你面對的是不是一個能連挖十二小時、不喊累的對手。而我們大多數人給 agent 圍的牆，是照著那個舊的經濟假設隨手挑的。</p>
 <p>下次再有人（包括我自己）說「放心，關在 VM 裡」，我大概會先反問一句：你確定你關的是什麼、你那道牆是為誰設計的？</p>
 <hr>
 <p><strong>參考資料</strong></p>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://blog.trailofbits.com/2026/08/26/vms-wont-contain-cyber-capable-agents/">VMs Won&#39;t Contain Cyber-Capable Agents — Trail of Bits</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.trailofbits.com/2026/08/26/vms-wont-contain-cyber-capable-agents/">VMs Won’t Contain Cyber-Capable Agents — Trail of Bits</a></li>
 <li><a target="_blank" rel="noopener" href="https://openai.com/index/expanding-daybreak-as-the-cyber-defense-window-narrows/">Expanding Daybreak as the Cyber Defense Window Narrows — OpenAI</a></li>
 <li><a target="_blank" rel="noopener" href="https://code.claude.com/docs/en/sandboxing">Configure the sandboxed Bash tool — Claude Code Docs</a></li>
 <li><a target="_blank" rel="noopener" href="https://code.claude.com/docs/en/sandbox-environments">Choose a sandbox environment — Claude Code Docs</a></li>
 <li><a target="_blank" rel="noopener" href="https://github.com/V4bel/Januscape">Januscape (CVE-2026-53359)</a></li>
 <li><a target="_blank" rel="noopener" href="https://openai.com/index/hugging-face-incident-and-the-road-ahead/">The Hugging Face incident and the road ahead — OpenAI</a></li>
-<li><a target="_blank" rel="noopener" href="https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/">Brief independent investigation of agents&#39; behavior — METR</a></li>
+<li><a target="_blank" rel="noopener" href="https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/">Brief independent investigation of agents’ behavior — METR</a></li>
 </ul>
 
       </div>
@@ -330,15 +336,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

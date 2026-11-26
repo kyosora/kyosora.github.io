@@ -124,39 +124,42 @@
         <p>SQL Server 的備份檔，這個月又比上個月大了好幾 GB。打開資料庫一看，資料表筆數沒什麼變，那這些空間是哪來的？</p>
 <p>很多人第一反應是「資料庫膨脹了」，然後跑去 <code>DBCC SHRINKDATABASE</code> 想把它壓回來。先停手——SHRINK 是 SQL Server 裡最容易幫倒忙的指令之一，後面會講為什麼。先搞懂備份檔為什麼會長大。</p>
 <p>完整備份複製的是資料庫裡「已配置的資料頁」加上一小段交易記錄，不是 mdf 檔的實體大小。一個 100 GB 的 mdf，裡面只有 40 GB 的頁真有資料，備份檔大約就是 40 GB 出頭。所以備份檔變大，意思是已配置的頁變多了——或者，根本不是資料庫的問題，是備份檔本身在累積。順這條線，由最常見往下查。</p>
-<h2 id="真因一：你每天往同一個檔案疊備份（最常見）"><a href="#真因一：你每天往同一個檔案疊備份（最常見）" class="headerlink" title="真因一：你每天往同一個檔案疊備份（最常見）"></a>真因一：你每天往同一個檔案疊備份（最常見）</h2><p>頭號元兇，也最容易被忽略。<code>BACKUP DATABASE</code> 不指定 <code>WITH INIT</code> 時，預設是 <code>NOINIT</code>——把這次備份附加到既有檔案，不是覆蓋。</p>
+<h2 id="真因一：你每天往同一個檔案疊備份（最常見）">真因一：你每天往同一個檔案疊備份（最常見）</h2>
+<p>頭號元兇，也最容易被忽略。<code>BACKUP DATABASE</code> 不指定 <code>WITH INIT</code> 時，預設是 <code>NOINIT</code>——把這次備份附加到既有檔案，不是覆蓋。</p>
 <p>如果排程固定備份到 <code>D:\Backup\MyDB.bak</code>、每天跑又沒寫 INIT，這個檔案裡其實疊了一份又一份完整備份，當然每天長大。</p>
 <p>要確認是不是這個問題，用 <code>RESTORE HEADERONLY</code> 把檔案裡的備份集列出來：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RESTORE HEADERONLY <span class="keyword">FROM</span> DISK <span class="operator">=</span> <span class="string">&#x27;D:\Backup\MyDB.bak&#x27;</span>;</span><br></pre></td></tr></table></figure>
-
 <p>回傳結果每一列是一份備份，看 <code>Position</code> 欄位。如果跑出來是一長串、Position 從 1 排到 30，那答案就在這了——不用再往下查。修法是改用 INIT 覆蓋，或更好的做法：每次用帶時間戳的新檔名。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- ❌ 不指定就是 NOINIT，一直往同一檔疊</span></span><br><span class="line">BACKUP DATABASE MyDB <span class="keyword">TO</span> DISK <span class="operator">=</span> <span class="string">&#x27;D:\Backup\MyDB.bak&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- ✅ 用 INIT 覆蓋，更好的是每次用帶時間戳的新檔名</span></span><br><span class="line">BACKUP DATABASE MyDB</span><br><span class="line"><span class="keyword">TO</span> DISK <span class="operator">=</span> <span class="string">&#x27;D:\Backup\MyDB_20241022.bak&#x27;</span></span><br><span class="line"><span class="keyword">WITH</span> INIT, COMPRESSION;</span><br></pre></td></tr></table></figure>
-
-<h2 id="真因二：頁密度太低（內部碎片）"><a href="#真因二：頁密度太低（內部碎片）" class="headerlink" title="真因二：頁密度太低（內部碎片）"></a>真因二：頁密度太低（內部碎片）</h2><p>如果備份檔不是疊出來的，那才往資料庫裡找。這裡要先澄清一個常見誤解——索引碎片分兩種：</p>
+<h2 id="真因二：頁密度太低（內部碎片）">真因二：頁密度太低（內部碎片）</h2>
+<p>如果備份檔不是疊出來的，那才往資料庫裡找。這裡要先澄清一個常見誤解——索引碎片分兩種：</p>
 <ul>
 <li>外部碎片：頁的邏輯順序和實體順序對不上。它影響查詢效能，但不影響備份大小，因為備份是一頁一頁原樣複製。</li>
 <li>內部碎片：頁面沒填滿，同樣資料用掉更多頁。這個會讓備份變大，因為已配置的頁變多了。</li>
 </ul>
 <p>所以拿 <code>avg_fragmentation_in_percent</code>（外部碎片指標）去解釋備份變大，會找錯方向。要看的是頁密度：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 看頁密度：avg_page_space_used_in_percent 偏低 = 內部碎片重</span></span><br><span class="line"><span class="comment">-- 第五個參數要傳 &#x27;DETAILED&#x27;，這個欄位才會有值</span></span><br><span class="line"><span class="keyword">SELECT</span> OBJECT_NAME(ips.object_id) <span class="keyword">AS</span> TableName,</span><br><span class="line">       i.name <span class="keyword">AS</span> IndexName,</span><br><span class="line">       ips.avg_page_space_used_in_percent,</span><br><span class="line">       ips.page_count</span><br><span class="line"><span class="keyword">FROM</span> sys.dm_db_index_physical_stats(DB_ID(), <span class="keyword">NULL</span>, <span class="keyword">NULL</span>, <span class="keyword">NULL</span>, <span class="string">&#x27;DETAILED&#x27;</span>) ips</span><br><span class="line"><span class="keyword">JOIN</span> sys.indexes i <span class="keyword">ON</span> i.object_id <span class="operator">=</span> ips.object_id <span class="keyword">AND</span> i.index_id <span class="operator">=</span> ips.index_id</span><br><span class="line"><span class="keyword">WHERE</span> ips.page_count <span class="operator">&gt;</span> <span class="number">1000</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> ips.avg_page_space_used_in_percent;</span><br></pre></td></tr></table></figure>
-
 <p>頁密度低通常是 fill factor 設太低、或大量隨機寫入造成 page split。用 <code>ALTER INDEX ... REBUILD</code> 配合合理的 fill factor 重建，能把頁填回去。</p>
 <p>順帶澄清兩個常被當兇手、其實不是的：RCSI／快照隔離的資料列版本存在 tempdb，而 tempdb 不進使用者資料庫的備份，所以它通常不是備份變大的原因；LOB 欄位異動也是頁層級備份，不會因為改一個欄位就把整個物件重複塞進去。</p>
-<h2 id="真因三：資料真的長大了"><a href="#真因三：資料真的長大了" class="headerlink" title="真因三：資料真的長大了"></a>真因三：資料真的長大了</h2><p>最樸素的可能：資料就是變多了。查實際各表佔用：</p>
+<h2 id="真因三：資料真的長大了">真因三：資料真的長大了</h2>
+<p>最樸素的可能：資料就是變多了。查實際各表佔用：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">EXEC</span> sp_spaceused;   <span class="comment">-- 整庫概況</span></span><br><span class="line"><span class="comment">-- 或用 sys.dm_db_partition_stats 看各表已用頁數</span></span><br></pre></td></tr></table></figure>
-
 <p>如果是這個，那不是「異常」，是該規劃容量和歸檔策略了。</p>
-<h2 id="為什麼別-SHRINK"><a href="#為什麼別-SHRINK" class="headerlink" title="為什麼別 SHRINK"></a>為什麼別 SHRINK</h2><p>回到開頭那個衝動。<code>DBCC SHRINKDATABASE</code> 會把檔案末端的頁搬到前面的空位，問題是——每搬一頁，就在它所屬的索引製造碎片。跑完一次 shrink，索引碎片可以從接近 0% 直接飆到接近 100%，你做的索引維護全廢。</p>
+<h2 id="為什麼別-SHRINK">為什麼別 SHRINK</h2>
+<p>回到開頭那個衝動。<code>DBCC SHRINKDATABASE</code> 會把檔案末端的頁搬到前面的空位，問題是——每搬一頁，就在它所屬的索引製造碎片。跑完一次 shrink，索引碎片可以從接近 0% 直接飆到接近 100%，你做的索引維護全廢。</p>
 <p>更糟的是「先重建索引、再 shrink」：REBUILD 剛把索引整理乾淨，shrink 立刻打散，檔案下次又長回來，陷入 shrink→碎片→rebuild→長大→再 shrink 的死循環。</p>
 <p>備份檔變大，幾乎沒有一種情況的正解是 shrink 資料庫。對症處理上面三個真因就好。</p>
-<h2 id="正確的維護方式"><a href="#正確的維護方式" class="headerlink" title="正確的維護方式"></a>正確的維護方式</h2><ul>
+<h2 id="正確的維護方式">正確的維護方式</h2>
+<ul>
 <li>備份用 <code>WITH INIT</code>（或每次帶時間戳的新檔名），並加 <code>WITH COMPRESSION</code>——壓縮通常能明顯縮小備份檔，是該預設打開的選項。再設保留策略定期清舊檔。</li>
 <li>索引維護用 <code>ALTER INDEX ... REBUILD</code>（碎片不嚴重時 <code>REORGANIZE</code>），別再用 <code>DBCC DBREINDEX</code>——那指令 SQL Server 2005 起就標記棄用了。</li>
 <li>例行 <code>DBCC CHECKDB</code> 確認沒有實體損壞、監控成長趨勢設警示，這些是日常該帶上的維護。</li>
 </ul>
-<h2 id="收尾"><a href="#收尾" class="headerlink" title="收尾"></a>收尾</h2><p>備份檔暴增，照這個順序查最快：先用 <code>RESTORE HEADERONLY</code> 看是不是同一個檔疊了多份備份（最常見），再用 <code>sp_spaceused</code> 看資料是不是真的長大，最後才查頁密度。</p>
+<h2 id="收尾">收尾</h2>
+<p>備份檔暴增，照這個順序查最快：先用 <code>RESTORE HEADERONLY</code> 看是不是同一個檔疊了多份備份（最常見），再用 <code>sp_spaceused</code> 看資料是不是真的長大，最後才查頁密度。</p>
 <p>SHRINK 不在這個清單裡。它解決的是「檔案實體很大但裡面很空」這種特定情況，代價是把索引打爛——動之前要非常清楚自己在做什麼。下次看到 .bak 又肥一圈，先 <code>RESTORE HEADERONLY</code> 打開看看，那通常就是答案。</p>
-<h2 id="相關文章"><a href="#相關文章" class="headerlink" title="相關文章"></a>相關文章</h2><p>備份檔多大是一回事，備份放在哪是另一回事：<a href="/posts/34296c7f/">快照算備份嗎？IDCF 被勒索後，我查了自己的 SQL Server 備份放哪</a>。</p>
+<h2 id="相關文章">相關文章</h2>
+<p>備份檔多大是一回事，備份放在哪是另一回事：<a href="/posts/34296c7f/">快照算備份嗎？IDCF 被勒索後，我查了自己的 SQL Server 備份放哪</a>。</p>
 
       </div>
       
@@ -247,15 +250,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

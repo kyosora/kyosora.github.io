@@ -125,57 +125,58 @@
         <p>昨天晚上看了 Coding2GO 一條 5 分 46 秒的影片，講 CSS View Transition API 終於支援跨文件了——純 CSS 兩頁各加幾行（同源 + 兩頁都 <code>@view-transition &#123; navigation: auto; &#125;</code>）、靜態網站也能做出 SPA 風的換頁過場。我當下就想到自己那個 Hexo blog：能不能加上 iOS 相簿那種「點縮圖、圖飛進去變大圖」的 morph 效果？</p>
 <p>今天動手，跑半天 morph 沒成。但 debug 過程裡順手 PowerShell 抓了一下封面圖檔大小——35 張總共 84.3MB，平均 2.4MB 一張。</p>
 <p>結果 morph 收手，反而把整站圖片壓掉 93%（84MB → 6MB）。本來想搞炫的，沒成；結果抓到真正拖慢網站的東西。記錄一下這次的過程。</p>
-<h2 id="原本的目標清單"><a href="#原本的目標清單" class="headerlink" title="原本的目標清單"></a>原本的目標清單</h2><p>下班前的 2 小時 budget，我想要的兩個東西：</p>
+<h2 id="原本的目標清單">原本的目標清單</h2>
+<p>下班前的 2 小時 budget，我想要的兩個東西：</p>
 <ul>
-<li><input checked="" disabled="" type="checkbox"> 整頁 cross-fade 換頁過場（基本款）</li>
-<li><input disabled="" type="checkbox"> list 縮圖 → 詳情頁大圖的 hero morph（進階款）</li>
+<li>[x] 整頁 cross-fade 換頁過場（基本款）</li>
+<li>[ ] list 縮圖 → 詳情頁大圖的 hero morph（進階款）</li>
 </ul>
 <p>我以為大半是 CSS 的事，看起來很簡單。估了 2 小時，實際跑了大概三倍。</p>
 <p>環境：Hexo + Butterfly 5.5.4。</p>
-<h2 id="坑-1：主題裝在-node-modules、不能改-pug"><a href="#坑-1：主題裝在-node-modules、不能改-pug" class="headerlink" title="坑 1：主題裝在 node_modules、不能改 .pug"></a>坑 1：主題裝在 node_modules、不能改 .pug</h2><p>Butterfly 5.x 是 npm 裝在 <code>node_modules/</code> 裡，不在 <code>themes/</code>。直接動主題的 <code>.pug</code> 模板，下次 <code>npm update</code> 一跑就被蓋掉，所有客製化白做。</p>
+<h2 id="坑-1：主題裝在-node-modules、不能改-pug">坑 1：主題裝在 node_modules、不能改 .pug</h2>
+<p>Butterfly 5.x 是 npm 裝在 <code>node_modules/</code> 裡，不在 <code>themes/</code>。直接動主題的 <code>.pug</code> 模板，下次 <code>npm update</code> 一跑就被蓋掉，所有客製化白做。</p>
 <p>好在 Butterfly 官方有 inject 機制，可以從 <code>_config.butterfly.yml</code> 注入 CSS 跟 JS 到 head 和 bottom：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">inject:</span></span><br><span class="line">  <span class="attr">head:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&lt;link</span> <span class="string">rel=&quot;stylesheet&quot;</span> <span class="string">href=&quot;/css/view-transitions.css&quot;&gt;</span></span><br><span class="line">  <span class="attr">bottom:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&lt;script</span> <span class="string">src=&quot;/js/some.js&quot;&gt;&lt;/script&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p>靜態規則放 <code>source/css/</code>、動態邏輯放 <code>source/js/</code>，主題本體一字不動。這條路至少穩。</p>
-<h2 id="坑-2：PJAX-攔截所有導航、VT-永遠不觸發"><a href="#坑-2：PJAX-攔截所有導航、VT-永遠不觸發" class="headerlink" title="坑 2：PJAX 攔截所有導航、VT 永遠不觸發"></a>坑 2：PJAX 攔截所有導航、VT 永遠不觸發</h2><p>寫好 <code>view-transitions.css</code>：</p>
+<h2 id="坑-2：PJAX-攔截所有導航、VT-永遠不觸發">坑 2：PJAX 攔截所有導航、VT 永遠不觸發</h2>
+<p>寫好 <code>view-transitions.css</code>：</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@view-transition</span> &#123;</span><br><span class="line">  navigation: auto;</span><br><span class="line">&#125;</span><br><span class="line">::<span class="built_in">view-transition-group</span>(*) &#123;</span><br><span class="line">  <span class="attribute">animation-duration</span>: <span class="number">0.4s</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@media</span> (<span class="attribute">prefers-reduced-motion</span>: reduce) &#123;</span><br><span class="line">  <span class="keyword">@view-transition</span> &#123; navigation: none; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>按理瀏覽器導航時就會自動 transition。但點連結 → 完全沒效果。</p>
 <p>我這份 <code>_config.butterfly.yml</code> 開了 PJAX（<code>pjax.enable: true</code>、Butterfly 5.x 官方預設是 <code>false</code>——這條我之前主動開過、現在已經忘了當初為什麼）。PJAX 用 fetch 抽換 DOM，根本不觸發瀏覽器原生 navigation——而 cross-document View Transition 要的就是原生 navigation。PJAX 沒攔截下來，VT 才能跑。</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># _config.butterfly.yml</span></span><br><span class="line"><span class="attr">pjax:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">false</span>   <span class="comment"># 從 true 改 false</span></span><br></pre></td></tr></table></figure>
-
 <p>關掉。個人靜態 blog 沒有跨頁要保留的播放器或狀態，PJAX 那點「換頁不重載 JS」的好處邊際效益低，換來原生過場質感划算。</p>
 <p>（順帶，Butterfly 還載了 instant.page 做 hover 預取，這個跟 cross-document VT 相容、不攔截導航，留著加分。）</p>
 <p>關 PJAX + 重 build，整頁 cross-fade 立刻生效。點連結 → 淡入淡出 → 進新頁，比原本的硬切舒服多了。我點來點去看了幾遍，確定真的有過場、不是錯覺。</p>
 <p>第一階段過關。回到第二階段：cover morph。</p>
-<h2 id="坑-3：CSS-模板插值是空話"><a href="#坑-3：CSS-模板插值是空話" class="headerlink" title="坑 3：CSS 模板插值是空話"></a>坑 3：CSS 模板插值是空話</h2><p>cover morph 的核心是給「list 端那張縮圖」跟「詳情頁那張大圖」設同一個 <code>view-transition-name</code>，瀏覽器才知道這兩個是同一個元素跨頁面位移。每張圖的 name 必須 unique，所以要動態生成。</p>
+<h2 id="坑-3：CSS-模板插值是空話">坑 3：CSS 模板插值是空話</h2>
+<p>cover morph 的核心是給「list 端那張縮圖」跟「詳情頁那張大圖」設同一個 <code>view-transition-name</code>，瀏覽器才知道這兩個是同一個元素跨頁面位移。每張圖的 name 必須 unique，所以要動態生成。</p>
 <p>我一開始的想法很直覺：寫在 CSS 裡用模板插值不就好了？</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* ❌ 永遠不會 morph */</span></span><br><span class="line"><span class="selector-class">.post-card</span> <span class="selector-class">.cover</span> &#123; <span class="attribute">view-transition-name</span>: hero-&#123;&#123; post<span class="selector-class">.slug</span> &#125;&#125;; &#125;</span><br></pre></td></tr></table></figure>
-
 <p>錯。CSS 靜態檔不過 hexo 模板引擎，<code>&#123;&#123; &#125;&#125;</code> 會原樣輸出。瀏覽器拿到 <code>hero-&#123;&#123; post.slug &#125;&#125;</code> 判定非法 ident、整條規則丟掉。</p>
 <p><strong>動態 name 走 JS 注入、靜態動畫規則放 .css</strong>——這條界線一旦劃清楚，就再也不會誤踩。</p>
 <p>（這個坑我前一個 session 寫筆記時就埋下了——當時直接抄了影片裡的 demo code、以為「以後直接這樣寫」很簡單，動手才發現自己埋了顆雷。）</p>
 <p>inject 一段 JS：監聽 <code>pageswap</code>、給 list 的 img 掛 <code>viewTransitionName</code>；監聽 <code>pagereveal</code>、給詳情頁的 <code>#page-header</code> 掛同樣的 name。技術上跑通了。</p>
-<h2 id="坑-4：cover-morph-點下去真的飛——但「不順暢」"><a href="#坑-4：cover-morph-點下去真的飛——但「不順暢」" class="headerlink" title="坑 4：cover morph 點下去真的飛——但「不順暢」"></a>坑 4：cover morph 點下去真的飛——但「不順暢」</h2><p>JS 寫完，Chrome 打開，點 list 卡片——morph 真的觸發、放大效果出現。</p>
+<h2 id="坑-4：cover-morph-點下去真的飛——但「不順暢」">坑 4：cover morph 點下去真的飛——但「不順暢」</h2>
+<p>JS 寫完，Chrome 打開，點 list 卡片——morph 真的觸發、放大效果出現。</p>
 <p>但視覺不順。</p>
 <p>問題不在 VT，在 Butterfly 把背景、nav、標題包在同一個 header。抓 DOM 才看清楚：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;page-header&quot;</span> <span class="attr">style</span>=<span class="string">&quot;background-image: url(...)&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">nav</span> <span class="attr">id</span>=<span class="string">&quot;nav&quot;</span>&gt;</span>      <span class="comment">&lt;!-- 整條頂部導航列 (60px 高) --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;post-info&quot;</span>&gt;</span> <span class="comment">&lt;!-- 文章標題、發表時間、字數那一塊 (158px 高) --&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p>把整個 <code>#page-header</code> 掛 <code>view-transition-name</code> 等於把「背景圖 + nav + 標題區」當一塊快照、跟 list 端的純縮圖 morph。過程中 nav 跟 post-info 在 list 端不存在，於是 fade-in 跟著放大過程冒出來——這就是不順暢感的來源。</p>
 <p>要修到完美得在 <code>#page-header</code> 內注入一層獨立 bg-layer（absolute 鋪滿、把背景圖搬到它身上、<code>#page-header</code> 自己清掉 background-image），<code>view-transition-name</code> 只掛在 bg-layer 上。nav 跟標題不掛、不參與 morph。</p>
 <p>但這真的在改主題渲染後的 DOM。我 npm 裝的是 Butterfly 5.5.4，2026 年內可能就會出 6.x、主題改了 DOM 結構就壞。</p>
 <p>技術 blog 的 cover morph 是 nice-to-have，DOM 注入投報率不夠。我選擇<strong>收手</strong>。最煩的不是沒動，是它有動但醜——明明放大效果都出來了，差那層收尾沒做。但想到「為了這層 polish、要 inject 一段 JS 改主題渲染後的 DOM、然後祈禱 Butterfly 6.x 出來別動結構」這條路，還是算了。</p>
 <p>（順便挖個墳：影片裡的 demo 只有圖，Butterfly 的 cover 是整個 header；差別就在這裡。）</p>
-<h2 id="真正的炸點：debug-過程中發現自己有-84MB-圖"><a href="#真正的炸點：debug-過程中發現自己有-84MB-圖" class="headerlink" title="真正的炸點：debug 過程中發現自己有 84MB 圖"></a>真正的炸點：debug 過程中發現自己有 84MB 圖</h2><p>我以為在做動畫，其實在測主題架構邊界——而真正該測的，是我從沒測過的東西。</p>
+<h2 id="真正的炸點：debug-過程中發現自己有-84MB-圖">真正的炸點：debug 過程中發現自己有 84MB 圖</h2>
+<p>我以為在做動畫，其實在測主題架構邊界——而真正該測的，是我從沒測過的東西。</p>
 <p>收手前，我懷疑「為什麼放大感不順」可能是圖太大、瀏覽器拍快照時還沒 decode 完。順手 PowerShell 統計了一下：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-ChildItem</span> <span class="literal">-Path</span> <span class="string">&quot;D:\hexo\source\images\posts&quot;</span> <span class="operator">-File</span> <span class="literal">-Include</span> *.png <span class="literal">-Recurse</span> |</span><br><span class="line">  <span class="built_in">Measure-Object</span> <span class="literal">-Property</span> Length <span class="literal">-Sum</span></span><br></pre></td></tr></table></figure>
-
 <p>35 張 cover、全是 1536×1024 PNG、平均 2.4MB、總 84.3MB。</p>
 <p>第二眼確認沒看錯。</p>
 <p>PNG 沒壓縮，gpt-image 直接吐出來就這麼大。我用 codex-image-gen skill 自動生 cover 已經幾個月，從來沒問過自己「這些圖到底多大」。</p>
 <p>每個讀者點開一篇文章，光詳情頁那張 banner 就要載 2 點多 MB。難怪手機 4G 點進去常常卡半秒。</p>
 <p>這才是真正該做的事。</p>
-<h2 id="修圖路上又踩一坑：hexo-after-generate-不是寫檔後的-hook"><a href="#修圖路上又踩一坑：hexo-after-generate-不是寫檔後的-hook" class="headerlink" title="修圖路上又踩一坑：hexo after_generate 不是寫檔後的 hook"></a>修圖路上又踩一坑：hexo after_generate 不是寫檔後的 hook</h2><p>決定壓 WebP。35 張全轉、引用同步改寫（HTML 跟 RSS atom.xml 都要掃，CSS/JSON 不動），希望接進 build pipeline、未來新圖自動處理、寫文流程一個字都不改。</p>
+<h2 id="修圖路上又踩一坑：hexo-after-generate-不是寫檔後的-hook">修圖路上又踩一坑：hexo after_generate 不是寫檔後的 hook</h2>
+<p>決定壓 WebP。35 張全轉、引用同步改寫（HTML 跟 RSS atom.xml 都要掃，CSS/JSON 不動），希望接進 build pipeline、未來新圖自動處理、寫文流程一個字都不改。</p>
 <p>選項評估：hexo 圖片 plugin（hexo-yam、hexo-imagemin）看了一下，要嘛停更、要嘛只壓不改 HTML 引用，都不夠用。決定自製 hexo filter + sharp（libvips 底層、業界標準）。</p>
 <p>寫了一個 <code>after_generate</code> filter，大概 100 行：</p>
 <ol>
@@ -188,20 +189,20 @@
 <p>加 console.log 才發現：<strong>hexo <code>after_generate</code> 比較像 route 生成後的 hook、不是 public/ 寫完後的 hook</strong>。filter 觸發時 routes 已經生成（in-memory）但 hexo-cli 還沒把它們寫到 <code>public/</code>。我從 disk 讀，當然 ENOENT。</p>
 <p>正解是用 <code>hexo.route</code> API 操作 in-memory routes：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">hexo.<span class="property">extend</span>.<span class="property">filter</span>.<span class="title function_">register</span>(<span class="string">&#x27;after_generate&#x27;</span>, <span class="keyword">async</span> <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> route = hexo.<span class="property">route</span>;</span><br><span class="line">  <span class="keyword">const</span> pngPaths = route.<span class="title function_">list</span>().<span class="title function_">filter</span>(<span class="function"><span class="params">p</span> =&gt;</span></span><br><span class="line">    <span class="regexp">/^images\/posts\/.*\.png$/i</span>.<span class="title function_">test</span>(p)</span><br><span class="line">  );</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> pngPath <span class="keyword">of</span> pngPaths) &#123;</span><br><span class="line">    <span class="keyword">const</span> pngBuf = <span class="keyword">await</span> <span class="title function_">routeToBuffer</span>(route, pngPath);</span><br><span class="line">    <span class="keyword">const</span> webpBuf = <span class="keyword">await</span> <span class="title function_">sharp</span>(pngBuf).<span class="title function_">webp</span>(&#123; <span class="attr">quality</span>: <span class="number">80</span> &#125;).<span class="title function_">toBuffer</span>();</span><br><span class="line">    <span class="keyword">const</span> webpPath = pngPath.<span class="title function_">replace</span>(<span class="regexp">/\.png$/</span>, <span class="string">&#x27;.webp&#x27;</span>);</span><br><span class="line">    route.<span class="title function_">set</span>(webpPath, webpBuf);</span><br><span class="line">    route.<span class="title function_">remove</span>(pngPath);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 接著用 route.list() + route.get() + route.set()</span></span><br><span class="line">  <span class="comment">// 改寫所有 .html / .xml route 的 .png 引用 → .webp</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
 <p>（完整實作我放在 <code>scripts/cover-to-webp.js</code>。實際版本還保留了「filter 永不讓 build 失敗」「單張失敗保留 PNG 跳過該檔 HTML 改寫」這些 fail-safe 邊界，我整理過。）</p>
 <p>第二次跑：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[cover-to-webp] 35 壓縮 / 0 失敗，84.3MB → 6.0MB (saved 93%)，12.9s</span><br></pre></td></tr></table></figure>
-
 <p>84MB → 6MB，平均 171KB 一張、目視看不出差別。source 那邊 PNG 留底沒動、frontmatter 的 <code>cover:</code> 路徑也照舊寫 .png 不用改——build 階段在 in-memory 換成 WebP。deploy 出去的 <code>public/</code> 只有 WebP、PNG 永遠只活在 source、不會兩份大圖一起發。</p>
-<h2 id="最終成果"><a href="#最終成果" class="headerlink" title="最終成果"></a>最終成果</h2><table>
+<h2 id="最終成果">最終成果</h2>
+<table>
 <thead>
 <tr>
 <th>項目</th>
 <th>狀態</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>整頁 cross-fade 換頁過場</td>
 <td>✅ 上線</td>
 </tr>
@@ -213,9 +214,11 @@
 <td>cover PNG → WebP 自動壓縮</td>
 <td>✅ 84MB → 6MB</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>下班 2 小時 budget 跑了大概三倍時間。「進階款 morph」沒成、但「沒在計畫內的副產品」反而是這次最大收益——每個讀者現在每頁少載 ~2MB，LCP 理論上會跟著改善（沒做正式量測，單純從下載差距推算）。</p>
-<h2 id="學到什麼"><a href="#學到什麼" class="headerlink" title="學到什麼"></a>學到什麼</h2><p>幾個我會帶到下次的：</p>
+<h2 id="學到什麼">學到什麼</h2>
+<p>幾個我會帶到下次的：</p>
 <p>主題客製不要碰 node_modules、但要意識到 inject 也是有極限的。第一階段 cross-fade 純 CSS、零耦合、升級不會壞，這是健康的 inject。第二階段 morph 要 DOM 注入抽 bg-layer，這已經在「改主題渲染後的 DOM 結構」，Butterfly 6.x 出來大概就會撞到。同樣是 inject、技術債的量級差很多。</p>
 <p><strong>炫效果常是發現真效能病的觸發點。</strong> 為了 morph 跑去抓圖大小，順手治了載入慢的真病。如果今天不是想做 morph，我可能再過半年都不會發現自己藏了 84MB 圖片巨石。</p>
 <p>Hexo <code>after_generate</code> filter 不能讀 public/。它在 routes 寫到 disk 之前觸發、要用 <code>hexo.route</code> API 操作 in-memory。這條我這次踩過了、以後就不會再忘。</p>
@@ -311,15 +314,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

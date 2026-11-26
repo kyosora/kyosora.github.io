@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署 | kyosora 筆記</title>
+<meta name="description" content="bat 用 if errorlevel 1 判斷失敗，結束代碼是負數就會漏接；改存 %errorlevel% 又可能被同名環境變數蓋掉。附三種寫法的 27 格實測矩陣，與部署腳本的最終寫法。">
+<link rel="canonical" href="https://kyosora.github.io/posts/4f8c5648/">
+
+<meta name="author" content="kyosora">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f4f6f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1820" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署">
+<meta property="og:description" content="bat 用 if errorlevel 1 判斷失敗，結束代碼是負數就會漏接；改存 %errorlevel% 又可能被同名環境變數蓋掉。附三種寫法的 27 格實測矩陣，與部署腳本的最終寫法。">
+<meta property="og:url" content="https://kyosora.github.io/posts/4f8c5648/">
+
+<meta property="og:site_name" content="kyosora 筆記">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://kyosora.github.io/images/posts/bat-errorlevel-negative-exit-code-cover.webp">
+<meta name="twitter:image" content="https://kyosora.github.io/images/posts/bat-errorlevel-negative-exit-code-cover.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="article:published_time" content="2026-11-26T08:20:00.000Z">
+<meta property="article:modified_time" content="2026-11-26T08:20:00.000Z">
+<meta property="article:author" content="kyosora">
+<meta property="article:section" content="程式設計">
+<meta property="article:tag" content="Windows">
+<meta property="article:tag" content="Batch">
+<meta property="article:tag" content="CMD">
+<meta property="article:tag" content="部署">
+<meta property="article:tag" content="除錯">
+<meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k">
+<meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E">
+<meta name="baidu-site-verification" content="code-pE5rnuxcfD">
+<link rel="icon" href="/images/favicon.png">
+<link rel="alternate" type="application/atom+xml" title="kyosora 筆記" href="/atom.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&amp;display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/css/kyosora.css?v=4bf38b40">
+
+<script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署","description":"bat 用 if errorlevel 1 判斷失敗，結束代碼是負數就會漏接；改存 %errorlevel% 又可能被同名環境變數蓋掉。附三種寫法的 27 格實測矩陣，與部署腳本的最終寫法。","url":"https://kyosora.github.io/posts/4f8c5648/","mainEntityOfPage":"https://kyosora.github.io/posts/4f8c5648/","image":"https://kyosora.github.io/images/posts/bat-errorlevel-negative-exit-code-cover.webp","datePublished":"2026-11-26T08:20:00.000Z","dateModified":"2026-11-26T08:20:00.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"程式設計","keywords":"Windows, Batch, CMD, 部署, 除錯"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"程式設計","item":"https://kyosora.github.io/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/"},{"@type":"ListItem","position":3,"name":"bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署","item":"https://kyosora.github.io/posts/4f8c5648/"}]}]}</script>
+
+</head>
+<body class="kind-post">
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
+<symbol id="i-rss" viewBox="0 0 24 24"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.2"/></symbol>
+</svg>
+
+<a class="skip" href="#main">跳到內文</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/">kyosora 筆記</a>
+    <nav class="nav" aria-label="主要選單">
+      
+      <a href="/">首頁</a>
+      
+      <a href="/archives/">歸檔</a>
+      
+      <a href="/categories/">分類</a>
+      
+      <a href="/tags/">標籤</a>
+      
+      <a href="/about/">關於</a>
+      
+    </nav>
+    <div class="tools">
+      <button class="tool" type="button" data-action="search" aria-label="搜尋文章（快捷鍵 /）" title="搜尋（/）"><svg class="icon"><use href="#i-search"/></svg></button>
+      <button class="tool tool--text" type="button" data-action="translate" aria-label="切換成簡體中文" title="繁簡切換">簡</button>
+      <button class="tool" type="button" data-action="theme" aria-label="切換深色模式" title="深淺色切換"><svg class="icon icon-moon"><use href="#i-moon"/></svg><svg class="icon icon-sun"><use href="#i-sun"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<article class="post">
+  <header class="post-head">
+    
+    <figure class="post-banner"><img src="/images/posts/bat-errorlevel-negative-exit-code-cover.webp" alt="" width="1536" height="1024" fetchpriority="high" decoding="async"></figure>
+    
+    <div class="wrap post-head-inner">
+      
+<nav class="crumbs" aria-label="目前位置">
+  <ol>
+  
+    <li><a href="/">首頁</a></li>
+  
+    <li><a href="/categories/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">程式設計</a></li>
+  
+  </ol>
+</nav>
+
+
+      <h1 class="post-title">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</h1>
+      <p class="post-meta">
+        <span>發布於 <time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></span>
+        
+        <span>約 6 分鐘讀完</span>
+        <span class="views" data-views hidden></span>
+      </p>
+    </div>
+  </header>
+
+  <div class="wrap post-layout">
+    
+    <aside class="post-aside">
+      <details class="toc-box" open>
+        <summary>目錄</summary>
+        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E7%89%88%EF%BC%9Aif-errorlevel-1"><span class="toc-text">第一版：if errorlevel 1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E7%89%88%EF%BC%9A%E5%AD%98%E6%88%90-rc%EF%BC%8C%E5%86%8D%E8%B7%9F-0-%E6%AF%94"><span class="toc-text">第二版：存成 rc，再跟 0 比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E7%89%88%EF%BC%9A%E5%85%88%E6%B8%85%E6%8E%89%E5%90%8C%E5%90%8D%E8%AE%8A%E6%95%B8"><span class="toc-text">第三版：先清掉同名變數</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E5%81%87%E7%9A%84-npm-%E8%B7%91%E5%AE%8C%E6%95%B4%E5%80%8B%E7%9F%A9%E9%99%A3"><span class="toc-text">用假的 npm 跑完整個矩陣</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%99%E6%AC%A1%E8%A8%98%E4%BD%8F%E7%9A%84%E4%BA%8B"><span class="toc-text">這次記住的事</span></a></li></ol></nav>
+      </details>
+    </aside>
+    
+
+    <div class="post-main">
+      <div class="prose" id="article">
+        <p>這個部落格是用一支 <code>deploy-hexo.bat</code> 發佈的：<code>npm run clean</code>、<code>npm run build</code>、<code>npm run deploy</code> 三步。昨天換佈景主題時，我要它在任何一步失敗時停下來，壞掉的產物不要推上 GitHub。</p>
+<p>前後換了三種寫法，前兩種都有洞，兩個洞都是送 Codex 審查時被抓出來的。第一個洞會把負的結束代碼當成成功，第二個洞則是修第一個洞時換來的。</p>
+<h2 id="第一版：if-errorlevel-1">第一版：if errorlevel 1</h2>
+<p>很常見的一種寫法：</p>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">call</span> npm run build</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">errorlevel</span> <span class="number">1</span> <span class="keyword">goto</span> :fail</span><br></pre></td></tr></table></figure>
+<p><code>if /?</code> 的說明寫得很清楚，<code>ERRORLEVEL number</code> 的意思是「上一個程式的結束代碼大於或等於這個數字」：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ERRORLEVEL number Specifies a true condition if the last program run</span><br><span class="line">                  returned an exit code equal to or greater than the number</span><br><span class="line">                  specified.</span><br></pre></td></tr></table></figure>
+<p>大於或等於 1，負數就不算。負的結束代碼聽起來像邊角情況，寫這篇時我在本機試了一次：讓一個程式用 <code>0xC0000005</code>（存取違規，程式崩潰時常見的代碼）結束。</p>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line">python -c &quot;import sys; sys.<span class="keyword">exit</span>(<span class="number">0</span>xC0000005)&quot;</span><br><span class="line"><span class="built_in">echo</span> <span class="keyword">errorlevel</span>=<span class="variable">%errorlevel%</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">errorlevel</span> <span class="number">1</span> (<span class="built_in">echo</span> <span class="keyword">if</span>-<span class="keyword">errorlevel</span>-<span class="number">1</span>: caught) <span class="keyword">else</span> (<span class="built_in">echo</span> <span class="keyword">if</span>-<span class="keyword">errorlevel</span>-<span class="number">1</span>: MISSED)</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">errorlevel=-1073741819</span><br><span class="line">if-errorlevel-1: MISSED</span><br></pre></td></tr></table></figure>
+<p>cmd 把結束代碼當成有號整數，<code>0xC0000005</code> 變成 -1073741819。這類 <code>0xC...</code> 開頭的代碼在 cmd 裡都會是負數，<code>if errorlevel 1</code> 全部漏接。這裡是我用 Python 主動回傳存取違規的代碼；只要 <code>call npm run build</code> 最後傳回負數，第一版就會繼續執行 deploy。至於 Node 真的崩潰時，經過 npm 最後會回什麼，我沒有實測。</p>
+<h2 id="第二版：存成-rc，再跟-0-比">第二版：存成 rc，再跟 0 比</h2>
+<p>改成把結束代碼存起來，只要不是 0 就停：</p>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">call</span> npm run build</span><br><span class="line"><span class="built_in">set</span> &quot;rc=<span class="variable">%errorlevel%</span>&quot;</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> &quot;<span class="variable">%rc%</span>&quot;==&quot;<span class="number">0</span>&quot; <span class="keyword">goto</span> :fail</span><br></pre></td></tr></table></figure>
+<p>正數、負數都擋得住。Codex 審第二版時又指出一個洞：<code>%ERRORLEVEL%</code> 不一定是真的結束代碼。</p>
+<p>同一份 <code>if /?</code> 的說明後面有一段：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">%ERRORLEVEL% will expand into a string representation of</span><br><span class="line">the current value of ERRORLEVEL, provided that there is not already</span><br><span class="line">an environment variable with the name ERRORLEVEL, in which case you</span><br><span class="line">will get its value instead.</span><br></pre></td></tr></table></figure>
+<p>只要環境裡有一個叫 <code>ERRORLEVEL</code> 的變數，<code>%errorlevel%</code> 拿到的就是那個變數，不是上一個程式的結束代碼。像是在同一個命令列視窗裡有人下過 <code>set ERRORLEVEL=0</code>，或是某支包裝腳本把它設進環境。</p>
+<p>這個洞是審查時從說明文件推出來的，我平常部署時沒遇過，這台電腦的使用者和系統環境變數裡也沒有 <code>ERRORLEVEL</code>。但只要外層設過 <code>ERRORLEVEL=0</code>，build 失敗後腳本還是會呼叫 deploy，所以我把這個情境也補進測試。</p>
+<p><code>if errorlevel N</code> 那種寫法不受這個影響，它讀的一定是真的結束代碼。我想保留第二版跟 0 比的寫法，剩下要解決的就是同名變數。</p>
+<h2 id="第三版：先清掉同名變數">第三版：先清掉同名變數</h2>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line"><span class="built_in">setlocal</span> EnableExtensions</span><br><span class="line"><span class="comment">rem 清掉同名的環境變數，%errorlevel% 才會回到真正的結束代碼</span></span><br><span class="line"><span class="built_in">set</span> &quot;<span class="keyword">ERRORLEVEL</span>=&quot;</span><br><span class="line"></span><br><span class="line"><span class="keyword">call</span> npm run clean</span><br><span class="line"><span class="built_in">set</span> &quot;rc=<span class="variable">%errorlevel%</span>&quot;</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> &quot;<span class="variable">%rc%</span>&quot;==&quot;<span class="number">0</span>&quot; <span class="keyword">goto</span> :fail</span><br><span class="line"></span><br><span class="line"><span class="keyword">call</span> npm run build</span><br><span class="line"><span class="built_in">set</span> &quot;rc=<span class="variable">%errorlevel%</span>&quot;</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> &quot;<span class="variable">%rc%</span>&quot;==&quot;<span class="number">0</span>&quot; <span class="keyword">goto</span> :fail</span><br><span class="line"></span><br><span class="line"><span class="keyword">call</span> npm run deploy</span><br><span class="line"><span class="built_in">set</span> &quot;rc=<span class="variable">%errorlevel%</span>&quot;</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> &quot;<span class="variable">%rc%</span>&quot;==&quot;<span class="number">0</span>&quot; <span class="keyword">goto</span> :fail</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> 部署完成</span><br><span class="line"><span class="keyword">exit</span> /b <span class="number">0</span></span><br><span class="line"></span><br><span class="line">:fail</span><br><span class="line"><span class="built_in">echo</span> 部署中止：上一步失敗（錯誤碼 <span class="variable">%rc%</span>）</span><br><span class="line"><span class="keyword">exit</span> /b <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p><code>setlocal</code> 讓清變數、設 <code>rc</code> 都只在這支 bat 裡生效，不會漏回呼叫它的那個視窗。<code>EnableExtensions</code> 是明確打開命令延伸功能：<code>set /?</code> 寫得很清楚，<code>%ERRORLEVEL%</code> 這類動態變數要在延伸功能開啟時才有，而且「使用者自己定義了同名變數，就會蓋過動態的那個」。清掉同名變數後，我在每個 <code>call</code> 的下一行就把 <code>%errorlevel%</code> 存進 <code>rc</code>，記下那一步的結束代碼。存成 <code>rc</code> 再跟 0 比，正數和負數都擋得住。實際的 <code>deploy-hexo.bat</code> 還多了 <code>chcp 65001</code>、幾行提示文字和結尾的 <code>pause</code>，這裡拿掉了。</p>
+<h2 id="用假的-npm-跑完整個矩陣">用假的 npm 跑完整個矩陣</h2>
+<p>這種錯誤處理，只跑一次成功的部署什麼都驗不到。我請 Claude Code 搭了一個測試環境（下面是寫這篇時重跑的結果）：一支假的 <code>npm.cmd</code> 放在 PATH 最前面，依環境變數決定哪一步回什麼代碼，每次被呼叫都記到檔案裡。</p>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line"><span class="comment">rem 假的 npm，呼叫範例：npm run build；FAKE_FAIL_STEP 與 FAKE_RC 決定結束代碼</span></span><br><span class="line">&gt;&gt;&quot;<span class="variable">%FAKE_LOG%</span>&quot; <span class="built_in">echo</span> %<span class="number">2</span></span><br><span class="line"><span class="keyword">if</span> /i &quot;<span class="variable">%2&quot;==&quot;%</span>FAKE_FAIL_STEP%&quot; <span class="keyword">exit</span> /b <span class="variable">%FAKE_RC%</span></span><br><span class="line"><span class="keyword">exit</span> /b <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p>三種寫法，各跑「外層環境（沒設、<code>ERRORLEVEL=0</code>、<code>ERRORLEVEL=7</code>）× 結果（全部成功、build 回 2、build 回 −1）」九種組合，看實際呼叫了哪幾步、最後的結束代碼是什麼。27 格裡有 8 格的行為跟預期不符，合併相同結果如下：</p>
+<table>
+<thead>
+<tr>
+<th>寫法</th>
+<th>外層環境</th>
+<th>情境</th>
+<th>實際呼叫</th>
+<th>結果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>if errorlevel 1</code></td>
+<td>三種都一樣</td>
+<td>build 回 −1</td>
+<td>clean → build → deploy</td>
+<td>印「完成」，exit 0</td>
+</tr>
+<tr>
+<td>存 <code>rc</code> 不清變數</td>
+<td><code>ERRORLEVEL=0</code></td>
+<td>build 回 2</td>
+<td>clean → build → deploy</td>
+<td>印「完成」，exit 0</td>
+</tr>
+<tr>
+<td>存 <code>rc</code> 不清變數</td>
+<td><code>ERRORLEVEL=0</code></td>
+<td>build 回 −1</td>
+<td>clean → build → deploy</td>
+<td>印「完成」，exit 0</td>
+</tr>
+<tr>
+<td>存 <code>rc</code> 不清變數</td>
+<td><code>ERRORLEVEL=7</code></td>
+<td>三種情境都一樣</td>
+<td>clean</td>
+<td>clean 成功後讀到 7，提早中止，exit 1</td>
+</tr>
+</tbody>
+</table>
+<p>第三版九格全對：失敗的那幾格都停在 build，沒有跑 deploy，結束代碼是 1；成功的三格都跑完三步，結束代碼是 0。</p>
+<h2 id="這次記住的事">這次記住的事</h2>
+<p>第一版漏負數，我換了寫法，結果換來第二版的洞。這個新洞是 Codex 審第二版時指出的：同名變數會蓋過結束代碼。我把外層的 <code>ERRORLEVEL</code> 也放進測試，才重現兩種相反的結果：設成 0，build 失敗照樣部署；設成 7，連成功的 clean 都過不了。只在乾淨的環境裡把正負結束代碼測一遍，第二版會全部通過。</p>
+<p>下次再寫有「失敗就停」的 bat，我會先寫那支假的 <code>npm.cmd</code>，再寫 bat 本身。</p>
+
+      </div>
+      
+<footer class="post-end">
+  
+  <ul class="post-tags" aria-label="標籤">
+    <li><a href="/tags/Windows/">Windows</a></li><li><a href="/tags/Batch/">Batch</a></li><li><a href="/tags/CMD/">CMD</a></li><li><a href="/tags/%E9%83%A8%E7%BD%B2/">部署</a></li><li><a href="/tags/%E9%99%A4%E9%8C%AF/">除錯</a></li>
+  </ul>
+  
+
+  <section class="license" aria-label="版權資訊">
+    <p>作者 <a href="/about/">kyosora</a>。本文網址 <a href="https://kyosora.github.io/posts/4f8c5648/">https://kyosora.github.io/posts/4f8c5648/</a></p>
+    <p>以 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license noopener" target="_blank">CC BY-NC-SA 4.0</a> 授權，轉載請註明出處。</p>
+  </section>
+
+  <div class="share" aria-label="分享這篇文章">
+    <span class="share-label">分享</span>
+    
+    <a class="chip" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fkyosora.github.io%2Fposts%2F4f8c5648%2F" target="_blank" rel="noopener nofollow">Facebook</a>
+    
+    <a class="chip" href="https://x.com/intent/post?url=https%3A%2F%2Fkyosora.github.io%2Fposts%2F4f8c5648%2F&amp;text=bat%20%E7%94%A8%20if%20errorlevel%201%20%E6%AA%A2%E6%9F%A5%E5%A4%B1%E6%95%97%EF%BC%9F%E7%B5%90%E6%9D%9F%E4%BB%A3%E7%A2%BC%E6%98%AF%E8%B2%A0%E6%95%B8%E5%B0%B1%E6%9C%83%E6%BC%8F%E6%8E%A5%EF%BC%8C%E7%85%A7%E6%A8%A3%E5%BE%80%E4%B8%8B%E9%83%A8%E7%BD%B2" target="_blank" rel="noopener nofollow">X</a>
+    
+    <a class="chip" href="https://social-plugins.line.me/lineit/share?url=https%3A%2F%2Fkyosora.github.io%2Fposts%2F4f8c5648%2F" target="_blank" rel="noopener nofollow">LINE</a>
+    
+    <button class="chip" type="button" data-action="copy-link" data-url="https://kyosora.github.io/posts/4f8c5648/">複製連結</button>
+    <button class="chip" type="button" data-action="native-share" data-url="https://kyosora.github.io/posts/4f8c5648/" data-title="bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署" hidden>更多分享方式</button>
+  </div>
+
+  
+  <nav class="neighbours" aria-label="前後篇">
+    
+    <a class="neighbour neighbour--older" href="/posts/7175f458/">
+      <span class="neighbour-label">前一篇</span>
+      <span class="neighbour-title">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</span>
+    </a>
+    
+  </nav>
+  
+
+  
+  <section class="related" aria-labelledby="related-title">
+    <h2 id="related-title">相關文章</h2>
+    <ul class="related-list">
+    
+      <li>
+        <a href="/posts/25a8b1c4/">
+          <img src="/images/posts/iis-heuristic-cache-control-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</span>
+          <span class="related-date">2026-11-26</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/645f2b01/">
+          <img src="/images/posts/legacy-645f2b01-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">curl 能下載、Node.js 卻 fetch failed——在 WSL2 + Docker 裡修好 OpenClaw Telegram Bot 圖片上傳的全過程</span>
+          <span class="related-date">2026-03-11</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/7d2b90da/">
+          <img src="/images/posts/windows-multi-nic-default-route-remove-netroute-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</span>
+          <span class="related-date">2026-11-26</span>
+        </a>
+      </li>
+    
+      <li>
+        <a href="/posts/2a032167/">
+          <img src="/images/posts/legacy-2a032167-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">以為是 App Pool 的鍋，結果 IUSR 被 Windows 偷走了</span>
+          <span class="related-date">2026-04-23</span>
+        </a>
+      </li>
+    
+    </ul>
+  </section>
+  
+
+  
+  <section class="recent" aria-labelledby="recent-title">
+    <h2 id="recent-title">最近寫的</h2>
+    <ul>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
+    
+      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
+    
+      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
+    
+      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
+    
+    </ul>
+  </section>
+  
+
+  
+<section class="comments" id="comments" aria-labelledby="comments-title">
+  <h2 id="comments-title">留言</h2>
+  <div class="giscus-slot" data-giscus><p class="comments-note">往下捲到這裡才會載入留言區（使用 GitHub 帳號留言）。</p></div>
+</section>
+
+
+</footer>
+
+    </div>
+  </div>
+</article>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>© 2024–2026 kyosora。文章以 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license noopener" target="_blank">CC BY-NC-SA 4.0</a> 授權。</p>
+    <p class="footer-links"><a href="/atom.xml">RSS 訂閱</a><a href="https://github.com/kyosora" rel="noopener" target="_blank">GitHub</a><a href="/about/">關於我</a></p>
+  </div>
+</footer>
+
+<dialog class="search" id="search" aria-label="搜尋文章">
+  <form class="search-bar" role="search">
+    <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+    <input type="search" name="q" placeholder="搜尋標題與內文" aria-label="搜尋關鍵字" autocomplete="off" enterkeyhint="search">
+    <button class="tool" type="button" data-close aria-label="關閉搜尋"><svg class="icon"><use href="#i-close"/></svg></button>
+  </form>
+  <p class="search-status" role="status" aria-live="polite"></p>
+  <ol class="search-results"></ol>
+</dialog>
+
+<script>window.KY={"search":"/search.json","twcn":"/js/ky-twcn.js?v=eba49651","codeHeight":400,"mermaid":null,"giscus":{"data-repo":"kyosora/kyosora.github.io","data-repo-id":"R_kgDOLJYL_w","data-category-id":"DIC_kwDOLJYL_84C516C","data-mapping":"pathname","data-input-position":"top","data-lang":"zh-TW","data-reactions-enabled":"1","light":"light","dark":"dark"},"views":{"endpoint":"https://kyosora-views.coasta98381.workers.dev","minSeconds":15,"since":"2026-11","path":"/posts/4f8c5648/"}}</script>
+<script src="/js/kyosora.js?v=0f20e8d5" defer></script>
+
+</body>
+</html>

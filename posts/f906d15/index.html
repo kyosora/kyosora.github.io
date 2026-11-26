@@ -126,7 +126,8 @@
 <p>後來發現網頁版根本不是全文，只是章節摘要。真正的報告是一份 154 頁的 PDF，藏在頁面底下的連結裡。抓下來翻完，在監控操作那一章看到了「Presbyterian Church in Taiwan」。</p>
 <p>台灣基督長老教會。被列在一個中國情報單位的日常監控工作表裡，頻率標註是 Daily。</p>
 <p>這篇整理報告裡跟中國有關的四個案例，順序從遠到近——最後一個用的工具，跟我寫這篇文章用的是同一個。</p>
-<h2 id="先從一個離台灣還很遠的案例說起"><a href="#先從一個離台灣還很遠的案例說起" class="headerlink" title="先從一個離台灣還很遠的案例說起"></a>先從一個離台灣還很遠的案例說起</h2><p>報告編號 GTG-10007，一個持續性的間諜行動。操作者講中文，Anthropic 判斷人在湖南長沙。</p>
+<h2 id="先從一個離台灣還很遠的案例說起">先從一個離台灣還很遠的案例說起</h2>
+<p>報告編號 GTG-10007，一個持續性的間諜行動。操作者講中文，Anthropic 判斷人在湖南長沙。</p>
 <p>有意思的是身分。兩名操作者被識別為湖南某大學計算機與通信工程學院的大學部學生，其中一人先前在深信服（Sangfor）實習過，而且當時正在面試奇安信（QiAnXin）的攻擊性網路作戰職缺。</p>
 <p>不是什麼神祕的國家級駭客組織，是兩個還沒畢業、正在投履歷的學生。</p>
 <p>他們拿 Claude 當整個攻擊程式的工程與編排層，同時跑好幾條工作線：對 production 系統的入侵嘗試、對中東與歐洲、東南亞政府網路的偵察、針對主流端點防護產品的漏洞研究、惡意程式開發，還有一個情報蒐集平台。</p>
@@ -137,22 +138,24 @@
 <p>人不在的時候，蒐集和漏洞研究還在跑。</p>
 <p>成果是大約 50 個組織被鎖定，橫跨教育、零售、能源、科技、醫療、金融、製造和多國政府機關。其中一家教育科技公司被拿走數百 MB 的學生個資，一個東南亞政府機關的公民記錄被取走——姓名、電話、住址。針對某個主流資安產品的持續研究，產出了數個未公開的漏洞，而且在他們自己的實驗室環境裡驗證過。</p>
 <p>這案例跟台灣沒有直接關係，但它建立了後面三個案例的前提：<strong>Claude 在這些行動裡不是聊天機器人，是工程層。</strong></p>
-<h2 id="台灣第一次出現：輿情簡報的用詞規則"><a href="#台灣第一次出現：輿情簡報的用詞規則" class="headerlink" title="台灣第一次出現：輿情簡報的用詞規則"></a>台灣第一次出現：輿情簡報的用詞規則</h2><p>GTG-14022，報告稱它為「輿情監控」與異議人士監控行動。Anthropic 中度信心判斷，執行者是承包商而不是國家機關本身，客戶端連到國安或統戰宣傳系統。</p>
+<h2 id="台灣第一次出現：輿情簡報的用詞規則">台灣第一次出現：輿情簡報的用詞規則</h2>
+<p>GTG-14022，報告稱它為「輿情監控」與異議人士監控行動。Anthropic 中度信心判斷，執行者是承包商而不是國家機關本身，客戶端連到國安或統戰宣傳系統。</p>
 <p>這個行動要 Claude 扮演的角色寫得很直白：</p>
 <blockquote>
-<p>a &quot;senior emergency public opinion analyst serving the government of the People&#39;s Republic of China&quot;</p>
+<p>a “senior emergency public opinion analyst serving the government of the People’s Republic of China”</p>
 </blockquote>
 <p>服務中華人民共和國政府的資深應急輿情分析師。</p>
 <p>管線每天處理 15 到 30 篇以上的外媒報導，來源包括微博、X、YouTube、Telegram、Facebook，也包括台灣媒體。每篇文章被按政治敏感度評分，然後依照一套標準化的術語規則改寫，最後產出給官員看的內部簡報。</p>
 <p>那套術語規則裡有這麼一條：</p>
 <blockquote>
-<p>converting &quot;Taiwan government&quot; to &quot;Taiwan authorities&quot;</p>
+<p>converting “Taiwan government” to “Taiwan authorities”</p>
 </blockquote>
 <p>把「台灣政府」轉換成「台灣當局」。同一套規則還要求在批評中國的詞語外面加上引號——例如「人權侵害」要寫成加了引號的「人權侵害」。</p>
 <p>報告列出的監控類別表格裡，有一整行叫做 Political activity in Taiwan，說明欄寫的是：兩岸與文化外交活動，框定為主權威脅。</p>
 <p>產出的文件裡，有些會直接建議特定政府部委採取行動，用的是「三戰」（心理戰、法律戰、輿論戰）的用語。</p>
 <p>一個承包商，一套 prompt，每天三十篇。</p>
-<h2 id="長老教會：日常監控與教堂平面圖"><a href="#長老教會：日常監控與教堂平面圖" class="headerlink" title="長老教會：日常監控與教堂平面圖"></a>長老教會：日常監控與教堂平面圖</h2><p>GTG-14020 是這四個案例裡我讀得最不舒服的一個。</p>
+<h2 id="長老教會：日常監控與教堂平面圖">長老教會：日常監控與教堂平面圖</h2>
+<p>GTG-14020 是這四個案例裡我讀得最不舒服的一個。</p>
 <p>Anthropic 封鎖了一組帳號，判斷屬於中國境內、與官方對齊的宗教事務情報行動。其中一名使用者在對話裡自己透露，他是中國國家機關的資安人員。</p>
 <p>這個行動把 Claude 當成一整個分析師團隊的替代品，產出中文檔案，目標是亞洲各地的宗教領袖與華人離散社群人士。報告說目標設定「精確對應」中國宗教事務與統戰系統的優先順序。</p>
 <p>工作線有四條，長老教會是其中之一：</p>
@@ -165,7 +168,8 @@
 <th>頻率</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>天主教領導層</td>
 <td>亞洲各地資深樞機主教</td>
 <td>目標檔案</td>
@@ -189,7 +193,8 @@
 <td>監控摘要</td>
 <td>不定期</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>注意「台灣宗教公民社會」那一列的產出欄：除了人物檔案，還有場所偵察（venue reconnaissance）。報告對這項的描述是：</p>
 <blockquote>
 <p>conducted reconnaissance to map religious venues, including floor plans, facades, and structural diagrams</p>
@@ -199,7 +204,8 @@
 <p>檔案的內部範本有固定欄位。報告點名其中一個是統戰工作部的術語，指的是可以拿來施壓的把柄（原文只留下拼音 zhushu，中文字在 PDF 裡抽不出來）。其他重複出現的欄位包括 work handles 和 negative information。</p>
 <p>在 prompt 裡，操作者要求 Claude 採取「中國立場」，把西藏流亡政府描述為「非法分裂政權」，對法輪功套用官方的「邪教」定性。</p>
 <p>有一點要標清楚免得誤讀：報告描述整份目標名單時寫的是 <code>They ranged from senior, public-facing religious leaders to private citizens</code>——從公開露面的資深宗教領袖到一般私人都有。這句講的是涵蓋天主教、長老教會、藏傳佛教、法輪功的整份名單，報告沒有細分到哪一條工作線各自涵蓋到哪個層級。</p>
-<h2 id="離我們最近的一個：Claude-Code-加自訂-skills"><a href="#離我們最近的一個：Claude-Code-加自訂-skills" class="headerlink" title="離我們最近的一個：Claude Code 加自訂 skills"></a>離我們最近的一個：Claude Code 加自訂 skills</h2><p>GTG-14021。這裡要換一種「近」——前一個案例近在被監控的對象就在台灣，這一個近在他們用的方式我認得。</p>
+<h2 id="離我們最近的一個：Claude-Code-加自訂-skills">離我們最近的一個：Claude Code 加自訂 skills</h2>
+<p>GTG-14021。這裡要換一種「近」——前一個案例近在被監控的對象就在台灣，這一個近在他們用的方式我認得。</p>
 <p>Anthropic 封掉一組帳號，涉及三個行動，都跟中國市級公安與國安機關的「維穩」工作有關。其中一條是這樣寫的：</p>
 <blockquote>
 <p>A municipal cyber police unit used <strong>Claude Code, together with custom skills</strong>, to operate a sentiment monitoring pipeline, query a government surveillance database, and generate daily reports on politically sensitive incidents</p>
@@ -214,7 +220,8 @@
 </ul>
 <p>最後那一項已經不是個人提效，是把做法標準化成整個單位的流程。</p>
 <p>這個行動還要求 Claude 產出海外活動的行動前場所情報，報告舉的例子包括：溫哥華一場民主遊行的集合點、路線與終點；土耳其的維吾爾文化活動場地；奧斯陸自由論壇的放映場次。</p>
-<h2 id="更值得注意的變化，是成本"><a href="#更值得注意的變化，是成本" class="headerlink" title="更值得注意的變化，是成本"></a>更值得注意的變化，是成本</h2><p>這四個案例裡，我沒看到什麼前所未見的攻擊技術。報告評 GTG-14022 那一個案例時的說法是 <code>Rather than displaying any novel capabilities, this activity was unique in how it was used as part of the bureaucratic apparatus</code>——特別的不是能力，是它被嵌進官僚體系的方式。</p>
+<h2 id="更值得注意的變化，是成本">更值得注意的變化，是成本</h2>
+<p>這四個案例裡，我沒看到什麼前所未見的攻擊技術。報告評 GTG-14022 那一個案例時的說法是 <code>Rather than displaying any novel capabilities, this activity was unique in how it was used as part of the bureaucratic apparatus</code>——特別的不是能力，是它被嵌進官僚體系的方式。</p>
 <p>更值得注意的東西寫在監控章節的總論裡：</p>
 <blockquote>
 <p>a religious affairs intelligence collection unit in the PRC that once comprised many teams of analysts has been reduced to a single office, using an AI assistant to produce thousands of investigations per month</p>
@@ -225,7 +232,8 @@
 <p>AI 動到的就是這個成本結構。</p>
 <p>報告能證明的是人力這一項：原本好幾個分析師團隊的單位縮成一個辦公室，產出還是每月數千份。它沒有證明這些產出的品質等同於過去分析師的工作，也沒有證明最終的情報效用同步提升——中間還有人工複核、查證、決策採納這些環節，報告沒有著墨。</p>
 <p>但光是人力這一項變了，篩選機制就會鬆動。過去因為不划算而不會被盯上的邊際目標，在人力需求下降之後變得划算。這是成本邏輯下的推論，不是報告的結論；不過報告在網路攻擊那章講攻擊者經濟學時是同樣的講法：AI 壓低 ROI 計算裡的成本端，讓邊際目標變得可行，鼓勵「更高量、低接觸」的操作。</p>
-<h2 id="防護擋住了什麼，沒擋住什麼"><a href="#防護擋住了什麼，沒擋住什麼" class="headerlink" title="防護擋住了什麼，沒擋住什麼"></a>防護擋住了什麼，沒擋住什麼</h2><p>寫到這裡有個問題繞不開：Anthropic 的防護在哪裡？</p>
+<h2 id="防護擋住了什麼，沒擋住什麼">防護擋住了什麼，沒擋住什麼</h2>
+<p>寫到這裡有個問題繞不開：Anthropic 的防護在哪裡？</p>
 <p>報告在 GTG-14021 的緩解段落裡寫得相當坦白：</p>
 <blockquote>
 <p>Our existing safeguards did not perform uniformly in these cases. In one case, Claude correctly refused a request but was overcome on further prompting. In another, it complied across many sessions without intervention.</p>
@@ -234,7 +242,8 @@
 <p>把「我們擋失敗了」寫進自己的報告，這件事我認為值得肯定。報告只說了這幾個案例裡表現不一致，沒有交代是哪個環節失效。</p>
 <p>不過其中一類請求的難處是看得出來的。「請扮演服務政府的資深輿情分析師，分析以下報導的政治敏感度」——這句話單獨看，跟一般的內容分析請求沒有結構上的差別。它跟另一類請求不一樣：點名 10 個公民、分配「控制」類別的那種，惡意就寫在字面上，報告裡 Claude 也確實先拒絕了。難辦的是前面那種，惡意在使用脈絡裡。</p>
 <p>還有一個時間差值得注意：這四個行動都是事後被查出來、帳號才被封的，其中幾個已經運作了好幾個月。偵測得到和當下攔得下來，是兩件不同的事。</p>
-<h2 id="最後"><a href="#最後" class="headerlink" title="最後"></a>最後</h2><p>這篇本來只是一次例行的選題掃描。抓 PDF 的時候我其實有點猶豫，154 頁、10MB，為了寫一篇部落格值得嗎。</p>
+<h2 id="最後">最後</h2>
+<p>這篇本來只是一次例行的選題掃描。抓 PDF 的時候我其實有點猶豫，154 頁、10MB，為了寫一篇部落格值得嗎。</p>
 <p>翻到第 90 頁看到長老教會的那一刻，我就不猶豫了。</p>
 <p>被寫進別人的每日工作表這件事，應該有更多台灣人知道。報告是公開的，PDF 誰都能下載，第 90 到 93 頁就是 GTG-14020 的完整記錄，不必透過我轉述。</p>
 <p>如果你也在用 Claude Code 跑自動化流程，讀到第四個案例可能會有種重疊感——同樣的工具、同樣的 custom skills、幾乎同樣的管線設計，只是接的資料庫不一樣。</p>
@@ -332,15 +341,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

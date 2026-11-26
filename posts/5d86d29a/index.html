@@ -119,27 +119,28 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>左側固定寬度、右側自適應，是網頁版型裡最高頻的需求之一。以下整理五種 CSS 做法，左側統一設為 200px，逐一說明寫法與實務取捨。</p>
-<h2 id="1-浮動（Float）方法"><a href="#1-浮動（Float）方法" class="headerlink" title="1. 浮動（Float）方法"></a>1. 浮動（Float）方法</h2><p>傳統做法，現在主要用來維護舊專案，但看懂它對理解 CSS 佈局原理有幫助。</p>
+<h2 id="1-浮動（Float）方法">1. 浮動（Float）方法</h2>
+<p>傳統做法，現在主要用來維護舊專案，但看懂它對理解 CSS 佈局原理有幫助。</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.container</span> &#123;</span><br><span class="line">  <span class="attribute">overflow</span>: hidden; <span class="comment">/* 清除浮動 */</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.left</span> &#123;</span><br><span class="line">  <span class="attribute">float</span>: left;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">200px</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.right</span> &#123;</span><br><span class="line">  <span class="attribute">margin-left</span>: <span class="number">200px</span>; <span class="comment">/* 與左側寬度相同 */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p><strong>相容性</strong>最廣，IE6+ 都能用。缺點是必須清除浮動，父容器用 <code>overflow: hidden</code> 是最省事的方式，但如果內容需要溢出顯示（如下拉選單），就得改用 clearfix。</p>
-<h2 id="2-絕對定位（Absolute-Positioning）方法"><a href="#2-絕對定位（Absolute-Positioning）方法" class="headerlink" title="2. 絕對定位（Absolute Positioning）方法"></a>2. 絕對定位（Absolute Positioning）方法</h2><p>用絕對定位把左側釘死在左上角。</p>
+<h2 id="2-絕對定位（Absolute-Positioning）方法">2. 絕對定位（Absolute Positioning）方法</h2>
+<p>用絕對定位把左側釘死在左上角。</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.container</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: relative;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.left</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: absolute;</span><br><span class="line">  <span class="attribute">left</span>: <span class="number">0</span>;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">200px</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.right</span> &#123;</span><br><span class="line">  <span class="attribute">margin-left</span>: <span class="number">200px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>寫法直觀，但左側脫離文件流，<code>.container</code> 的高度由 <code>.right</code> 決定——若左側內容比右側高，左側會溢出容器底部。適合左右高度可控的情境，否則要另外設 <code>min-height</code>。</p>
-<h2 id="3-Flexbox-方法"><a href="#3-Flexbox-方法" class="headerlink" title="3. Flexbox 方法"></a>3. Flexbox 方法</h2><p>目前最常見的選擇，語意清楚，也容易做垂直對齊。</p>
+<h2 id="3-Flexbox-方法">3. Flexbox 方法</h2>
+<p>目前最常見的選擇，語意清楚，也容易做垂直對齊。</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.container</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: flex;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.left</span> &#123;</span><br><span class="line">  <span class="attribute">flex</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">200px</span>; <span class="comment">/* 不增長、不縮小、基礎寬度200px */</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.right</span> &#123;</span><br><span class="line">  <span class="attribute">flex</span>: <span class="number">1</span>; <span class="comment">/* 佔用所有剩餘空間 */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p><code>flex: 0 0 200px</code> 讓左側固定不縮放，<code>flex: 1</code> 讓右側吃掉剩餘空間。IE10 以下不支援，現代專案基本沒差。</p>
-<h2 id="4-Grid-佈局方法"><a href="#4-Grid-佈局方法" class="headerlink" title="4. Grid 佈局方法"></a>4. Grid 佈局方法</h2><p>Grid 的語法最簡潔，一行 <code>grid-template-columns</code> 搞定兩欄，擴展到三欄、四欄也只是多一個值。</p>
+<h2 id="4-Grid-佈局方法">4. Grid 佈局方法</h2>
+<p>Grid 的語法最簡潔，一行 <code>grid-template-columns</code> 搞定兩欄，擴展到三欄、四欄也只是多一個值。</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.container</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: grid;</span><br><span class="line">  <span class="attribute">grid-template-columns</span>: <span class="number">200px</span> <span class="number">1</span>fr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>相容性與 Flexbox 相近，IE11 部分支援，其餘現代瀏覽器全綠。</p>
-<h2 id="5-表格顯示（Table-Display）方法"><a href="#5-表格顯示（Table-Display）方法" class="headerlink" title="5. 表格顯示（Table Display）方法"></a>5. 表格顯示（Table Display）方法</h2><p>用 CSS 模擬 <code>&lt;table&gt;</code> 的行為，不用真的寫 HTML 表格標籤。</p>
+<h2 id="5-表格顯示（Table-Display）方法">5. 表格顯示（Table Display）方法</h2>
+<p>用 CSS 模擬 <code>&lt;table&gt;</code> 的行為，不用真的寫 HTML 表格標籤。</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.container</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: table;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">100%</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.left</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: table-cell;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">200px</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.right</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: table-cell;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>相容性好（IE8+），垂直對齊靠 <code>vertical-align</code> 就能處理，不需要額外設定。缺點是 <code>display: table</code> 的寬度計算有時不直觀，不適合需要精確控制間距的版型。</p>
-<h2 id="選哪個？"><a href="#選哪個？" class="headerlink" title="選哪個？"></a>選哪個？</h2><p>新專案直接用 <strong>Flexbox</strong> 或 <strong>Grid</strong>——Flexbox 適合單向排列，Grid 語法更簡潔，多欄擴展方便。需要相容 IE8–9 的舊專案用 Float 或 Table Display。絕對定位方案因為高度脫離文件流，通常只在特定元件（如固定側邊攔）才用，不適合作為通用版型方案。</p>
+<h2 id="選哪個？">選哪個？</h2>
+<p>新專案直接用 <strong>Flexbox</strong> 或 <strong>Grid</strong>——Flexbox 適合單向排列，Grid 語法更簡潔，多欄擴展方便。需要相容 IE8–9 的舊專案用 Float 或 Table Display。絕對定位方案因為高度脫離文件流，通常只在特定元件（如固定側邊攔）才用，不適合作為通用版型方案。</p>
 
       </div>
       
@@ -230,15 +231,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

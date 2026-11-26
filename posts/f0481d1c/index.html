@@ -123,24 +123,26 @@
       <div class="prose" id="article">
         <p>這篇舊稿原本把 Pinia 寫成「也支援 Vue 2」，還用 tree-shaking 和一組沒有來源的體積數字來分勝負。到了 2026 年，前一句已經過時，後一句也把幾個不同概念混在一起。</p>
 <p>先講我的選擇：新開的 Vue 3 專案直接用 Pinia。既有 Vuex 專案是否搬遷，則看 Vue 版本、外掛依賴與測試覆蓋率，沒必要為了跟上推薦名單就整批重寫。</p>
-<h2 id="官方定位已經很清楚"><a href="#官方定位已經很清楚" class="headerlink" title="官方定位已經很清楚"></a>官方定位已經很清楚</h2><p><a target="_blank" rel="noopener" href="https://pinia.vuejs.org/introduction.html">Pinia 官方介紹</a>說明，它在 2019 年從 Composition API 的 store 實驗開始，後來吸收 Vuex 5 討論中的想法，最後成為 Vue 官方推薦的狀態管理方案。</p>
+<h2 id="官方定位已經很清楚">官方定位已經很清楚</h2>
+<p><a target="_blank" rel="noopener" href="https://pinia.vuejs.org/introduction.html">Pinia 官方介紹</a>說明，它在 2019 年從 Composition API 的 store 實驗開始，後來吸收 Vuex 5 討論中的想法，最後成為 Vue 官方推薦的狀態管理方案。</p>
 <p>Vuex 沒有因此突然失效。Vuex 3 對應 Vue 2，Vuex 4 對應 Vue 3，既有系統仍可以維護；只是新專案沒有太多理由再背 mutation、巢狀 module 與額外的 TypeScript 包裝。</p>
 <p>還有一個版本陷阱：Pinia 最新主線只支援 Vue 3。需要 Vue 2 的專案得留在 Pinia v2 分支，不能把「Pinia 曾支援 Vue 2」寫成「最新版仍支援」。</p>
-<h2 id="mutation-為什麼消失了？"><a href="#mutation-為什麼消失了？" class="headerlink" title="mutation 為什麼消失了？"></a>mutation 為什麼消失了？</h2><p>Vuex 把同步狀態修改放在 mutation，非同步流程通常放在 action：</p>
+<h2 id="mutation-為什麼消失了？">mutation 為什麼消失了？</h2>
+<p>Vuex 把同步狀態修改放在 mutation，非同步流程通常放在 action：</p>
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createStore &#125; <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> store = <span class="title function_">createStore</span>(&#123;</span><br><span class="line">  <span class="attr">state</span>: <span class="function">() =&gt;</span> (&#123; <span class="attr">count</span>: <span class="number">0</span> &#125;),</span><br><span class="line">  <span class="attr">mutations</span>: &#123;</span><br><span class="line">    <span class="title function_">increment</span>(<span class="params">state</span>) &#123;</span><br><span class="line">      state.<span class="property">count</span>++</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">actions</span>: &#123;</span><br><span class="line">    <span class="title function_">incrementLater</span>(<span class="params">&#123; commit &#125;</span>) &#123;</span><br><span class="line">      <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> <span class="title function_">commit</span>(<span class="string">&#x27;increment&#x27;</span>), <span class="number">300</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
 <p>Pinia 拿掉 mutation。action 可以同步或非同步，也能直接修改 state：</p>
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; defineStore &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useCounterStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;counter&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">state</span>: <span class="function">() =&gt;</span> (&#123; <span class="attr">count</span>: <span class="number">0</span> &#125;),</span><br><span class="line">  <span class="attr">actions</span>: &#123;</span><br><span class="line">    <span class="title function_">increment</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">count</span>++</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title function_">incrementLater</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> <span class="variable language_">this</span>.<span class="title function_">increment</span>(), <span class="number">300</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
 <p>Pinia 也允許元件直接寫 <code>counter.count++</code>。我仍會把帶有業務意義的變更收進 action，因為 <code>checkout()</code>、<code>cancelOrder()</code> 比散在各元件裡的欄位修改容易追查。這是團隊約定，不是 Pinia 強制規則。</p>
-<h2 id="TypeScript-的差距在哪裡？"><a href="#TypeScript-的差距在哪裡？" class="headerlink" title="TypeScript 的差距在哪裡？"></a>TypeScript 的差距在哪裡？</h2><p>Vuex 的 state 型別不難寫，麻煩通常出現在帶字串名稱的 getter、mutation、action，以及模組化後的型別包裝。Pinia 的 store 是一般匯入值，狀態與 action 多半能從 <code>defineStore()</code> 推斷，IDE 自動完成也比較直接。</p>
+<h2 id="TypeScript-的差距在哪裡？">TypeScript 的差距在哪裡？</h2>
+<p>Vuex 的 state 型別不難寫，麻煩通常出現在帶字串名稱的 getter、mutation、action，以及模組化後的型別包裝。Pinia 的 store 是一般匯入值，狀態與 action 多半能從 <code>defineStore()</code> 推斷，IDE 自動完成也比較直接。</p>
 <p>「多半」不等於完全不必標註。Option Store 的 getter 若透過 <code>this</code> 讀取另一個 getter，仍可能需要明確回傳型別；外部 API 資料、可為空的 state 和複雜泛型也要自己定義。Pinia 改善的是推斷路徑，沒有取消 TypeScript 的型別設計工作。</p>
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useUserStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;user&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">state</span>: <span class="function">() =&gt;</span> (&#123;</span><br><span class="line">    <span class="attr">profile</span>: <span class="literal">null</span> <span class="keyword">as</span> <span class="title class_">UserProfile</span> | <span class="literal">null</span>,</span><br><span class="line">  &#125;),</span><br><span class="line">  <span class="attr">getters</span>: &#123;</span><br><span class="line">    <span class="title function_">displayName</span>(): <span class="built_in">string</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">profile</span>?.<span class="property">name</span> ?? <span class="string">&#x27;訪客&#x27;</span></span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<h2 id="模組與程式碼分割別混在一起"><a href="#模組與程式碼分割別混在一起" class="headerlink" title="模組與程式碼分割別混在一起"></a>模組與程式碼分割別混在一起</h2><p>Vuex 以單一 store 搭配巢狀 module；Pinia 則讓每個 store 都有自己的 id，天生就是平坦命名空間。Vuex 的一個 module 通常可以對應成一個 Pinia store。</p>
+<h2 id="模組與程式碼分割別混在一起">模組與程式碼分割別混在一起</h2>
+<p>Vuex 以單一 store 搭配巢狀 module；Pinia 則讓每個 store 都有自己的 id，天生就是平坦命名空間。Vuex 的一個 module 通常可以對應成一個 Pinia store。</p>
 <p>Pinia store 只在呼叫時註冊，不代表所有未使用程式碼一定會自動從 bundle 消失。能否切成獨立 chunk，仍取決於匯入關係與 bundler 的動態匯入邊界。比較準確的說法是：Pinia 的多 store 結構較容易配合路由層級的 code splitting，不該直接保證 tree-shaking 結果。</p>
 <p>兩套工具都能接 Vue DevTools。Pinia 官方頁列出的體積約為 1.5 kB，但實際 bundle 還會受版本、格式與壓縮方式影響；拿一個固定數字宣稱 Vuex 必然大十倍，對選型沒有幫助。</p>
-<h2 id="哪些專案不急著搬？"><a href="#哪些專案不急著搬？" class="headerlink" title="哪些專案不急著搬？"></a>哪些專案不急著搬？</h2><p>以下情況可以先留在 Vuex：</p>
+<h2 id="哪些專案不急著搬？">哪些專案不急著搬？</h2>
+<p>以下情況可以先留在 Vuex：</p>
 <ul>
 <li>Vue 2 系統還要維護，而且 Vuex 3 已經跑得穩定。</li>
 <li>大量依賴 Vuex 專用外掛、動態 module 或既有測試工具。</li>
@@ -160,7 +162,8 @@
 <li>確認 SSR、router guard、外掛和單元測試的初始化時機。</li>
 <li>觀察一個發布週期，再搬下一個 module。</li>
 </ol>
-<h2 id="我的結論"><a href="#我的結論" class="headerlink" title="我的結論"></a>我的結論</h2><p>新 Vue 3 專案選 Pinia，理由是官方定位、較短的 API 路徑與 TypeScript 推斷，不需要再搬出模糊的效能神話。</p>
+<h2 id="我的結論">我的結論</h2>
+<p>新 Vue 3 專案選 Pinia，理由是官方定位、較短的 API 路徑與 TypeScript 推斷，不需要再搬出模糊的效能神話。</p>
 <p>舊專案的答案比較現實。Vuex 若沒有造成維護問題，就讓它繼續工作；要搬時按 module 漸進處理，保留可以回退的範圍。狀態管理的價值是讓資料流容易理解，為了換工具而讓整個系統同時不穩，順序就反了。</p>
 
       </div>
@@ -244,15 +247,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

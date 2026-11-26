@@ -119,29 +119,37 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>WebSocket通訊的握手、傳輸、心跳到關閉，底層到底在做什麼？這篇把整個過程拆開來看。</p>
-<h2 id="WebSocket是什麼"><a href="#WebSocket是什麼" class="headerlink" title="WebSocket是什麼?"></a>WebSocket是什麼?</h2><p>WebSocket是一種網路通訊協定，能在瀏覽器和伺服器之間建立全雙工的通訊管道。傳統HTTP是請求—回應模式，每次都要重新建立連線；WebSocket一旦握手完成，雙方就可以隨時互相傳送訊息，連線一直維持著。</p>
-<h2 id="WebSocket通訊過程"><a href="#WebSocket通訊過程" class="headerlink" title="WebSocket通訊過程"></a>WebSocket通訊過程</h2><h3 id="1-建立連線"><a href="#1-建立連線" class="headerlink" title="1. 建立連線"></a>1. 建立連線</h3><p>客戶端（通常是瀏覽器）先發出一個普通的 HTTP GET 請求，帶上升級用的標頭：</p>
+<h2 id="WebSocket是什麼">WebSocket是什麼?</h2>
+<p>WebSocket是一種網路通訊協定，能在瀏覽器和伺服器之間建立全雙工的通訊管道。傳統HTTP是請求—回應模式，每次都要重新建立連線；WebSocket一旦握手完成，雙方就可以隨時互相傳送訊息，連線一直維持著。</p>
+<h2 id="WebSocket通訊過程">WebSocket通訊過程</h2>
+<h3 id="1-建立連線">1. 建立連線</h3>
+<p>客戶端（通常是瀏覽器）先發出一個普通的 HTTP GET 請求，帶上升級用的標頭：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Upgrade: websocket</span><br><span class="line">Connection: Upgrade</span><br><span class="line">Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==</span><br><span class="line">Sec-WebSocket-Version: 13</span><br></pre></td></tr></table></figure>
-
 <p><code>Sec-WebSocket-Key</code> 是瀏覽器隨機產生的 16 bytes，經 base64 編碼後放進去，作用是讓伺服器證明它確實理解 WebSocket 協定。</p>
-<h3 id="2-伺服器回應"><a href="#2-伺服器回應" class="headerlink" title="2. 伺服器回應"></a>2. 伺服器回應</h3><p>伺服器若支援 WebSocket，回傳 HTTP 101（Switching Protocols）：</p>
+<h3 id="2-伺服器回應">2. 伺服器回應</h3>
+<p>伺服器若支援 WebSocket，回傳 HTTP 101（Switching Protocols）：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Upgrade: websocket</span><br><span class="line">Connection: Upgrade</span><br><span class="line">Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=</span><br></pre></td></tr></table></figure>
-
 <p><code>Sec-WebSocket-Accept</code> 的計算方式：把客戶端的 key 和固定 GUID <code>258EAFA5-E914-47DA-95CA-C5AB0DC85B11</code> 串接後，SHA-1 雜湊，再 base64 編碼。這個設計是為了防止不懂 WebSocket 的 HTTP 代理或快取意外完成握手。</p>
-<h3 id="3-連線建立完成"><a href="#3-連線建立完成" class="headerlink" title="3. 連線建立完成"></a>3. 連線建立完成</h3><p>客戶端驗證 <code>Sec-WebSocket-Accept</code> 正確後，握手完成。從這一刻起，HTTP 協定退場，同一條 TCP 連線就變成 WebSocket 通道。</p>
-<h3 id="4-資料傳輸"><a href="#4-資料傳輸" class="headerlink" title="4. 資料傳輸"></a>4. 資料傳輸</h3><p>WebSocket 用「幀（Frame）」傳資料，幀標頭記錄了類型（文字或二進位）和長度。有一個細節值得注意：<strong>客戶端送往伺服器的幀必須做遮罩（masking）</strong>，遮罩金鑰是每幀隨機產生的 32 bits；伺服器回傳的幀則不需要遮罩。這是 RFC 6455 強制規定的，伺服器收到沒有遮罩的客戶端幀必須直接關閉連線。</p>
+<h3 id="3-連線建立完成">3. 連線建立完成</h3>
+<p>客戶端驗證 <code>Sec-WebSocket-Accept</code> 正確後，握手完成。從這一刻起，HTTP 協定退場，同一條 TCP 連線就變成 WebSocket 通道。</p>
+<h3 id="4-資料傳輸">4. 資料傳輸</h3>
+<p>WebSocket 用「幀（Frame）」傳資料，幀標頭記錄了類型（文字或二進位）和長度。有一個細節值得注意：<strong>客戶端送往伺服器的幀必須做遮罩（masking）</strong>，遮罩金鑰是每幀隨機產生的 32 bits；伺服器回傳的幀則不需要遮罩。這是 RFC 6455 強制規定的，伺服器收到沒有遮罩的客戶端幀必須直接關閉連線。</p>
 <p>雙方都可以在不等待對方回應的情況下傳資料，這就是全雙工的意思。</p>
-<h3 id="5-心跳機制"><a href="#5-心跳機制" class="headerlink" title="5. 心跳機制"></a>5. 心跳機制</h3><p>長時間沒有流量時，NAT 或防火牆可能靜悄悄地把連線砍掉。WebSocket 的 Ping/Pong 控制幀就是用來偵測這件事：任何一方都可以發 Ping，對方收到後必須立刻回 Pong。實務上通常是伺服器定期對所有連線發 Ping，超時沒收到 Pong 就主動關閉，釋放資源。</p>
-<h3 id="6-關閉連線"><a href="#6-關閉連線" class="headerlink" title="6. 關閉連線"></a>6. 關閉連線</h3><p>關閉是有序的四步握手：</p>
+<h3 id="5-心跳機制">5. 心跳機制</h3>
+<p>長時間沒有流量時，NAT 或防火牆可能靜悄悄地把連線砍掉。WebSocket 的 Ping/Pong 控制幀就是用來偵測這件事：任何一方都可以發 Ping，對方收到後必須立刻回 Pong。實務上通常是伺服器定期對所有連線發 Ping，超時沒收到 Pong 就主動關閉，釋放資源。</p>
+<h3 id="6-關閉連線">6. 關閉連線</h3>
+<p>關閉是有序的四步握手：</p>
 <ol>
 <li>任何一方發出帶狀態碼的關閉幀</li>
 <li>另一方收到後，回一個關閉幀</li>
 <li>雙方都確認後，底層 TCP 連線才正式關閉</li>
 </ol>
 <p>這樣可以確保兩端都知道連線結束，避免資料在關閉過程中遺失。</p>
-<h2 id="和-HTTP-輪詢相比"><a href="#和-HTTP-輪詢相比" class="headerlink" title="和 HTTP 輪詢相比"></a>和 HTTP 輪詢相比</h2><p>傳統做法是讓前端每隔幾秒發一次 HTTP 請求問「有新資料嗎？」，每次都要建立連線、帶上完整的 HTTP 標頭、等待回應，就算伺服器沒有新東西也是一樣的成本。</p>
+<h2 id="和-HTTP-輪詢相比">和 HTTP 輪詢相比</h2>
+<p>傳統做法是讓前端每隔幾秒發一次 HTTP 請求問「有新資料嗎？」，每次都要建立連線、帶上完整的 HTTP 標頭、等待回應，就算伺服器沒有新東西也是一樣的成本。</p>
 <p>WebSocket 握手只做一次，之後的每筆訊息只有幾個 bytes 的幀標頭，伺服器也可以主動推資料，不用等客戶端來問。對需要高頻更新的場景，這個差距很明顯。</p>
-<h2 id="適用場景"><a href="#適用場景" class="headerlink" title="適用場景"></a>適用場景</h2><p>WebSocket特別適合需要即時更新的應用，例如：</p>
+<h2 id="適用場景">適用場景</h2>
+<p>WebSocket特別適合需要即時更新的應用，例如：</p>
 <ul>
 <li>線上遊戲</li>
 <li>即時聊天室</li>
@@ -214,15 +222,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

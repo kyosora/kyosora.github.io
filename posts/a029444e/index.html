@@ -119,9 +119,9 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>程式在第 9527 筆資料才出錯時，一路按 F5 重跑只是在浪費時間。條件中斷點能直接停在那筆資料；若問題只發生在遠端主機，還要把符號、驗證與防火牆一起處理。這篇把我認為最值得先學的 Visual Studio 除錯工具排成一條實際順序。</p>
-<h2 id="1-中斷點（Breakpoint）的使用"><a href="#1-中斷點（Breakpoint）的使用" class="headerlink" title="1. 中斷點（Breakpoint）的使用"></a>1. 中斷點（Breakpoint）的使用</h2><p>中斷點是除錯最核心的功能。程式執行到中斷點時會暫停，讓你檢查當前的變數值、呼叫堆疊與程式狀態。</p>
+<h2 id="1-中斷點（Breakpoint）的使用">1. 中斷點（Breakpoint）的使用</h2>
+<p>中斷點是除錯最核心的功能。程式執行到中斷點時會暫停，讓你檢查當前的變數值、呼叫堆疊與程式狀態。</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 一般中斷點：點擊行號左側的灰色區域即可設定</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ProcessData</span>(<span class="params"><span class="built_in">string</span> data</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> cleaned = data.Trim();     <span class="comment">// ← 在這裡設中斷點，程式會在此暫停</span></span><br><span class="line">    <span class="keyword">var</span> parsed = Parse(cleaned);   <span class="comment">// 然後用 F10/F11 逐步往下走</span></span><br><span class="line">    Save(parsed);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 條件中斷點：右鍵中斷點 → 條件（Condition）</span></span><br><span class="line"><span class="comment">// 只在特定情況才中斷，避免迴圈裡每次都停</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ProcessLocation</span>(<span class="params"><span class="built_in">string</span> location</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 設條件：location == &quot;台北市&quot;，只有符合時才停下來</span></span><br><span class="line">    ProcessRegionData(location);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p><strong>條件中斷點特別有用的場合：</strong> 迴圈裡有一萬筆資料，但只有第 9527 筆會出錯。這時設 <code>i == 9527</code> 當條件，比按 F5 按到手抽筋快多了。</p>
 <p>除了條件中斷點，VS 還支援：</p>
 <ul>
@@ -129,8 +129,10 @@
 <li>命中計數（Hit Count）：第 N 次才中斷，處理迴圈問題很方便</li>
 <li>相依中斷點：當另一個中斷點被命中後才啟用</li>
 </ul>
-<p><img loading="lazy" decoding="async" src="20241122043117267.png"><br><img loading="lazy" decoding="async" src="20241122043208535.png"></p>
-<h2 id="2-重要的除錯快捷鍵"><a href="#2-重要的除錯快捷鍵" class="headerlink" title="2. 重要的除錯快捷鍵"></a>2. 重要的除錯快捷鍵</h2><table>
+<p><img loading="lazy" decoding="async" src="20241122043117267.png" alt=""><br>
+<img loading="lazy" decoding="async" src="20241122043208535.png" alt=""></p>
+<h2 id="2-重要的除錯快捷鍵">2. 重要的除錯快捷鍵</h2>
+<table>
 <thead>
 <tr>
 <th>快捷鍵</th>
@@ -138,7 +140,8 @@
 <th>使用場景</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>F5</td>
 <td>開始除錯</td>
 <td>啟動程式並進入除錯模式</td>
@@ -173,35 +176,34 @@
 <td>重新附加至處理程序</td>
 <td>快速重新連到上次附加的程序</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p><code>Ctrl+Alt+P</code> 和 <code>Shift+Alt+P</code> 容易混淆：前者是開對話框讓你選要附加哪個程序（第一次用），後者是直接重新連上次那個（省略選擇步驟）。遠端除錯第一次連線必須用 <code>Ctrl+Alt+P</code>。</p>
-<h2 id="3-進階除錯技巧"><a href="#3-進階除錯技巧" class="headerlink" title="3. 進階除錯技巧"></a>3. 進階除錯技巧</h2><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">DebugDemo</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ProcessUserData</span>(<span class="params">List&lt;User&gt; users</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Debug.WriteLine 輸出到 Output 視窗，不會出現在 Release 版本</span></span><br><span class="line">        System.Diagnostics.Debug.WriteLine(<span class="string">$&quot;開始處理使用者資料：<span class="subst">&#123;users.Count&#125;</span> 筆&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> user <span class="keyword">in</span> users)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">try</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// Debug.Assert：條件不成立時彈出中斷對話框（僅 Debug 模式）</span></span><br><span class="line">                System.Diagnostics.Debug.Assert(user.Age &gt;= <span class="number">0</span>,</span><br><span class="line">                    <span class="string">&quot;使用者年齡不能為負數&quot;</span>);</span><br><span class="line"></span><br><span class="line">                ProcessUserInfo(user);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">catch</span> (Exception ex)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// Debugger.Break()：程式碼裡直接觸發中斷，</span></span><br><span class="line">                <span class="comment">// 等同於在這行設了一個無法取消的中斷點。</span></span><br><span class="line">                <span class="comment">// 一定要先檢查 IsAttached：沒掛除錯器時呼叫它，</span></span><br><span class="line">                <span class="comment">// .NET Framework 4 起會交給 Windows 錯誤報告（WER）處理，</span></span><br><span class="line">                <span class="comment">// 結果看機器上的 WER 設定，程序可能就此終止</span></span><br><span class="line">                <span class="keyword">if</span> (System.Diagnostics.Debugger.IsAttached)</span><br><span class="line">                    System.Diagnostics.Debugger.Break();</span><br><span class="line">                LogError(ex);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 非同步程式的除錯：在 await 前後設中斷點，</span></span><br><span class="line">    <span class="comment">// VS 能正確追蹤跨 Task 的呼叫堆疊</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task <span class="title">ProcessUserDataAsync</span>(<span class="params">List&lt;User&gt; users</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> user <span class="keyword">in</span> users)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">await</span> ValidateUserDataAsync(user);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Task.WhenAll 同時跑多個 Task 時，</span></span><br><span class="line">            <span class="comment">// 開 [偵錯 &gt; 視窗 &gt; 工作] 視窗可看到各 Task 的狀態</span></span><br><span class="line">            <span class="keyword">var</span> tasks = <span class="keyword">new</span>[]</span><br><span class="line">            &#123;</span><br><span class="line">                UpdateUserProfileAsync(user),</span><br><span class="line">                UpdateUserPreferencesAsync(user)</span><br><span class="line">            &#125;;</span><br><span class="line">            <span class="keyword">await</span> Task.WhenAll(tasks);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<h2 id="3-進階除錯技巧">3. 進階除錯技巧</h2>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">DebugDemo</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ProcessUserData</span>(<span class="params">List&lt;User&gt; users</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Debug.WriteLine 輸出到 Output 視窗，不會出現在 Release 版本</span></span><br><span class="line">        System.Diagnostics.Debug.WriteLine(<span class="string">$&quot;開始處理使用者資料：<span class="subst">&#123;users.Count&#125;</span> 筆&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> user <span class="keyword">in</span> users)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">try</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// Debug.Assert：條件不成立時彈出中斷對話框（僅 Debug 模式）</span></span><br><span class="line">                System.Diagnostics.Debug.Assert(user.Age &gt;= <span class="number">0</span>,</span><br><span class="line">                    <span class="string">&quot;使用者年齡不能為負數&quot;</span>);</span><br><span class="line"></span><br><span class="line">                ProcessUserInfo(user);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">catch</span> (Exception ex)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// Debugger.Break()：程式碼裡直接觸發中斷，</span></span><br><span class="line">                <span class="comment">// 等同於在這行設了一個無法取消的中斷點。</span></span><br><span class="line">                <span class="comment">// 一定要先檢查 IsAttached：沒掛除錯器時呼叫它，</span></span><br><span class="line">                <span class="comment">// .NET Framework 4 起會交給 Windows 錯誤報告（WER）處理，</span></span><br><span class="line">                <span class="comment">// 結果看機器上的 WER 設定，程序可能就此終止</span></span><br><span class="line">                <span class="keyword">if</span> (System.Diagnostics.Debugger.IsAttached)</span><br><span class="line">                    System.Diagnostics.Debugger.Break();</span><br><span class="line">                LogError(ex);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 非同步程式的除錯：在 await 前後設中斷點，</span></span><br><span class="line">    <span class="comment">// VS 能正確追蹤跨 Task 的呼叫堆疊</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task <span class="title">ProcessUserDataAsync</span>(<span class="params">List&lt;User&gt; users</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> user <span class="keyword">in</span> users)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">await</span> ValidateUserDataAsync(user);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Task.WhenAll 同時跑多個 Task 時，</span></span><br><span class="line">            <span class="comment">// 開 [偵錯 &gt; 視窗 &gt; 工作] 視窗可看到各 Task 的狀態</span></span><br><span class="line">            <span class="keyword">var</span> tasks = <span class="keyword">new</span>[]</span><br><span class="line">            &#123;</span><br><span class="line">                UpdateUserProfileAsync(user),</span><br><span class="line">                UpdateUserPreferencesAsync(user)</span><br><span class="line">            &#125;;</span><br><span class="line">            <span class="keyword">await</span> Task.WhenAll(tasks);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>監看視窗（Watch Window）</strong> 是另一個很實用但常被忽略的功能：暫停時把滑鼠移到變數上可以快速看值，但如果要持續追蹤某個運算式（例如 <code>users.Count(u =&gt; u.IsActive)</code>），可以把它拖到監看視窗，每次中斷都會自動更新。</p>
-<h2 id="4-VS-內建效能分析工具"><a href="#4-VS-內建效能分析工具" class="headerlink" title="4. VS 內建效能分析工具"></a>4. VS 內建效能分析工具</h2><p>除了手動 Stopwatch 計時，VS 有內建的 Diagnostic Tools 視窗（除錯中自動開啟，或從「偵錯 &gt; 視窗 &gt; 診斷工具」叫出），可以看到：</p>
+<h2 id="4-VS-內建效能分析工具">4. VS 內建效能分析工具</h2>
+<p>除了手動 Stopwatch 計時，VS 有內建的 Diagnostic Tools 視窗（除錯中自動開啟，或從「偵錯 &gt; 視窗 &gt; 診斷工具」叫出），可以看到：</p>
 <ul>
 <li>CPU 使用率：時間軸上的 CPU 曲線，高峰區段點下去可看到哪個方法最耗時</li>
 <li>記憶體用量：追蹤 managed heap 的增長，拍下快照後比較兩個時間點的物件數量，是找記憶體洩漏的起點</li>
 </ul>
 <p>需要更深入的效能分析時，用「偵錯 &gt; 效能分析工具」（Alt+F2）開啟完整的 Profiler，選 CPU Usage 後會產生火焰圖，可以直接看到哪條呼叫路徑佔用最多時間。</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 手動計時適合用在快速比較兩個實作的相對速度</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">BenchmarkTwoApproaches</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> sw = <span class="keyword">new</span> Stopwatch();</span><br><span class="line"></span><br><span class="line">    sw.Restart();</span><br><span class="line">    ApproachA();</span><br><span class="line">    <span class="keyword">var</span> timeA = sw.ElapsedMilliseconds;</span><br><span class="line"></span><br><span class="line">    sw.Restart();</span><br><span class="line">    ApproachB();</span><br><span class="line">    <span class="keyword">var</span> timeB = sw.ElapsedMilliseconds;</span><br><span class="line"></span><br><span class="line">    Debug.WriteLine(<span class="string">$&quot;A: <span class="subst">&#123;timeA&#125;</span>ms, B: <span class="subst">&#123;timeB&#125;</span>ms&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 追蹤記憶體洩漏的基本模式：</span></span><br><span class="line"><span class="comment">// 在 Diagnostic Tools 裡拍快照 → 執行一輪操作 → 再拍快照 → 比較 delta</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ProcessImages</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">var</span> image = <span class="keyword">new</span> Bitmap(<span class="string">&quot;large_image.jpg&quot;</span>);</span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">var</span> graphics = Graphics.FromImage(image);</span><br><span class="line">    ProcessImageData(image, graphics);</span><br><span class="line">    <span class="comment">// using 確保 Dispose 被呼叫，在記憶體快照裡不會看到這兩個物件殘留</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="5-遠端除錯完整教學"><a href="#5-遠端除錯完整教學" class="headerlink" title="5. 遠端除錯完整教學"></a>5. 遠端除錯完整教學</h2><p>遠端除錯讓你在本機 VS 對遠端主機（測試機、正式機）上執行的程式設中斷點。</p>
-<h4 id="5-1-系統架構圖"><a href="#5-1-系統架構圖" class="headerlink" title="5.1 系統架構圖"></a>5.1 系統架構圖</h4><div>
+<h2 id="5-遠端除錯完整教學">5. 遠端除錯完整教學</h2>
+<p>遠端除錯讓你在本機 VS 對遠端主機（測試機、正式機）上執行的程式設中斷點。</p>
+<h4 id="5-1-系統架構圖">5.1 系統架構圖</h4>
+<div>
 <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
   <rect width="800" height="400" fill="#f5f5f5"/>
-  
   <rect x="50" y="100" width="200" height="200" rx="10" fill="#4CAF50" opacity="0.8"/>
   <text x="150" y="150" text-anchor="middle" fill="white">開發機</text>
   <text x="150" y="180" text-anchor="middle" fill="white" font-size="14">Visual Studio</text>
-  
   <rect x="550" y="100" width="200" height="200" rx="10" fill="#2196F3" opacity="0.8"/>
   <text x="650" y="150" text-anchor="middle" fill="white">遠端主機</text>
   <text x="650" y="180" text-anchor="middle" fill="white" font-size="14">Remote Tools</text>
-  
   <path d="M250 200 L550 200" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
   <text x="400" y="180" text-anchor="middle" fill="#666">TCP Port 4026</text>
-  
   <defs>
     <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
@@ -209,47 +211,60 @@
   </defs>
 </svg>
 </div>
-
-<h4 id="5-2-遠端主機設定步驟"><a href="#5-2-遠端主機設定步驟" class="headerlink" title="5.2 遠端主機設定步驟"></a>5.2 遠端主機設定步驟</h4><ol>
-<li><p>下載並安裝 Remote Tools</p>
+<h4 id="5-2-遠端主機設定步驟">5.2 遠端主機設定步驟</h4>
+<ol>
+<li>
+<p>下載並安裝 Remote Tools</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">前往 https://visualstudio.microsoft.com/downloads/</span><br><span class="line">頁面往下找「Remote tools for Visual Studio 2022」，</span><br><span class="line">選擇對應架構（x64 最常用）下載後安裝。</span><br></pre></td></tr></table></figure>
-
 <p>Remote Tools 2022 和 2026 可以跟兩個版本的 Visual Studio 交叉搭配，預設連接埠也都是 4026。</p>
 </li>
-<li><p>以系統管理員身分執行 msvsmon.exe</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">獨立安裝 Remote Tools 2022 的預設路徑：</span><br><span class="line">C:\Program Files\Microsoft Visual Studio 17.0\Common7\IDE\Remote Debugger\x64\msvsmon.exe</span><br><span class="line">（注意是「Microsoft Visual Studio 17.0」一個資料夾，中間是空格）</span><br><span class="line"></span><br><span class="line">遠端主機若本來就裝了 VS 2022，msvsmon 在 VS 安裝目錄底下：</span><br><span class="line">C:\Program Files\Microsoft Visual Studio\2022\&lt;版本&gt;\Common7\IDE\Remote Debugger\x64\msvsmon.exe</span><br></pre></td></tr></table></figure></li>
-<li><p>開放防火牆</p>
+<li>
+<p>以系統管理員身分執行 msvsmon.exe</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">獨立安裝 Remote Tools 2022 的預設路徑：</span><br><span class="line">C:\Program Files\Microsoft Visual Studio 17.0\Common7\IDE\Remote Debugger\x64\msvsmon.exe</span><br><span class="line">（注意是「Microsoft Visual Studio 17.0」一個資料夾，中間是空格）</span><br><span class="line"></span><br><span class="line">遠端主機若本來就裝了 VS 2022，msvsmon 在 VS 安裝目錄底下：</span><br><span class="line">C:\Program Files\Microsoft Visual Studio\2022\&lt;版本&gt;\Common7\IDE\Remote Debugger\x64\msvsmon.exe</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>開放防火牆</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># VS 2022／2026 Remote Debugger 的主連接埠通常是 4026（TCP）</span></span><br><span class="line"><span class="comment"># 實際值以 msvsmon 視窗或 Remote Debugger Configuration Wizard 顯示為準</span></span><br><span class="line"><span class="comment"># 3702（UDP）是 WS-Discovery，用於在同網段自動探索 Remote Debugger，</span></span><br><span class="line"><span class="comment"># 若直接用 IP 連線可以不開這個 port</span></span><br><span class="line"><span class="built_in">New-NetFirewallRule</span> <span class="literal">-DisplayName</span> <span class="string">&quot;VS Remote Debugger&quot;</span> <span class="literal">-Direction</span> Inbound <span class="literal">-LocalPort</span> <span class="number">4026</span> <span class="literal">-Protocol</span> TCP <span class="literal">-Action</span> Allow</span><br></pre></td></tr></table></figure>
-
 <p>32 位元除錯的額外 port 會受 Remote Tools 版本與「以服務執行」設定影響，不要看文章就固定多開 4025。先看官方 <a target="_blank" rel="noopener" href="https://learn.microsoft.com/visualstudio/debugger/remote-debugger-port-assignments">Remote Debugger Port Assignments</a>，再只放行實際需要的來源 IP 與 port。</p>
 </li>
 </ol>
-<h4 id="5-3-開發機連線步驟"><a href="#5-3-開發機連線步驟" class="headerlink" title="5.3 開發機連線步驟"></a>5.3 開發機連線步驟</h4><ol>
-<li><p>開啟 Visual Studio，確認本機原始碼與遠端版本一致（版本不同中斷點會打不中）</p>
+<h4 id="5-3-開發機連線步驟">5.3 開發機連線步驟</h4>
+<ol>
+<li>
+<p>開啟 Visual Studio，確認本機原始碼與遠端版本一致（版本不同中斷點會打不中）</p>
 </li>
-<li><p>偵錯 &gt; 附加至處理程序（或 <code>Ctrl+Alt+P</code>）</p>
+<li>
+<p>偵錯 &gt; 附加至處理程序（或 <code>Ctrl+Alt+P</code>）</p>
 <blockquote>
 <p>注意：這裡要用 <code>Ctrl+Alt+P</code>（開對話框），不是 <code>Shift+Alt+P</code>（重新附加上次那個）。</p>
 </blockquote>
 </li>
-<li><p>在「連接類型」優先選遠端（Windows 驗證）。無驗證模式只適合隔離的受信任測試網路，不要暴露到公司共用網段或網際網路</p>
+<li>
+<p>在「連接類型」優先選遠端（Windows 驗證）。無驗證模式只適合隔離的受信任測試網路，不要暴露到公司共用網段或網際網路</p>
 </li>
-<li><p>在「連接目標」輸入 <code>IP位址:4026</code> 或 <code>機器名稱:4026</code>，按 Enter</p>
+<li>
+<p>在「連接目標」輸入 <code>IP位址:4026</code> 或 <code>機器名稱:4026</code>，按 Enter</p>
 </li>
-<li><p>點「尋找」等清單出現後，選擇要除錯的處理程序</p>
+<li>
+<p>點「尋找」等清單出現後，選擇要除錯的處理程序</p>
 </li>
-<li><p>點「附加」開始除錯</p>
+<li>
+<p>點「附加」開始除錯</p>
 </li>
 </ol>
-<p><img loading="lazy" decoding="async" src="20241122045303233.png"></p>
-<h4 id="5-4-連線前注意事項"><a href="#5-4-連線前注意事項" class="headerlink" title="5.4 連線前注意事項"></a>5.4 連線前注意事項</h4><ul>
+<p><img loading="lazy" decoding="async" src="20241122045303233.png" alt=""></p>
+<h4 id="5-4-連線前注意事項">5.4 連線前注意事項</h4>
+<ul>
 <li>遠端執行的 DLL／EXE 必須和你載入的原始碼、PDB 來自同一次 Build；不是只看版本字串相同</li>
 <li>Windows 遠端除錯預設從 Visual Studio 開發機讀取 PDB，不要求把完整符號檔放在遠端主機。用「模組」視窗確認實際載入路徑與是否精確匹配</li>
 <li>建議先在測試環境驗證流程，正式機上的遠端除錯會讓程式效能下降</li>
 <li>正式機遠端除錯請務必走 VPN 或專用網路，避免 msvsmon 暴露在外網</li>
 </ul>
-<h2 id="6-常見問題（FAQ）"><a href="#6-常見問題（FAQ）" class="headerlink" title="6. 常見問題（FAQ）"></a>6. 常見問題（FAQ）</h2><h4 id="遠端除錯問題"><a href="#遠端除錯問題" class="headerlink" title="遠端除錯問題"></a>遠端除錯問題</h4><ol>
-<li><p>無法連線</p>
+<h2 id="6-常見問題（FAQ）">6. 常見問題（FAQ）</h2>
+<h4 id="遠端除錯問題">遠端除錯問題</h4>
+<ol>
+<li>
+<p>無法連線</p>
 <ul>
 <li>防火牆是否放行 4026 TCP</li>
 <li>Remote Tools 是否在 Visual Studio 官方支援的版本組合內；不要只靠「年分一樣」猜相容性</li>
@@ -257,41 +272,48 @@
 <li>若用機器名稱無法連，改用 IP 位址試試</li>
 </ul>
 </li>
-<li><p>找不到處理程序</p>
+<li>
+<p>找不到處理程序</p>
 <ul>
 <li>確認程式正在執行</li>
 <li>若程式是以 SYSTEM 帳號跑的服務，需要勾選「顯示所有使用者的處理程序」</li>
 </ul>
 </li>
-<li><p>中斷點命中但顯示「沒有符號」</p>
+<li>
+<p>中斷點命中但顯示「沒有符號」</p>
 <ul>
 <li>確認 PDB 檔案存在且與 DLL 的 Build ID 相符</li>
 <li>在「偵錯 &gt; 選項 &gt; 符號」加上 PDB 所在路徑</li>
 </ul>
 </li>
 </ol>
-<h4 id="一般除錯問題"><a href="#一般除錯問題" class="headerlink" title="一般除錯問題"></a>一般除錯問題</h4><ol>
-<li><p>中斷點不會停下來</p>
+<h4 id="一般除錯問題">一般除錯問題</h4>
+<ol>
+<li>
+<p>中斷點不會停下來</p>
 <ul>
 <li>確認執行的是 Debug 組態，不是 Release</li>
 <li>中斷點圖示空心？表示符號未載入，重新建置後再試</li>
 </ul>
 </li>
-<li><p>Production 環境出問題無法直接除錯</p>
+<li>
+<p>Production 環境出問題無法直接除錯</p>
 <ul>
 <li>先靠結構化日誌（Serilog、NLog）縮小範圍</li>
 <li>Application Insights 或類似的 APM 工具可在不中斷程序的情況下取得例外堆疊，但仍有取樣、網路與執行效能成本</li>
 <li>確認有需要才考慮遠端除錯，對效能影響不小</li>
 </ul>
 </li>
-<li><p>非同步程式很難追蹤</p>
+<li>
+<p>非同步程式很難追蹤</p>
 <ul>
 <li>善用「偵錯 &gt; 視窗 &gt; 工作」視窗看各 Task 狀態</li>
 <li>先看實際例外型別與 call stack；只有被 <code>AggregateException</code>、reflection 等包裝時，<code>InnerException</code> 才是下一層線索</li>
 </ul>
 </li>
 </ol>
-<h2 id="7-實用除錯建議"><a href="#7-實用除錯建議" class="headerlink" title="7. 實用除錯建議"></a>7. 實用除錯建議</h2><p>養成這幾個習慣，debug 時會快很多：</p>
+<h2 id="7-實用除錯建議">7. 實用除錯建議</h2>
+<p>養成這幾個習慣，debug 時會快很多：</p>
 <ul>
 <li>條件中斷點比「F5 無限重試」省力，設好條件直接跳到問題點</li>
 <li><code>Debug.WriteLine</code> 輸出到 Output 視窗，不會干擾 UI，比 <code>Console.WriteLine</code> 更適合除錯用途</li>
@@ -299,9 +321,9 @@
 <li>變數命名清楚，監看視窗裡的值才有意義；<code>temp1</code>、<code>temp2</code> 看到會想哭</li>
 <li>Diagnostic Tools 的 CPU/記憶體時間軸，養成除錯時瞄一眼的習慣，有時問題在你還沒意識到前就已經在圖上很明顯</li>
 </ul>
-<h2 id="8-例外處理與日誌的搭配"><a href="#8-例外處理與日誌的搭配" class="headerlink" title="8. 例外處理與日誌的搭配"></a>8. 例外處理與日誌的搭配</h2><p>遠端環境不能隨時附加除錯器，日誌品質決定了排查速度。</p>
+<h2 id="8-例外處理與日誌的搭配">8. 例外處理與日誌的搭配</h2>
+<p>遠端環境不能隨時附加除錯器，日誌品質決定了排查速度。</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task&lt;User&gt; <span class="title">GetUserAsync</span>(<span class="params"><span class="built_in">int</span> id</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        _logger.LogInformation(<span class="string">&quot;查詢使用者 &#123;UserId&#125;&quot;</span>, id);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> user = <span class="keyword">await</span> _userRepository.GetByIdAsync(id);</span><br><span class="line">        <span class="keyword">if</span> (user == <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            _logger.LogWarning(<span class="string">&quot;找不到使用者 &#123;UserId&#125;&quot;</span>, id);</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> UserNotFoundException(id);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> user;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (Exception ex) <span class="keyword">when</span> (ex <span class="keyword">is</span> <span class="keyword">not</span> UserNotFoundException)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 記錄「沒預期到的」例外，UserNotFoundException 是預期內的業務邏輯</span></span><br><span class="line">        _logger.LogError(ex, <span class="string">&quot;查詢使用者 &#123;UserId&#125; 時發生非預期例外&quot;</span>, id);</span><br><span class="line">        <span class="keyword">throw</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>幾個讓日誌真正有用的原則：</p>
 <ul>
 <li>用結構化日誌（<code>&#123;UserId&#125;</code> 佔位符而非字串插值），才能在 Seq 或 Kibana 裡過濾</li>
@@ -309,7 +331,8 @@
 <li>每層只 log 一次，別在 repository、service、controller 三層都 log 同一個例外，堆疊裡會出現三份重複</li>
 </ul>
 <p>我的優先順序是：條件中斷點先縮小輸入，例外設定抓第一個拋出點，再看 call stack 和變數；遠端附加放在最後。很多問題靠前兩步已經能定位，沒必要一開始就把正式機接上除錯器。</p>
-<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
+<h2 id="參考資源">參考資源</h2>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-tw/visualstudio/debugger/">Visual Studio 偵錯檔案</a></li>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-tw/visualstudio/debugger/debugger-tips-and-tricks">Visual Studio 除錯技巧</a></li>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-tw/dotnet/api/system.diagnostics.debugger.break">Debugger.Break 方法（沒掛除錯器時的行為）</a></li>
@@ -369,15 +392,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -124,10 +124,12 @@
       <div class="prose" id="article">
         <p>Claude Code 最近多了一個功能叫動態工作流（dynamic workflows）：讓主代理在執行時，當場寫一支 JavaScript，生成並協調一群子代理——每個子代理有自己獨立的 context window 和一個聚焦的小目標。</p>
 <p>我前幾天用它做了件很實際的雜活：評估四個候選部落格選題，看哪個跟我既有文章庫重複、哪個值得寫。這篇把那支 script 整個攤開，講三件事——怎麼寫、<code>parallel</code> 和 <code>pipeline</code> 怎麼選、跑一次燒多少 token。</p>
-<h2 id="為什麼不是「開更多分頁」那麼簡單"><a href="#為什麼不是「開更多分頁」那麼簡單" class="headerlink" title="為什麼不是「開更多分頁」那麼簡單"></a>為什麼不是「開更多分頁」那麼簡單</h2><p>你可能會想，並行做事，開幾個對話視窗不就好了？</p>
+<h2 id="為什麼不是「開更多分頁」那麼簡單">為什麼不是「開更多分頁」那麼簡單</h2>
+<p>你可能會想，並行做事，開幾個對話視窗不就好了？</p>
 <p>差別在 context。Claude Code 過去是「一個對話、一條 context」，所有東西擠在同一個上下文視窗。長任務這個模式有三個老毛病，官方發布時直接點名：智慧惰性（做到一半宣布完工）、自我偏好偏差（驗證自己的產出時護短）、目標漂移（對話太長、尤其壓縮過後忘了最初目標）。</p>
 <p>動態工作流的解法不是把單一 context 養得更肥，而是把活切開：每個子代理拿一塊乾淨的上下文，做一件聚焦的事，彼此不互相汙染。並行只是順帶的好處，真正的價值是這個隔離。</p>
-<h2 id="核心就五個函數"><a href="#核心就五個函數" class="headerlink" title="核心就五個函數"></a>核心就五個函數</h2><p>整個 API 你先記五個就能動：</p>
+<h2 id="核心就五個函數">核心就五個函數</h2>
+<p>整個 API 你先記五個就能動：</p>
 <ul>
 <li><code>agent(prompt, opts)</code>：派一個子代理，回傳它的最終輸出。<code>opts</code> 裡給 <code>schema</code>，它就被強制用結構化格式回傳。</li>
 <li><code>parallel(thunks)</code>：一批任務同時跑，<strong>全部跑完才往下走</strong>。這是一道柵欄（barrier）。</li>
@@ -136,31 +138,30 @@
 <li><code>schema</code>：不是函數，是你丟給 <code>agent</code> 的一個 JSON Schema，決定它回什麼結構。</li>
 </ul>
 <p>兩個一定要知道的限制，都寫在官方文件裡：<code>meta</code> 區塊必須是純字面值（不能放變數或函數呼叫）；腳本裡不能用 <code>Date.now()</code> 和 <code>Math.random()</code>（它們會破壞工作流的可重播性，直接呼叫會丟錯）。</p>
-<h2 id="把-script-攤開"><a href="#把-script-攤開" class="headerlink" title="把 script 攤開"></a>把 script 攤開</h2><p>先是宣告區。<code>meta</code> 在最前面，名字、描述、階段，全是死的字面值。<code>CANDIDATES</code> 是我在 <code>meta</code> 下方宣告的靜態陣列，每筆長這樣：<code>&#123; topic: &#39;主題名&#39;, keywords: &#39;查重用的關鍵字&#39; &#125;</code>，四個選題四筆，沒有特別的魔法。</p>
+<h2 id="把-script-攤開">把 script 攤開</h2>
+<p>先是宣告區。<code>meta</code> 在最前面，名字、描述、階段，全是死的字面值。<code>CANDIDATES</code> 是我在 <code>meta</code> 下方宣告的靜態陣列，每筆長這樣：<code>&#123; topic: '主題名', keywords: '查重用的關鍵字' &#125;</code>，四個選題四筆，沒有特別的魔法。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> meta = &#123;</span><br><span class="line">  <span class="attr">name</span>: <span class="string">&#x27;ai-topic-gap-scan&#x27;</span>,</span><br><span class="line">  <span class="attr">description</span>: <span class="string">&#x27;評估 4 個候選 AI 開發工具選題對文章庫的缺口與讀者價值&#x27;</span>,</span><br><span class="line">  <span class="attr">phases</span>: [</span><br><span class="line">    &#123; <span class="attr">title</span>: <span class="string">&#x27;Evaluate&#x27;</span>, <span class="attr">detail</span>: <span class="string">&#x27;每個候選主題派一個 agent：grep 文章庫查重複 + 評估讀者價值&#x27;</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">title</span>: <span class="string">&#x27;Synthesize&#x27;</span>, <span class="attr">detail</span>: <span class="string">&#x27;綜合 4 份評估，排序出最該寫的選題缺口&#x27;</span> &#125;,</span><br><span class="line">  ],</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>接著定 schema。這是整支 script 我覺得最關鍵的一塊——它決定子代理回給我的是一個能直接用的物件，而不是一段要我自己 parse 的中文：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="variable constant_">EVAL_SCHEMA</span> = &#123;</span><br><span class="line">  <span class="attr">type</span>: <span class="string">&#x27;object&#x27;</span>,</span><br><span class="line">  <span class="attr">properties</span>: &#123;</span><br><span class="line">    <span class="attr">topic</span>: &#123; <span class="attr">type</span>: <span class="string">&#x27;string&#x27;</span> &#125;,</span><br><span class="line">    <span class="attr">coveredInVault</span>: &#123; <span class="attr">type</span>: <span class="string">&#x27;boolean&#x27;</span>, <span class="attr">description</span>: <span class="string">&#x27;文章庫是否已有實質重複的文章&#x27;</span> &#125;,</span><br><span class="line">    <span class="attr">closestExistingPost</span>: &#123; <span class="attr">type</span>: <span class="string">&#x27;string&#x27;</span>, <span class="attr">description</span>: <span class="string">&#x27;庫裡最接近的既有文章檔名，沒有填 &quot;無&quot;&#x27;</span> &#125;,</span><br><span class="line">    <span class="attr">valueForReaders</span>: &#123; <span class="attr">type</span>: <span class="string">&#x27;integer&#x27;</span>, <span class="attr">minimum</span>: <span class="number">1</span>, <span class="attr">maximum</span>: <span class="number">10</span> &#125;,</span><br><span class="line">    <span class="attr">angle</span>: &#123; <span class="attr">type</span>: <span class="string">&#x27;string&#x27;</span>, <span class="attr">description</span>: <span class="string">&#x27;若要寫，最佳切入角度（一句話）&#x27;</span> &#125;,</span><br><span class="line">    <span class="attr">reason</span>: &#123; <span class="attr">type</span>: <span class="string">&#x27;string&#x27;</span>, <span class="attr">description</span>: <span class="string">&#x27;評分理由，2-3 句&#x27;</span> &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">required</span>: [<span class="string">&#x27;topic&#x27;</span>, <span class="string">&#x27;coveredInVault&#x27;</span>, <span class="string">&#x27;closestExistingPost&#x27;</span>, <span class="string">&#x27;valueForReaders&#x27;</span>, <span class="string">&#x27;angle&#x27;</span>, <span class="string">&#x27;reason&#x27;</span>],</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>然後是主體——散出去四個子代理並行評估：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">phase</span>(<span class="string">&#x27;Evaluate&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> evals = <span class="keyword">await</span> <span class="title function_">parallel</span>(</span><br><span class="line">  <span class="variable constant_">CANDIDATES</span>.<span class="title function_">map</span>(<span class="function">(<span class="params">c</span>) =&gt;</span> <span class="function">() =&gt;</span></span><br><span class="line">    <span class="title function_">agent</span>(</span><br><span class="line">      <span class="string">`你是技術部落格的選題編輯。評估「<span class="subst">$&#123;c.topic&#125;</span>」值不值得寫成新文章。\n`</span> +</span><br><span class="line">        <span class="string">`步驟：用 Glob 列出文章庫檔名、用 Grep 查關鍵字「<span class="subst">$&#123;c.keywords&#125;</span>」、`</span> +</span><br><span class="line">        <span class="string">`判斷是否實質重複、給 1-10 的讀者價值分、給一句切入角度。`</span>,</span><br><span class="line">      &#123; <span class="attr">label</span>: <span class="string">`eval:<span class="subst">$&#123;c.topic.slice(<span class="number">0</span>, <span class="number">16</span>)&#125;</span>`</span>, <span class="attr">phase</span>: <span class="string">&#x27;Evaluate&#x27;</span>, <span class="attr">schema</span>: <span class="variable constant_">EVAL_SCHEMA</span> &#125;</span><br><span class="line">    )</span><br><span class="line">  )</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> valid = evals.<span class="title function_">filter</span>(<span class="title class_">Boolean</span>)</span><br></pre></td></tr></table></figure>
-
 <p>注意 <code>CANDIDATES.map(... () =&gt; agent(...))</code>——<code>parallel</code> 收的是一陣列「拿來就能呼叫的函數」（thunk），不是已經啟動的 Promise。這個細節錯了會變成全部序列跑，並行就沒了。</p>
 <p>最後收齊四份評估，丟給一個綜合代理排序：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">phase</span>(<span class="string">&#x27;Synthesize&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> synthesis = <span class="keyword">await</span> <span class="title function_">agent</span>(</span><br><span class="line">  <span class="string">`以下是 4 份評估 JSON：\n<span class="subst">$&#123;<span class="built_in">JSON</span>.stringify(valid, <span class="literal">null</span>, <span class="number">2</span>)&#125;</span>\n`</span> +</span><br><span class="line">    <span class="string">`請從「最該寫」到「最不該寫」排序，並指出文章庫最大的缺口。`</span>,</span><br><span class="line">  &#123; <span class="attr">label</span>: <span class="string">&#x27;synthesize&#x27;</span>, <span class="attr">phase</span>: <span class="string">&#x27;Synthesize&#x27;</span>, <span class="attr">schema</span>: <span class="variable constant_">SYNTH_SCHEMA</span> &#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> &#123; <span class="attr">evals</span>: valid, synthesis &#125;</span><br></pre></td></tr></table></figure>
-
 <p><code>SYNTH_SCHEMA</code> 我就不整段貼了，重點是它要求一個 <code>ranking</code> 陣列（每筆含 <code>topic</code> 和 <code>writeNow</code> 布林）加一個 <code>vaultGap</code> 字串——同樣靠 schema 把「主編的判斷」框成結構化資料。</p>
-<h2 id="設計決策一：parallel-還是-pipeline"><a href="#設計決策一：parallel-還是-pipeline" class="headerlink" title="設計決策一：parallel 還是 pipeline"></a>設計決策一：parallel 還是 pipeline</h2><p>這是寫 workflow 最先要決定的事，我一開始也猶豫。</p>
+<h2 id="設計決策一：parallel-還是-pipeline">設計決策一：parallel 還是 pipeline</h2>
+<p>這是寫 workflow 最先要決定的事，我一開始也猶豫。</p>
 <p>官方文件的預設建議是 <code>pipeline</code>，因為它不設柵欄、整體更快——項目 A 走完第一階段就能直接進第二階段，不用等 B。大多數多階段的活都該用它。</p>
 <p>但我這個案子用了 <code>parallel</code>，因為綜合那一步<strong>必須等四份評估全部到齊</strong>才能排序。少一份，排出來的東西就是殘缺的。這正是少數真的需要 barrier 的場景：下游要的是「全部結果的總和」，而不是「單一項目流過管線」。</p>
 <p>一句話判準：如果你的下一步只需要單一項目的前一步結果，用 <code>pipeline</code>；如果它需要前一階段<strong>所有</strong>項目的結果，才用 <code>parallel</code> 這道柵欄。</p>
-<h2 id="設計決策二：schema-把散文變物件"><a href="#設計決策二：schema-把散文變物件" class="headerlink" title="設計決策二：schema 把散文變物件"></a>設計決策二：schema 把散文變物件</h2><p>沒有 schema，子代理回你一段話，你還得自己從裡面挖出「價值幾分、重不重複」。給了 schema，驗證在工具呼叫那一層就做掉——格式不對它自己重試，回到你手上已經是乾淨的物件，可以直接 <code>valid.filter(e =&gt; e.valueForReaders &gt;= 7)</code> 這樣用。</p>
+<h2 id="設計決策二：schema-把散文變物件">設計決策二：schema 把散文變物件</h2>
+<p>沒有 schema，子代理回你一段話，你還得自己從裡面挖出「價值幾分、重不重複」。給了 schema，驗證在工具呼叫那一層就做掉——格式不對它自己重試，回到你手上已經是乾淨的物件，可以直接 <code>valid.filter(e =&gt; e.valueForReaders &gt;= 7)</code> 這樣用。</p>
 <p>舉個實際的——這是其中一個子代理回來的東西，原封不動（<code>reason</code> 我截短了）：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;topic&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Claude Code Dynamic Workflows（動態工作流）&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;coveredInVault&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;closestExistingPost&quot;</span><span class="punctuation">:</span> <span class="string">&quot;多個AI-agent並行改程式碼互相覆蓋的隔離原則.md&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;valueForReaders&quot;</span><span class="punctuation">:</span> <span class="number">7</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;angle&quot;</span><span class="punctuation">:</span> <span class="string">&quot;用『靜態 plan-then-execute vs 動態 runtime 即興派發』的對照切入&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;reason&quot;</span><span class="punctuation">:</span> <span class="string">&quot;文章庫在多代理這塊已經很厚，但沒有一篇正面講 runtime 即興編排，最接近那篇談的是並行派發的失敗模式，屬於沾到邊而非實質重複。&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p>你看到的不是一段「我覺得這題還行因為⋯⋯」的散文，而是欄位齊全、型別正確的物件——<code>valueForReaders</code> 真的是個 7 不是字串，<code>coveredInVault</code> 真的是個布林。把判斷框成 schema，下游的 <code>filter</code>、<code>sort</code> 才接得住。</p>
 <p>那個 <code>evals.filter(Boolean)</code> 也不是裝飾。依 runtime 規格，子代理中途被略過、或它自己出錯時會回傳 <code>null</code>，過濾掉才不會把 <code>null</code> 餵進下一步。我這次五個全活，但生產環境你得假設它會掉。</p>
-<h2 id="跑一次多少錢"><a href="#跑一次多少錢" class="headerlink" title="跑一次多少錢"></a>跑一次多少錢</h2><p>講完怎麼寫，講代價。這趟的真實數字：</p>
+<h2 id="跑一次多少錢">跑一次多少錢</h2>
+<p>講完怎麼寫，講代價。這趟的真實數字：</p>
 <table>
 <thead>
 <tr>
@@ -168,7 +169,8 @@
 <th>數字</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>子代理數</td>
 <td>5（4 評估 + 1 綜合）</td>
 </tr>
@@ -184,15 +186,17 @@
 <td>token</td>
 <td>375,328</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>兩分鐘換一份選題排序，代價 37 萬 token。這不便宜——而且要講清楚，37 萬是 token 量，不是帳單金額；你實際付多少，看你的訂閱方案、以及子代理跑在哪個模型上。官方自己也講白了：「大多數傳統 coding 任務不需要五個審稿員。」</p>
 <p>所以我的判準是這樣：</p>
 <ul>
 <li><strong>該用</strong>：深度研究、跨檔案大遷移、根因調查、大規模去重——這些單一 context 撐不住、會惰性或漂移的活。</li>
 <li><strong>不該用</strong>：單檔編輯、你心裡已經有答案、或一個子代理就能搞定的事。</li>
 </ul>
-<p>補一個跟隔離有關的點：如果你的子代理會並行改同一批檔案，記得讓它們各跑一個 worktree（<code>agent(prompt, &#123; isolation: &#39;worktree&#39; &#125;)</code>），否則它們會互相蓋掉對方的修改。並行很爽，但前提是任務之間真的不共享狀態。</p>
-<h2 id="值不值得用"><a href="#值不值得用" class="headerlink" title="值不值得用"></a>值不值得用</h2><p>動態工作流不難寫，難的是判斷什麼時候值得動用它。五個函數、一個 schema，半小時就能跑起來；但 37 萬 token 的帳單會逼你誠實面對「這活到底要不要五個腦袋」。</p>
+<p>補一個跟隔離有關的點：如果你的子代理會並行改同一批檔案，記得讓它們各跑一個 worktree（<code>agent(prompt, &#123; isolation: 'worktree' &#125;)</code>），否則它們會互相蓋掉對方的修改。並行很爽，但前提是任務之間真的不共享狀態。</p>
+<h2 id="值不值得用">值不值得用</h2>
+<p>動態工作流不難寫，難的是判斷什麼時候值得動用它。五個函數、一個 schema，半小時就能跑起來；但 37 萬 token 的帳單會逼你誠實面對「這活到底要不要五個腦袋」。</p>
 <p>最後說個題外話。我用這支 workflow 取材時，還順手踩了一個關於我自己的坑——我一度咬定其中一個子代理在幻覺，寫成文章、還過了兩輪 AI 審稿，最後翻開 transcript 才發現它老老實實做了查證，幻覺的是我。那是<a href="/posts/ac250f0e/">另一篇文章</a>了。</p>
 <p>工具值得學。只是學會之後，別像我一樣，只看它最終吐了什麼就下結論。</p>
 
@@ -285,15 +289,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

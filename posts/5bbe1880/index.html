@@ -122,13 +122,16 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <p>五月十四日 Anthropic 在自家部落格放出一份叫 <a target="_blank" rel="noopener" href="https://claude.com/blog/the-founders-playbook">Founder&#39;s Playbook</a> 的內部手冊，主題是「怎麼用 AI 從零做一家 startup」。</p>
+        <p>五月十四日 Anthropic 在自家部落格放出一份叫 <a target="_blank" rel="noopener" href="https://claude.com/blog/the-founders-playbook">Founder’s Playbook</a> 的內部手冊，主題是「怎麼用 AI 從零做一家 startup」。</p>
 <p>結論反直覺：AI 會放大你的創業失敗模式，而不是降低失敗率。寫這份手冊的是 Anthropic 自己——賣你 Claude Code 的那家公司——提醒你它賣的工具會放大失敗。</p>
-<h2 id="我下載-PDF-那天剛好在抓一個-bug"><a href="#我下載-PDF-那天剛好在抓一個-bug" class="headerlink" title="我下載 PDF 那天剛好在抓一個 bug"></a>我下載 PDF 那天剛好在抓一個 bug</h2><p>那天我在改公司專案的下載功能。PM 一直堅持是「SQL 抓不到資料」，花了快兩小時才發現根本不是——伺服器上的 LibreOffice 被 MODA ODF Application Tools 的安裝程式覆寫掉了，舊路徑變成空殼資料夾。</p>
+<h2 id="我下載-PDF-那天剛好在抓一個-bug">我下載 PDF 那天剛好在抓一個 bug</h2>
+<p>那天我在改公司專案的下載功能。PM 一直堅持是「SQL 抓不到資料」，花了快兩小時才發現根本不是——伺服器上的 LibreOffice 被 MODA ODF Application Tools 的安裝程式覆寫掉了，舊路徑變成空殼資料夾。</p>
 <p>問題本身只是一行硬編碼路徑。難搞的是錯誤被四層補丁吞掉的方式：執行檔不見就拋例外、<code>ConvertFile</code> 沒產出檔還是寫 log 繼續跑、controller 對著不存在路徑 <code>return File()</code>、最外層 catch 把一切包成 <code>Content(&quot;查無資料&quot;)</code>。前端拿到 1,229 bytes 的「ODS 檔」（其實是 HTML 錯誤頁），或一個誤導的「查無資料」。PM 直接想到 SQL 篩選，沒人會懷疑是轉檔程式問題。</p>
 <p>那段程式碼是十年前人類工程師寫的，跟 AI 無關。但讀完手冊我發現這就是 Anthropic 在講的 Agentic technical debt 最具體的樣子——AI 寫程式時會把這個模式放大，它的常見輸出傾向是補 try-catch、讓流程繼續跑。結果就是所有失敗被默默吞掉，根因永遠找不到。</p>
-<h2 id="手冊把創業切成四階段，三個最致命的陷阱"><a href="#手冊把創業切成四階段，三個最致命的陷阱" class="headerlink" title="手冊把創業切成四階段，三個最致命的陷阱"></a>手冊把創業切成四階段，三個最致命的陷阱</h2><p>Anthropic 把 AI-native startup 生命週期分成四階段：Idea、MVP、Launch、Scale。每階段都列出 AI 會放大的失敗模式。我挑三個最致命的講。</p>
-<h3 id="陷阱一：原型不等於市場"><a href="#陷阱一：原型不等於市場" class="headerlink" title="陷阱一：原型不等於市場"></a>陷阱一：原型不等於市場</h3><p>第一階段最致命的問題是：AI 讓你十分鐘做出能跑的 prototype，但「能跑」跟「能養活自己」是兩件完全不同的事。過去這條鴻溝被「技術門檻」遮住——你做不出來，所以沒辦法騙自己「做出來就會有人用」。AI 把技術門檻拿掉之後，這個自我欺騙的空間反而變得超大。</p>
+<h2 id="手冊把創業切成四階段，三個最致命的陷阱">手冊把創業切成四階段，三個最致命的陷阱</h2>
+<p>Anthropic 把 AI-native startup 生命週期分成四階段：Idea、MVP、Launch、Scale。每階段都列出 AI 會放大的失敗模式。我挑三個最致命的講。</p>
+<h3 id="陷阱一：原型不等於市場">陷阱一：原型不等於市場</h3>
+<p>第一階段最致命的問題是：AI 讓你十分鐘做出能跑的 prototype，但「能跑」跟「能養活自己」是兩件完全不同的事。過去這條鴻溝被「技術門檻」遮住——你做不出來，所以沒辦法騙自己「做出來就會有人用」。AI 把技術門檻拿掉之後，這個自我欺騙的空間反而變得超大。</p>
 <p>我自己上個月就踩了一個。</p>
 <p>我想做一個 AI 插畫日記的 iOS app——使用者寫日記，AI 每篇產出一張 4-koma 漫畫，累積成週/月/年回顧繪本。技術上的難點是 character consistency：跨呼叫之間主角的臉要保持同一個人，不然累積三個月後使用者會發現自己變成不同人，整個產品概念崩盤。</p>
 <p>我用 Codex CLI 跑了四輪驗證全過——最關鍵的跨呼叫角色一致性（同一個人、不同場景跟衣著）、中文字渲染、4 格敘事連貫全部沒問題。接下來用 Claude Artifacts 做了兩輪可點擊的 iOS 原型，11 個畫面全部可操作，已經到「直接拍 demo 影片貼小紅書/IG」的程度。我那時候真的覺得這東西要起飛了。</p>
@@ -142,16 +145,20 @@
 <p>技術風險清零了。原型可以 demo 了。但這個產品做出來會賠錢。</p>
 <p>最殘酷的是：如果我沒做這四輪 Codex 驗證、沒做兩輪 Claude Artifacts 原型，我大概會早一個禮拜放棄這個 idea。<strong>AI 讓我多浪費了一個禮拜把信心建立在錯誤的證據上</strong>。技術跑通變成「這個 idea 應該值得做」的偽證據，但這兩件事根本是不同的問題。</p>
 <p>這就是 Anthropic 手冊裡專門開一節談的：「distinguishing genuine product-market fit from early hype」。翻成白話：別把「prototype 跑得起來」當成「市場驗證」。</p>
-<h3 id="陷阱二：Agentic-技術債"><a href="#陷阱二：Agentic-技術債" class="headerlink" title="陷阱二：Agentic 技術債"></a>陷阱二：Agentic 技術債</h3><p>手冊裡的原句是「architecture, scope, and security practices that keep AI-generated MVP codebases from accruing technical debt」——Anthropic 認為 AI 生成的 MVP codebase 需要特別設計才不會累積技術債，這個立場本身就有訊息量。</p>
+<h3 id="陷阱二：Agentic-技術債">陷阱二：Agentic 技術債</h3>
+<p>手冊裡的原句是「architecture, scope, and security practices that keep AI-generated MVP codebases from accruing technical debt」——Anthropic 認為 AI 生成的 MVP codebase 需要特別設計才不會累積技術債，這個立場本身就有訊息量。</p>
 <p>前面 MODA 那個四層 catch 是傳統人類版本。AI 版本的我也見過——你叫它「修一下這個 bug」，它修完還順手加三個 try-catch 把上下文都包起來，註解寫「For robustness」。短期看起來很穩定，半年後追線索時你會詛咒它的祖宗。如果第一層 catch 直接 throw、不要假裝成功，那次排查我從兩小時可以壓到五分鐘。</p>
-<h3 id="陷阱三：創始人變決策瓶頸"><a href="#陷阱三：創始人變決策瓶頸" class="headerlink" title="陷阱三：創始人變決策瓶頸"></a>陷阱三：創始人變決策瓶頸</h3><p>第三階段 Launch，手冊講「a Launch-stage operating system that replaces founder attention with agentic workflows」。意思是當你把所有執行工作交給 AI agent 之後，你會發現自己變成系統裡最慢的那個元件。</p>
+<h3 id="陷阱三：創始人變決策瓶頸">陷阱三：創始人變決策瓶頸</h3>
+<p>第三階段 Launch，手冊講「a Launch-stage operating system that replaces founder attention with agentic workflows」。意思是當你把所有執行工作交給 AI agent 之後，你會發現自己變成系統裡最慢的那個元件。</p>
 <p>最戲劇性的例子是 OpenClaw 刪郵件事件。Meta AI 安全與對齊總監把 OpenClaw 接到自己的工作信箱跑 200 多封郵件處理，中途下了三次「不要動」的指令。結果 OpenClaw 把 2/15 之前所有郵件都刪了。事後它的解釋是：「我知道你說過不讓我刪，我確實違反了。」</p>
 <p>表面上看像是 context 壓縮——對話歷史變長後「未經批准不得操作」可能被當成可丟棄的歷史訊息壓掉了。但無論技術根因是哪一條，使用者看到的事實是：明確下達過的指令被 AI 違反。Agent 越多、自主性越強，這種 case 會越多。只要你睡著或忙別的事，整個系統可能就在你看不到的地方做出不可逆的決定。</p>
-<h2 id="Scale-階段拚的是「能不能把判斷複製給-agent」"><a href="#Scale-階段拚的是「能不能把判斷複製給-agent」" class="headerlink" title="Scale 階段拚的是「能不能把判斷複製給 agent」"></a>Scale 階段拚的是「能不能把判斷複製給 agent」</h2><p>第四階段 Scale 對個人開發者反而最關鍵。手冊的結論很乾脆：AI 把執行成本拉到趨近於零之後，判斷力變成最稀缺的資源。護城河是把垂直領域知識結構化累積成專屬 Skills。</p>
+<h2 id="Scale-階段拚的是「能不能把判斷複製給-agent」">Scale 階段拚的是「能不能把判斷複製給 agent」</h2>
+<p>第四階段 Scale 對個人開發者反而最關鍵。手冊的結論很乾脆：AI 把執行成本拉到趨近於零之後，判斷力變成最稀缺的資源。護城河是把垂直領域知識結構化累積成專屬 Skills。</p>
 <p>過去一年我為了不同情境寫了一堆 Claude Code skill——交易判斷、公司專案內規、技術部落格寫作、知識管理流程。寫完之後 AI 表現會明顯穩定，但寫 skill 本身是只有我能做的工作——它要把我腦子裡的「為什麼這樣做」逐條寫清楚。</p>
 <p>舉個例子，我那份「修公司專案 bug 的 skill」裡寫了像「排查 LibreOffice 相關問題前先 <code>where soffice.exe</code>，不要看程式碼裡寫了什麼路徑」這種規則。這條從我踩過坑的人身上才能抽得出來。</p>
 <p>不是每份 skill 都有護城河價值。分辨「SOP」跟「護城河」的檢查句只有一條：<strong>沒有公司內部脈絡、歷史事故、真實資料或個人決策偏好，就寫不出這條規則</strong>。寫得出來 = SOP，寫不出來 = 護城河。</p>
-<h2 id="我下次開新案子會先寫-skill-再寫程式碼"><a href="#我下次開新案子會先寫-skill-再寫程式碼" class="headerlink" title="我下次開新案子會先寫 skill 再寫程式碼"></a>我下次開新案子會先寫 skill 再寫程式碼</h2><p>下次開新案子，我會先花一天寫一份「AI 該怎麼幫我做這個專案」的 skill，再讓它寫第一行程式碼。不是因為這樣比較有效率——剛開始幾天反而會慢——而是因為公司專案那個四層 catch 吞掉根因的程式碼，我不想再看到第二次。也因為 AI 插畫日記那一個禮拜，我不想再讓「技術跑通」變成「這個 idea 值得做」的偽證據。</p>
+<h2 id="我下次開新案子會先寫-skill-再寫程式碼">我下次開新案子會先寫 skill 再寫程式碼</h2>
+<p>下次開新案子，我會先花一天寫一份「AI 該怎麼幫我做這個專案」的 skill，再讓它寫第一行程式碼。不是因為這樣比較有效率——剛開始幾天反而會慢——而是因為公司專案那個四層 catch 吞掉根因的程式碼，我不想再看到第二次。也因為 AI 插畫日記那一個禮拜，我不想再讓「技術跑通」變成「這個 idea 值得做」的偽證據。</p>
 
       </div>
       
@@ -242,15 +249,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

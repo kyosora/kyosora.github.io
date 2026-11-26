@@ -124,25 +124,27 @@
       <div class="prose" id="article">
         <p>上個月寫過一篇文章，講 Cloudflare 網路上的 HTML 請求有 57.5% 來自機器人、真人只剩 42.5%（<a href="/posts/c55595b2/">那篇在這</a>）。當時的結論偏哲學：網站的讀者已經一半不是人，你要為誰設計。哲學歸哲學，實務上站長手上的工具只有一個很鈍的開關——Cloudflare 儀表板那顆「Block AI Bots」。它針對的主要是拿內容去訓練模型的爬蟲，但只有開和關兩個狀態，你沒得挑要擋哪一種。</p>
 <p>7 月 1 日 Cloudflare 把這顆開關拆了。新版的 AI 流量控制把「AI bot」切成三種用途分開管，連免費方案都能用。更重要的是他們同時宣布：<strong>9 月 15 日起預設值要變，而且變法會讓「封鎖 AI 訓練」連 Googlebot 一起擋掉</strong>。如果你的站在 Cloudflare 後面、又開過 Block AI Bots，這篇讀完建議去檢查一下設定。</p>
-<h2 id="一鍵封鎖為什麼不夠用"><a href="#一鍵封鎖為什麼不夠用" class="headerlink" title="一鍵封鎖為什麼不夠用"></a>一鍵封鎖為什麼不夠用</h2><p>先講舊開關的問題在哪。</p>
+<h2 id="一鍵封鎖為什麼不夠用">一鍵封鎖為什麼不夠用</h2>
+<p>先講舊開關的問題在哪。</p>
 <p>去年那顆「Block AI Bots」的假想敵很明確：拿你的內容去訓練模型、然後一滴流量都不回給你的訓練爬蟲。封它天經地義。但一年下來，「AI bot」這個詞涵蓋的東西越來越雜。有人問 ChatGPT 問題、它即時來你的網站抓一頁回去回答，這是 AI bot。有人叫 Claude 開瀏覽器幫他比價，逛到你的商店頁，這也是 AI bot。Google 搜尋現在直接在結果頁生成答案，Googlebot 爬你的內容既為了搜尋索引、也為了餵 AI——還是 AI bot。</p>
 <p>這三種行為對站長的利害關係完全不同，但在舊開關眼裡是同一種東西。於是小站長被迫做一個很難看的交易：想出現在搜尋結果裡，就得連訓練一起吞下去，因為大廠用同一隻爬蟲做兩件事。Cloudflare 原文直接把這叫 Faustian bargain——要嘛被找到、要嘛被訓練，二選一。而且這種綁售對既有搜尋巨頭最有利，新玩家為了追上差距反而更有動機把爬蟲偽裝起來。</p>
-<h2 id="新的三分類：Search、Agent、Training"><a href="#新的三分類：Search、Agent、Training" class="headerlink" title="新的三分類：Search、Agent、Training"></a>新的三分類：Search、Agent、Training</h2><p>Cloudflare 的解法是不再問「這是不是 AI」，改問「它來你的站做什麼」。三個分類：</p>
+<h2 id="新的三分類：Search、Agent、Training">新的三分類：Search、Agent、Training</h2>
+<p>Cloudflare 的解法是不再問「這是不是 AI」，改問「它來你的站做什麼」。三個分類：</p>
 <p><strong>Search</strong>：爬你的內容建索引，之後回答別人的問題時把你端出來。特徵是「先建資料庫、後回應查詢」。站長理論上會拿到 referral 流量當回報，所以這類預設繼續放行。</p>
 <p><strong>Agent</strong>：即時代替某個真人來辦事。ChatGPT-User 這種聊天時即時抓頁的 bot、Gemini 或 Claude 直接操瀏覽器的 browser-use agent 都算。特徵是背後通常有一個人正在等結果。</p>
 <p><strong>Training</strong>：把你的內容抓走灌進模型權重。特徵是資料被永久吸收進模型本體，之後跟你再無關係。</p>
 <p>除了這三個可設定的分類，BotBase（新的 bot 目錄，企業版功能）還追蹤 Transact、Data Collection、SEO、Feed Fetching 等十來種行為，而且一隻 bot 可以同時掛多個標籤——這點是後面預設值變更的關鍵。</p>
-<h2 id="9-月-15-日：多用途爬蟲按最嚴格規則處理"><a href="#9-月-15-日：多用途爬蟲按最嚴格規則處理" class="headerlink" title="9 月 15 日：多用途爬蟲按最嚴格規則處理"></a>9 月 15 日：多用途爬蟲按最嚴格規則處理</h2><p>真正需要你動手的是這段。</p>
+<h2 id="9-月-15-日：多用途爬蟲按最嚴格規則處理">9 月 15 日：多用途爬蟲按最嚴格規則處理</h2>
+<p>真正需要你動手的是這段。</p>
 <p>9 月 15 日起兩件事生效。第一，新加入 Cloudflare 的網域，在有廣告的頁面上預設封鎖 Training 和 Agent、放行 Search。邏輯是：頁面上有廣告代表你希望真人看到它，那些會截走人類注意力的 bot 就先擋在門外。</p>
 <p>第二件影響更大：<strong>多用途爬蟲從此按它的全部行為判定，取最嚴格的規則</strong>。Googlebot、Bingbot、Applebot 這些同時掛 Search 和 Training 標籤的爬蟲，只要你設定了封鎖 Training——不管是用新選項還是舊的 Block AI Bots——它們就會被一起擋掉。</p>
 <p>換成白話：你去年為了防 AI 訓練按下的那顆開關，9 月 15 日之後會開始擋 Google 搜尋的爬蟲。對靠自然搜尋吃流量的站，這不是小事。</p>
 <p>Cloudflare 有留後路：9 月 15 日前到儀表板的 Security settings 標記「Search 兼 Training 的爬蟲維持現狀」就能豁免，他們也會持續發通知提醒。但通知這種東西，大家都知道最後會躺在哪個沒人看的信箱資料夾裡。我的建議是趁記得的時候現在就去看一眼，我自己檢查完這個部落格的設定才開始寫這篇。</p>
-<h2 id="robots-txt-多了一個-use-欄位"><a href="#robots-txt-多了一個-use-欄位" class="headerlink" title="robots.txt 多了一個 use 欄位"></a>robots.txt 多了一個 use 欄位</h2><p>另一個值得記下來的是 Content Signals 的擴充。Cloudflare 的 managed robots.txt 原本長這樣：</p>
+<h2 id="robots-txt-多了一個-use-欄位">robots.txt 多了一個 use 欄位</h2>
+<p>另一個值得記下來的是 Content Signals 的擴充。Cloudflare 的 managed robots.txt 原本長這樣：</p>
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 原版 Content Signals：搜尋可以、訓練不行</span><br><span class="line">User-agent: *</span><br><span class="line">Content-Signal: search=yes,ai-train=no</span><br><span class="line">Allow: /</span><br></pre></td></tr></table></figure>
-
 <p>現在多了一個可選欄位 <code>use</code>（Content Signals 完整版本來有 <code>search</code>、<code>ai-input</code>、<code>ai-train</code> 三個欄位，上面的 managed 範例只帶了其中兩個），表達「你抓走之後可以留下什麼」，三個等級：</p>
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 新版：多了 use 欄位</span><br><span class="line">User-agent: *</span><br><span class="line">Content-Signal: search=yes,ai-train=no,use=reference</span><br><span class="line">Allow: /</span><br></pre></td></tr></table></figure>
-
 <ul>
 <li><code>immediate</code>——可以互動，但什麼都不准存</li>
 <li><code>reference</code>（預設）——可以索引、摘錄，要附回連結</li>
@@ -150,11 +152,12 @@
 </ul>
 <p>已啟用 managed robots.txt 的站會自動被加上 <code>use=reference</code>。要注意這跟 robots.txt 的其他條目一樣是「表達偏好」，不是強制封鎖——爬蟲理不理你是另一回事。Cloudflare 給的牙齒在別處：他們開始在 BotBase 追蹤每隻 bot 的實際 content use，被抓到違反聲明的 bot 會失去 Verified 身分，而失去 Verified 在 Cloudflare 的新規則下等於失去預設放行的資格。Cloudflare 自稱全網超過兩成的網域在它後面——數字是他們自己講的，但就算打個折，這個處罰對正經公司仍然有威懾力。</p>
 <p>順帶一提，Verified 的定義也改了。以前 Verified bot 等於預設放行；現在 Verified 只代表「這隻 bot 誠實表明身分、而且沒有濫用這份存取權」，放不放行看它所屬的分類有沒有被你允許。誠實和授權終於拆成兩件事，這個改動我認為比三分類本身更有品味。</p>
-<h2 id="那個-Forwarded-header-的實驗"><a href="#那個-Forwarded-header-的實驗" class="headerlink" title="那個 Forwarded header 的實驗"></a>那個 Forwarded header 的實驗</h2><p>還有一個目前只是提案的東西，但方向有意思。現在敲你門的 agent 越來越常不是它的開發商在跑——你可能信任 Stripe，但不見得信任每個把 Stripe 工具接進週末專案的開發者。Cloudflare 提議借用 RFC 7239 的 Forwarded header 來傳遞這層信任鏈：</p>
+<h2 id="那個-Forwarded-header-的實驗">那個 Forwarded header 的實驗</h2>
+<p>還有一個目前只是提案的東西，但方向有意思。現在敲你門的 agent 越來越常不是它的開發商在跑——你可能信任 Stripe，但不見得信任每個把 Stripe 工具接進週末專案的開發者。Cloudflare 提議借用 RFC 7239 的 Forwarded header 來傳遞這層信任鏈：</p>
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Forwarded: for=&quot;openai&quot;;use=&quot;reference&quot;</span><br></pre></td></tr></table></figure>
-
 <p>概念上跟 <code>X-Forwarded-For</code> 保留原始 IP 一樣：你說「放行 OpenAI」，那不管它是直連還是隔著三層可信任的中介過來，這個授權都跟著走。搭配前面的 content use 聲明，一個請求進門時就自帶「我是誰、我打算怎麼用你的內容」。這套能不能成，要看各家 agent 廠商買不買帳——單方面的協議史上成功的不多，robots.txt 算一個，但它花了三十年。</p>
-<h2 id="9-月-15-日前的檢查清單"><a href="#9-月-15-日前的檢查清單" class="headerlink" title="9 月 15 日前的檢查清單"></a>9 月 15 日前的檢查清單</h2><p>把該做的事收成一份清單，五分鐘可以做完：</p>
+<h2 id="9-月-15-日前的檢查清單">9 月 15 日前的檢查清單</h2>
+<p>把該做的事收成一份清單，五分鐘可以做完：</p>
 <ol>
 <li>開過 Block AI Bots 的站：到 Security settings 看一眼新的 AI traffic 選項。你靠 Google 自然流量吃飯的話，確認 Training 的封鎖規則不會連帶擋掉 Search 兼 Training 的多用途爬蟲，需要維持現狀就標記豁免</li>
 <li>有廣告的站：知道 9/15 起新網域的預設是「廣告頁封 Training + Agent」。既有網域不會被自動改設定，但這是 Cloudflare 認定的合理基準線，值得對照一下自己的判斷</li>
@@ -162,7 +165,8 @@
 <li>SaaS 登入前頁面：Agent 進來多半是替潛在客戶做功課，擋掉它等於擋掉一次產品評估，放行通常划算</li>
 </ol>
 <p>不同的站有不同答案，這正是舊開關做不到的事。</p>
-<h2 id="我自己的站怎麼設"><a href="#我自己的站怎麼設" class="headerlink" title="我自己的站怎麼設"></a>我自己的站怎麼設</h2><p>講完規則，講判斷。這個部落格是 Hexo 靜態站，沒廣告，流量本來就不值錢，我的設定邏輯跟商業站不一樣：</p>
+<h2 id="我自己的站怎麼設">我自己的站怎麼設</h2>
+<p>講完規則，講判斷。這個部落格是 Hexo 靜態站，沒廣告，流量本來就不值錢，我的設定邏輯跟商業站不一樣：</p>
 <p>Search 放行，沒有懸念。Agent 我也放——上個月那篇就寫過，我自己的 AI 工具天天假扮 Chrome 去撈別人的 API，我沒有立場擋別人的 agent 來讀我的文章，何況 agent 讀完引用還會帶連結回來。Training 我掙扎了一下。技術文章被拿去訓練，說完全不介意是假的；但一個沒有營收模式的個人部落格，封 Training 換不到補償，只換到「9 月 15 日後要多管一條 Googlebot 豁免設定」的心智負擔。我最後選擇不封，加上 <code>use=reference</code> 表達偏好就好。</p>
 <p>這個選擇不見得對，半年後 Pay-Per-Crawl 這類補償市場如果真的成熟，我可能會改。但至少現在起，「封不封」不再是一顆什麼都混在一起的開關，而是三個可以分開想清楚的問題。工具鈍的時候，站長只能在全有和全無之間二選一；工具利了，才輪得到判斷出場。</p>
 <p>去檢查你的設定吧，期限是 9 月 15 日。</p>
@@ -248,15 +252,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

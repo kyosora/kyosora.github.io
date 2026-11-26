@@ -25,8 +25,8 @@
 <meta property="article:modified_time" content="2026-07-31T08:29:33.000Z">
 <meta property="article:author" content="kyosora">
 <meta property="article:section" content="AI工具實戰">
-<meta property="article:tag" content="Claude Code">
 <meta property="article:tag" content="Cursor">
+<meta property="article:tag" content="Claude Code">
 <meta property="article:tag" content="AI Coding">
 <meta property="article:tag" content="Composer">
 <meta property="article:tag" content="開發工具演化">
@@ -43,7 +43,7 @@
 <script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Cursor 自建 AI 模型的背後邏輯：當你的 IDE 不想再幫別人打工","description":"ARR 衝到 20 億美元的 Cursor 為何要從頭訓練 Composer 2？拆解一家 IDE 公司自建基礎模型的核心焦慮、與 Claude Code 和 Codex 的競爭，分析這個賭注對用 AI 寫程式碼的開發者代表什麼。","url":"https://kyosora.github.io/posts/51217f8c/","mainEntityOfPage":"https://kyosora.github.io/posts/51217f8c/","image":"https://kyosora.github.io/images/posts/legacy-51217f8c-cover.webp","datePublished":"2026-03-19T17:30:00.000Z","dateModified":"2026-07-31T08:29:33.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI工具實戰","keywords":"Claude Code, Cursor, AI Coding, Composer, 開發工具演化"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI工具實戰","item":"https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"},{"@type":"ListItem","position":3,"name":"Cursor 自建 AI 模型的背後邏輯：當你的 IDE 不想再幫別人打工","item":"https://kyosora.github.io/posts/51217f8c/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Cursor 自建 AI 模型的背後邏輯：當你的 IDE 不想再幫別人打工","description":"ARR 衝到 20 億美元的 Cursor 為何要從頭訓練 Composer 2？拆解一家 IDE 公司自建基礎模型的核心焦慮、與 Claude Code 和 Codex 的競爭，分析這個賭注對用 AI 寫程式碼的開發者代表什麼。","url":"https://kyosora.github.io/posts/51217f8c/","mainEntityOfPage":"https://kyosora.github.io/posts/51217f8c/","image":"https://kyosora.github.io/images/posts/legacy-51217f8c-cover.webp","datePublished":"2026-03-19T17:30:00.000Z","dateModified":"2026-07-31T08:29:33.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI工具實戰","keywords":"Cursor, Claude Code, AI Coding, Composer, 開發工具演化"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI工具實戰","item":"https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"},{"@type":"ListItem","position":3,"name":"Cursor 自建 AI 模型的背後邏輯：當你的 IDE 不想再幫別人打工","item":"https://kyosora.github.io/posts/51217f8c/"}]}]}</script>
 
 </head>
 <body class="kind-post">
@@ -125,17 +125,20 @@
         <p>三月十九號，Bloomberg 丟出一顆炸彈：Cursor 正在自建 AI 模型。</p>
 <p>不是微調，不是套殼。是從頭訓練一個專門寫程式碼的基礎模型，叫做 Composer 2。同一天，消息傳出 Cursor 正在以約 500 億美元估值募資。</p>
 <p>一個 IDE 公司，估值比大多數 SaaS 獨角獸加起來還高，然後決定去做模型。這件事值得認真想一下。</p>
-<h2 id="為什麼-Cursor-要自己做模型？"><a href="#為什麼-Cursor-要自己做模型？" class="headerlink" title="為什麼 Cursor 要自己做模型？"></a>為什麼 Cursor 要自己做模型？</h2><p>先看數字：Cursor 現在每天有超過一百萬活躍使用者，五萬家企業客戶——包括 Stripe 和 Figma 這種等級的公司。ARR 已經衝到 20 億美元。</p>
+<h2 id="為什麼-Cursor-要自己做模型？">為什麼 Cursor 要自己做模型？</h2>
+<p>先看數字：Cursor 現在每天有超過一百萬活躍使用者，五萬家企業客戶——包括 Stripe 和 Figma 這種等級的公司。ARR 已經衝到 20 億美元。</p>
 <p>表面上看，一切都很好。但 Cursor 的核心焦慮其實很明確：<strong>他們最重要的能力，是別人提供的。</strong></p>
 <p>Cursor 背後的模型主要是 Claude 和 GPT。每一次 Anthropic 改了 API 定價、每一次 OpenAI 決定把 Codex 做得更好、每一次這些公司推出自己的 IDE 或 Agent 產品——Cursor 的護城河就窄了一點。</p>
 <p>這不是被害妄想。Claude Code 已經在搶 Cursor 的午餐。OpenAI 的 Codex 直接整合進 ChatGPT 生態系。Google 有 Gemini Code Assist。每一家模型公司都在往「直接幫你寫 code」的方向走。</p>
 <p><strong>當你的上游供應商同時也是你的競爭對手，你只有兩條路：要不就接受自己是個管道，要不就往下扎根。</strong></p>
 <p>Cursor 選了後者。</p>
-<h2 id="Composer-2-到底在做什麼？"><a href="#Composer-2-到底在做什麼？" class="headerlink" title="Composer 2 到底在做什麼？"></a>Composer 2 到底在做什麼？</h2><p>Composer 2 不是一般的程式碼補全模型。Cursor 把它定位成 AI Agent——可以獨立執行長時間的程式設計任務。</p>
+<h2 id="Composer-2-到底在做什麼？">Composer 2 到底在做什麼？</h2>
+<p>Composer 2 不是一般的程式碼補全模型。Cursor 把它定位成 AI Agent——可以獨立執行長時間的程式設計任務。</p>
 <p>這代表什麼？你不再需要一行一行地 prompt 它。你給它一個任務描述（「把這個 REST API 改成 GraphQL」），它會自己拆解步驟、讀取相關程式碼、生成修改、跑測試、處理錯誤。整個流程是自主的。</p>
 <p>從技術架構來看，Cursor 2.0 採用的是多 Agent 架構。不同的 Agent 負責不同的子任務——有的讀 codebase，有的寫程式碼，有的做 code review，有的跑測試。這和我們在 Claude Code 裡看到的 subagent 模式很像，但 Cursor 的野心是把整個流程都跑在自己的模型上。</p>
 <p>根據報導，Composer 2 使用了 RL（強化學習）來訓練 Agent 的自我總結能力。模型不只學會寫 code，還學會了如何把自己做過的事情壓縮成有用的 context——這對長時間任務來說是關鍵能力。</p>
-<h2 id="自建模型的賭注有多大？"><a href="#自建模型的賭注有多大？" class="headerlink" title="自建模型的賭注有多大？"></a>自建模型的賭注有多大？</h2><p>非常大。</p>
+<h2 id="自建模型的賭注有多大？">自建模型的賭注有多大？</h2>
+<p>非常大。</p>
 <p>訓練一個能在程式碼生成上跟 Claude 或 GPT 競爭的模型，需要：</p>
 <ol>
 <li><strong>算力</strong>：前期投入至少數億美元。500 億估值的募資，很大一部分大概要花在 GPU 上。</li>
@@ -145,16 +148,19 @@
 <p>但 Cursor 有一個別人沒有的東西：<strong>一百萬開發者每天在他們的 IDE 裡寫程式碼的資料。</strong></p>
 <p>每一次接受建議、每一次拒絕建議、每一次修改 AI 生成的程式碼——這些互動資料是模型訓練最珍貴的訊號。OpenAI 有 ChatGPT 的對話資料，但 Cursor 有的是真實開發場景中的程式碼互動資料。</p>
 <p>這就是為什麼 Cursor 有可能成功：他們不需要做一個通用模型，只需要做一個在程式碼任務上超越通用模型的垂直模型。</p>
-<h2 id="對我們這些用-AI-寫-code-的人意味著什麼？"><a href="#對我們這些用-AI-寫-code-的人意味著什麼？" class="headerlink" title="對我們這些用 AI 寫 code 的人意味著什麼？"></a>對我們這些用 AI 寫 code 的人意味著什麼？</h2><p>身為一個每天用 Claude Code 工作的開發者，我看到幾個趨勢：</p>
+<h2 id="對我們這些用-AI-寫-code-的人意味著什麼？">對我們這些用 AI 寫 code 的人意味著什麼？</h2>
+<p>身為一個每天用 Claude Code 工作的開發者，我看到幾個趨勢：</p>
 <p><strong>模型層正在商品化。</strong> GLM-5 用 MIT 授權開源，效能逼近前沿。Cursor 自建模型。DeepSeek 開源。模型不再是護城河——工具鏈和工作流整合才是。</p>
 <p><strong>Agent 架構正在成為標配。</strong> Cursor 的 Composer 2、Claude Code 的 subagent、OpenAI 的 Codex Agent——所有人都在從「你問我答」轉向「你說需求，我自己搞定」。2026 年底，手動一行一行 prompt AI 寫 code 會像手動管理 memory 一樣，不是不能做，但為什麼要？</p>
 <p><strong>垂直整合是趨勢。</strong> Cursor 做自己的模型。Anthropic 做 Claude Code。OpenAI 做 Codex。每家都想從模型到工具一條龍。這對使用者來說其實有好有壞：整合得好，體驗會更順暢；但鎖定效應也會更強。</p>
 <p><strong>開發者的角色在轉變。</strong> 我認為最重要的一點：當 AI Agent 可以獨立執行整個開發任務時，開發者的工作重心會從「寫程式碼」轉向「定義需求、審查結果、設計架構」。這不是「AI 取代程式設計師」的故事——是程式設計師的工作內容在改變。</p>
-<h2 id="Cursor-的真正對手"><a href="#Cursor-的真正對手" class="headerlink" title="Cursor 的真正對手"></a>Cursor 的真正對手</h2><p>表面上，Cursor 在跟 Claude Code 和 Codex 競爭。但我認為更根本的競爭是在模型公司之間。</p>
+<h2 id="Cursor-的真正對手">Cursor 的真正對手</h2>
+<p>表面上，Cursor 在跟 Claude Code 和 Codex 競爭。但我認為更根本的競爭是在模型公司之間。</p>
 <p>Anthropic 和 OpenAI 都有自己的 coding 產品，但他們的核心業務是賣模型。如果 Cursor 用自己的模型取代 Claude API 的呼叫，Anthropic 就少了一個大客戶。</p>
 <p>反過來，如果 Anthropic 把 Claude Code 做得夠好，Cursor 的存在意義就會被壓縮。</p>
 <p>這是一場關於「誰擁有開發者工作流」的戰爭。模型公司想往上走（做工具），工具公司想往下扎（做模型）。中間地帶會越來越窄。</p>
-<h2 id="我的判斷"><a href="#我的判斷" class="headerlink" title="我的判斷"></a>我的判斷</h2><p>Cursor 自建模型這步棋，我認為方向正確但風險極高。</p>
+<h2 id="我的判斷">我的判斷</h2>
+<p>Cursor 自建模型這步棋，我認為方向正確但風險極高。</p>
 <p>正確的地方：降低對上游供應商的依賴，用獨家資料建立差異化，在 Agent 時代提前佈局。</p>
 <p>風險的地方：模型訓練是吃錢的黑洞，500 億估值意味著投資人對成長的期待會非常高，而且 Anthropic 和 OpenAI 不會坐視不管。</p>
 <p>根據我用 Claude Code 的經驗，模型本身的能力固然重要，但更重要的是工具鏈的整合度。Cursor 的 Tab、Composer、背景 Agent 這些功能確實比很多競品做得更細膩。如果他們的自研模型能在不犧牲這些體驗的前提下降低成本，那會是很強的組合拳。</p>
@@ -166,7 +172,7 @@
 <footer class="post-end">
   
   <ul class="post-tags" aria-label="標籤">
-    <li><a href="/tags/Claude-Code/">Claude Code</a></li><li><a href="/tags/Cursor/">Cursor</a></li><li><a href="/tags/AI-Coding/">AI Coding</a></li><li><a href="/tags/Composer/">Composer</a></li><li><a href="/tags/%E9%96%8B%E7%99%BC%E5%B7%A5%E5%85%B7%E6%BC%94%E5%8C%96/">開發工具演化</a></li>
+    <li><a href="/tags/Cursor/">Cursor</a></li><li><a href="/tags/Claude-Code/">Claude Code</a></li><li><a href="/tags/AI-Coding/">AI Coding</a></li><li><a href="/tags/Composer/">Composer</a></li><li><a href="/tags/%E9%96%8B%E7%99%BC%E5%B7%A5%E5%85%B7%E6%BC%94%E5%8C%96/">開發工具演化</a></li>
   </ul>
   
 
@@ -250,15 +256,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -115,7 +115,7 @@
     <aside class="post-aside">
       <details class="toc-box" open>
         <summary>目錄</summary>
-        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#PyInstaller-%E5%9C%A8%E5%81%9A%E4%BB%80%E9%BA%BC"><span class="toc-text">PyInstaller 在做什麼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E6%8A%8A%E7%92%B0%E5%A2%83%E9%9A%94%E9%9B%A2%E4%B9%BE%E6%B7%A8"><span class="toc-text">先把環境隔離乾淨</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%9D%91%EF%BC%9Aonefile-%E5%BE%8C%E6%89%BE%E4%B8%8D%E5%88%B0%E8%B3%87%E6%BA%90%E6%AA%94"><span class="toc-text">核心坑：onefile 後找不到資源檔</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#add-data-%E7%9A%84%E8%AA%9E%E6%B3%95%EF%BC%8C%E8%B7%A8%E5%B9%B3%E5%8F%B0%E4%B8%8D%E4%B8%80%E6%A8%A3"><span class="toc-text">--add-data 的語法，跨平台不一樣</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PySide6-%E6%87%89%E7%94%A8%E7%9A%84%E5%AE%8C%E6%95%B4%E6%89%93%E5%8C%85%E6%8C%87%E4%BB%A4"><span class="toc-text">PySide6 應用的完整打包指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#windowed-%E7%9A%84%E9%9A%B1%E8%97%8F%E4%BB%A3%E5%83%B9%EF%BC%9Astdout-%E8%AE%8A%E6%88%90-None"><span class="toc-text">--windowed 的隱藏代價：stdout 變成 None</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%93%E5%8C%85%E5%BE%8C%E5%B8%B8%E8%A6%8B%E5%95%8F%E9%A1%8C%E5%B0%8D%E7%85%A7"><span class="toc-text">打包後常見問題對照</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%90%E5%93%81%E6%AA%A2%E6%9F%A5%E6%B8%85%E5%96%AE"><span class="toc-text">成品檢查清單</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%AB%E5%9C%A8%E6%9C%80%E5%BE%8C"><span class="toc-text">寫在最後</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%83%E8%80%83%E8%B3%87%E6%96%99"><span class="toc-text">參考資料</span></a></li></ol></nav>
+        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#PyInstaller-%E5%9C%A8%E5%81%9A%E4%BB%80%E9%BA%BC"><span class="toc-text">PyInstaller 在做什麼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E6%8A%8A%E7%92%B0%E5%A2%83%E9%9A%94%E9%9B%A2%E4%B9%BE%E6%B7%A8"><span class="toc-text">先把環境隔離乾淨</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%9D%91%EF%BC%9Aonefile-%E5%BE%8C%E6%89%BE%E4%B8%8D%E5%88%B0%E8%B3%87%E6%BA%90%E6%AA%94"><span class="toc-text">核心坑：onefile 後找不到資源檔</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%80%93add-data-%E7%9A%84%E8%AA%9E%E6%B3%95%EF%BC%8C%E8%B7%A8%E5%B9%B3%E5%8F%B0%E4%B8%8D%E4%B8%80%E6%A8%A3"><span class="toc-text">–add-data 的語法，跨平台不一樣</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PySide6-%E6%87%89%E7%94%A8%E7%9A%84%E5%AE%8C%E6%95%B4%E6%89%93%E5%8C%85%E6%8C%87%E4%BB%A4"><span class="toc-text">PySide6 應用的完整打包指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%80%93windowed-%E7%9A%84%E9%9A%B1%E8%97%8F%E4%BB%A3%E5%83%B9%EF%BC%9Astdout-%E8%AE%8A%E6%88%90-None"><span class="toc-text">–windowed 的隱藏代價：stdout 變成 None</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%93%E5%8C%85%E5%BE%8C%E5%B8%B8%E8%A6%8B%E5%95%8F%E9%A1%8C%E5%B0%8D%E7%85%A7"><span class="toc-text">打包後常見問題對照</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%90%E5%93%81%E6%AA%A2%E6%9F%A5%E6%B8%85%E5%96%AE"><span class="toc-text">成品檢查清單</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%AB%E5%9C%A8%E6%9C%80%E5%BE%8C"><span class="toc-text">寫在最後</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%83%E8%80%83%E8%B3%87%E6%96%99"><span class="toc-text">參考資料</span></a></li></ol></nav>
       </details>
     </aside>
     
@@ -123,44 +123,43 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>PySide6 寫的 GUI 程式在自己電腦上跑得好好的，打包成 exe 丟給同事，雙擊就閃退，或是視窗開了但圖示、樣式表全空白。問題幾乎都出在同一個地方：onefile 模式下資源檔的路徑跟開發時不一樣。這篇用一個 Hexo 文章編輯器（HexoEditor）的打包流程當例子，把 PyInstaller 打包 PySide6 會踩到的幾個坑攤開講，重點放在最容易卡住人的 <code>sys._MEIPASS</code> 資源解析。</p>
-<h2 id="PyInstaller-在做什麼"><a href="#PyInstaller-在做什麼" class="headerlink" title="PyInstaller 在做什麼"></a>PyInstaller 在做什麼</h2><p>PyInstaller 會掃描你的程式進入點，分析它 import 了哪些模組，把 Python 直譯器、相依函式庫、你的程式碼全部收進一個 bundle。它有兩種輸出模式：</p>
+<h2 id="PyInstaller-在做什麼">PyInstaller 在做什麼</h2>
+<p>PyInstaller 會掃描你的程式進入點，分析它 import 了哪些模組，把 Python 直譯器、相依函式庫、你的程式碼全部收進一個 bundle。它有兩種輸出模式：</p>
 <ul>
 <li><strong>onedir（預設）</strong>：產生一個資料夾，exe 旁邊放著一堆 <code>.dll</code>、<code>.pyd</code> 和一個 <code>_internal</code> 目錄（把相依集中收進 <code>_internal</code> 是 PyInstaller 6.0 起的配置，舊版是直接散在 exe 旁邊）。</li>
 <li><strong>onefile（<code>--onefile</code> / <code>-F</code>）</strong>：全部壓成單一 exe，啟動時自解壓到暫存目錄再執行。</li>
 </ul>
 <p>很多人為了「只給一個檔案比較乾淨」選 onefile，然後就撞上資源路徑的問題。先把基本流程跑通，再來解這個坑。</p>
-<h2 id="先把環境隔離乾淨"><a href="#先把環境隔離乾淨" class="headerlink" title="先把環境隔離乾淨"></a>先把環境隔離乾淨</h2><p>打包前一定要在乾淨的虛擬環境裡做。理由很實際：PyInstaller 是靠掃描相依關係決定要打包什麼，如果你的全域 Python 裝了一堆跟這個專案無關的套件，它有機會把不該帶的東西也掃進來，exe 體積暴增，還可能因為版本衝突在別人電腦上掛掉。</p>
+<h2 id="先把環境隔離乾淨">先把環境隔離乾淨</h2>
+<p>打包前一定要在乾淨的虛擬環境裡做。理由很實際：PyInstaller 是靠掃描相依關係決定要打包什麼，如果你的全域 Python 裝了一堆跟這個專案無關的套件，它有機會把不該帶的東西也掃進來，exe 體積暴增，還可能因為版本衝突在別人電腦上掛掉。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 建立虛擬環境</span></span><br><span class="line">python -m venv venv</span><br><span class="line"></span><br><span class="line"><span class="comment"># 啟動虛擬環境</span></span><br><span class="line"><span class="comment"># Windows</span></span><br><span class="line">venv\Scripts\activate</span><br><span class="line"><span class="comment"># Linux/Mac</span></span><br><span class="line"><span class="built_in">source</span> venv/bin/activate</span><br><span class="line"></span><br><span class="line"><span class="comment"># 只裝這個專案真正需要的套件</span></span><br><span class="line">pip install -r requirements.txt</span><br><span class="line">pip install pyinstaller</span><br></pre></td></tr></table></figure>
-
 <p>裝完先確認 <code>pip list</code> 裡只有你預期的東西。這一步偷懶，後面 debug exe 體積或缺檔會花更多時間。</p>
-<h2 id="核心坑：onefile-後找不到資源檔"><a href="#核心坑：onefile-後找不到資源檔" class="headerlink" title="核心坑：onefile 後找不到資源檔"></a>核心坑：onefile 後找不到資源檔</h2><p>這是 PyInstaller 打包 GUI 最常見、也最容易讓人摸不著頭緒的問題。開發時你大概是這樣讀資源檔的：</p>
+<h2 id="核心坑：onefile-後找不到資源檔">核心坑：onefile 後找不到資源檔</h2>
+<p>這是 PyInstaller 打包 GUI 最常見、也最容易讓人摸不著頭緒的問題。開發時你大概是這樣讀資源檔的：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pathlib <span class="keyword">import</span> Path</span><br><span class="line"></span><br><span class="line">BASE_DIR = Path(__file__).resolve().parent</span><br><span class="line">style_file = BASE_DIR / <span class="string">&#x27;styles.json&#x27;</span></span><br></pre></td></tr></table></figure>
-
 <p>開發環境下這沒問題，<code>__file__</code> 指向你的 <code>.py</code> 檔，相對路徑都對得上。但 onefile 打包後執行，bootloader 會把 bundle 裡的內容解壓到一個<strong>臨時資料夾</strong>（每次執行路徑都不同，像 <code>C:\Users\xxx\AppData\Local\Temp\_MEI123456</code>），而程式的工作目錄通常是 exe 所在的位置。你用相對路徑或 <code>__file__</code> 去組路徑，指到的地方根本沒有那個檔案，於是圖示載不出來、qss 套不上、讀設定檔直接拋 <code>FileNotFoundError</code>。</p>
 <p>PyInstaller 解決這件事的方式是：程式被打包執行時，bootloader 會設定 <code>sys.frozen = True</code>，並把 bundle 資料夾的絕對路徑存進 <code>sys._MEIPASS</code>。對 onefile 來說，<code>sys._MEIPASS</code> 就是那個解壓出來的暫存目錄；對 onedir 來說，它指向 <code>_internal</code> 目錄。你所有打包進去的資源，都要透過這個 base path 去組路徑才找得到。</p>
 <p>官方文件給的標準寫法是用 <code>try/except</code> 包住 <code>sys._MEIPASS</code>，沒打包時 fall back 到當前目錄：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">resource_path</span>(<span class="params">relative_path</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;取得資源的絕對路徑，開發環境和 PyInstaller 打包後都適用&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="comment"># 打包後 PyInstaller 把 base path 存在 sys._MEIPASS</span></span><br><span class="line">        base_path = sys._MEIPASS</span><br><span class="line">    <span class="keyword">except</span> AttributeError:</span><br><span class="line">        <span class="comment"># 沒打包時就用當前工作目錄</span></span><br><span class="line">        base_path = os.path.abspath(<span class="string">&#x27;.&#x27;</span>)</span><br><span class="line">    <span class="keyword">return</span> os.path.join(base_path, relative_path)</span><br></pre></td></tr></table></figure>
-
 <p>也可以寫成顯式判斷 <code>sys.frozen</code> 的版本，意思一樣，可讀性更高一點：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">resource_path</span>(<span class="params">relative_path</span>):</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">getattr</span>(sys, <span class="string">&#x27;frozen&#x27;</span>, <span class="literal">False</span>):</span><br><span class="line">        <span class="comment"># 打包執行：用 bootloader 設定的 _MEIPASS</span></span><br><span class="line">        base_path = <span class="built_in">getattr</span>(sys, <span class="string">&#x27;_MEIPASS&#x27;</span>, os.path.abspath(<span class="string">&#x27;.&#x27;</span>))</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="comment"># 開發執行：以本檔所在目錄為基準</span></span><br><span class="line">        base_path = os.path.dirname(os.path.abspath(__file__))</span><br><span class="line">    <span class="keyword">return</span> os.path.join(base_path, relative_path)</span><br></pre></td></tr></table></figure>
-
 <p>接著把所有讀資源檔的地方都改成走這個函式：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 原本（打包後會壞）</span></span><br><span class="line">style_file = BASE_DIR / <span class="string">&#x27;styles.json&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 改成</span></span><br><span class="line">style_file = resource_path(<span class="string">&#x27;styles.json&#x27;</span>)</span><br><span class="line">icon_path = resource_path(<span class="string">&#x27;icon.ico&#x27;</span>)</span><br></pre></td></tr></table></figure>
-
-<p>關鍵在於：**<code>resource_path</code> 要拿到的路徑，必須跟 <code>--add-data</code> 把檔案放進去的位置對得上。** 下一節講語法時會把這兩件事接起來。</p>
+<p>關鍵在於：<strong><code>resource_path</code> 要拿到的路徑，必須跟 <code>--add-data</code> 把檔案放進去的位置對得上。</strong> 下一節講語法時會把這兩件事接起來。</p>
 <blockquote>
 <p>補一句：<code>sys._MEIPASS</code> 不是唯一解法，但它相容範圍最廣、跨版本最穩、出問題時也最好定位，所以這篇一律用它。其他寫法（例如直接依賴 <code>__file__</code>）在不同 PyInstaller 版本與 onefile／onedir 模式下行為不一致，要用前先在你的目標版本上驗一次再決定。</p>
 </blockquote>
-<h2 id="add-data-的語法，跨平台不一樣"><a href="#add-data-的語法，跨平台不一樣" class="headerlink" title="--add-data 的語法，跨平台不一樣"></a>--add-data 的語法，跨平台不一樣</h2><p>資源檔要先用 <code>--add-data</code> 收進 bundle，執行期才抓得到。它的語法是 <code>來源:目的地</code>，而分隔符號在不同平台不同——這是另一個常被忽略的細節：</p>
+<h2 id="–add-data-的語法，跨平台不一樣">–add-data 的語法，跨平台不一樣</h2>
+<p>資源檔要先用 <code>--add-data</code> 收進 bundle，執行期才抓得到。它的語法是 <code>來源:目的地</code>，而分隔符號在不同平台不同——這是另一個常被忽略的細節：</p>
 <ul>
 <li><strong>Windows</strong>：用分號 <code>;</code> 分隔，例如 <code>--add-data &quot;styles.json;.&quot;</code></li>
 <li><strong>Linux / macOS</strong>：用冒號 <code>:</code> 分隔，例如 <code>--add-data &quot;styles.json:.&quot;</code></li>
 </ul>
-<p>目的地是<strong>相對於 bundle 頂層目錄</strong>的路徑，不能省略。要放到根目錄就寫 <code>.</code>。所以 <code>--add-data &quot;styles.json;.&quot;</code> 的意思是「把 <code>styles.json</code> 收進去，放在 bundle 根目錄」，而執行期 <code>resource_path(&#39;styles.json&#39;)</code> 算出來的就是 <code>sys._MEIPASS/styles.json</code>——兩邊對上了，檔案才找得到。</p>
+<p>目的地是<strong>相對於 bundle 頂層目錄</strong>的路徑，不能省略。要放到根目錄就寫 <code>.</code>。所以 <code>--add-data &quot;styles.json;.&quot;</code> 的意思是「把 <code>styles.json</code> 收進去，放在 bundle 根目錄」，而執行期 <code>resource_path('styles.json')</code> 算出來的就是 <code>sys._MEIPASS/styles.json</code>——兩邊對上了，檔案才找得到。</p>
 <p>PyInstaller 6 之後官方統一推薦 POSIX 風格的冒號語法（<code>來源:目的地</code>），Windows 為了向後相容仍然吃分號，但官方建議改用冒號讓指令跨平台一致。如果你需要同一份指令在 Windows 跟 Linux 都能跑，用冒號版本比較省事。</p>
-<h2 id="PySide6-應用的完整打包指令"><a href="#PySide6-應用的完整打包指令" class="headerlink" title="PySide6 應用的完整打包指令"></a>PySide6 應用的完整打包指令</h2><p>把上面幾件事湊起來，HexoEditor 的打包指令長這樣（Windows，用 <code>^</code> 換行）：</p>
+<h2 id="PySide6-應用的完整打包指令">PySide6 應用的完整打包指令</h2>
+<p>把上面幾件事湊起來，HexoEditor 的打包指令長這樣（Windows，用 <code>^</code> 換行）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">pyinstaller --name=<span class="string">&quot;HexoEditor&quot;</span> ^</span><br><span class="line">            --windowed ^</span><br><span class="line">            --icon=icon.ico ^</span><br><span class="line">            --add-data=<span class="string">&quot;styles.json;.&quot;</span> ^</span><br><span class="line">            --add-data=<span class="string">&quot;category_config.json;.&quot;</span> ^</span><br><span class="line">            --add-data=<span class="string">&quot;tag_config.json;.&quot;</span> ^</span><br><span class="line">            main.py</span><br></pre></td></tr></table></figure>
-
 <p>幾個參數的作用：</p>
 <ul>
 <li><code>--name</code>：指定輸出執行檔名稱</li>
@@ -172,14 +171,15 @@
 <p>跑完第一次後，PyInstaller 會在當前目錄產生一個 <code>.spec</code> 檔，等於把你這串命令列參數寫成設定檔。之後要重複打包，直接 <code>pyinstaller HexoEditor.spec</code> 就好；參數一多（一長串 <code>--add-data</code>、<code>--hidden-import</code>）也比每次手敲命令列好維護。複雜的客製化（例如多個資料目錄、額外 binaries）官方建議直接改 <code>.spec</code>。</p>
 </blockquote>
 <p>注意我沒有加 <code>--hidden-import=PySide6.QtXml</code>。原因是 <strong>PyInstaller 內建了 PySide6 的 hook</strong>，會自動掃描你用到的 Qt 模組、把對應的相依、translations 和 plugins（包含 <code>platforms</code> 下的 <code>qwindows.dll</code> 這類關鍵 platform plugin）一起收進去。大多數 PySide6 程式不需要手動指定 hidden-import。</p>
-<p><code>--hidden-import</code> 真正派上用場的場合，是你用了 PyInstaller 靜態掃描看不到的動態 import——例如透過字串 <code>importlib.import_module()</code> 載入模組、或某個冷門 Qt 模組 hook 沒覆蓋到。判斷方式很簡單：先不加，打包後跑跑看，如果報 <code>ModuleNotFoundError: No module named &#39;xxx&#39;</code>，再針對那個模組補 <code>--hidden-import=xxx</code>。不要預先一股腦塞一堆，那只會讓 exe 變大、問題更難定位。</p>
-<h2 id="windowed-的隱藏代價：stdout-變成-None"><a href="#windowed-的隱藏代價：stdout-變成-None" class="headerlink" title="--windowed 的隱藏代價：stdout 變成 None"></a>--windowed 的隱藏代價：stdout 變成 None</h2><p><code>--windowed</code>（等同 <code>--noconsole</code> / <code>-w</code>）在 Windows 上會用 windowed 版本的 bootloader 來建程式，這個 bootloader 是以 <code>/SUBSYSTEM:WINDOWS</code> 編譯的，所以執行時不會附帶主控台視窗。對 GUI 程式這正是你要的——使用者看到的是視窗，不是一個黑色 console。（這篇講的是 Windows；macOS 上 <code>--windowed</code> 是去建 <code>.app</code> bundle，下面 stdout 變 <code>None</code> 那個坑主要是 Windows <code>/SUBSYSTEM:WINDOWS</code> 的行為。）</p>
+<p><code>--hidden-import</code> 真正派上用場的場合，是你用了 PyInstaller 靜態掃描看不到的動態 import——例如透過字串 <code>importlib.import_module()</code> 載入模組、或某個冷門 Qt 模組 hook 沒覆蓋到。判斷方式很簡單：先不加，打包後跑跑看，如果報 <code>ModuleNotFoundError: No module named 'xxx'</code>，再針對那個模組補 <code>--hidden-import=xxx</code>。不要預先一股腦塞一堆，那只會讓 exe 變大、問題更難定位。</p>
+<h2 id="–windowed-的隱藏代價：stdout-變成-None">–windowed 的隱藏代價：stdout 變成 None</h2>
+<p><code>--windowed</code>（等同 <code>--noconsole</code> / <code>-w</code>）在 Windows 上會用 windowed 版本的 bootloader 來建程式，這個 bootloader 是以 <code>/SUBSYSTEM:WINDOWS</code> 編譯的，所以執行時不會附帶主控台視窗。對 GUI 程式這正是你要的——使用者看到的是視窗，不是一個黑色 console。（這篇講的是 Windows；macOS 上 <code>--windowed</code> 是去建 <code>.app</code> bundle，下面 stdout 變 <code>None</code> 那個坑主要是 Windows <code>/SUBSYSTEM:WINDOWS</code> 的行為。）</p>
 <p>但它有個容易讓人栽跟頭的副作用：<strong>沒有主控台，<code>sys.stdin</code>、<code>sys.stdout</code>、<code>sys.stderr</code> 全部會是 <code>None</code>。</strong> 如果你的程式裡某個地方直接 <code>print()</code>、或某個函式庫往 <code>sys.stdout</code> 寫東西，在開發時跑得好好的，打包成 windowed 後可能因為對 <code>None</code> 做操作而拋例外。我自己就吃過這種苦——開發時 print 一切正常，打包後雙擊沒反應，因為某段背景邏輯 print log 直接炸了，而且因為沒 console，連錯誤訊息都看不到。</p>
 <p>兩個務實的應對：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. debug 階段先拿掉 --windowed，留著 console 看 traceback</span></span><br><span class="line"><span class="comment">#    確認程式跑得起來、再加回 --windowed 出正式版</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 程式裡別假設 stdout 一定存在，用 logging 寫檔取代 print</span></span><br><span class="line"><span class="keyword">import</span> logging</span><br><span class="line">logging.basicConfig(</span><br><span class="line">    filename=<span class="string">&#x27;app.log&#x27;</span>,</span><br><span class="line">    level=logging.INFO,</span><br><span class="line">    <span class="built_in">format</span>=<span class="string">&#x27;%(asctime)s %(levelname)s %(message)s&#x27;</span>,</span><br><span class="line">)</span><br><span class="line">logging.info(<span class="string">&#x27;啟動完成&#x27;</span>)  <span class="comment"># 不依賴 stdout，windowed 模式也安全</span></span><br></pre></td></tr></table></figure>
-
 <p>把 log 寫進檔案這招特別有用：windowed 模式下程式閃退時你什麼都看不到，有一份 <code>app.log</code> 就能知道它死在哪一行。</p>
-<h2 id="打包後常見問題對照"><a href="#打包後常見問題對照" class="headerlink" title="打包後常見問題對照"></a>打包後常見問題對照</h2><table>
+<h2 id="打包後常見問題對照">打包後常見問題對照</h2>
+<table>
 <thead>
 <tr>
 <th>症狀</th>
@@ -187,7 +187,8 @@
 <th>解法</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>缺模組 <code>ModuleNotFoundError</code></td>
 <td>動態 import 沒被掃到</td>
 <td>針對該模組加 <code>--hidden-import</code></td>
@@ -212,19 +213,23 @@
 <td>罕見，hook 沒收到 platforms</td>
 <td>確認用較新版 PyInstaller，必要時手動 <code>--add-data</code> 收 plugins</td>
 </tr>
-</tbody></table>
-<h2 id="成品檢查清單"><a href="#成品檢查清單" class="headerlink" title="成品檢查清單"></a>成品檢查清單</h2><p>打包完別只在自己機器上點一下就交差。資源路徑、windowed 副作用這些坑，常常要到一台「沒裝 Python 的乾淨電腦」上才會現形：</p>
+</tbody>
+</table>
+<h2 id="成品檢查清單">成品檢查清單</h2>
+<p>打包完別只在自己機器上點一下就交差。資源路徑、windowed 副作用這些坑，常常要到一台「沒裝 Python 的乾淨電腦」上才會現形：</p>
 <ul>
-<li><input disabled="" type="checkbox"> 在沒有 Python 環境的電腦上能正常啟動</li>
-<li><input disabled="" type="checkbox"> 圖示、樣式表、設定檔都正確載入（這項直接驗證 <code>_MEIPASS</code> 有沒有接對）</li>
-<li><input disabled="" type="checkbox"> 所有功能跑一遍，特別是會讀寫檔案的部分</li>
-<li><input disabled="" type="checkbox"> windowed 模式下沒有因為 <code>print</code> / stdout 而閃退</li>
-<li><input disabled="" type="checkbox"> exe 體積在合理範圍，沒帶多餘套件</li>
+<li>[ ] 在沒有 Python 環境的電腦上能正常啟動</li>
+<li>[ ] 圖示、樣式表、設定檔都正確載入（這項直接驗證 <code>_MEIPASS</code> 有沒有接對）</li>
+<li>[ ] 所有功能跑一遍，特別是會讀寫檔案的部分</li>
+<li>[ ] windowed 模式下沒有因為 <code>print</code> / stdout 而閃退</li>
+<li>[ ] exe 體積在合理範圍，沒帶多餘套件</li>
 </ul>
-<h2 id="寫在最後"><a href="#寫在最後" class="headerlink" title="寫在最後"></a>寫在最後</h2><p>PyInstaller 打包 PySide6，真正會卡住人的不是基本指令，而是 onefile 後資源路徑變了、以及 <code>--windowed</code> 砍掉 stdout 這兩件「開發時看不到、換台電腦才爆」的事。把 <code>resource_path</code> 函式建好、所有資源讀取都走它，再記得 <code>--add-data</code> 的目的地要跟 <code>resource_path</code> 算出來的路徑對上，這條最常見的死路就通了。至於 hidden-import，先信任 PyInstaller 的 PySide6 hook，缺什麼再補什麼——預先塞一堆只是替自己製造更難查的問題。</p>
-<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ul>
+<h2 id="寫在最後">寫在最後</h2>
+<p>PyInstaller 打包 PySide6，真正會卡住人的不是基本指令，而是 onefile 後資源路徑變了、以及 <code>--windowed</code> 砍掉 stdout 這兩件「開發時看不到、換台電腦才爆」的事。把 <code>resource_path</code> 函式建好、所有資源讀取都走它，再記得 <code>--add-data</code> 的目的地要跟 <code>resource_path</code> 算出來的路徑對上，這條最常見的死路就通了。至於 hidden-import，先信任 PyInstaller 的 PySide6 hook，缺什麼再補什麼——預先塞一堆只是替自己製造更難查的問題。</p>
+<h2 id="參考資料">參考資料</h2>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://pyinstaller.org/en/stable/runtime-information.html">PyInstaller Run-time Information（_MEIPASS / sys.frozen）</a></li>
-<li><a target="_blank" rel="noopener" href="https://pyinstaller.org/en/stable/usage.html">PyInstaller Using PyInstaller（--add-data 語法）</a></li>
+<li><a target="_blank" rel="noopener" href="https://pyinstaller.org/en/stable/usage.html">PyInstaller Using PyInstaller（–add-data 語法）</a></li>
 <li><a target="_blank" rel="noopener" href="https://pyinstaller.org/en/stable/common-issues-and-pitfalls.html">PyInstaller Common Issues and Pitfalls（windowed 模式 stdout）</a></li>
 <li><a target="_blank" rel="noopener" href="https://doc.qt.io/qtforpython-6/">PySide6 文件</a></li>
 </ul>
@@ -318,15 +323,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

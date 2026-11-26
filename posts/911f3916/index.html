@@ -119,41 +119,51 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>家裡的 IP 會變、沒有固定位址，想從外面連回自己的伺服器就麻煩了。DuckDNS 解決這件事：把一個固定子網域（例如 <code>yourname.duckdns.org</code>）指向你現在的 IP，IP 變了就更新，網域名稱不變。完全免費，架在 Amazon AWS 上，一個帳號最多五個子網域。</p>
-<h2 id="什麼是-DuckDNS？"><a href="#什麼是-DuckDNS？" class="headerlink" title="什麼是 DuckDNS？"></a>什麼是 DuckDNS？</h2><p>DuckDNS 是免費的動態 DNS 託管服務。它讓你把一個固定的子網域（例如 <code>yourdomain.duckdns.org</code>）指向一個會變動的 IP 位址，對沒有固定 IP 的家庭網路或小型伺服器來說很實用。</p>
-<h2 id="DuckDNS-的主要特點"><a href="#DuckDNS-的主要特點" class="headerlink" title="DuckDNS 的主要特點"></a>DuckDNS 的主要特點</h2><ul>
+<h2 id="什麼是-DuckDNS？">什麼是 DuckDNS？</h2>
+<p>DuckDNS 是免費的動態 DNS 託管服務。它讓你把一個固定的子網域（例如 <code>yourdomain.duckdns.org</code>）指向一個會變動的 IP 位址，對沒有固定 IP 的家庭網路或小型伺服器來說很實用。</p>
+<h2 id="DuckDNS-的主要特點">DuckDNS 的主要特點</h2>
+<ul>
 <li>完全免費：不收任何費用，靠捐款維持營運。</li>
 <li>支援 IPv4 和 IPv6：兩種協定都能用。</li>
 <li>API 支援：提供簡單的 HTTP API，方便整合到自己的應用程式或腳本。</li>
 <li>多平台支援：官方提供 Windows、Linux、macOS、路由器、Raspberry Pi 等平台的腳本與說明。</li>
 </ul>
-<h2 id="如何使用-DuckDNS"><a href="#如何使用-DuckDNS" class="headerlink" title="如何使用 DuckDNS"></a>如何使用 DuckDNS</h2><h3 id="步驟-1：註冊帳號"><a href="#步驟-1：註冊帳號" class="headerlink" title="步驟 1：註冊帳號"></a>步驟 1：註冊帳號</h3><ol>
+<h2 id="如何使用-DuckDNS">如何使用 DuckDNS</h2>
+<h3 id="步驟-1：註冊帳號">步驟 1：註冊帳號</h3>
+<ol>
 <li>前往 <a target="_blank" rel="noopener" href="https://www.duckdns.org/">DuckDNS 官網</a></li>
 <li>使用 GitHub 或 Google 帳號登入（Twitter 登入目前已停用）</li>
 </ol>
-<h3 id="步驟-2：建立子網域"><a href="#步驟-2：建立子網域" class="headerlink" title="步驟 2：建立子網域"></a>步驟 2：建立子網域</h3><ol>
+<h3 id="步驟-2：建立子網域">步驟 2：建立子網域</h3>
+<ol>
 <li>登入後，在頁面上方的文字框輸入想要的子網域名稱（例如 <code>mywebsite</code>）</li>
 <li>點擊「add domain」按鈕</li>
 <li>建立成功後會出現在下方列表，目前指向的 IP 也會一併顯示</li>
 </ol>
-<h3 id="步驟-3：更新-IP-位址"><a href="#步驟-3：更新-IP-位址" class="headerlink" title="步驟 3：更新 IP 位址"></a>步驟 3：更新 IP 位址</h3><p>有幾種方式可以保持 IP 同步：</p>
+<h3 id="步驟-3：更新-IP-位址">步驟 3：更新 IP 位址</h3>
+<p>有幾種方式可以保持 IP 同步：</p>
 <ol>
-<li><p>手動更新：在 DuckDNS 網站上點擊「update ip」，適合測試用。</p>
+<li>
+<p>手動更新：在 DuckDNS 網站上點擊「update ip」，適合測試用。</p>
 </li>
-<li><p>Linux cron 腳本：官網 install 頁面有現成腳本，選平台後貼上即可。以 Linux + cron 為例：</p>
+<li>
+<p>Linux cron 腳本：官網 install 頁面有現成腳本，選平台後貼上即可。以 Linux + cron 為例：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 建立腳本檔案</span></span><br><span class="line"><span class="built_in">mkdir</span> -p ~/duckdns</span><br><span class="line"><span class="built_in">cat</span> &gt; ~/duckdns/duck.sh &lt;&lt; <span class="string">&#x27;EOF&#x27;</span></span><br><span class="line">curl -fsS <span class="string">&quot;https://www.duckdns.org/update?domains=yourname&amp;token=your-token&amp;ip=&quot;</span> -o ~/duckdns/duck.log</span><br><span class="line">EOF</span><br><span class="line"><span class="built_in">chmod</span> 700 ~/duckdns/duck.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 加進 cron，每 5 分鐘更新一次</span></span><br><span class="line">crontab -e</span><br><span class="line"><span class="comment"># 加入這行：</span></span><br><span class="line"><span class="comment"># */5 * * * * ~/duckdns/duck.sh &gt;/dev/null 2&gt;&amp;1</span></span><br></pre></td></tr></table></figure>
-
 <p>把 <code>yourname</code> 換成你的子網域、<code>your-token</code> 換成帳號頁面上的 token。這裡不要加 <code>curl -k</code>；<code>-k</code> 會略過 TLS 憑證驗證，讓更新 token 更容易被中間人攔截。腳本權限設成 <code>700</code>，也不要把 token 貼進公開 repo 或截圖。</p>
 </li>
-<li><p>路由器整合：部分路由器韌體（例如 DD-WRT、OpenWrt）直接支援 DuckDNS，在 DDNS 設定頁填入網域與 token 即可。</p>
+<li>
+<p>路由器整合：部分路由器韌體（例如 DD-WRT、OpenWrt）直接支援 DuckDNS，在 DDNS 設定頁填入網域與 token 即可。</p>
 </li>
-<li><p>用戶端軟體：有各作業系統的第三方用戶端可以選用。</p>
+<li>
+<p>用戶端軟體：有各作業系統的第三方用戶端可以選用。</p>
 </li>
 </ol>
-<h3 id="步驟-4：測試"><a href="#步驟-4：測試" class="headerlink" title="步驟 4：測試"></a>步驟 4：測試</h3><p>設定完成後先查 DNS 是否指向正確 IP：</p>
+<h3 id="步驟-4：測試">步驟 4：測試</h3>
+<p>設定完成後先查 DNS 是否指向正確 IP：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nslookup yourname.duckdns.org</span><br><span class="line"><span class="comment"># Linux/macOS 也可用：dig +short yourname.duckdns.org</span></span><br></pre></td></tr></table></figure>
-
 <p>解析結果和目前的對外 IP 相符，只能證明 DuckDNS 更新成功。<code>ping</code> 可能被防火牆擋掉，也不能證明你的網站、SSH 或遊戲伺服器能連線。真正的驗證要從外部網路測目標服務，例如關掉手機 Wi-Fi 後連 <code>https://yourname.duckdns.org</code>，或測指定 TCP port。</p>
-<h2 id="先確認你不是卡在-CGNAT"><a href="#先確認你不是卡在-CGNAT" class="headerlink" title="先確認你不是卡在 CGNAT"></a>先確認你不是卡在 CGNAT</h2><p>DuckDNS 只負責把名稱解析到 IP，不會替你打通家用路由器。要讓外網連進來，還需要：</p>
+<h2 id="先確認你不是卡在-CGNAT">先確認你不是卡在 CGNAT</h2>
+<p>DuckDNS 只負責把名稱解析到 IP，不會替你打通家用路由器。要讓外網連進來，還需要：</p>
 <ol>
 <li>路由器 WAN IP 與查 IP 網站顯示的位址一致；若不同，很可能在 ISP 的 CGNAT 後面。</li>
 <li>路由器已把需要的 port 轉送到內網伺服器，而且伺服器的內網 IP 固定。</li>
@@ -161,13 +171,15 @@
 <li>ISP 沒有封鎖該 port，服務本身也確實在監聽。</li>
 </ol>
 <p>卡在 CGNAT 時，設定再多次 DuckDNS 都沒用。可向 ISP 申請公網 IP，或改用 VPN／tunnel 類方案；不要把 DNS 問題和入站連線問題混在一起。</p>
-<h2 id="應用場景"><a href="#應用場景" class="headerlink" title="應用場景"></a>應用場景</h2><ul>
+<h2 id="應用場景">應用場景</h2>
+<ul>
 <li>遠端存取家庭網路：IP 變動也能穩定連回家中的 NAS 或其他裝置。</li>
 <li>架設個人網站或服務：讓外部訪客用固定網址找到你的服務。</li>
 <li>遊戲伺服器：需要固定位址讓朋友連線時很方便。</li>
 <li>IoT 專案：物聯網裝置的遠端管理與連線。</li>
 </ul>
-<h2 id="安全性注意事項"><a href="#安全性注意事項" class="headerlink" title="安全性注意事項"></a>安全性注意事項</h2><p>DuckDNS 本身只做 DNS 解析，安全性要靠自己把關：</p>
+<h2 id="安全性注意事項">安全性注意事項</h2>
+<p>DuckDNS 本身只做 DNS 解析，安全性要靠自己把關：</p>
 <ol>
 <li>只開必要的連接埠，管理介面優先放在 VPN 後方，不要直接暴露外網</li>
 <li>帳號的 token 不要外洩，這個 token 可以直接更新你的網域</li>
@@ -241,15 +253,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

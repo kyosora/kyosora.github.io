@@ -111,22 +111,27 @@
     <aside class="post-aside">
       <details class="toc-box" open>
         <summary>目錄</summary>
-        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%A0%E4%B8%8D%E5%8F%AF%E4%B8%8D%E7%9F%A5%E7%9A%84%E7%B6%B2%E8%B7%AF%E9%80%9A%E8%A8%8A%E5%9F%A0%E5%A4%A7%E5%85%A8"><span class="toc-text">你不可不知的網路通訊埠大全</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IANA-%E5%9F%A0%E8%99%9F%E5%88%86%E9%A1%9E"><span class="toc-text">IANA 埠號分類</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E9%80%9A%E8%A8%8A%E5%9F%A0%E5%88%86%E9%A1%9E"><span class="toc-text">常用通訊埠分類</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7%E5%BB%BA%E8%AD%B0"><span class="toc-text">安全性建議</span></a></li></ol></li></ol></nav>
+        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">你不可不知的網路通訊埠大全</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IANA-%E5%9F%A0%E8%99%9F%E5%88%86%E9%A1%9E"><span class="toc-text">IANA 埠號分類</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E9%80%9A%E8%A8%8A%E5%9F%A0%E5%88%86%E9%A1%9E"><span class="toc-text">常用通訊埠分類</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7%E5%BB%BA%E8%AD%B0"><span class="toc-text">安全性建議</span></a></li></ol></li></ol></nav>
       </details>
     </aside>
     
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="你不可不知的網路通訊埠大全"><a href="#你不可不知的網路通訊埠大全" class="headerlink" title="你不可不知的網路通訊埠大全"></a>你不可不知的網路通訊埠大全</h2><p>通訊埠（Port）是網路通訊中的虛擬概念，用於區分同一台電腦上執行的不同網路服務。埠號是 16 位元無號整數，範圍 0–65535，其中 0 保留給作業系統，不可指定為服務埠；實際可用範圍為 1–65535。</p>
-<h3 id="IANA-埠號分類"><a href="#IANA-埠號分類" class="headerlink" title="IANA 埠號分類"></a>IANA 埠號分類</h3><p>IANA 將通訊埠分為三個範圍：</p>
+        <h2>你不可不知的網路通訊埠大全</h2>
+<p>通訊埠（Port）是網路通訊中的虛擬概念，用於區分同一台電腦上執行的不同網路服務。埠號是 16 位元無號整數，範圍 0–65535，其中 0 保留給作業系統，不可指定為服務埠；實際可用範圍為 1–65535。</p>
+<h3 id="IANA-埠號分類">IANA 埠號分類</h3>
+<p>IANA 將通訊埠分為三個範圍：</p>
 <ul>
 <li><strong>Well-Known Ports（0–1023）</strong>：由 IANA 正式指派給知名協定，需要系統管理員權限才能監聽</li>
 <li><strong>Registered Ports（1024–49151）</strong>：向 IANA 登記的應用程式服務埠，一般使用者帳號可監聽</li>
 <li><strong>Dynamic / Private Ports（49152–65535）</strong>：作業系統動態分配給用戶端連線使用，不對外提供服務</li>
 </ul>
-<h3 id="常用通訊埠分類"><a href="#常用通訊埠分類" class="headerlink" title="常用通訊埠分類"></a>常用通訊埠分類</h3><h4 id="檔案傳輸相關通訊埠"><a href="#檔案傳輸相關通訊埠" class="headerlink" title="檔案傳輸相關通訊埠"></a>檔案傳輸相關通訊埠</h4><ul>
-<li><strong>FTP（檔案傳輸協定）</strong><ul>
+<h3 id="常用通訊埠分類">常用通訊埠分類</h3>
+<h4 id="檔案傳輸相關通訊埠">檔案傳輸相關通訊埠</h4>
+<ul>
+<li><strong>FTP（檔案傳輸協定）</strong>
+<ul>
 <li>20：FTP 資料傳輸埠</li>
 <li>21：FTP 控制埠</li>
 <li>989：FTPS 資料傳輸埠（加密版本）</li>
@@ -136,80 +141,95 @@
 </ul>
 </li>
 </ul>
-<h4 id="遠端連線通訊埠"><a href="#遠端連線通訊埠" class="headerlink" title="遠端連線通訊埠"></a>遠端連線通訊埠</h4><ul>
-<li><p><strong>22：SSH/SCP</strong></p>
+<h4 id="遠端連線通訊埠">遠端連線通訊埠</h4>
+<ul>
+<li>
+<p><strong>22：SSH/SCP</strong></p>
 <ul>
 <li>安全的遠端連線和檔案傳輸</li>
 <li>現代系統的標準遠端管理工具</li>
 </ul>
 </li>
-<li><p><strong>23：Telnet</strong></p>
+<li>
+<p><strong>23：Telnet</strong></p>
 <ul>
 <li>傳統的遠端連線協定</li>
 <li>注意：不加密，建議改用 SSH</li>
 </ul>
 </li>
-<li><p><strong>3389：Windows Remote Desktop</strong></p>
+<li>
+<p><strong>3389：Windows Remote Desktop</strong></p>
 <ul>
 <li>Windows 遠端桌面連線</li>
 <li>提供圖形化的遠端操作介面</li>
 </ul>
 </li>
 </ul>
-<h4 id="網路基礎服務通訊埠"><a href="#網路基礎服務通訊埠" class="headerlink" title="網路基礎服務通訊埠"></a>網路基礎服務通訊埠</h4><ul>
-<li><p><strong>53：DNS</strong></p>
+<h4 id="網路基礎服務通訊埠">網路基礎服務通訊埠</h4>
+<ul>
+<li>
+<p><strong>53：DNS</strong></p>
 <ul>
 <li>網域名稱解析服務，將網域名稱轉換為 IP 位址</li>
 <li>一般查詢走 UDP/53；回應超過 512 bytes 或進行 Zone Transfer 時改用 TCP/53</li>
 <li>DNS over TLS（DoT）使用 853 埠</li>
 </ul>
 </li>
-<li><p><strong>67/68：DHCP</strong></p>
+<li>
+<p><strong>67/68：DHCP</strong></p>
 <ul>
 <li>67：DHCP 伺服器</li>
 <li>68：DHCP 客戶端</li>
 <li>自動分配 IP 位址的服務</li>
 </ul>
 </li>
-<li><p><strong>80：HTTP</strong></p>
+<li>
+<p><strong>80：HTTP</strong></p>
 <ul>
 <li>網頁瀏覽的基本協定</li>
 <li>未加密的網頁傳輸</li>
 </ul>
 </li>
-<li><p><strong>443：HTTPS</strong></p>
+<li>
+<p><strong>443：HTTPS</strong></p>
 <ul>
 <li>加密的網頁傳輸，現代網站標配</li>
 <li>TCP/443 走 TLS；QUIC（HTTP/3）同樣使用 UDP/443，部署比例持續上升</li>
 </ul>
 </li>
 </ul>
-<h4 id="郵件相關通訊埠"><a href="#郵件相關通訊埠" class="headerlink" title="郵件相關通訊埠"></a>郵件相關通訊埠</h4><ul>
-<li><p><strong>25：SMTP</strong></p>
+<h4 id="郵件相關通訊埠">郵件相關通訊埠</h4>
+<ul>
+<li>
+<p><strong>25：SMTP</strong></p>
 <ul>
 <li>郵件伺服器之間的轉發（MTA to MTA）</li>
 <li>ISP 通常封鎖一般用戶外寄 25 埠以防止垃圾郵件</li>
 </ul>
 </li>
-<li><p><strong>465：SMTPS（Submission over Implicit TLS）</strong></p>
+<li>
+<p><strong>465：SMTPS（Submission over Implicit TLS）</strong></p>
 <ul>
 <li>連線一開始即啟用 TLS 加密，RFC 8314 正式確立</li>
 <li>現代郵件客戶端發信的兩個主要選擇之一</li>
 </ul>
 </li>
-<li><p><strong>587：SMTP Submission（STARTTLS）</strong></p>
+<li>
+<p><strong>587：SMTP Submission（STARTTLS）</strong></p>
 <ul>
 <li>RFC 6409 定義的郵件提交標準埠，連線後升級為 TLS</li>
 <li>目前最廣泛使用的郵件客戶端發信埠，設定 SMTP 客戶端時優先選這個</li>
 </ul>
 </li>
-<li><p><strong>110：POP3</strong></p>
+<li>
+<p><strong>110：POP3</strong></p>
 <ul>
 <li>郵件接收協定，從伺服器下載後預設從伺服器刪除</li>
 <li>加密版本使用 995（POP3S）</li>
 </ul>
 </li>
-<li><p><strong>143：IMAP</strong></p>
+<li>
+<p><strong>143：IMAP</strong></p>
 <ul>
 <li>郵件存取協定，郵件留在伺服器端，支援多裝置同步</li>
 <li>相較 POP3 更適合多裝置使用情境</li>
@@ -217,92 +237,110 @@
 </ul>
 </li>
 </ul>
-<h4 id="資料庫服務通訊埠"><a href="#資料庫服務通訊埠" class="headerlink" title="資料庫服務通訊埠"></a>資料庫服務通訊埠</h4><ul>
-<li><p><strong>1433：SQL Server</strong></p>
+<h4 id="資料庫服務通訊埠">資料庫服務通訊埠</h4>
+<ul>
+<li>
+<p><strong>1433：SQL Server</strong></p>
 <ul>
 <li>Microsoft SQL Server 的預設通訊埠</li>
 <li>企業級資料庫服務</li>
 </ul>
 </li>
-<li><p><strong>1434：SQL Server Browser</strong></p>
+<li>
+<p><strong>1434：SQL Server Browser</strong></p>
 <ul>
 <li>SQL Server Browser 服務（UDP 協定）</li>
 <li>用於回報具名執行個體的動態埠號，讓客戶端知道要連哪個埠</li>
 <li>SQL Slammer 蠕蟲（2003）正是利用此埠發動攻擊，安全性建議：非必要應停用 SQL Server Browser 服務</li>
 </ul>
 </li>
-<li><p><strong>3306：MySQL</strong></p>
+<li>
+<p><strong>3306：MySQL</strong></p>
 <ul>
 <li>MySQL 資料庫的預設通訊埠</li>
 </ul>
 </li>
-<li><p><strong>5432：PostgreSQL</strong></p>
+<li>
+<p><strong>5432：PostgreSQL</strong></p>
 <ul>
 <li>PostgreSQL 的預設通訊埠</li>
 </ul>
 </li>
-<li><p><strong>5022：SQL Server Always On 可用性群組</strong></p>
+<li>
+<p><strong>5022：SQL Server Always On 可用性群組</strong></p>
 <ul>
 <li>Always On Availability Groups 的 database mirroring endpoint 預設埠</li>
 <li>用於主要複本與次要複本之間的同步通訊；防火牆需放行此埠才能建立複本連線</li>
 </ul>
 </li>
 </ul>
-<h4 id="開發與-DevOps-常用通訊埠"><a href="#開發與-DevOps-常用通訊埠" class="headerlink" title="開發與 DevOps 常用通訊埠"></a>開發與 DevOps 常用通訊埠</h4><ul>
-<li><p><strong>6379：Redis</strong></p>
+<h4 id="開發與-DevOps-常用通訊埠">開發與 DevOps 常用通訊埠</h4>
+<ul>
+<li>
+<p><strong>6379：Redis</strong></p>
 <ul>
 <li>Redis 的預設通訊埠，無加密</li>
 <li>生產環境應綁定至 127.0.0.1 或透過 TLS Proxy 對外，避免直接暴露</li>
 </ul>
 </li>
-<li><p><strong>27017：MongoDB</strong></p>
+<li>
+<p><strong>27017：MongoDB</strong></p>
 <ul>
 <li>MongoDB 的預設通訊埠</li>
 </ul>
 </li>
-<li><p><strong>8080：HTTP 替代埠</strong></p>
+<li>
+<p><strong>8080：HTTP 替代埠</strong></p>
 <ul>
 <li>開發環境常用的 HTTP 測試埠，Tomcat、各類反向代理預設亦使用此埠</li>
 </ul>
 </li>
-<li><p><strong>8443：HTTPS 替代埠</strong></p>
+<li>
+<p><strong>8443：HTTPS 替代埠</strong></p>
 <ul>
 <li>開發環境常用的 HTTPS 測試埠，對應 8080 的加密版本</li>
 </ul>
 </li>
-<li><p><strong>9090：Prometheus</strong></p>
+<li>
+<p><strong>9090：Prometheus</strong></p>
 <ul>
 <li>Prometheus 監控伺服器的預設 Web 介面與 API 埠</li>
 </ul>
 </li>
 </ul>
-<h4 id="其他重要服務通訊埠"><a href="#其他重要服務通訊埠" class="headerlink" title="其他重要服務通訊埠"></a>其他重要服務通訊埠</h4><ul>
-<li><p><strong>119：NNTP</strong></p>
+<h4 id="其他重要服務通訊埠">其他重要服務通訊埠</h4>
+<ul>
+<li>
+<p><strong>119：NNTP</strong></p>
 <ul>
 <li>網路新聞傳輸協定</li>
 <li>用於新聞組服務</li>
 </ul>
 </li>
-<li><p><strong>123：NTP</strong></p>
+<li>
+<p><strong>123：NTP</strong></p>
 <ul>
 <li>網路時間協定（UDP）</li>
 <li>用於時間同步</li>
 </ul>
 </li>
-<li><p><strong>389：LDAP</strong></p>
+<li>
+<p><strong>389：LDAP</strong></p>
 <ul>
 <li>輕量級目錄存取協定，用於集中式身分驗證</li>
 <li>明文傳輸；可透過 StartTLS 在同一埠升級為加密連線</li>
 <li>加密版本使用 636（LDAPS），連線一開始即啟用 TLS，安全性更高</li>
 </ul>
 </li>
-<li><p><strong>445：SMB（Server Message Block）</strong></p>
+<li>
+<p><strong>445：SMB（Server Message Block）</strong></p>
 <ul>
 <li>Windows 現代檔案與印表機共享的主力埠</li>
 <li>Windows 2000 起即走 TCP 445 直接傳輸，跨路由器、VPN 均可使用</li>
 </ul>
 </li>
-<li><p><strong>137/138/139：NetBIOS over TCP/IP（遺留）</strong></p>
+<li>
+<p><strong>137/138/139：NetBIOS over TCP/IP（遺留）</strong></p>
 <ul>
 <li>137：名稱服務</li>
 <li>138：資料廣播（UDP）</li>
@@ -311,7 +349,8 @@
 </ul>
 </li>
 </ul>
-<h3 id="安全性建議"><a href="#安全性建議" class="headerlink" title="安全性建議"></a>安全性建議</h3><ol>
+<h3 id="安全性建議">安全性建議</h3>
+<ol>
 <li>定期檢查開放的通訊埠</li>
 <li>關閉不必要的服務和通訊埠</li>
 <li>使用防火牆限制通訊埠存取</li>
@@ -369,15 +408,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

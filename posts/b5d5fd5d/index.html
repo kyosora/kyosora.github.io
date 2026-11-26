@@ -118,39 +118,45 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>水位監測系統的主查詢開始出現「執行逾時到期。在作業完成之前超過逾時等待的時間，或是伺服器未回應。」，這是應用層的 CommandTimeout（預設 30 秒），一旦觸發就連帶觸發 LINE 通知錯誤，警報不斷。</p>
-<h2 id="初始情況"><a href="#初始情況" class="headerlink" title="初始情況"></a>初始情況</h2><h3 id="系統概況"><a href="#系統概況" class="headerlink" title="系統概況"></a>系統概況</h3><ul>
+        <h2 id="背景">背景</h2>
+<p>水位監測系統的主查詢開始出現「執行逾時到期。在作業完成之前超過逾時等待的時間，或是伺服器未回應。」，這是應用層的 CommandTimeout（預設 30 秒），一旦觸發就連帶觸發 LINE 通知錯誤，警報不斷。</p>
+<h2 id="初始情況">初始情況</h2>
+<h3 id="系統概況">系統概況</h3>
+<ul>
 <li>共 120 個監測站點（stt_no）</li>
 <li>每 10 分鐘向 <code>WaterLevelGaugeHistory</code> 匯入一次資料，觀察時已累積逾 500 萬筆</li>
 <li>需要查詢每個站點最近 24 小時的最新一筆</li>
 </ul>
-<h3 id="原始查詢"><a href="#原始查詢" class="headerlink" title="原始查詢"></a>原始查詢</h3><p>執行時間約 1 分鐘以上：</p>
+<h3 id="原始查詢">原始查詢</h3>
+<p>執行時間約 1 分鐘以上：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> </span><br><span class="line">    WL.[ID], WL.[stt_name], <span class="comment">/* 其他欄位 ... */</span></span><br><span class="line">    WLH.[measure_time], WLH.[val], WLH.[Status], WLH.cstatus, WLH.[Epower], WLH.nodata</span><br><span class="line"><span class="keyword">FROM</span> [dbo].[WaterLevelGauge] WL</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> [dbo].[WaterLevelGauge_detailed_View] WLD </span><br><span class="line">    <span class="keyword">ON</span> WL.[stt_name] <span class="operator">=</span> WLD.[MonitoringStationNumber]</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> [ID], [stt_no], [dev_id], [measure_time], [val], [Status], [cstatus], [nodata], [power] <span class="keyword">AS</span> Epower, </span><br><span class="line">    <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> [stt_no] <span class="keyword">ORDER</span> <span class="keyword">BY</span> [measure_time] <span class="keyword">DESC</span>) <span class="keyword">AS</span> row_num </span><br><span class="line">    <span class="keyword">FROM</span> [dbo].[WaterLevelGaugeHistory] </span><br><span class="line">    <span class="keyword">WHERE</span> [dev_id] <span class="keyword">IS</span> <span class="keyword">NOT NULL</span></span><br><span class="line">) WLH <span class="keyword">ON</span> WL.[stt_no] <span class="operator">=</span> WLH.[stt_no] <span class="keyword">AND</span> WLH.row_num <span class="operator">=</span> <span class="number">1</span></span><br><span class="line"><span class="keyword">WHERE</span> WL.[memo2] <span class="operator">&lt;&gt;</span> <span class="string">&#x27;停用&#x27;</span> <span class="keyword">OR</span> WL.[memo2] <span class="keyword">IS</span> <span class="keyword">NULL</span>;</span><br></pre></td></tr></table></figure>
-
 <p>瓶頸在子查詢：它對整張 500 萬筆的 <code>WaterLevelGaugeHistory</code> 跑 <code>ROW_NUMBER()</code>，沒有時間範圍限制，也沒有索引可用。</p>
-<h2 id="優化過程"><a href="#優化過程" class="headerlink" title="優化過程"></a>優化過程</h2><h3 id="步驟-1：重構子查詢並加時間過濾"><a href="#步驟-1：重構子查詢並加時間過濾" class="headerlink" title="步驟 1：重構子查詢並加時間過濾"></a>步驟 1：重構子查詢並加時間過濾</h3><p>把時間條件推進子查詢，讓 <code>ROW_NUMBER()</code> 只看最近 24 小時的資料。120 個站點、每 10 分鐘一筆，24 小時最多 144 × 120 = 17,280 筆，比 500 萬少了幾個數量級：</p>
+<h2 id="優化過程">優化過程</h2>
+<h3 id="步驟-1：重構子查詢並加時間過濾">步驟 1：重構子查詢並加時間過濾</h3>
+<p>把時間條件推進子查詢，讓 <code>ROW_NUMBER()</code> 只看最近 24 小時的資料。120 個站點、每 10 分鐘一筆，24 小時最多 144 × 120 = 17,280 筆，比 500 萬少了幾個數量級：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 子查詢：只取每個站點最近 24 小時內的最新一筆</span></span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    [ID], [stt_no], [dev_id], [measure_time], [val], [Status], </span><br><span class="line">    [cstatus], [nodata], [power] <span class="keyword">AS</span> Epower</span><br><span class="line"><span class="keyword">FROM</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> </span><br><span class="line">        [ID], [stt_no], [dev_id], [measure_time], [val], [Status], </span><br><span class="line">        [cstatus], [nodata], [power],</span><br><span class="line">        <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> [stt_no] <span class="keyword">ORDER</span> <span class="keyword">BY</span> [measure_time] <span class="keyword">DESC</span>) <span class="keyword">AS</span> row_num</span><br><span class="line">    <span class="keyword">FROM</span> [dbo].[WaterLevelGaugeHistory]</span><br><span class="line">    <span class="keyword">WHERE</span> [dev_id] <span class="keyword">IS</span> <span class="keyword">NOT NULL</span></span><br><span class="line">        <span class="keyword">AND</span> [measure_time] <span class="operator">&gt;=</span> DATEADD(<span class="keyword">HOUR</span>, <span class="number">-24</span>, GETDATE())</span><br><span class="line">) ranked</span><br><span class="line"><span class="keyword">WHERE</span> row_num <span class="operator">=</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
-
 <p>同時審視原始查詢對 <code>WaterLevelGauge_detailed_View</code> 的 LEFT JOIN：那個 View 的欄位在最終 SELECT 清單中並未實際使用，屬於多餘的連接，直接移除。</p>
 <p>完整優化後的外層查詢：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> </span><br><span class="line">    WL.[ID], WL.[stt_name], <span class="comment">/* 其他欄位 ... */</span></span><br><span class="line">    WLH.[measure_time], WLH.[val], WLH.[Status], WLH.cstatus, WLH.[Epower], WLH.nodata</span><br><span class="line"><span class="keyword">FROM</span> [dbo].[WaterLevelGauge] WL</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> (</span><br><span class="line">    <span class="keyword">SELECT</span></span><br><span class="line">        [ID], [stt_no], [dev_id], [measure_time], [val], [Status], </span><br><span class="line">        [cstatus], [nodata], [power] <span class="keyword">AS</span> Epower</span><br><span class="line">    <span class="keyword">FROM</span> (</span><br><span class="line">        <span class="keyword">SELECT</span> </span><br><span class="line">            [ID], [stt_no], [dev_id], [measure_time], [val], [Status], </span><br><span class="line">            [cstatus], [nodata], [power],</span><br><span class="line">            <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> [stt_no] <span class="keyword">ORDER</span> <span class="keyword">BY</span> [measure_time] <span class="keyword">DESC</span>) <span class="keyword">AS</span> row_num</span><br><span class="line">        <span class="keyword">FROM</span> [dbo].[WaterLevelGaugeHistory]</span><br><span class="line">        <span class="keyword">WHERE</span> [dev_id] <span class="keyword">IS</span> <span class="keyword">NOT NULL</span></span><br><span class="line">            <span class="keyword">AND</span> [measure_time] <span class="operator">&gt;=</span> DATEADD(<span class="keyword">HOUR</span>, <span class="number">-24</span>, GETDATE())</span><br><span class="line">    ) ranked</span><br><span class="line">    <span class="keyword">WHERE</span> row_num <span class="operator">=</span> <span class="number">1</span></span><br><span class="line">) WLH <span class="keyword">ON</span> WL.[stt_no] <span class="operator">=</span> WLH.[stt_no]</span><br><span class="line"><span class="keyword">WHERE</span> WL.[memo2] <span class="operator">&lt;&gt;</span> <span class="string">&#x27;停用&#x27;</span> <span class="keyword">OR</span> WL.[memo2] <span class="keyword">IS</span> <span class="keyword">NULL</span>;</span><br></pre></td></tr></table></figure>
-
-<h3 id="步驟-2：建覆蓋索引"><a href="#步驟-2：建覆蓋索引" class="headerlink" title="步驟 2：建覆蓋索引"></a>步驟 2：建覆蓋索引</h3><p>查詢的存取模式是「先用 <code>stt_no</code> 分組、再按 <code>measure_time</code> 降序取最新一筆」，索引鍵欄位照這個順序設：</p>
+<h3 id="步驟-2：建覆蓋索引">步驟 2：建覆蓋索引</h3>
+<p>查詢的存取模式是「先用 <code>stt_no</code> 分組、再按 <code>measure_time</code> 降序取最新一筆」，索引鍵欄位照這個順序設：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- WaterLevelGaugeHistory：鍵欄位涵蓋過濾與排序，INCLUDE 涵蓋常用輸出欄位</span></span><br><span class="line"><span class="keyword">CREATE</span> NONCLUSTERED INDEX IX_WaterLevelGaugeHistory_stt_no_measure_time</span><br><span class="line"><span class="keyword">ON</span> [dbo].[WaterLevelGaugeHistory] ([stt_no], [measure_time] <span class="keyword">DESC</span>)</span><br><span class="line">INCLUDE ([val], [Status], [cstatus])</span><br><span class="line"><span class="keyword">WITH</span> (SORT_IN_TEMPDB <span class="operator">=</span> <span class="keyword">ON</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- WaterLevelGauge：JOIN 條件用到 stt_no</span></span><br><span class="line"><span class="keyword">CREATE</span> NONCLUSTERED INDEX IX_WaterLevelGauge_stt_name</span><br><span class="line"><span class="keyword">ON</span> [dbo].[WaterLevelGauge] ([stt_name])</span><br><span class="line"><span class="keyword">WITH</span> (SORT_IN_TEMPDB <span class="operator">=</span> <span class="keyword">ON</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 建完索引後更新統計資訊，讓查詢最佳化工具拿到最新的分布資訊</span></span><br><span class="line"><span class="keyword">UPDATE</span> STATISTICS [dbo].[WaterLevelGaugeHistory] <span class="keyword">WITH</span> FULLSCAN;</span><br><span class="line"><span class="keyword">UPDATE</span> STATISTICS [dbo].[WaterLevelGauge] <span class="keyword">WITH</span> FULLSCAN;</span><br></pre></td></tr></table></figure>
-
 <p><code>INCLUDE</code> 欄位沒有納入 <code>dev_id</code>、<code>nodata</code>、<code>power</code>，這是刻意的取捨：<code>dev_id</code> 雖出現在 WHERE（<code>IS NOT NULL</code>），但幾乎所有資料列都非 NULL，過濾效益有限；<code>nodata</code>、<code>power</code> 欄位相對較大。把這三個欄位加進 INCLUDE 會增加索引體積與維護成本。實際上因為 <code>ROW_NUMBER</code> 把結果集收窄到最多 120 筆，回表次數本來就可接受，不加 INCLUDE 是合理的。</p>
-<h2 id="優化結果"><a href="#優化結果" class="headerlink" title="優化結果"></a>優化結果</h2><p>用 <code>SET STATISTICS TIME ON</code> 量測：</p>
+<h2 id="優化結果">優化結果</h2>
+<p>用 <code>SET STATISTICS TIME ON</code> 量測：</p>
 <ul>
 <li>原始查詢：~60 秒</li>
 <li>優化後：~1 秒</li>
 <li>改善幅度：約 98%（60→1 秒的實測比率）</li>
 </ul>
 <p>數字背後的原理：子查詢從掃描 500 萬筆降到最多 17,280 筆，再加上覆蓋索引讓過濾階段免去大量回表，這兩個改動相乘才跑出這個數字。</p>
-<h2 id="為什麼效果這麼明顯"><a href="#為什麼效果這麼明顯" class="headerlink" title="為什麼效果這麼明顯"></a>為什麼效果這麼明顯</h2><p><strong>時間過濾推進子查詢</strong>是關鍵。原本 <code>ROW_NUMBER()</code> 要看完全部 500 萬筆才知道哪一筆是「最新的」；加了 24 小時限制之後，每個站點最多 144 筆，全部站點合計不超過 1.7 萬筆，計算量直接砍了幾個數量級。</p>
+<h2 id="為什麼效果這麼明顯">為什麼效果這麼明顯</h2>
+<p><strong>時間過濾推進子查詢</strong>是關鍵。原本 <code>ROW_NUMBER()</code> 要看完全部 500 萬筆才知道哪一筆是「最新的」；加了 24 小時限制之後，每個站點最多 144 筆，全部站點合計不超過 1.7 萬筆，計算量直接砍了幾個數量級。</p>
 <p><strong>索引鍵欄位順序</strong>要對。<code>(stt_no, measure_time DESC)</code> 讓 SQL Server 能針對每個 stt_no 範圍直接從最新的時間往前讀，不用排序。如果順序對調成 <code>(measure_time, stt_no)</code> 效果會差很多。</p>
 <p><strong>移除多餘 JOIN</strong>（<code>WaterLevelGauge_detailed_View</code>）消除了一個 View 的額外展開，這個 View 本身可能含有複雜的子查詢或多層 JOIN。</p>
 <p><strong>資料分布剛好配合</strong>：120 個站點、固定 10 分鐘頻率，資料非常均勻，<code>PARTITION BY stt_no</code> 的效率最高，不會有某個 stt_no 累積異常多筆的偏態問題。</p>
-<h2 id="後續建議"><a href="#後續建議" class="headerlink" title="後續建議"></a>後續建議</h2><p><strong>定期維護</strong>：索引片段化程度超過 30% 就重建（<code>ALTER INDEX ... REBUILD</code>），統計資訊建議每週更新一次或在大量批次匯入後手動觸發。</p>
+<h2 id="後續建議">後續建議</h2>
+<p><strong>定期維護</strong>：索引片段化程度超過 30% 就重建（<code>ALTER INDEX ... REBUILD</code>），統計資訊建議每週更新一次或在大量批次匯入後手動觸發。</p>
 <p><strong>資料保留策略</strong>：目前靠時間過濾迴避全表掃描，但 500 萬筆仍會讓索引維護成本持續增長。考慮只在主表保留近三個月，舊資料歸檔到歷史表。</p>
 <p><strong>查詢存放區（Query Store）監控</strong>：開啟後可以追蹤執行計畫的漂移，在計畫被換掉導致效能回退時提前發現。</p>
 <p><strong>分區表</strong>：如果資料量繼續增長到數千萬筆，按月分區配合 partition elimination 能讓時間過濾的效果更直接；但這是資料量真正成長到那個規模才需要考慮的事，目前不必急。</p>
@@ -205,15 +211,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

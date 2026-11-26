@@ -126,44 +126,48 @@
 <p>再試一次。還是藍屏。</p>
 <p>這個問題困擾我好一陣子了。頻率不固定，有時候連開三場沒事，有時候進遊戲讀完畫面就炸。因為不是每次都觸發，排查起來格外惱人——你沒辦法穩定重現，就很難判斷到底是哪裡出問題。</p>
 <hr>
-<h2 id="我走過的彎路"><a href="#我走過的彎路" class="headerlink" title="我走過的彎路"></a>我走過的彎路</h2><p>我一開始懷疑是熱當。APEX 吃資源本來就兇，我的 GPU 溫度跑到八九十度是常態，藍屏的時間點又剛好在遊戲載入高峰，看起來太像過熱了。</p>
+<h2 id="我走過的彎路">我走過的彎路</h2>
+<p>我一開始懷疑是熱當。APEX 吃資源本來就兇，我的 GPU 溫度跑到八九十度是常態，藍屏的時間點又剛好在遊戲載入高峰，看起來太像過熱了。</p>
 <p>所以我先更新了顯示卡驅動。沒用。</p>
 <p>接著我把 APEX 的相關路徑全部加進火絨的安全區，怕是防毒軟體跟 EasyAntiCheat 打架。也沒用。</p>
 <p>問題就這樣斷斷續續，每隔幾天炸一次，炸完重開又能玩，讓人很難下定決心認真查。直到某天連續藍屏兩次，我受不了了，想到一件事——AI 現在不是很會讀 log 嗎？不如直接把事件日誌丟給它看。</p>
 <p>這個決定救了我大概一整個晚上的時間。</p>
 <hr>
-<h2 id="BSOD-0x0000001a-是什麼"><a href="#BSOD-0x0000001a-是什麼" class="headerlink" title="BSOD 0x0000001a 是什麼"></a>BSOD <code>0x0000001a</code> 是什麼</h2><p><code>MEMORY_MANAGEMENT</code>。聽起來嚇人，實際上這個停止碼涵蓋範圍很廣，代表 Windows 核心在管理記憶體時遇到嚴重的不一致狀態。</p>
+<h2 id="BSOD-0x0000001a-是什麼">BSOD <code>0x0000001a</code> 是什麼</h2>
+<p><code>MEMORY_MANAGEMENT</code>。聽起來嚇人，實際上這個停止碼涵蓋範圍很廣，代表 Windows 核心在管理記憶體時遇到嚴重的不一致狀態。</p>
 <p>溫度、驅動、防毒——我之前懷疑的方向全錯了。真正在崩的不是遊戲本體，而是遊戲啟動時順帶拉起的一個系統服務。</p>
 <p>問題在於<strong>時序</strong>：APEX 啟動 → 觸發某個元件 → 元件炸掉 → 核心記憶體狀態損壞 → BSOD。重裝遊戲不會動到那個元件，更新驅動也不會。</p>
 <hr>
-<h2 id="步驟一：用-PowerShell-查-BSOD-歷史"><a href="#步驟一：用-PowerShell-查-BSOD-歷史" class="headerlink" title="步驟一：用 PowerShell 查 BSOD 歷史"></a>步驟一：用 PowerShell 查 BSOD 歷史</h2><p>不猜了，直接看 log。Windows 事件日誌會把每一次 BSOD 記錄在 System 日誌裡，事件 ID <code>1001</code>，訊息包含 <code>bugcheck</code>。</p>
+<h2 id="步驟一：用-PowerShell-查-BSOD-歷史">步驟一：用 PowerShell 查 BSOD 歷史</h2>
+<p>不猜了，直接看 log。Windows 事件日誌會把每一次 BSOD 記錄在 System 日誌裡，事件 ID <code>1001</code>，訊息包含 <code>bugcheck</code>。</p>
 <p>以<strong>系統管理員</strong>身份開啟 PowerShell：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-WinEvent</span> <span class="literal">-LogName</span> System <span class="literal">-MaxEvents</span> <span class="number">5000</span> | <span class="built_in">Where-Object</span> &#123;</span><br><span class="line">    <span class="variable">$_</span>.Id <span class="operator">-eq</span> <span class="number">1001</span> <span class="operator">-and</span> <span class="variable">$_</span>.Message <span class="operator">-match</span> <span class="string">&quot;bugcheck&quot;</span></span><br><span class="line">&#125; | <span class="built_in">Select-Object</span> TimeCreated, Message | <span class="built_in">Format-List</span></span><br></pre></td></tr></table></figure>
-
 <p>這會列出最近所有藍屏的時間點和停止碼。我跑完發現有 4 筆紀錄，時間點跟我印象中藍屏的日子吻合。把這些時間記下來——這是診斷的錨點。</p>
 <hr>
-<h2 id="步驟二：建立崩潰前的時間軸"><a href="#步驟二：建立崩潰前的時間軸" class="headerlink" title="步驟二：建立崩潰前的時間軸"></a>步驟二：建立崩潰前的時間軸</h2><p>BSOD 本身只是結果。真正的線索藏在它發生<strong>前幾秒</strong>的應用程式錯誤裡。</p>
+<h2 id="步驟二：建立崩潰前的時間軸">步驟二：建立崩潰前的時間軸</h2>
+<p>BSOD 本身只是結果。真正的線索藏在它發生<strong>前幾秒</strong>的應用程式錯誤裡。</p>
 <p>用記下的 BSOD 時間往前推，查同段時間的應用程式錯誤：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 把 $bsodTime 換成實際的 BSOD 時間戳</span></span><br><span class="line"><span class="variable">$bsodTime</span> = [<span class="built_in">datetime</span>]<span class="string">&quot;2026-04-08 21:30:00&quot;</span></span><br><span class="line"><span class="variable">$start</span> = <span class="variable">$bsodTime</span>.AddMinutes(<span class="literal">-2</span>)</span><br><span class="line"><span class="variable">$end</span> = <span class="variable">$bsodTime</span>.AddSeconds(<span class="number">5</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">Get-WinEvent</span> <span class="literal">-LogName</span> Application | <span class="built_in">Where-Object</span> &#123;</span><br><span class="line">    <span class="variable">$_</span>.TimeCreated <span class="operator">-ge</span> <span class="variable">$start</span> <span class="operator">-and</span> <span class="variable">$_</span>.TimeCreated <span class="operator">-le</span> <span class="variable">$end</span> <span class="operator">-and</span> <span class="variable">$_</span>.Level <span class="operator">-le</span> <span class="number">2</span></span><br><span class="line">&#125; | <span class="built_in">Select-Object</span> TimeCreated, ProviderName, Id, Message | <span class="built_in">Format-List</span></span><br></pre></td></tr></table></figure>
-
 <p>重複這個查詢，把每一次 BSOD 前後都跑一遍。</p>
 <p>跑完四次 BSOD 的前後時段，答案浮出來了：<code>GameInputRedistService.exe</code> 崩潰，錯誤碼 <code>0xc0000005</code>（Access Violation），每次都在 BSOD 前幾秒。4 次 BSOD，4 次都有同一個元件先掛掉。</p>
 <p>我之前花時間查溫度、換驅動、設防毒白名單，結果元兇是一個我聽都沒聽過的服務。</p>
 <hr>
-<h2 id="步驟三：為什麼卸載沒用"><a href="#步驟三：為什麼卸載沒用" class="headerlink" title="步驟三：為什麼卸載沒用"></a>步驟三：為什麼卸載沒用</h2><p>知道是誰之後，第一反應當然是卸掉它。但你會發現它消失了——然後開一次 APEX，它又回來了。</p>
+<h2 id="步驟三：為什麼卸載沒用">步驟三：為什麼卸載沒用</h2>
+<p>知道是誰之後，第一反應當然是卸掉它。但你會發現它消失了——然後開一次 APEX，它又回來了。</p>
 <p>APEX 使用 EasyAntiCheat，而 EAC 會在每次遊戲啟動時自動偵測並重新安裝 <code>GameInputRedistService</code>。你移除它，遊戲幫你裝回來，然後它再次崩潰。無限迴圈。</p>
 <p>所以卸載不是解法。<strong>讓它存在但不啟動</strong>，才是。</p>
 <hr>
-<h2 id="步驟四：禁用服務"><a href="#步驟四：禁用服務" class="headerlink" title="步驟四：禁用服務"></a>步驟四：禁用服務</h2><p>以<strong>系統管理員</strong>身份執行：</p>
+<h2 id="步驟四：禁用服務">步驟四：禁用服務</h2>
+<p>以<strong>系統管理員</strong>身份執行：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Stop-Service</span> <span class="literal">-Name</span> <span class="string">&quot;GameInputRedistService&quot;</span> <span class="literal">-Force</span></span><br><span class="line"><span class="built_in">Set-Service</span> <span class="literal">-Name</span> <span class="string">&quot;GameInputRedistService&quot;</span> <span class="literal">-StartupType</span> Disabled</span><br></pre></td></tr></table></figure>
-
 <p>第一行強制停止當前執行中的服務，第二行把啟動類型設為停用。服務本體還在，EAC 偵測到它存在所以不會重裝，但它不會自動啟動、不會崩潰、不會踩到核心記憶體。</p>
 <hr>
-<h2 id="一鍵修復腳本"><a href="#一鍵修復腳本" class="headerlink" title="一鍵修復腳本"></a>一鍵修復腳本</h2><p>我自己實際操作時就是直接打上面那兩行指令，但如果你想分享給不熟 PowerShell 的朋友，下面這個腳本加了檢查邏輯和中文提示，存成 <code>fix-gameinput.ps1</code>，右鍵「以系統管理員身份執行」就好：</p>
+<h2 id="一鍵修復腳本">一鍵修復腳本</h2>
+<p>我自己實際操作時就是直接打上面那兩行指令，但如果你想分享給不熟 PowerShell 的朋友，下面這個腳本加了檢查邏輯和中文提示，存成 <code>fix-gameinput.ps1</code>，右鍵「以系統管理員身份執行」就好：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#Requires -RunAsAdministrator</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$serviceName</span> = <span class="string">&quot;GameInputRedistService&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;正在停止 <span class="variable">$serviceName</span> 服務...&quot;</span> <span class="literal">-ForegroundColor</span> Yellow</span><br><span class="line"></span><br><span class="line"><span class="variable">$service</span> = <span class="built_in">Get-Service</span> <span class="literal">-Name</span> <span class="variable">$serviceName</span> <span class="literal">-ErrorAction</span> SilentlyContinue</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$null</span> <span class="operator">-eq</span> <span class="variable">$service</span>) &#123;</span><br><span class="line">    <span class="built_in">Write-Host</span> <span class="string">&quot;服務不存在，可能尚未安裝。請先開啟一次 APEX 讓服務安裝完成後再執行此腳本。&quot;</span> <span class="literal">-ForegroundColor</span> Red</span><br><span class="line">    <span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止服務</span></span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$service</span>.Status <span class="operator">-eq</span> <span class="string">&quot;Running&quot;</span>) &#123;</span><br><span class="line">    <span class="built_in">Stop-Service</span> <span class="literal">-Name</span> <span class="variable">$serviceName</span> <span class="literal">-Force</span></span><br><span class="line">    <span class="built_in">Start-Sleep</span> <span class="literal">-Seconds</span> <span class="number">2</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 禁用服務</span></span><br><span class="line"><span class="built_in">Set-Service</span> <span class="literal">-Name</span> <span class="variable">$serviceName</span> <span class="literal">-StartupType</span> Disabled</span><br><span class="line"></span><br><span class="line"><span class="comment"># 驗證結果</span></span><br><span class="line"><span class="variable">$updated</span> = <span class="built_in">Get-Service</span> <span class="literal">-Name</span> <span class="variable">$serviceName</span></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;完成！服務狀態：&quot;</span> <span class="literal">-ForegroundColor</span> Green</span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;  名稱：<span class="variable">$</span>(<span class="variable">$updated</span>.Name)&quot;</span></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;  狀態：<span class="variable">$</span>(<span class="variable">$updated</span>.Status)&quot;</span></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;  啟動類型：<span class="variable">$</span>(<span class="variable">$updated</span>.StartType)&quot;</span></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;現在可以開啟 APEX 測試了。&quot;</span> <span class="literal">-ForegroundColor</span> Cyan</span><br></pre></td></tr></table></figure>
-
 <hr>
-<h2 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h2><p>禁用之後我連打了好幾天的 APEX，沒有再藍屏過，手把和其他輸入裝置也沒感覺到副作用。</p>
+<h2 id="總結">總結</h2>
+<p>禁用之後我連打了好幾天的 APEX，沒有再藍屏過，手把和其他輸入裝置也沒感覺到副作用。</p>
 <p>回頭看這次排查，前前後後斷斷續續搞了不知道多久，最後真正找到原因只花了十分鐘。差別在於我之前一直在猜——猜溫度、猜驅動、猜防毒——而事件日誌不用猜，它把時間線攤在你面前。</p>
 <p>三個步驟：</p>
 <ol>
@@ -262,15 +266,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
     
       <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
     
     </ul>
   </section>

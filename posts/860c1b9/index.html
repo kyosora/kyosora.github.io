@@ -118,11 +118,13 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>資料夾裡累積了超過兩百萬個檔案。透過 Windows 檔案總管直接刪除，系統會卡死，沒有回應。Windows 在計算資源回收桶確認與 GUI 進度時開銷極大，檔案數量一多就撐不住。</p>
-<h2 id="解決方案：使用批次檔"><a href="#解決方案：使用批次檔" class="headerlink" title="解決方案：使用批次檔"></a>解決方案：使用批次檔</h2><p>以下是使用的批次檔程式碼：</p>
+        <h2 id="問題描述">問題描述</h2>
+<p>資料夾裡累積了超過兩百萬個檔案。透過 Windows 檔案總管直接刪除，系統會卡死，沒有回應。Windows 在計算資源回收桶確認與 GUI 進度時開銷極大，檔案數量一多就撐不住。</p>
+<h2 id="解決方案：使用批次檔">解決方案：使用批次檔</h2>
+<p>以下是使用的批次檔程式碼：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">@echo off</span><br><span class="line">setlocal enabledelayedexpansion</span><br><span class="line"></span><br><span class="line">set &quot;folder_path=%~dp0&quot;</span><br><span class="line"></span><br><span class="line">echo 警告：此批次檔案將快速刪除以下資料夾中的所有檔案和子資料夾：</span><br><span class="line">echo %folder_path%</span><br><span class="line">echo.</span><br><span class="line">echo 請確認這是您想要清空的正確資料夾。</span><br><span class="line">echo 按 Y 繼續，或按任意其他鍵取消操作。</span><br><span class="line">set /p confirm=確認刪除 (Y/N)? </span><br><span class="line"></span><br><span class="line">if /i &quot;%confirm%&quot; neq &quot;Y&quot; (</span><br><span class="line">    echo 操作已取消。</span><br><span class="line">    goto :EOF</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">echo.</span><br><span class="line">echo 正在快速刪除所有內容，請稍候...</span><br><span class="line"></span><br><span class="line">pushd &quot;%folder_path%&quot;</span><br><span class="line"></span><br><span class="line">:: 使用 robocopy 來快速清空資料夾</span><br><span class="line">mkdir empty_temp</span><br><span class="line">robocopy empty_temp . /mir /mt:32</span><br><span class="line"></span><br><span class="line">:: 刪除臨時資料夾</span><br><span class="line">rmdir empty_temp</span><br><span class="line"></span><br><span class="line">popd</span><br><span class="line"></span><br><span class="line">echo 所有內容已被刪除。</span><br><span class="line"></span><br><span class="line">echo.</span><br><span class="line">echo 按任意鍵退出。</span><br><span class="line">pause &gt; nul</span><br></pre></td></tr></table></figure>
-
-<h2 id="如何使用這個批次檔"><a href="#如何使用這個批次檔" class="headerlink" title="如何使用這個批次檔"></a>如何使用這個批次檔</h2><ol>
+<h2 id="如何使用這個批次檔">如何使用這個批次檔</h2>
+<ol>
 <li>將上面的程式碼複製到文字編輯器（如記事本）。</li>
 <li>存成 <code>.bat</code> 格式，例如 <code>fast_delete_all.bat</code>。</li>
 <li>把這個 <code>.bat</code> 檔放進想要清空的資料夾。</li>
@@ -133,13 +135,14 @@
 <blockquote>
 <p><strong>注意：</strong> Windows 不允許刪除正在執行中的程式，所以執行完畢後資料夾內仍會殘留這支 <code>.bat</code> 檔本身，需手動刪除。</p>
 </blockquote>
-<h2 id="為什麼這個方法有效"><a href="#為什麼這個方法有效" class="headerlink" title="為什麼這個方法有效"></a>為什麼這個方法有效</h2><p>核心是 <code>robocopy</code>（Robust File Copy），Windows 內建的強大檔案複製工具。這裡用它把空資料夾鏡像到目標，讓目標多出來的所有檔案都被清除。</p>
+<h2 id="為什麼這個方法有效">為什麼這個方法有效</h2>
+<p>核心是 <code>robocopy</code>（Robust File Copy），Windows 內建的強大檔案複製工具。這裡用它把空資料夾鏡像到目標，讓目標多出來的所有檔案都被清除。</p>
 <p><code>/mir</code> 讓 robocopy 將目標資料夾鏡像成與空來源一致，因此目標中所有多餘的檔案都會被刪除。比直接在檔案總管刪除快的原因，是跳過了 GUI 的縮圖運算、資源回收桶確認及進度回報等 shell 開銷——每個檔案的刪除系統呼叫本身同樣是逐一執行的。<code>/mt:32</code> 開啟多執行緒，對以複製為主的情境效果顯著；不過在這個純刪除（purge）的使用情境下，加速效果有限，主要還是靠前述跳過 shell 開銷的優勢。</p>
 <p><strong>關於 exit code：</strong> robocopy 在純刪除操作後 exit code 通常是 1 或 3（非 0），若在外層腳本以 <code>errorlevel</code> 判斷成敗，會誤判為失敗。如果需要讓外層腳本正確判讀，可在 bat 最後加一行 <code>exit /b 0</code>。</p>
 <p><strong>關於重複執行：</strong> 若 <code>empty_temp</code> 目錄已存在（例如上次執行時 <code>rmdir</code> 失敗），robocopy 仍可正常執行，不會 fail。但如果目錄非空，它的內容反而會被鏡像進來。保險起見，可在 <code>mkdir</code> 前加一行防禦：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if exist empty_temp rd /s /q empty_temp</span><br></pre></td></tr></table></figure>
-
-<h2 id="安全提示"><a href="#安全提示" class="headerlink" title="安全提示"></a>安全提示</h2><p>使用前請注意：</p>
+<h2 id="安全提示">安全提示</h2>
+<p>使用前請注意：</p>
 <ol>
 <li>務必確認 bat 放在正確的資料夾——腳本以自身所在位置（<code>%~dp0</code>）為操作目標。</li>
 <li>這個批次檔會刪除資料夾內的所有內容，包括子資料夾與隱藏檔案，無法復原。</li>
@@ -196,15 +199,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

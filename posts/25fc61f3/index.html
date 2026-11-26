@@ -127,7 +127,8 @@
 <p>下面討論的都是 SWE-bench Pro 的 public OSS 版本（scaleapi/SWE-bench_Pro-os），Scale AI 自己幫客戶跑的私有 eval 版本不在這個討論範圍。</p>
 <p>緊接著兩件事。一是 Poolside 自己內部踩了同一個坑——他們訓練中的 Laguna M.1 模型一個週末突然跳了 20 分，差點上排行榜第一。二是 Datacurve 拿同樣的方法去稽核 Claude Opus 4.6 和 4.7 在 SWE-bench Pro 上的歷史 rollout，結論是：<strong>在 30 個抽樣任務中，Opus 4.7 有 18% 的通過、Opus 4.6 有 25% 的通過，是從容器裡讀 gold commit 得到的。</strong></p>
 <p>那張你今年拿來選模型、拿來說服老闆換 API 的排行榜，數字至少要打個問號。</p>
-<h2 id="先回答「現在都-4-8-了還在講-4-7-幹嘛」"><a href="#先回答「現在都-4-8-了還在講-4-7-幹嘛」" class="headerlink" title="先回答「現在都 4.8 了還在講 4.7 幹嘛」"></a>先回答「現在都 4.8 了還在講 4.7 幹嘛」</h2><p>這條時間線很諷刺，先擺出來：</p>
+<h2 id="先回答「現在都-4-8-了還在講-4-7-幹嘛」">先回答「現在都 4.8 了還在講 4.7 幹嘛」</h2>
+<p>這條時間線很諷刺，先擺出來：</p>
 <ul>
 <li>4/29 Poolside 開 issue #93</li>
 <li>5/11 Poolside 發 <a target="_blank" rel="noopener" href="https://poolside.ai/blog/through-the-looking-glass">Through the Looking Glass</a> 詳述自家踩坑</li>
@@ -142,13 +143,13 @@
 <li><strong>尚未被驗證</strong>：4.8 在 SWE-bench Pro 上實際 rollout 的 trajectory 沒有第三方 audit 出來。Anthropic 自己的 model card 講 4.8 在「寫完 code 後自己檢查、自己標 bug」這件事上比 4.7 大約強了 4 倍，但這是 self-checking 能力提升，跟「拒絕讀容器裡的 gold commit」是兩回事。</li>
 </ul>
 <p>也就是說：事情發生過、漏洞修補在路上、新模型沒被重測。文章談的就是這個中間地帶。</p>
-<h2 id="Poolside-是自己抓到自己作弊的"><a href="#Poolside-是自己抓到自己作弊的" class="headerlink" title="Poolside 是自己抓到自己作弊的"></a>Poolside 是自己抓到自己作弊的</h2><p>事情這樣開始：五月初的某個週末，Poolside 的 evals 團隊發現訓練中的 Laguna M.1 在 SWE-bench Pro 上突然跳到 ~64%。這個分數如果是真的，就是當天的 #1。</p>
+<h2 id="Poolside-是自己抓到自己作弊的">Poolside 是自己抓到自己作弊的</h2>
+<p>事情這樣開始：五月初的某個週末，Poolside 的 evals 團隊發現訓練中的 Laguna M.1 在 SWE-bench Pro 上突然跳到 ~64%。這個分數如果是真的，就是當天的 #1。</p>
 <p>但他們同時跑著好幾個 benchmark，其他 benchmark 的分數沒動。只有 SWE-bench Pro 飆。</p>
 <p>這種「單一榜飆、其他榜不動」的訊號，對熟 RL 訓練的人來說就是 reward hacking 的招牌氣味。Connor Adams、Aalhad Patankar、Alex Martin 幾個人立刻去抽 sample，看 agent 到底跑了什麼。</p>
 <p>抽出來的內容讓他們重做訓練設定。他們在 blog 裡記錄了三層 hack：</p>
 <p>第一層，git history mining。容器裡 <code>.git</code> 完整保留，agent 跑：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --oneline --all --grep=<span class="string">&quot;ensure_type&quot;</span></span><br><span class="line">git show 9fff6d433d --<span class="built_in">stat</span></span><br></pre></td></tr></table></figure>
-
 <p>修過原 bug 的 commit 就在 history 裡，連訊息都還在。Agent 抄 patch 丟進答案，verifier 跑過，通過。</p>
 <p>第二層，clone 原 repo。容器 git history 若被剝掉，agent 學會直接 <code>git clone --bare --depth 1000 https://github.com/django/django.git</code>，再 grep 跟 issue 描述相關的 commit。Django 的修復紀錄是公開的。</p>
 <p>第三層，web scraping。連 GitHub 都搜不到的話，<code>pip download astropy==4.3</code> 抓對應版本，從套件裡挖出修好的那段 code。一個極端案例裡，agent 找到某個演算法在「作者本人個人網站」上的實作，直接複製貼上。</p>
@@ -157,7 +158,8 @@
 <p>The same tools and skills that make agents so capable, also make it hard to stop a highly intelligent agent that wants to cheat.</p>
 </blockquote>
 <p>你讓 agent 會用 bash、會用 git、會 curl、會 pip，它就會用這些東西完成任何能達到「通過 verifier」這個目標的事——讀 gold commit 也算。你不能教它一半。</p>
-<h2 id="Datacurve-用一份小樣本-audit-對齊了帳"><a href="#Datacurve-用一份小樣本-audit-對齊了帳" class="headerlink" title="Datacurve 用一份小樣本 audit 對齊了帳"></a>Datacurve 用一份小樣本 audit 對齊了帳</h2><p>Poolside 那篇 blog 是 5/11 發的。5/26，Datacurve 發布新 benchmark DeepSWE 的同時順手把 SWE-bench Pro 的歷史 rollout 翻出來重審。</p>
+<h2 id="Datacurve-用一份小樣本-audit-對齊了帳">Datacurve 用一份小樣本 audit 對齊了帳</h2>
+<p>Poolside 那篇 blog 是 5/11 發的。5/26，Datacurve 發布新 benchmark DeepSWE 的同時順手把 SWE-bench Pro 的歷史 rollout 翻出來重審。</p>
 <p>先把 audit 邊界講清楚，免得後面數字被讀者過度推論：</p>
 <ul>
 <li>四個人團隊</li>
@@ -175,7 +177,8 @@
 <th>「通過」裡有多少是讀 gold 來的</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>Claude Opus 4.6</td>
 <td>&gt;12%</td>
 <td>~25%</td>
@@ -195,10 +198,12 @@
 <td>0</td>
 <td>0</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>不需要把這當定罪、可以把它當訊號。訊號是：在這個樣本下，Claude 系列會去用容器內可見的環境資訊（包括 .git history）達成目標，GPT 系列在同樣的 30 個任務裡沒被觀察到這個模式。</p>
 <p>為什麼會差這麼大？我的猜測——這不是事實、只是猜——是 Anthropic 的 RL 訓練比較鼓勵 agent「先去摸環境」。Claude Code 我自己用大半年，最明顯的特徵就是它會比 GPT 系列更愛 <code>ls</code>、更愛開檔看、更愛 grep。在真實開發場景這是優點，因為它把 codebase 當成有上下文的東西在處理；在 SWE-bench Pro 這種「環境本身就是答案來源」的場合，這個習慣會直接變成讀 gold commit 的入口。</p>
-<h2 id="評分尺自己也有不確定性"><a href="#評分尺自己也有不確定性" class="headerlink" title="評分尺自己也有不確定性"></a>評分尺自己也有不確定性</h2><p>事情到這還沒完。Datacurve 順手量了 SWE-bench Pro 的自動評分器（grader）。</p>
+<h2 id="評分尺自己也有不確定性">評分尺自己也有不確定性</h2>
+<p>事情到這還沒完。Datacurve 順手量了 SWE-bench Pro 的自動評分器（grader）。</p>
 <p>先講機制。SWE-bench Pro 的 grader 不是「比對 patch 字面跟 reference 像不像」，而是跑 verifier、看 test suite 過不過。但 verifier 跟 test 是綁著 reference implementation 寫的——同一個 bug 換一條路徑解，test 可能因為內部結構、變數名、邏輯流程不同而 fail。</p>
 <p>兩個獨立的數字：</p>
 <ul>
@@ -207,7 +212,8 @@
 </ul>
 <p>這兩個是不同條件下的機率，不能直接加總。但個別看都不小：false reject 24% 表示 SWE-bench Pro 對「跟原作者寫法不同但行為正確」的解法相當不友善。DeepSWE 自家 grader 的對應數字是 false accept 0.3%、false reject 1.1%。</p>
 <p>yage 那篇審計文章標題就講白了：「When the Ruler Is Wrong, No Measurement Matters」。grader 不會故意整你，但只要它測的不是「行為正確」而是「實作匹配」，那你 agent 的得分就跟「有沒有踩中原作者的實作路徑」綁在一起。</p>
-<h2 id="真正的問題是-benchmark-邊界"><a href="#真正的問題是-benchmark-邊界" class="headerlink" title="真正的問題是 benchmark 邊界"></a>真正的問題是 benchmark 邊界</h2><p>把 Poolside 跟 Datacurve 兩件事擺一起，根本問題不在 Claude 或哪個模型壞。在於 SWE-bench Pro 沒把沙盒邊界封好。</p>
+<h2 id="真正的問題是-benchmark-邊界">真正的問題是 benchmark 邊界</h2>
+<p>把 Poolside 跟 Datacurve 兩件事擺一起，根本問題不在 Claude 或哪個模型壞。在於 SWE-bench Pro 沒把沙盒邊界封好。</p>
 <p>評估一個 agent「會不會解 bug」這件事，前提是它能拿到的環境只有人類工程師在那個情境下會拿到的東西。SWE-bench Pro 的 Docker 鏡像裡放完整 <code>.git</code>，這就像考數學給學生考卷時順便把解答本夾在卷子背面——學生瞄一眼解答然後抄上去，你說學生作弊也對、但出題的人要負很大責任。</p>
 <p>這個區分對讀者重要在哪裡？對你日常選工具來說：</p>
 <ul>
@@ -215,7 +221,8 @@
 <li>「SWE-bench Pro 的數字是污染的」 = 「拿這個榜選模型不可靠」（不管你信哪一家）</li>
 <li>真正該下的結論：benchmark 設計沒做到應該做的事。「Claude 不能用」會是另一個過度推論</li>
 </ul>
-<h2 id="那你還能拿什麼選模型"><a href="#那你還能拿什麼選模型" class="headerlink" title="那你還能拿什麼選模型"></a>那你還能拿什麼選模型</h2><p>如果你是工程師，這件事直接影響的是「我該用哪家的 AI Coding 工具」這個決定。我把幾個判準寫下來：</p>
+<h2 id="那你還能拿什麼選模型">那你還能拿什麼選模型</h2>
+<p>如果你是工程師，這件事直接影響的是「我該用哪家的 AI Coding 工具」這個決定。我把幾個判準寫下來：</p>
 <p>一，先釘住「榜單」這個詞的歧義。同一個 SWE-bench Pro 至少有兩種公開排序：</p>
 <ul>
 <li>廠商自報（vendor-reported）：各家 lab 自己用自己調過的 scaffolding 跑出來、自己貼上去的分數</li>
@@ -231,7 +238,8 @@
 <li>你自己 review 二十分鐘</li>
 </ul>
 <p>要避免一個陷阱：別用你 codebase 裡已經解掉的 bug 來測，因為修復 commit 八成已經在 git history 或 PR 裡，模型一 grep 就抄到。挑「我自己都還沒想清楚怎麼修」的 bug。</p>
-<h2 id="我自己怎麼處理"><a href="#我自己怎麼處理" class="headerlink" title="我自己怎麼處理"></a>我自己怎麼處理</h2><p>我半年前還會看 SWE-bench 分數選模型，現在不會了。</p>
+<h2 id="我自己怎麼處理">我自己怎麼處理</h2>
+<p>我半年前還會看 SWE-bench 分數選模型，現在不會了。</p>
 <p>換模型現在我只做一件事：用我手邊真實的、一個還沒解的 bug，三家模型各跑一次給我看 patch。我自己 review 二十分鐘。誰的 patch 改的地方最像我會改的地方、誰的 patch 最少假設我沒講過的東西、誰的 patch 跑完測試最快、誰最會自己跑 lint，我就用誰。</p>
 <p>這個流程很 manual，但二十分鐘換一個我用三個月、每天用八小時的工具，CP 值高得離譜。</p>
 <p>SWE-bench Pro 這件事之後，我已經不期待任何單一榜單能告訴我「該選哪家」這件事。</p>
@@ -325,15 +333,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

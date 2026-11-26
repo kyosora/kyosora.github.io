@@ -119,7 +119,8 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>IoC（控制反轉）和 DI（依賴注入）常被混用，但兩者的層次不同：IoC 是設計原則，DI 是實現手段之一。搞清楚這個關係，才不會看到「容器」兩字就覺得是 IoC 的全部。</p>
-<h2 id="控制反轉-IoC-是什麼"><a href="#控制反轉-IoC-是什麼" class="headerlink" title="控制反轉 (IoC) 是什麼"></a>控制反轉 (IoC) 是什麼</h2><p>傳統寫法裡，程式碼自己決定何時建立依賴、用哪個實作——控制權在你的類別手上。IoC 把這個控制權交出去：由外部（框架、容器、或呼叫方）決定要注入什麼。</p>
+<h2 id="控制反轉-IoC-是什麼">控制反轉 (IoC) 是什麼</h2>
+<p>傳統寫法裡，程式碼自己決定何時建立依賴、用哪個實作——控制權在你的類別手上。IoC 把這個控制權交出去：由外部（框架、容器、或呼叫方）決定要注入什麼。</p>
 <p>IoC 並不等於 DI 容器。Martin Fowler 最早定義 IoC 時，涵蓋了 Service Locator、Template Method、以及依賴注入等多種形式。DI 容器只是實現 IoC 最常見的一種工具。</p>
 <p>IoC 帶來的實際好處：</p>
 <ul>
@@ -128,41 +129,39 @@
 <li><strong>可擴展性</strong>：新增實作、切換策略，不需修改現有程式碼。</li>
 </ul>
 <p>這三點都源自同一個機制——類別不再自己 <code>new</code> 依賴，而是被動接受注入。</p>
-<h2 id="依賴注入-DI-的注入方式"><a href="#依賴注入-DI-的注入方式" class="headerlink" title="依賴注入 (DI) 的注入方式"></a>依賴注入 (DI) 的注入方式</h2><p>DI 的核心想法：不在類別內部建立依賴物件，改由外部傳入。</p>
+<h2 id="依賴注入-DI-的注入方式">依賴注入 (DI) 的注入方式</h2>
+<p>DI 的核心想法：不在類別內部建立依賴物件，改由外部傳入。</p>
 <p>注入方式有三種，但在 .NET 內建 DI 容器的情境下，實際可用的只有建構函式注入：</p>
 <p><strong>建構函式注入</strong>（.NET 內建容器的唯一原生支援方式）：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">OrderService</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> IPaymentGateway _payment;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">OrderService</span>(<span class="params">IPaymentGateway payment</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _payment = payment;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p><strong>屬性注入</strong>和<strong>方法注入</strong>在 .NET 內建 DI 容器中並非原生支援。若要使用，需要改用 Autofac 或 Ninject 等第三方容器。直接在屬性上加 <code>[Inject]</code> 在內建容器下不會有任何效果，這是新手常踩的坑。</p>
-<h2 id="NET-Core-內建-DI-容器"><a href="#NET-Core-內建-DI-容器" class="headerlink" title=".NET Core 內建 DI 容器"></a>.NET Core 內建 DI 容器</h2><h3 id="註冊服務"><a href="#註冊服務" class="headerlink" title="註冊服務"></a>註冊服務</h3><p><strong>.NET 6+ 的 Program.cs：</strong></p>
+<h2 id="NET-Core-內建-DI-容器">.NET Core 內建 DI 容器</h2>
+<h3 id="註冊服務">註冊服務</h3>
+<p><strong>.NET 6+ 的 Program.cs：</strong></p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> builder = WebApplication.CreateBuilder(<span class="keyword">args</span>);</span><br><span class="line"></span><br><span class="line">builder.Services.AddTransient&lt;IMyService, MyService&gt;();</span><br><span class="line">builder.Services.AddScoped&lt;IUserRepository, UserRepository&gt;();</span><br><span class="line"><span class="comment">// ILogger&lt;T&gt; 由框架自動註冊，不需要手動 AddSingleton&lt;ILogger, ...&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> app = builder.Build();</span><br><span class="line">app.Run();</span><br></pre></td></tr></table></figure>
-
 <p><strong>.NET 5 以前的 Startup.cs：</strong></p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Startup</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ConfigureServices</span>(<span class="params">IServiceCollection services</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        services.AddTransient&lt;IMyService, MyService&gt;();</span><br><span class="line">        services.AddScoped&lt;IUserRepository, UserRepository&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p><strong>控制器使用：</strong></p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MyController</span> : <span class="title">Controller</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> IMyService _myService;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> ILogger&lt;MyController&gt; _logger;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyController</span>(<span class="params">IMyService myService, ILogger&lt;MyController&gt; logger</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _myService = myService;</span><br><span class="line">        _logger = logger;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="生命週期管理"><a href="#生命週期管理" class="headerlink" title="生命週期管理"></a>生命週期管理</h3><p>.NET DI 容器提供三種生命週期：</p>
+<h3 id="生命週期管理">生命週期管理</h3>
+<p>.NET DI 容器提供三種生命週期：</p>
 <ul>
 <li><strong>Transient</strong>：每次從容器解析（resolve）時建立新實例。注意「每次解析」不等於「每次 HTTP 請求」——同一個請求裡如果有兩個類別都依賴同一個 Transient 服務，兩者拿到的是不同實例。</li>
 <li><strong>Scoped</strong>：同一個請求（或範圍）內共用同一實例，跨請求則各自獨立。</li>
 <li><strong>Singleton</strong>：整個應用程式生命週期共用同一實例，只建立一次。</li>
 </ul>
-<h3 id="進階用法"><a href="#進階用法" class="headerlink" title="進階用法"></a>進階用法</h3><p><strong>工廠方法（Transient 的進階寫法）：</strong></p>
+<h3 id="進階用法">進階用法</h3>
+<p><strong>工廠方法（Transient 的進階寫法）：</strong></p>
 <p>當建立服務需要額外參數或執行時期邏輯時，用 <code>AddTransient</code> 的 factory 多載：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">builder.Services.AddTransient&lt;IEmailSender&gt;(provider =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> config = provider.GetRequiredService&lt;IConfiguration&gt;();</span><br><span class="line">    <span class="keyword">var</span> smtpHost = config[<span class="string">&quot;Smtp:Host&quot;</span>];</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> SmtpEmailSender(smtpHost);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
 <p><strong>同一介面的多個實作：</strong></p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">builder.Services.AddTransient&lt;INotification, EmailNotification&gt;();</span><br><span class="line">builder.Services.AddTransient&lt;INotification, SmsNotification&gt;();</span><br></pre></td></tr></table></figure>
-
 <p>取出所有實作用 <code>GetServices&lt;T&gt;()</code>（注意是複數）：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">NotificationDispatcher</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> IEnumerable&lt;INotification&gt; _channels;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">NotificationDispatcher</span>(<span class="params">IEnumerable&lt;INotification&gt; channels</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _channels = channels;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task <span class="title">SendAll</span>(<span class="params"><span class="built_in">string</span> message</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> ch <span class="keyword">in</span> _channels)</span><br><span class="line">            <span class="keyword">await</span> ch.Send(message);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p><strong>條件註冊（依環境切換實作）：</strong></p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (builder.Environment.IsDevelopment())</span><br><span class="line">    builder.Services.AddTransient&lt;IPaymentGateway, FakePaymentGateway&gt;();</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    builder.Services.AddTransient&lt;IPaymentGateway, StripePaymentGateway&gt;();</span><br></pre></td></tr></table></figure>
-
-<h2 id="最佳實踐"><a href="#最佳實踐" class="headerlink" title="最佳實踐"></a>最佳實踐</h2><p><strong>優先建構函式注入。</strong> 依賴清單一目了然，且強迫你在類別被建立時就完成初始化，不存在「物件存在但依賴還沒設定」的中間狀態。</p>
+<h2 id="最佳實踐">最佳實踐</h2>
+<p><strong>優先建構函式注入。</strong> 依賴清單一目了然，且強迫你在類別被建立時就完成初始化，不存在「物件存在但依賴還沒設定」的中間狀態。</p>
 <p><strong>依賴抽象，不依賴具體實作。</strong> <code>IUserRepository</code> 而非 <code>SqlUserRepository</code>，這樣日後換成 Redis 或 Cosmos DB 不需改動使用方。</p>
 <p><strong>避免 Service Locator 模式。</strong> 直接注入 <code>IServiceProvider</code> 再手動 <code>GetService&lt;T&gt;()</code> 是反模式——依賴關係藏在方法體裡，測試時無法從建構子看出類別需要什麼。</p>
 <p><strong>注意生命週期陷阱（Captive Dependency）。</strong> Singleton 服務若持有 Scoped 服務，Scoped 服務會被「捕獲」成事實上的 Singleton——它在整個應用程式生命週期只建立一次，不會隨請求重置，導致資料隔離失效。.NET 在開發模式下預設開啟 scope validation，會在啟動時直接丟例外，但正式環境預設關閉，要特別留意。</p>
@@ -257,15 +256,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

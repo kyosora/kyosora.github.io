@@ -124,10 +124,10 @@
       <div class="prose" id="article">
         <p>韓國銀行被駭這件事，台灣媒體的標題多半寫「廣東 26 歲駭客」。我讀 CrowdStrike 10 月 7 日那篇原始報告時，停在另一行：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">38.244.50[.]120:18899/.claude/CLAUDE.md</span><br></pre></td></tr></table></figure>
-
 <p>攻擊者的伺服器開著目錄瀏覽，Claude Code 的設定檔就放在上面，誰連過去都看得到。CrowdStrike 順著這個檔案找到第二台主機，分析了公開目錄裡的 session 紀錄、記憶檔和 ARTEX 設定，才寫得出這份報告。</p>
 <p>我每天都在用 Claude Code。所以我想從這份報告拆出兩個跟工作有關的問題：開發工具留下的紀錄會不會被部署出去，以及非核心系統的風險該怎麼排。</p>
-<h2 id="先把報告講了什麼、沒講什麼分開"><a href="#先把報告講了什麼、沒講什麼分開" class="headerlink" title="先把報告講了什麼、沒講什麼分開"></a>先把報告講了什麼、沒講什麼分開</h2><p>事件本身是這樣。9 月底到 10 月初，韓國多家金融機構陸續通報資料外洩。韓聯社報導有 7 家金融機構發生侵害事故，Reuters 後續報導的「至少 9 家」則包含被揭露或被媒體報導為攻擊目標的銀行，兩個數字口徑不同。受影響人數，多家媒體引述的是約 6.8 萬人。人數最多的兩家是 Yegaram 儲蓄銀行約 4 萬人、新韓銀行約 2.5 萬人；KB 國民銀行 119 人，韓亞銀行 89 人。韓國金融委員會 10 月 6 日發了消費者警示，隔天 CrowdStrike 的報告出來。</p>
+<h2 id="先把報告講了什麼、沒講什麼分開">先把報告講了什麼、沒講什麼分開</h2>
+<p>事件本身是這樣。9 月底到 10 月初，韓國多家金融機構陸續通報資料外洩。韓聯社報導有 7 家金融機構發生侵害事故，Reuters 後續報導的「至少 9 家」則包含被揭露或被媒體報導為攻擊目標的銀行，兩個數字口徑不同。受影響人數，多家媒體引述的是約 6.8 萬人。人數最多的兩家是 Yegaram 儲蓄銀行約 4 萬人、新韓銀行約 2.5 萬人；KB 國民銀行 119 人，韓亞銀行 89 人。韓國金融委員會 10 月 6 日發了消費者警示，隔天 CrowdStrike 的報告出來。</p>
 <p>報告確定的部分：</p>
 <ul>
 <li>攻擊者用 ARTEX 加上 Claude Code。ARTEX 是中國開發的開源 agentic 滲透測試工具，剛釋出不久。</li>
@@ -145,35 +145,35 @@
 <p>至於「廣東茂名、26 歲」，來源是攻擊者叫 Claude 幫忙寫一份資安研究員履歷，把 ARTEX 的戰果寫成條列，prompt 裡附了姓名、電話、Telegram 帳號、年齡、學校和所在地。報告同時指出，操作者一開始填的出生日期是 2007 年 9 月 22 日，跟 26 歲對不起來。CrowdStrike 的說法是這些資料「很可能」屬於操作者，但現有資訊無法確認。</p>
 <p>身分沒確認，所以我不會在這裡重貼那個帳號。截至 10 月 12 日，我查到的公開報導沒有提到逮捕或起訴。中國外交部 10 月 8 日的回應是不了解具體情況，並重申反對駭客活動。</p>
 <p>報告發布後，ARTEX 的開發者把專案轉成閉源並停止更新。已經流出去的版本收不回來。</p>
-<h2 id="那個目錄裡有什麼"><a href="#那個目錄裡有什麼" class="headerlink" title="那個目錄裡有什麼"></a>那個目錄裡有什麼</h2><p>回到 <code>.claude</code> 這個目錄。以下是預設位置下跟這件事有關的幾個檔案：</p>
+<h2 id="那個目錄裡有什麼">那個目錄裡有什麼</h2>
+<p>回到 <code>.claude</code> 這個目錄。以下是預設位置下跟這件事有關的幾個檔案：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">~/.claude/</span><br><span class="line">├── CLAUDE.md                      # 全域指示：我要它怎麼工作</span><br><span class="line">├── settings.json                  # 權限、hook、環境變數</span><br><span class="line">└── projects/</span><br><span class="line">    └── &lt;專案識別目錄&gt;/</span><br><span class="line">        ├── &lt;session-id&gt;.jsonl     # session 紀錄：對話、工具呼叫、工具結果</span><br><span class="line">        └── memory/                # 跨 session 留下來的筆記</span><br></pre></td></tr></table></figure>
-
 <p>攻擊者那份 <code>CLAUDE.md</code> 是一段中文滲透測試 prompt，規定模型該怎麼打。session 紀錄和記憶檔讓隔天的 session 能接著做，操作者不用每天重新交代進度。</p>
 <p>撿到目錄的分析師拿到的是同一批檔案。操作過程能重建到什麼程度，看的就是這些紀錄，連他中途跑去問履歷怎麼寫都留在裡面。</p>
-<p>寫到這裡，我叫 Claude Code 在我自己的機器上數了一下（10 月 12 日，範圍是 <code>~/.claude/projects</code>）：39 個 session 檔，整個目錄 381MB，記憶檔 169 個。拿 <code>grep -E &#39;password|api[_-]?key|token&#39;</code> 去掃，39 個裡有 36 個命中。token 這個字太常見，這數字一定高估，但我也不敢說裡面完全沒有貼過不該貼的東西。</p>
+<p>寫到這裡，我叫 Claude Code 在我自己的機器上數了一下（10 月 12 日，範圍是 <code>~/.claude/projects</code>）：39 個 session 檔，整個目錄 381MB，記憶檔 169 個。拿 <code>grep -E 'password|api[_-]?key|token'</code> 去掃，39 個裡有 36 個命中。token 這個字太常見，這數字一定高估，但我也不敢說裡面完全沒有貼過不該貼的東西。</p>
 <p>攻擊者的目錄為什麼會對外，報告沒寫。</p>
-<h2 id="我們比較可能踩到的版本"><a href="#我們比較可能踩到的版本" class="headerlink" title="我們比較可能踩到的版本"></a>我們比較可能踩到的版本</h2><p>多數人不會把家目錄開成 HTTP 服務。比較現實的是專案層的檔案：repo 根目錄的 <code>CLAUDE.md</code>、<code>.claude/settings.json</code>、<code>.claude/settings.local.json</code>。部署方式如果是「整個資料夾複製到站台目錄」，這些檔案就跟著上線了，跟十年前 <code>.git/</code> 被整包抓走是同一個問題。</p>
+<h2 id="我們比較可能踩到的版本">我們比較可能踩到的版本</h2>
+<p>多數人不會把家目錄開成 HTTP 服務。比較現實的是專案層的檔案：repo 根目錄的 <code>CLAUDE.md</code>、<code>.claude/settings.json</code>、<code>.claude/settings.local.json</code>。部署方式如果是「整個資料夾複製到站台目錄」，這些檔案就跟著上線了，跟十年前 <code>.git/</code> 被整包抓走是同一個問題。</p>
 <p>先從外面看一次回應狀態：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 把 example.com 換成自己的站台</span></span><br><span class="line"><span class="keyword">for</span> p <span class="keyword">in</span> CLAUDE.md .claude/settings.json .claude/settings.local.json .git/config .<span class="built_in">env</span>; <span class="keyword">do</span></span><br><span class="line">  <span class="built_in">printf</span> <span class="string">&#x27;%s  %s\n&#x27;</span> <span class="string">&quot;<span class="subst">$(curl -s -o /dev/null -w &#x27;%&#123;http_code&#125;&#x27; <span class="string">&quot;https://example.com/<span class="variable">$p</span>&quot;</span>)</span>&quot;</span> <span class="string">&quot;<span class="variable">$p</span>&quot;</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
-
 <p>404 或 403 代表這次請求沒拿到檔案。看到 200 先別急著下結論，SPA 的 fallback 頁和自訂錯誤頁也會回 200，要把內容抓下來確認是不是目標檔案；3xx 則看它導去哪裡。</p>
 <p>如果確認檔案真的公開了，先把來源站和 CDN 的存取一起擋掉、清掉相關快取，同時把存取紀錄和外洩的檔案留一份。檔案裡有還有效的憑證就馬上撤銷或輪替，不用等全部檢查完。接著才是確認暴露了多久、哪些資料，修掉部署流程，再從外面驗一次。沒有存取紀錄不代表沒人下載過。</p>
 <p>IIS 的話，交給靜態檔案處理、又沒有 MIME 對應的副檔名不會送出，<code>.md</code> 和 <code>.jsonl</code> 通常會落在 404.3，算是運氣好。但只要站台有 <code>.json</code> 的 MIME 對應，這層限制就擋不住 <code>settings.json</code>。直接把路徑區段藏起來比較乾淨：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">directoryBrowse</span> <span class="attr">enabled</span>=<span class="string">&quot;false&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">security</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">requestFiltering</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">hiddenSegments</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 路徑區段命中就拒絕，IIS log 記為 404.8，跟副檔名無關 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">add</span> <span class="attr">segment</span>=<span class="string">&quot;.claude&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">add</span> <span class="attr">segment</span>=<span class="string">&quot;.git&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">add</span> <span class="attr">segment</span>=<span class="string">&quot;.env&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">add</span> <span class="attr">segment</span>=<span class="string">&quot;CLAUDE.md&quot;</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">hiddenSegments</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">requestFiltering</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">security</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p>關掉目錄瀏覽只是讓人列不出清單，知道檔名的人照樣能直接下載，所以 <code>hiddenSegments</code> 那段才是重點。</p>
 <p>nginx 用兩條規則。第一條攔截名稱以點開頭的路徑區段，但排除名稱剛好是 <code>.well-known</code> 的區段，那底下的內容照舊由既有設定處理；第二條攔截根目錄的 <code>CLAUDE.md</code>：</p>
 <figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">location</span> <span class="regexp">~ /\.(?!well-known(?:/|$))</span> &#123; <span class="attribute">return</span> <span class="number">404</span>; &#125;</span><br><span class="line"><span class="section">location</span> = /CLAUDE.md &#123; <span class="attribute">return</span> <span class="number">404</span>; &#125;</span><br></pre></td></tr></table></figure>
-
 <p>正規表示式的 location 會受既有設定的順序和 <code>^~</code> 前綴影響，貼上去之後記得用上面的 curl 再驗一次。</p>
 <p>這幾段是整理過方便複製的最小版本，路徑清單請依你的專案增減。根本解法還是部署只送建置產物，別送原始碼資料夾。</p>
-<h2 id="非核心系統，手上也有客戶資料"><a href="#非核心系統，手上也有客戶資料" class="headerlink" title="非核心系統，手上也有客戶資料"></a>非核心系統，手上也有客戶資料</h2><p>公開的 <code>.claude</code> 目錄解釋了研究人員怎麼追到操作者。銀行是怎麼被打進去的，是另一個問題，擋掉 <code>.claude</code> 也修不到它。</p>
+<h2 id="非核心系統，手上也有客戶資料">非核心系統，手上也有客戶資料</h2>
+<p>公開的 <code>.claude</code> 目錄解釋了研究人員怎麼追到操作者。銀行是怎麼被打進去的，是另一個問題，擋掉 <code>.claude</code> 也修不到它。</p>
 <p>媒體報導的兩個入口，一個是給外部仲介查貸款進度的服務，一個是行員的行動辦公系統。照韓聯社的報導，銀行的說法是受影響的屬於業務支援系統，跟網銀、行動銀行的交易系統分開。交易系統沒事，資料還是出去了，因為這些輔助系統手上本來就有姓名、電話、年收入、核貸額度。</p>
 <p>做過弱掃整改的人對這種系統不陌生。它對外、有個資，但被歸在非核心。各家銀行內部怎麼排修補順序，公開資料看不出來，我不想替他們猜。我能說的是這類系統被往後排時常見的理由：要打它得有人花時間摸，攻擊者會去挑更值得的目標。</p>
 <p>CrowdStrike 在報告裡的評估是，AI 工具讓一個為錢而來的攻擊者能在短時間內完成多起入侵。讀到這句，我認為「攻擊者不會願意花這個時間」這個前提會越來越站不住。這是我的判斷，報告沒有給攻擊工時或成本的數字。</p>
 <p>同一波事件裡，友利銀行和 NH 農協銀行表示入侵防禦系統擋下了攻擊，截至報導當時沒有發現資料外洩。韓國《京鄉新聞》10 月 5 日的報導提到兩個差異：友利的業務系統登入除了帳密還要生物辨識，農協則沒有對貸款仲介開放內部系統的連線路徑。報導用的是「據了解」的語氣，這兩項措施在這次攻擊裡實際起了多少作用，公開資訊還不足以確認。但多一道驗證、少一條對外路徑，都是不用等 AI 防禦產品就能做的事。</p>
 <p>三月我寫過<a href="/posts/55188ba6/">地下論壇的 agentic 攻擊框架</a>，那篇引用的還是威脅情報報告裡的趨勢數字。這次有了操作紀錄外露的具體案例，而它會這麼具體，是因為攻擊者自己沒關目錄。</p>
-<h2 id="我自己會做的兩件事"><a href="#我自己會做的兩件事" class="headerlink" title="我自己會做的兩件事"></a>我自己會做的兩件事</h2><p>第一件是拿上面那段 curl，花五分鐘把手上幾個站台掃過第一輪。</p>
+<h2 id="我自己會做的兩件事">我自己會做的兩件事</h2>
+<p>第一件是拿上面那段 curl，花五分鐘把手上幾個站台掃過第一輪。</p>
 <p>第二件是回頭看整改清單的排序。我會改用三個條件重排：對外暴露的程度、讀得到哪些個資、驗證和權限怎麼設，系統算不算核心不再是主要依據。</p>
 <p>至於那位操作者，工具留下的對話和記憶檔，最後都成了公開線索。我用同一套工具，記憶檔 169 個，這件事我笑不太出來。</p>
 
@@ -266,15 +266,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -27,9 +27,9 @@
 <meta property="article:section" content="資訊安全">
 <meta property="article:tag" content="AI Agent">
 <meta property="article:tag" content="Prompt Injection">
+<meta property="article:tag" content="權限設計">
 <meta property="article:tag" content="GitHub Actions">
 <meta property="article:tag" content="CI/CD">
-<meta property="article:tag" content="權限設計">
 <meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k">
 <meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E">
 <meta name="baidu-site-verification" content="code-pE5rnuxcfD">
@@ -43,7 +43,7 @@
 <script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"沒人繞過權限檢查，是閘門照規則放行的：Google ADK 的 AI agent 互相提權事件","description":"權限檢查每一行都寫對，攻擊者卻還是拿到了 CI runner 上的憑證？拆解 Google ADK 的 AI agent 互相提權事件：閘門為何會照規則放行被操縱的機器帳號，以及該怎麼把吃外部輸入的工作和握有金鑰的工作分開。","url":"https://kyosora.github.io/posts/c7573347/","mainEntityOfPage":"https://kyosora.github.io/posts/c7573347/","image":"https://kyosora.github.io/images/posts/google-adk-agent-to-agent-cover.webp","datePublished":"2026-08-05T08:40:00.000Z","dateModified":"2026-08-05T09:45:55.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"資訊安全","keywords":"AI Agent, Prompt Injection, GitHub Actions, CI/CD, 權限設計"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"資訊安全","item":"https://kyosora.github.io/categories/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/"},{"@type":"ListItem","position":3,"name":"沒人繞過權限檢查，是閘門照規則放行的：Google ADK 的 AI agent 互相提權事件","item":"https://kyosora.github.io/posts/c7573347/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"沒人繞過權限檢查，是閘門照規則放行的：Google ADK 的 AI agent 互相提權事件","description":"權限檢查每一行都寫對，攻擊者卻還是拿到了 CI runner 上的憑證？拆解 Google ADK 的 AI agent 互相提權事件：閘門為何會照規則放行被操縱的機器帳號，以及該怎麼把吃外部輸入的工作和握有金鑰的工作分開。","url":"https://kyosora.github.io/posts/c7573347/","mainEntityOfPage":"https://kyosora.github.io/posts/c7573347/","image":"https://kyosora.github.io/images/posts/google-adk-agent-to-agent-cover.webp","datePublished":"2026-08-05T08:40:00.000Z","dateModified":"2026-08-05T09:45:55.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"資訊安全","keywords":"AI Agent, Prompt Injection, 權限設計, GitHub Actions, CI/CD"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"資訊安全","item":"https://kyosora.github.io/categories/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/"},{"@type":"ListItem","position":3,"name":"沒人繞過權限檢查，是閘門照規則放行的：Google ADK 的 AI agent 互相提權事件","item":"https://kyosora.github.io/posts/c7573347/"}]}]}</script>
 
 </head>
 <body class="kind-post">
@@ -130,39 +130,42 @@
 <li><strong>鏈二（RCE 與憑證外洩）</strong>：issue 裡的注入 → <code>issue-analyze.yml</code> 的 agent 貼出 <code>/adk-issue-fix</code> → <code>issue-fix.yml</code> 的特權 job 開跑 → runner 上任意程式碼執行。</li>
 </ul>
 <p>我認為這是今年最值得工程師讀完的一份 CI 安全報告，理由跟 AI 沒什麼關係——它示範了一段條件式明明正確實作了既定規則，卻因為規則本身信任了一個可被操縱的身分，整道防線就失去意義。</p>
-<h2 id="閘門沒有被繞過，它是照規則放行的"><a href="#閘門沒有被繞過，它是照規則放行的" class="headerlink" title="閘門沒有被繞過，它是照規則放行的"></a>閘門沒有被繞過，它是照規則放行的</h2><p>先看鏈二的授權閘門，因為它是整件事最反直覺的部分。</p>
+<h2 id="閘門沒有被繞過，它是照規則放行的">閘門沒有被繞過，它是照規則放行的</h2>
+<p>先看鏈二的授權閘門，因為它是整件事最反直覺的部分。</p>
 <p><code>issue-fix.yml</code> 有權限檢查，而且寫得比多數人的 workflow 嚴謹。下面只節錄並等價改寫它的觸發條件，方便閱讀——這不是逐字原始碼，也不是可直接執行的完整 workflow，<code>runs-on</code>、<code>permissions</code>、<code>steps</code> 與部分 <code>workflow_dispatch</code> metadata 都省略了。逐字版本可以在 <code>v2.2.0</code> 的歷史檔案裡核對：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">issue_comment:</span></span><br><span class="line">    <span class="attr">types:</span> [<span class="string">created</span>]</span><br><span class="line">  <span class="attr">workflow_dispatch:</span></span><br><span class="line">    <span class="attr">inputs:</span></span><br><span class="line">      <span class="attr">issue_url:</span></span><br><span class="line">        <span class="attr">required:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">issue-fix:</span></span><br><span class="line">    <span class="comment"># 僅節錄 job-level if；完整 workflow 另有 runs-on / permissions / steps</span></span><br><span class="line">    <span class="attr">if:</span> <span class="string">&gt;</span></span><br><span class="line"><span class="string">      github.repository == &#x27;google/adk-python&#x27; &amp;&amp;</span></span><br><span class="line"><span class="string">      (github.event_name == &#x27;workflow_dispatch&#x27; ||</span></span><br><span class="line"><span class="string">       (!github.event.issue.pull_request &amp;&amp;</span></span><br><span class="line"><span class="string">        startsWith(github.event.comment.body, &#x27;/adk-issue-fix&#x27;) &amp;&amp;</span></span><br><span class="line"><span class="string">        contains(fromJSON(&#x27;[&quot;OWNER&quot;, &quot;MEMBER&quot;, &quot;COLLABORATOR&quot;]&#x27;),</span></span><br><span class="line"><span class="string">                 github.event.comment.author_association)))</span></span><br></pre></td></tr></table></figure>
-
 <p>它鎖了儲存庫名稱、排除 PR 只認 issue、要求指令出現在留言開頭、還檢查發話者跟儲存庫的關係。以人類為對象的威脅模型來看，這是一道合格的閘門。</p>
 <p>而 <code>adk-bot</code> 的身分是 COLLABORATOR，本來就在白名單上。它不是被繞過的，它是被正常放行的——這個區別很重要，因為沒有任何一行條件式寫錯，你去 code review 也挑不出東西來。</p>
 <p>閘門回答的是「你是誰」，它從來沒被要求回答「你這次說的話是誰教的」。在人類的世界裡這兩件事幾乎等價，帳號被盜是例外而不是常態。agent 讓它們分開了。</p>
-<h2 id="鏈一：偽造一份「已經有人審過」的軌跡"><a href="#鏈一：偽造一份「已經有人審過」的軌跡" class="headerlink" title="鏈一：偽造一份「已經有人審過」的軌跡"></a>鏈一：偽造一份「已經有人審過」的軌跡</h2><p>先講影響比較間接的那條。</p>
+<h2 id="鏈一：偽造一份「已經有人審過」的軌跡">鏈一：偽造一份「已經有人審過」的軌跡</h2>
+<p>先講影響比較間接的那條。</p>
 <p><code>pr-triage.yml</code> 會對進來的 PR 跑自動分析。研究者在 PoC 環境裡送出一個 PR，把提示注入寫進 PR 描述，偽裝成符合貢獻規範的 triage 步驟。agent 讀進去、照做，以 <code>adk-bot</code> 的身分貼出一則 <code>@gemini-cli</code> 開頭的留言。</p>
 <p>這則留言被 <code>gemini-dispatch.yml</code> 接走，路由到原本只允許受信任儲存庫關係觸發的 <code>gemini-invoke.yml</code>。高權限的 agent 就這樣帶著攻擊者寫的提示跑起來，並且在回應裡吐出了自己掛載的 MCP 工具清單。研究者另外證明 <code>github-actions[bot]</code> 可以送出 pull request review 事件、核准變更。</p>
 <p>研究者在 PoC 環境裡示範了怎麼製造出一份假的審查軌跡，也錄了影片。但他們沒有在 Google 的正式儲存庫完成惡意合併——最後那一步（讓 maintainer 真的按下 merge）是推導出來的社交工程風險。Google 的漏洞獎勵計畫回覆針對這條鏈指出，PR 不會因為 bot 審過就自動合併。</p>
 <p>我覺得這條鏈真正棘手的地方在於——<strong>它攻擊的不是機器，是人類 reviewer 賴以判斷的那些訊號。</strong> 你看到 PR 上有 approve、有 bot 分析留言、狀態一片綠，這些平常拿來省時間的證據，此時全都在攻擊者的影響範圍內。</p>
-<h2 id="鏈二：從一則-issue-到-runner-上的-RCE"><a href="#鏈二：從一則-issue-到-runner-上的-RCE" class="headerlink" title="鏈二：從一則 issue 到 runner 上的 RCE"></a>鏈二：從一則 issue 到 runner 上的 RCE</h2><p>這條比較嚴重，也是研究者在調查過程中額外挖到的。</p>
+<h2 id="鏈二：從一則-issue-到-runner-上的-RCE">鏈二：從一則 issue 到 runner 上的 RCE</h2>
+<p>這條比較嚴重，也是研究者在調查過程中額外挖到的。</p>
 <p><code>issue-analyze.yml</code> 對新開的 issue 沒有任何作者身分檢查，任何 GitHub 使用者開 issue 都能觸發。它會執行 Antigravity agent，過程中 <code>ADK_TRIAGE_AGENT</code>（<code>adk-bot</code> 的 personal access token）和 <code>GOOGLE_API_KEY</code> 是直接以環境變數帶入的；<code>ADK_GCP_SA_KEY</code> 則是先餵給 Google 的 auth action 當 <code>credentials_json</code>，由它產生憑證檔落在 runner 上。分析結果一樣以 <code>adk-bot</code> 的身分貼成留言。</p>
 <p>注入寫在 issue 裡，agent 讀了，貼出 <code>/adk-issue-fix</code>。前面那道閘門看到發話者是 COLLABORATOR，照規則放行，特權 job 開跑。</p>
 <p>跑起來之後還有一層防護：Pillar 指出 <code>run_antigravity.py</code> 會先擋掉一組危險字元，再用 <code>shlex.split()</code> 取第一個 token，只准 <code>gh</code> 和 <code>git</code>。聽起來很嚴，但它只檢查了指令名稱——後面的子命令和參數完全沒驗，而且 agent 的檔案寫入工具根本不在這個檢查的管轄範圍內。</p>
 <p>於是 <code>git</code> 自己就是逃逸出口：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 注意：以下 payload_dir / 指令內容都要換成實際值。</span></span><br><span class="line"><span class="comment"># 角括號 &lt;&gt; 本身就在被封鎖的字元清單裡，照字面寫是過不了檢查的。</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 路徑一：叫 git 直接執行指定目錄下的 hook</span></span><br><span class="line"><span class="comment">#   前提是 hook 檔名必須是 git 認得的（例如 pre-commit），</span></span><br><span class="line"><span class="comment">#   而且在 Linux runner 上要有執行位元，否則 git 會直接忽略它</span></span><br><span class="line">git -c core.hooksPath=payload_dir hook run pre-commit</span><br><span class="line"></span><br><span class="line"><span class="comment"># 路徑二：git alias 的 ! 前綴會把後面整串交給 shell</span></span><br><span class="line">git -c <span class="string">&quot;alias.x=!cat /proc/self/environ&quot;</span> x</span><br></pre></td></tr></table></figure>
-
 <p>這兩條的第一個 token 都是 <code>git</code>，也都避開了那組被封鎖的字元。搭配沒被管住的檔案寫入工具，攻擊者可以先把 payload 寫進 runner，再用合法的 git 指令執行它。</p>
 <p>順帶說明一個容易誤解的地方：不是「任何 git 動作都會觸發 hook」。<code>git status</code>、<code>git log</code> 這類不會。要嘛執行到 hook 生命週期上的動作（例如 commit），要嘛像上面那樣直接用 <code>git hook run</code> 叫它。</p>
 <p>PoC 影片展示的結果是把 <code>adk-bot</code> 的 PAT 送到研究者自架的 C2 伺服器。同一個執行環境裡還有 <code>GOOGLE_API_KEY</code> 和 auth action 產生的 GCP 憑證檔，RCE 拿得到——但「用這些憑證去推程式碼」或「橫向打進 GCP 專案」屬於報告列出的潛在影響，不是已示範的成果。</p>
-<h2 id="那到底該怎麼擋"><a href="#那到底該怎麼擋" class="headerlink" title="那到底該怎麼擋"></a>那到底該怎麼擋</h2><p>既然問題是「身分不等於意圖」，直覺的反應是把身分檢查寫得更細。這條路走不通，而且有個很多人會踩的陷阱：</p>
+<h2 id="那到底該怎麼擋">那到底該怎麼擋</h2>
+<p>既然問題是「身分不等於意圖」，直覺的反應是把身分檢查寫得更細。這條路走不通，而且有個很多人會踩的陷阱：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ❌ 看起來合理，實際上擋不住這次的攻擊</span></span><br><span class="line"><span class="attr">if:</span> <span class="string">github.event.comment.user.type</span> <span class="type">!=</span> <span class="string">&#x27;Bot&#x27;</span></span><br></pre></td></tr></table></figure>
-
 <p>只有被 GitHub API 標示為 <code>Bot</code> 類型的 actor 才會命中這個條件。像 <code>adk-bot</code> 這種綁 personal access token 的機器帳號，即使完全由自動化控制，類型仍然是 <code>User</code>——它會直接通過。更麻煩的是 GitHub App 還能以「代表某位使用者」的方式發言，那時候動作會歸屬到那個真人頭上。想用 <code>user.type</code> 證明「這段文字是真人親手打的」，從一開始就不成立。</p>
 <p><code>author_association</code> 收緊到 OWNER／MEMBER 確實能擋掉這次的 <code>adk-bot</code>。但我只把它當止血，不當解法：它成立的前提是 agent 的權限層級剛好低於你設的門檻，哪天有人把 bot 升成 MEMBER 就破功；而且 MEMBER 只代表組織成員，不代表這個人是這個儲存庫的 maintainer，大型組織裡這個範圍可能寬得離譜。</p>
 <p>真正的分界不在條件式，在於別讓吃外部輸入的 job 和握有 secrets 的 job 共用同一個身分。條件判斷是在猜「這次是不是壞人」，身分隔離是讓壞人猜對了也拿不到東西。要人類把關就用 GitHub 的 environment approval，並且確保 reviewer 身分與憑證不會落到 agent 手上——重點是建立一道 agent 靠留言滿足不了的核准邊界。</p>
-<h2 id="三件現在可以做的檢查"><a href="#三件現在可以做的檢查" class="headerlink" title="三件現在可以做的檢查"></a>三件現在可以做的檢查</h2><p>不需要有 AI，傳統的 bot 一樣適用。</p>
+<h2 id="三件現在可以做的檢查">三件現在可以做的檢查</h2>
+<p>不需要有 AI，傳統的 bot 一樣適用。</p>
 <p><strong>把吃外部輸入的 workflow 標出來。</strong> 觸發條件是 <code>issues</code>、<code>issue_comment</code>、<code>pull_request_target</code> 的都算。<code>pull_request_target</code> 值得單獨提：它在 base 儲存庫的特權 context 下執行，預設 checkout 的是 base branch 而不是 PR 的程式碼，真正的危險是 workflow 自己額外指定 PR head 去 checkout 並執行，或者把 PR 標題、內文、branch 名稱這些沒轉義的字串直接塞進 shell。</p>
 <p><strong>追一次傳遞性權限。</strong> 別只盤點「哪個 workflow 有 secrets」，要盤點「低權限 job 的輸出，會不會被高權限 job 當成命令或授權訊號讀進去」。留言、label、branch 名稱、commit message 都是 job 之間傳話的管道。單純被讀到不構成漏洞，構成漏洞的是下游把它當成可信的指令來源。</p>
 <p><strong>別讓 agent 用人類帳號的長期 token。</strong> GitHub App 的 installation token 比 PAT 好，短期、可限 scope、可限儲存庫；GCP 那邊用 OIDC 換掉長期有效的 service account JSON key。要注意這只縮短憑證的有效期，runner 當下被控制時，攻擊者還是能立刻拿現成的憑證去用——它降低的是事後的損害範圍，不是當下的。</p>
-<h2 id="我的判斷"><a href="#我的判斷" class="headerlink" title="我的判斷"></a>我的判斷</h2><p>自然語言進入了授權路徑，這是我覺得這起事件真正要記下來的一句話。</p>
+<h2 id="我的判斷">我的判斷</h2>
+<p>自然語言進入了授權路徑，這是我覺得這起事件真正要記下來的一句話。</p>
 <p>過去十年 CI 的權限模型是為人類設計的：你是不是 collaborator、有沒有 write 權限、這個 token 的 scope 多大。這套模型的前提是「帳號的行為代表帳號持有者的意圖」。agent 打破的正是這個前提——它有帳號、有 token、有權限，而它的行為可能被最後讀進去的那段外部文字主導。</p>
 <p>我最在意的不是某個工程師漏了一行檢查，而是這次根本沒有人寫錯。那道閘門在它被設計的年代完全合理，然後前提悄悄變了，而條件式不會自己知道這件事。你的儲存庫裡如果有掛著 write 權限、又會讀外部文字的自動化，那就已經具備這類攻擊鏈的兩個關鍵前提，值得再往下查一層：那些外部文字能不能影響它的工具呼叫，它的輸出又會不會被下游當成授權訊號。</p>
 <p>Google 的處理是把那幾個 workflow 直接移除。看起來粗暴，我覺得誠實。</p>
@@ -170,7 +173,7 @@
 <hr>
 <p><strong>參考資料</strong></p>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://www.pillar.security/blog/ill-just-call-you-agent-to-agent-privilege-boundary-failures-in-ci-cd-on-googles-adk-repository">I&#39;ll Just Call You: Agent-to-Agent Privilege Boundary Failures in CI/CD on Google&#39;s ADK Repository — Pillar Security</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.pillar.security/blog/ill-just-call-you-agent-to-agent-privilege-boundary-failures-in-ci-cd-on-googles-adk-repository">I’ll Just Call You: Agent-to-Agent Privilege Boundary Failures in CI/CD on Google’s ADK Repository — Pillar Security</a></li>
 <li><a target="_blank" rel="noopener" href="https://github.com/google/adk-python/blob/v2.2.0/.github/workflows/issue-fix.yml">issue-fix.yml @ v2.2.0（本文節錄的原始 workflow）</a></li>
 <li><a target="_blank" rel="noopener" href="https://thehackernews.com/2026/08/google-deletes-3-adk-ai-workflows-after.html">Google Deletes 3 ADK AI Workflows After Malicious GitHub Issue Could Trigger Privileged Agent — The Hacker News</a></li>
 <li><a target="_blank" rel="noopener" href="https://securitylab.github.com/resources/github-actions-preventing-pwn-requests/">Preventing pwn requests — GitHub Security Lab</a></li>
@@ -181,7 +184,7 @@
 <footer class="post-end">
   
   <ul class="post-tags" aria-label="標籤">
-    <li><a href="/tags/AI-Agent/">AI Agent</a></li><li><a href="/tags/Prompt-Injection/">Prompt Injection</a></li><li><a href="/tags/GitHub-Actions/">GitHub Actions</a></li><li><a href="/tags/CI-CD/">CI/CD</a></li><li><a href="/tags/%E6%AC%8A%E9%99%90%E8%A8%AD%E8%A8%88/">權限設計</a></li>
+    <li><a href="/tags/AI-Agent/">AI Agent</a></li><li><a href="/tags/Prompt-Injection/">Prompt Injection</a></li><li><a href="/tags/%E6%AC%8A%E9%99%90%E8%A8%AD%E8%A8%88/">權限設計</a></li><li><a href="/tags/GitHub-Actions/">GitHub Actions</a></li><li><a href="/tags/CI-CD/">CI/CD</a></li>
   </ul>
   
 
@@ -265,15 +268,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

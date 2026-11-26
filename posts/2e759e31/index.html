@@ -124,38 +124,45 @@
       <div class="prose" id="article">
         <p>兩天前 Anthropic 發了 Claude Tag。我看完官方公告跟幾篇分析後，整理出三個訊號——拼起來會讓你看到，Claude Tag 這條產品線明確押 Team 跟 Enterprise，個人開發者不在 Beta 名單裡。再把訊號往外推，整個 Anthropic 的資源分配，正在從 individual 倒向 team。</p>
 <p>這個判斷可能會冒犯一些人。但證據我攤出來給你看。</p>
-<h2 id="Claude-Tag-是什麼"><a href="#Claude-Tag-是什麼" class="headerlink" title="Claude Tag 是什麼"></a>Claude Tag 是什麼</h2><p>簡單講：Claude 變成 Slack 的虛擬同事。</p>
+<h2 id="Claude-Tag-是什麼">Claude Tag 是什麼</h2>
+<p>簡單講：Claude 變成 Slack 的虛擬同事。</p>
 <p>你把它加進頻道，連上工具跟資料，頻道裡誰都能 <code>@Claude</code> 派任務給它。它有持續記憶，會記得這個頻道在幹嘛。它有 ambient 模式，會主動冒出來提醒你「我覺得你應該知道這個」。Anthropic 自己內部用同一套東西，宣稱 product team 65% 的程式碼是 Claude Tag 寫的。</p>
 <p>聽起來都對。重點不是它做什麼，是它在賭什麼。</p>
-<h2 id="訊號一：Beta-只給-Enterprise-和-Team"><a href="#訊號一：Beta-只給-Enterprise-和-Team" class="headerlink" title="訊號一：Beta 只給 Enterprise 和 Team"></a>訊號一：Beta 只給 Enterprise 和 Team</h2><p>第一個訊號很明顯——這次的 Beta 不開個人版。</p>
+<h2 id="訊號一：Beta-只給-Enterprise-和-Team">訊號一：Beta 只給 Enterprise 和 Team</h2>
+<p>第一個訊號很明顯——這次的 Beta 不開個人版。</p>
 <p>只給 Claude Enterprise 跟 Claude Team 客戶。Pro 用戶看著也沒份。整篇公告沒看到一句「個人開發者未來會推出」，連這種安撫性的話都省了。</p>
 <p>對比一下兩個月前 Claude Code 的更新節奏。那時候 Anthropic 還會把個人開發者掛在嘴邊，新功能 Pro 用戶往往先吃到、官方部落格還會專門寫一篇給 individual developer 的使用案例。這次連「未來個人版會推出」這層安撫話都沒寫。</p>
 <p>當然也要給對方一個合理解釋的空間——Claude Tag 內建 admin 控制、共用 identity、channel scope、token spend 監控，這些功能確實只在企業協作裡有意義。Pro 用戶一個人用，根本沒有「我們團隊頻道」這種東西要管。所以「Beta 不開個人版」有產品條件的合理性，不全是「不重視個人開發者」。</p>
 <p>但 Anthropic 過去推 Claude Code in Slack 的時候，是把 Pro / Max / Team / Enterprise 都列在前提；這次 Claude Tag 直接把 Pro 跟 Max 切出名單。從「都歡迎」變「企業限定」是一條清楚的線。Beta 階段本來就是產品最在意客戶體驗、最願意修 bug 的窗口，把哪一群人請進來、哪一群人請出去，就是訊號。</p>
-<h2 id="訊號二：渠道押在-Slack"><a href="#訊號二：渠道押在-Slack" class="headerlink" title="訊號二：渠道押在 Slack"></a>訊號二：渠道押在 Slack</h2><p>第二個訊號藏在通訊軟體的選擇裡。</p>
+<h2 id="訊號二：渠道押在-Slack">訊號二：渠道押在 Slack</h2>
+<p>第二個訊號藏在通訊軟體的選擇裡。</p>
 <p>Slack 不是中性的選擇。它是 Salesforce 旗下、北美企業協作的主場、台灣很多開發者根本沒裝。我自己手上 6 個固定接觸的客戶，3 個用 Teams、2 個用 Lark、1 個只用 LINE 群組。Slack 在我的工作流裡的份量是零。</p>
 <p>Anthropic 押 Slack，意思是他們鎖定的客戶在哪——美國中大型 SaaS 公司、產品團隊用 Slack 協作。這些公司一年付幾十萬美金沒問題。</p>
 <p>一人公司、外包工作室、個人開發者——這群人不是 Claude Tag 的目標用戶。這沒有對錯，是產品定位。</p>
 <p>回到 Claude Tag 這件事——當你選一個渠道，就是選了一群人。Slack 對 Anthropic 來說是入口，對我這種沒 Slack 工作流的開發者來說是另一個世界。</p>
-<h2 id="訊號三：「65-程式碼」這數字"><a href="#訊號三：「65-程式碼」這數字" class="headerlink" title="訊號三：「65% 程式碼」這數字"></a>訊號三：「65% 程式碼」這數字</h2><p>第三個訊號最隱性，但最關鍵。</p>
+<h2 id="訊號三：「65-程式碼」這數字">訊號三：「65% 程式碼」這數字</h2>
+<p>第三個訊號最隱性，但最關鍵。</p>
 <p>Anthropic 在<a target="_blank" rel="noopener" href="https://www.anthropic.com/news/introducing-claude-tag">官方公告</a>裡寫「我們的 product team 65% 的程式碼是內部版 Claude Tag 寫的」。乍看像在炫耀「我們自己也用」，但細看會發現——公告完全沒附方法論。</p>
 <p>commit 行數？被 merge 的行數？包不包括 boilerplate 跟 generated code？是 AI 自動寫，還是工程師 prompt 引導下的 AI 補完？失敗率多少？這些都沒講。</p>
 <p>沒有口徑的 65% 只能當行銷數字，不能當工程生產力指標。一份開發者導向的更新會交代「我們怎麼定義 65%」「哪些任務適合、哪些不適合」「失敗模式有哪些」。一份不附定義就直接拋數字的更新，溝通對象不是工程師。</p>
 <p>這條訊號是三個裡推論成份最重的（坦白講，可能真的只是行銷部門寫得鬆，不一定代表戰略轉向）。但放著 65% 不給定義、不講失敗模式、不附使用場景——這種發布語氣的轉變值得記下來。</p>
-<h2 id="哪些是事實，哪些是我的推測"><a href="#哪些是事實，哪些是我的推測" class="headerlink" title="哪些是事實，哪些是我的推測"></a>哪些是事實，哪些是我的推測</h2><p>三條訊號的證據強度不一樣，我把界線講清楚，免得讓讀者買單我沒撐住的部分。</p>
+<h2 id="哪些是事實，哪些是我的推測">哪些是事實，哪些是我的推測</h2>
+<p>三條訊號的證據強度不一樣，我把界線講清楚，免得讓讀者買單我沒撐住的部分。</p>
 <ul>
 <li>事實層：Beta 確實只開 Enterprise 跟 Team、Slack 是首發渠道、公告引用了 65% 但沒附定義。這三條是官方公告白紙黑字，可以直接驗證。</li>
 <li>中等推論：Slack 渠道選擇 = 鎖定北美中大型 SaaS 客戶。這個推論建立在 Slack 用戶結構的常識上，但不等於 Anthropic 內部真的把「個人開發者」明確劃出主戰場。</li>
 <li>弱推論：「65% 是給資本市場看的」「Anthropic 的目標客戶從來不是一人公司」。這部分是我從多條訊號歸納出來的判斷，不是官方表態。我相信這個判斷，但讀者可以拒絕。</li>
 </ul>
 <p>把這層拆開後再往下讀。</p>
-<h2 id="把三個訊號連起來看：AI-agent-市場已經分流"><a href="#把三個訊號連起來看：AI-agent-市場已經分流" class="headerlink" title="把三個訊號連起來看：AI agent 市場已經分流"></a>把三個訊號連起來看：AI agent 市場已經分流</h2><p>三條訊號拼起來，畫面就清楚了。AI agent 的市場已經分流，而且分得很快。</p>
+<h2 id="把三個訊號連起來看：AI-agent-市場已經分流">把三個訊號連起來看：AI agent 市場已經分流</h2>
+<p>三條訊號拼起來，畫面就清楚了。AI agent 的市場已經分流，而且分得很快。</p>
 <p>一邊是 team agent：Claude Tag、ChatGPT for Teams、GitHub Copilot 接進 Slack 跟 Teams。賣給企業，按席位收費，ARPU 動輒每年幾百到幾千美金、留存好、決策者是 IT 主管。</p>
 <p>另一邊是 individual agent：Cursor、Cline、Aider、Claude Code 個人版。賣給開發者，月費 20-200 美金，ARPU 低、流失率高、決策者是工程師本人。</p>
 <p>兩邊的 ARPU 差幾十倍。Anthropic 把資源往 team 押沒什麼好意外的——資本投票結果就是這樣。</p>
 <p>另一個值得記下來的訊號是：Salesforce 把 Slack 原生 agent 最深的整合位置讓給 Anthropic。這不是「巨頭分邊已經完成」（Slack 同時把 OpenAI、Google、Cursor 都列在生態合作名單），但這是巨頭排隊選位的訊號——OpenAI 跟微軟綁定、Anthropic 拿到 Slack 的核心位置，剩下幾家進不了同一個圈子。團隊協作這條軌道上，位子已經開始定下來。</p>
 <p>我認為，未來一年 Anthropic 的資源分配會持續向 team agent 傾斜。Claude Code 個人版會繼續更新，但功能權重、技術投入、roadmap 優先序會明顯偏向 Enterprise 場景。這不是 Anthropic 變壞了，是商業選擇。</p>
-<h2 id="對一人公司的具體影響"><a href="#對一人公司的具體影響" class="headerlink" title="對一人公司的具體影響"></a>對一人公司的具體影響</h2><p>我自己一人公司，看完這些訊號的第一反應是冷的。但冷靜過後，得想清楚實際影響在哪。</p>
+<h2 id="對一人公司的具體影響">對一人公司的具體影響</h2>
+<p>我自己一人公司，看完這些訊號的第一反應是冷的。但冷靜過後，得想清楚實際影響在哪。</p>
 <p><strong>影響一：工具優先序偏移</strong></p>
 <p>個人版的 bug 修復、新功能、效能優化的優先序會降。不是不修，是排在 Enterprise 客戶後面。我已經看到 Claude Code 的某些角落幾個月沒大動，但 Enterprise 那邊的 SDK、observability、admin console 的更新節奏快得驚人。資源配置從來都會透露真實的優先序。</p>
 <p><strong>影響二：定價往上走的壓力</strong></p>
@@ -163,18 +170,18 @@
 <p>短期內 Pro 不太會大跳，但長期看，個人版會慢慢被「鼓勵」升級到更高方案——更多 token、更多並發、更多 feature gating。這是經典的 SaaS 戰術。</p>
 <p><strong>影響三：對 individual agent 領域反而是機會</strong></p>
 <p>這是反面——大廠資源往 team 走，意味著個人開發者市場的競爭壓力降低。Cursor、Cline、Continue 這些 individual agent 工具的生存空間反而變大。Anthropic 不太可能再做一個跟 Cursor 正面對撞的產品，因為投入產出比不划算。對中小玩家是好消息。</p>
-<h2 id="我會怎麼接招"><a href="#我會怎麼接招" class="headerlink" title="我會怎麼接招"></a>我會怎麼接招</h2><p>知道了訊號，下一步是怎麼接招。我的策略有三條。</p>
+<h2 id="我會怎麼接招">我會怎麼接招</h2>
+<p>知道了訊號，下一步是怎麼接招。我的策略有三條。</p>
 <p>第一條是不依賴單一供應商。別把工作流綁死在 Claude 上。我目前的工具鏈裡，Claude Code、Codex CLI、Gemini API 三個都有測試管道。Codex CLI 接管大量 token 消耗的 batch 任務、Gemini 跑 brainstorm 跟第二意見、Claude 主力做主開發。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 我手上的多供應商分流（簡化版，codex 跟 gemini 是我本機包的 wrapper，不是官方子命令）</span></span><br><span class="line"><span class="keyword">case</span> <span class="string">&quot;<span class="variable">$TASK_TYPE</span>&quot;</span> <span class="keyword">in</span></span><br><span class="line">  bulk_edit|batch_codegen)</span><br><span class="line">    codex <span class="built_in">exec</span> --skill=codex-delegate <span class="string">&quot;<span class="variable">$@</span>&quot;</span></span><br><span class="line">    ;;</span><br><span class="line">  second_opinion|brainstorm)</span><br><span class="line">    gemini ask <span class="string">&quot;<span class="variable">$@</span>&quot;</span></span><br><span class="line">    ;;</span><br><span class="line">  *)</span><br><span class="line">    claude <span class="string">&quot;<span class="variable">$@</span>&quot;</span></span><br><span class="line">    ;;</span><br><span class="line"><span class="keyword">esac</span></span><br></pre></td></tr></table></figure>
-
 <p>實際用的版本更複雜（有 fallback、有 retry、有 token 預算控制），這個是整理過方便分享的。重點是分流邏輯——別讓一家供應商出問題就整條工作流停擺。Anthropic 任何一條政策改變，我都有 Plan B 可以切。</p>
 <p>第二條是自己 hack 出 team 體驗。我用不到 Claude Tag，但我能組合出近似的東西。Claude Code 加上 Telegram bot 加上 Obsidian 共享 vault，就是一個極簡版的「持續記憶 + 多裝置 + 隨時喚起」。記憶在 Obsidian、入口在 TG、執行在 Claude Code。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Telegram bot → Claude Code（沒做 rate limit、錯誤處理，生產前自己補）</span></span><br><span class="line">bot.<span class="title function_">on</span>(<span class="string">&quot;text&quot;</span>, <span class="title function_">async</span> (ctx) =&gt; &#123;</span><br><span class="line">  <span class="keyword">if</span> (!<span class="variable constant_">ALLOWED_USERS</span>.<span class="title function_">has</span>(ctx.<span class="property">from</span>.<span class="property">id</span>)) <span class="keyword">return</span>;  <span class="comment">// 白名單必加，否則任何人都能用你的額度</span></span><br><span class="line">  <span class="keyword">const</span> reply = <span class="keyword">await</span> <span class="title function_">spawnClaude</span>(&#123; <span class="attr">prompt</span>: ctx.<span class="property">message</span>.<span class="property">text</span>, <span class="attr">cwd</span>: <span class="variable constant_">VAULT_PATH</span> &#125;);</span><br><span class="line">  <span class="keyword">await</span> ctx.<span class="title function_">reply</span>(reply);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
 <p>這套東西最關鍵的優勢是——我擁有它。Anthropic 改價、改 API、改方向，我都能調整。Claude Tag 我擁有不了，他們改方向、漲價、停掉，我都只能接受。對一人公司來說，擁有比功能完整更重要。</p>
 <p>順便講台灣這邊的渠道選擇——你不用硬綁 Telegram。Teams 有 Bot Framework、Lark（飛書）有 open platform API、Discord 有 bot 生態、GitHub Issues 也能當入口（webhook 觸發 Claude Code 處理）。挑你客戶在用的、整合好那一條，就有自己版本的「Claude Tag」。台灣客戶幾乎不用 Slack，但都有自己的協作工具，這條路 Anthropic 不會走，你要自己走。</p>
 <p>第三條是押寶 individual agent 的長尾。我自己做的小工具、寫的部落格，全部圍繞 individual developer 場景。當大廠都往 team 跑，個人開發者市場的競爭壓力反而降低——這裡有空間做小而美的工具、有空間建立信任、有空間做差異化。Cursor 母公司 Anysphere 在 <a target="_blank" rel="noopener" href="https://cursor.com/blog/series-d">2025 年 11 月的 Series D</a> 拿到 293 億美金估值、Cline 在 open source 圈子站穩腳跟，都是這個邏輯的證明。</p>
-<h2 id="結尾：看清楚比沒看清楚好"><a href="#結尾：看清楚比沒看清楚好" class="headerlink" title="結尾：看清楚比沒看清楚好"></a>結尾：看清楚比沒看清楚好</h2><p>Claude Tag 不是壞產品，揭露的也不是「Anthropic 變壞了」。揭露的是——這款產品本來就不是為一人設計的，這條產品線的資源傾斜還會延伸到整個 roadmap。但看清楚比沒看清楚好。看清楚才知道哪些東西要自己備、哪些東西別期待、哪些方向是空的。</p>
+<h2 id="結尾：看清楚比沒看清楚好">結尾：看清楚比沒看清楚好</h2>
+<p>Claude Tag 不是壞產品，揭露的也不是「Anthropic 變壞了」。揭露的是——這款產品本來就不是為一人設計的，這條產品線的資源傾斜還會延伸到整個 roadmap。但看清楚比沒看清楚好。看清楚才知道哪些東西要自己備、哪些東西別期待、哪些方向是空的。</p>
 <p>下次 Anthropic 再發 Enterprise-only 的新功能，我不會再覺得「我也想要」。點開 release notes、確認個人版有沒有影響、關掉視窗回去寫自己的東西。</p>
 <p>這就夠了。</p>
 
@@ -267,15 +274,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

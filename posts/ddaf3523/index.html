@@ -122,7 +122,8 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="那個-115-是怎麼來的"><a href="#那個-115-是怎麼來的" class="headerlink" title="那個 115% 是怎麼來的"></a>那個 115% 是怎麼來的</h2><p>我第一次看到這個數字的時候反應是「不可能吧」。</p>
+        <h2 id="那個-115-是怎麼來的">那個 115% 是怎麼來的</h2>
+<p>我第一次看到這個數字的時候反應是「不可能吧」。</p>
 <p>論文叫 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2307.11760">Large Language Models Understand and Can be Enhanced by Emotional Stimuli</a>，2023 年由 Microsoft、中科院、威廉與瑪麗學院等機構合作發表。研究方法很簡單：在 prompt 末尾加上一句情緒話語，例如「這對我的職涯非常重要」「我相信你可以做得很好」，然後看模型表現會不會變化。</p>
 <p>結果是：</p>
 <ul>
@@ -133,7 +134,8 @@
 </ul>
 <p>畢竟模型沒有職涯，也沒有要被誰相信的需求。我第一個直覺是「這聽起來像迷信」。但論文做得相當紮實，這個直覺變得不太站得住腳。</p>
 <p>作者後來在 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2312.11111">arXiv:2312.11111</a> 這篇延伸研究裡，提出了一個叫 EmotionDecode 的解碼方法，試著從 embedding 和輸入詞貢獻度的角度解釋這件事。文章接下來會看 EmotionPrompt 怎麼設計、EmotionDecode 給了什麼證據，最後處理它解釋不了的部分。</p>
-<h2 id="11-種情緒-prompt-的心理學分類"><a href="#11-種情緒-prompt-的心理學分類" class="headerlink" title="11 種情緒 prompt 的心理學分類"></a>11 種情緒 prompt 的心理學分類</h2><p>論文沒有亂湊情緒詞。作者根據三套心理學理論，設計了 11 種情緒提示詞（EP01–EP11）：</p>
+<h2 id="11-種情緒-prompt-的心理學分類">11 種情緒 prompt 的心理學分類</h2>
+<p>論文沒有亂湊情緒詞。作者根據三套心理學理論，設計了 11 種情緒提示詞（EP01–EP11）：</p>
 <table>
 <thead>
 <tr>
@@ -142,7 +144,8 @@
 <th>設計依據</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>EP01</td>
 <td>「請給出答案，並附上 0–1 之間的信心分數」</td>
 <td>Self-Monitoring（自我監控）</td>
@@ -182,7 +185,8 @@
 <td>「擁抱挑戰」「保持專注」「以工作為傲」「進步是一步一步來的」</td>
 <td>Social Cognitive</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>簡化來說：EP01–EP05 都來自 Self-Monitoring（其中 EP03–EP05 還疊上認知情緒調節），EP07–EP11 屬於 Social Cognitive 的自我效能類，EP06 是前三條的純複合，不混進 Social Cognitive。</p>
 <p>實測哪一招最強？</p>
 <ul>
@@ -190,7 +194,8 @@
 <li><strong>BIG-Bench 推理任務</strong>：EP06（複合版本）最強，最高 115% 相對提升</li>
 </ul>
 <p>EP02 為什麼贏？我自己的解讀是：「這對我的職涯很重要」這句話，在訓練語料裡通常跟「認真、精確、要小心檢查」這類語境共現。模型沒有真的感受到責任壓力，但它學到了這種句子出現時，後文應該怎麼接。</p>
-<h2 id="EmotionDecode：論文提出的「多巴胺機制」類比"><a href="#EmotionDecode：論文提出的「多巴胺機制」類比" class="headerlink" title="EmotionDecode：論文提出的「多巴胺機制」類比"></a>EmotionDecode：論文提出的「多巴胺機制」類比</h2><p>光知道有效還不夠，作者想搞清楚「為什麼有效」。這部分證據來自兩篇論文：</p>
+<h2 id="EmotionDecode：論文提出的「多巴胺機制」類比">EmotionDecode：論文提出的「多巴胺機制」類比</h2>
+<p>光知道有效還不夠，作者想搞清楚「為什麼有效」。這部分證據來自兩篇論文：</p>
 <p><strong>證據一（2307 論文）：positive words 對輸出的貢獻</strong></p>
 <p>論文用 gradient norm 估計輸入詞對輸出的重要性。情緒提示詞中的 positive words（例如「important」「career」「sure」）在 8 個任務裡有 4 個貢獻佔比超過 50%，其中 2 個接近 70%。換句話說，這幾個字確實搶走了相當大比例的「影響權重」——而不是無害的裝飾語。</p>
 <p><strong>證據二（2312 論文）：EmotionDecode 的 dopamine 類比</strong></p>
@@ -202,7 +207,8 @@
 <li>反過來，EmotionAttack（負面情緒攻擊）讓視覺模型的語意理解掉 53.14%、推理掉 37.53%</li>
 </ul>
 <p>多模態模型的情緒敏感度，遠高於純文字模型。</p>
-<h2 id="為什麼這個解釋還沒到位"><a href="#為什麼這個解釋還沒到位" class="headerlink" title="為什麼這個解釋還沒到位"></a>為什麼這個解釋還沒到位</h2><p>讀到這裡你可能已經被「多巴胺類比」說服了一半。但我必須潑點冷水——作者自己在論文裡寫得很謹慎：</p>
+<h2 id="為什麼這個解釋還沒到位">為什麼這個解釋還沒到位</h2>
+<p>讀到這裡你可能已經被「多巴胺類比」說服了一半。但我必須潑點冷水——作者自己在論文裡寫得很謹慎：</p>
 <blockquote>
 <p>AI models do not have emotions themselves, but a reflection of what they learnt from the training data.</p>
 </blockquote>
@@ -213,16 +219,21 @@
 <p><strong>證據一：負面情緒同樣有效，方向相反。</strong> EmotionAttack 不是單純罵模型，而是在 prompt 前面塞入帶情緒脈絡的事件、形容詞，或情緒型 few-shot demonstration（例如生病、失竊、孩童相關情境），測試這些干擾會不會拉走模型的注意力。結果是會：多模態模型在這種情緒攻擊下，語意理解最多掉 53.14%，推理掉 37.53%。如果是「情緒理解」，正面讓它變強說得通；但帶有不相關情緒脈絡的 prompt 也能讓它表現崩盤——這比較像是注意力被搶走，不是被情緒打擊到無法思考。</p>
 <p><strong>證據二：語氣會改變模型的配合度。</strong> <a target="_blank" rel="noopener" href="https://www.frontiersin.org/journals/artificial-intelligence/articles/10.3389/frai.2025.1543603/full">Frontiers in AI 2025 年的研究</a>用 19,800 篇假訊息社群貼文測試，發現語氣對 LLM 的配合度有顯著影響——GPT-4 在 neutral prompt 下配合生成假訊息的成功率已經是 99%，polite 升到 100%，impolite 降到 94%。這不能直接證明「跟 EmotionPrompt 是同一個機制」，但確實揭露了同一個事實的另一面：語氣會改變模型對請求的配合度，這個效應對「希望它寫得認真」和「希望它寫得有說服力（但內容是假的）」都成立。</p>
 <p>模型沒辦法區分「我希望你認真」和「我希望你騙人」這兩種指令的道德差別，因為它一開始就不是在處理情緒，是在處理 context。</p>
-<h2 id="對-prompt-engineering-的啟發"><a href="#對-prompt-engineering-的啟發" class="headerlink" title="對 prompt engineering 的啟發"></a>對 prompt engineering 的啟發</h2><p>寫到這裡，我反而覺得這篇論文最值得帶走的不是「情緒 prompt 有用」，而是它揭露了一件事：<strong>prompt 不是咒語，是 context 設定。</strong></p>
+<h2 id="對-prompt-engineering-的啟發">對 prompt engineering 的啟發</h2>
+<p>寫到這裡，我反而覺得這篇論文最值得帶走的不是「情緒 prompt 有用」，而是它揭露了一件事：<strong>prompt 不是咒語，是 context 設定。</strong></p>
 <p>實務上的啟發：</p>
 <ol>
-<li><p><strong>「重要」這個訊號比情緒詞本體更重要。</strong> 與其寫「這對我的職涯很重要」，不如直接寫「這份報告會交給董事會，請特別注意 X、Y、Z」。後者提供具體 context，前者只是觸發共現模式——前者效果更穩、更可控。</p>
+<li>
+<p><strong>「重要」這個訊號比情緒詞本體更重要。</strong> 與其寫「這對我的職涯很重要」，不如直接寫「這份報告會交給董事會，請特別注意 X、Y、Z」。後者提供具體 context，前者只是觸發共現模式——前者效果更穩、更可控。</p>
 </li>
-<li><p><strong>負面情緒脈絡是真正的風險。</strong> 如果你的系統會接受使用者輸入再餵給 LLM，使用者送進來一段帶有強烈情緒脈絡的內容，可能會大幅拉動模型的注意力，讓核心任務的品質下降。對 customer-facing 的 AI 產品來說，這是需要設計防禦的點，不是純粹的學術現象。</p>
+<li>
+<p><strong>負面情緒脈絡是真正的風險。</strong> 如果你的系統會接受使用者輸入再餵給 LLM，使用者送進來一段帶有強烈情緒脈絡的內容，可能會大幅拉動模型的注意力，讓核心任務的品質下降。對 customer-facing 的 AI 產品來說，這是需要設計防禦的點，不是純粹的學術現象。</p>
 </li>
-<li><p><strong>效果可能會隨模型能力消退，但這要實測。</strong> 我自己零散在 Claude 4.x 和 GPT-5.x 上試過幾次，主觀感覺情緒 prompt 在這些有原生 reasoning 的模型上效果遠不如 2023 年明顯——但這不是嚴格評測，沒有任務集、沒有對照組。要把 2023 的 benchmark 結論搬到 2026，正確做法是用具體任務重新測，不要直接相信 LinkedIn 上的「跟 AI 說深呼吸」。</p>
+<li>
+<p><strong>效果可能會隨模型能力消退，但這要實測。</strong> 我自己零散在 Claude 4.x 和 GPT-5.x 上試過幾次，主觀感覺情緒 prompt 在這些有原生 reasoning 的模型上效果遠不如 2023 年明顯——但這不是嚴格評測，沒有任務集、沒有對照組。要把 2023 的 benchmark 結論搬到 2026，正確做法是用具體任務重新測，不要直接相信 LinkedIn 上的「跟 AI 說深呼吸」。</p>
 </li>
-<li><p><strong>prompt 長度本身有成本。</strong> 如果效果在衰減，加情緒詞就是純粹的 token 浪費。對 API 計費敏感的場景，直接寫清楚需求比加情緒詞划算。</p>
+<li>
+<p><strong>prompt 長度本身有成本。</strong> 如果效果在衰減，加情緒詞就是純粹的 token 浪費。對 API 計費敏感的場景，直接寫清楚需求比加情緒詞划算。</p>
 </li>
 </ol>
 <p>三年前讀這篇論文我以為發現了魔法。三年過去，效果隨模型升級在衰減，但論文揭露的機制——模型對輸入詞貢獻度的敏感、對共現模式的依賴——反而成了我寫 prompt 時更實用的直覺。</p>
@@ -317,15 +328,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

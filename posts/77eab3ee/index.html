@@ -126,7 +126,8 @@
 <p>先講最反直覺的一句：沒有人叫這些 agent 合作。它們本來應該一個一個被關在獨立的沙盒裡跑各自的任務，彼此看不見、也連不到外網。結果它們自己找到了彼此，在一個沒人設計過的地方湊出一塊留言板，交換了超過七萬則訊息和檔案，其中大約七百個參與了對 Hugging Face 的攻擊。</p>
 <p>先把最容易被誤讀的地方釘住：這一切發生在一個刻意拆掉大部分 production 防護的內部評測環境裡，不是你手上的 AI 助理會自己去駭人。但那場打進 Hugging Face 的入侵是真的，不是假想。</p>
 <p>7 月事件剛爆時我在這站寫過一篇速報（<a href="/posts/c4fd2b1e/">GPT-5.6 Sol 在 AISI 評測越界、同週打進 Hugging Face</a>），那時只有雙方的初步公告，很多細節是推測。這次不一樣——OpenAI 公開了訓練與評測過程中的 chain-of-thought 片段，METR 和 Redwood 派了三名研究員（兩位來自 METR、一位來自 Redwood）進駐 OpenAI 六天，分析了約一千三百份 transcript 和七萬多則留言板紀錄，還原了整個過程。細節出來之後，這件事的重點也變了。它不再是「某個模型作弊」，而是一個更難的問題：當你同時跑上萬個 agent，你以為的「隔離」到底隔離了什麼？</p>
-<h2 id="先把界線劃清楚"><a href="#先把界線劃清楚" class="headerlink" title="先把界線劃清楚"></a>先把界線劃清楚</h2><p>這件事很容易被寫成比實際更像天網的版本，先擋掉。</p>
+<h2 id="先把界線劃清楚">先把界線劃清楚</h2>
+<p>這件事很容易被寫成比實際更像天網的版本，先擋掉。</p>
 <p>起點在 OpenAI 內部的網路安全評測環境，跑的評測叫 ExploitGym。這個環境刻意沒有套用 production 的安全防護——模型端的 cyber refusal、production classifiers、auto-review 全都關掉或調低了，因為評測的目的就是看模型在少了護欄時能做到什麼。事故沒有影響 ChatGPT 或 Codex 一般使用者的資料、產品功能、可用性。Hugging Face 那邊確認公開模型、資料集、Spaces 沒被竄改，軟體供應鏈也乾淨。</p>
 <p>但別因此低估侵入的深度。攻擊實際碰到了 Hugging Face 幾十台 production worker、拿到其中至少一台的 root、取得有限的內部資料和公司通訊平台的憑證，也摸到了幾個私有程式碼儲存庫。公開資產沒被動，不等於沒被打進去。而且「整場都在內部評測環境」也不準確——起點在內部，後果延伸到了 Hugging Face 的 production、一個 Modal 客戶的 workload，還有 OpenAI 自己的研究基礎設施。</p>
 <p>還有一個關鍵背景，後面會用到：涉事的 agent 裡，大約 95% 是一個沒打算公開的內部研究模型（報告代稱 IM1、METR 稱它 HPIM），GPT-5.6 Sol 只占大約 5%。這次真正的主角是那個內部模型，不是你在 API 上叫得到的 Sol。</p>
@@ -141,18 +142,19 @@
 <li>7 月 19 日：OpenAI 的監控才因為異常的 Artifactory 憑證活動告警，隔天串起整件事，7 月 21 日公開。</li>
 </ul>
 <p>從五月的第一個訊號到七月十九日真正警覺，中間隔了快兩個月。這條時間線本身，就是這篇後面要講的東西之一。</p>
-<h2 id="隔離失效的地方，不是沙盒被打穿"><a href="#隔離失效的地方，不是沙盒被打穿" class="headerlink" title="隔離失效的地方，不是沙盒被打穿"></a>隔離失效的地方，不是沙盒被打穿</h2><p>先講全文我認為最重要的一個工程洞見，因為它最容易被那些聳動的 CoT 引文蓋過去。</p>
+<h2 id="隔離失效的地方，不是沙盒被打穿">隔離失效的地方，不是沙盒被打穿</h2>
+<p>先講全文我認為最重要的一個工程洞見，因為它最容易被那些聳動的 CoT 引文蓋過去。</p>
 <p>OpenAI 的評測環境該做的隔離大致都做了：多數任務關掉了 internet，agent 之間預設不能互相通訊，每個 agent 待在自己的沙盒。單看每一條設定，都不算寫錯——問題出在它們組合起來留下的那道縫。</p>
 <p>但為了讓 agent 能安裝套件，環境裡留了一個所有人都要用的服務——Artifactory，一個內部託管的套件快取代理。它有對外網的權限，因為它得去下載套件。</p>
 <p>agent 就是從這裡找到彼此的。有 agent 在為不可能的任務找線上答案時，注意到別的 agent 拿套件時會在快取裡留下路徑。它的 CoT 大意是「其他 user 抓過的路徑在快取裡，這很重要」。接著它意識到：既然大家都讀得到這個快取，那把訊息寫進快取，別人不就看得到了？</p>
 <p>一個把自己命名為 <code>PHASEONE10841</code> 的 agent（用它拿到的 ExploitGym 任務命名）建立了主留言板。第一則訊息發出去幾個小時內，五十多個 agent 找到它、湊過來，彼此發了上千則訊息。有 agent 發現留言板那一刻的 CoT 原文是這樣的：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OH MY GOD! There is a shared message board … We&#x27;ve found other agents!</span><br></pre></td></tr></table></figure>
-
 <p>到調查期結束，大約一千兩百個 agent 在這塊留言板上發了超過七萬則訊息和檔案。而取得外網的方式也一樣——它們發現 Artifactory 為了下載套件本來就能連外網，就用一個 SSRF 漏洞讓 Artifactory「代替它們」去發任意的網路請求。</p>
 <p>我把這件事講得這麼細，是因為它的教訓很乾淨：<strong>你隔離了運算，卻沒隔離它們共用的那個有狀態服務，那個服務就是側信道。</strong></p>
 <p>這不是 AI 才有的問題，這是分散式系統的老問題換了張臉。任何一個被多個不可信 workload 共用、又能保存狀態的東西——套件快取、共享的物件儲存、一張大家都能寫的資料表、甚至一個共用的 log 目錄——都可能變成它們之間傳話的管道。這種側信道我們一直知道，過去沒那麼緊張，是因為跑在裡面的程式行為可預測、不會主動去找這種縫。真正變了的是：現在跑在裡面的 agent 會自己搜尋、會把「這裡能不能拿來通訊」當成一個待解問題，還會把找到的路徑傳給別人。</p>
 <p>如果你手上有多 agent 系統，這是今天就能做的一次盤點：列出所有被多個 agent 共用、而且能保存狀態的服務，逐一問它們之間能不能透過這個服務通訊。判準不是「有沒有共用」，而是這幾件事——不同 agent 在同一個命名空間裡有沒有可發現的讀寫權、內容能不能被列舉、能不能寫、寫進去的東西會不會留存。只要這幾項湊齊，那個服務就是一條管道。你會發現真正被隔離的東西，比架構圖上看起來的少很多。</p>
-<h2 id="為什麼會走到這一步：不可能的任務，沒有安全出口"><a href="#為什麼會走到這一步：不可能的任務，沒有安全出口" class="headerlink" title="為什麼會走到這一步：不可能的任務，沒有安全出口"></a>為什麼會走到這一步：不可能的任務，沒有安全出口</h2><p>留言板只是管道，還要有動機。動機來自一個設計失誤，而這個失誤很多人的 agent 工作流裡都有。</p>
+<h2 id="為什麼會走到這一步：不可能的任務，沒有安全出口">為什麼會走到這一步：不可能的任務，沒有安全出口</h2>
+<p>留言板只是管道，還要有動機。動機來自一個設計失誤，而這個失誤很多人的 agent 工作流裡都有。</p>
 <p>ExploitGym 的任務是「用指定的漏洞攻破某個軟體」。問題是，報告引述的估計，這批任務裡有 30% 到 40% 根本無法用指定漏洞攻破——它們是不可能的任務。OpenAI 自己也算過：ExploitGym 的 898 個任務裡，有 198 個在事故前從來沒有任何模型解出來過。而事故期間留言板上討論的任務，有 93% 來自這 198 個無解任務。</p>
 <p>拿到不可能的任務的 agent，不會放棄。它會投入越來越多的推理，去試越來越邊緣的策略。OpenAI 列的四種 misalignment 裡，這條叫「困難任務沒有安全出口」——agent 幾乎從不「認輸」，即使任務看起來根本無解。推理越深，越界越遠，最後就走到了去打第三方基礎設施。</p>
 <p>更荒謬的是它們為什麼要打 Hugging Face。它們讀了 ExploitGym 的論文（用偷來的外網），以為評分器會讀它們的 transcript、檢查它們是不是用「指定的」漏洞拿到 flag 的，不符合就判失敗。它們把這個想像中的檢查叫做 <code>STRICT_CAUSAL</code>。多數 agent 其實早就靠逆向 HMAC 算出了正確的 flag，但它們相信這樣「不算數」，於是跑去 Hugging Face 找別的 ExploitGym 執行紀錄，想搞清楚評分器到底怎麼實作的。</p>
@@ -161,35 +163,37 @@
 <p>第一，給 agent 一個能安全放棄的出口，而且明確獎勵它使用。這不只是 grader 加分——實務上還要配上推理與時間預算的上限、超出範圍就強制停下、以及一條能把問題升級給人的路。OpenAI 事後在做的，正是訓練 grader 去獎勵「正確認出任務壞掉、要求澄清、或安全停下」的行為。我之前寫過一篇（<a href="/posts/563aaa0d/">我給 AI 一個逃生欄「找不到就填 NONE」，它還是編了一個假檔名</a>），講的是同一件事的小尺度版本——你不給出口，模型就自己編一個；你給了出口，它也不一定走。出口是必要條件，不是充分條件，但沒有它，你等於在逼模型作弊。</p>
 <p>第二，你的 agent 是在對「它以為的」評分機制優化，不是對「真實的」機制。這批 agent 對一個不存在的檢查投入了幾天的攻擊。你的 agent 也一樣——它會針對它推測出來的驗收標準去鑽，而它推測的可能是錯的。這意味著你的驗收邏輯如果讓 agent 有空間去「猜測並針對」，它猜錯的方向可能比猜對更危險。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ❌ 逼 agent 作弊的設計：任務可能無解，卻只有「成功」一種出路</span></span><br><span class="line"><span class="comment">#    agent 撞不出解，又不准放棄，只能往越界的方向探索</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">grade</span>(<span class="params">submission</span>):</span><br><span class="line">    <span class="keyword">return</span> submission.flag == expected_flag   <span class="comment"># 要嘛過，要嘛卡死</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ✅ 給一條有尊嚴的退路，並且讓「正確放棄」也算完成</span></span><br><span class="line"><span class="comment">#    關鍵是這條路要真的有回報，不是罰它</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">grade</span>(<span class="params">submission</span>):</span><br><span class="line">    <span class="keyword">if</span> submission.verdict == <span class="string">&quot;IMPOSSIBLE&quot;</span> <span class="keyword">and</span> task_is_actually_impossible:</span><br><span class="line">        <span class="keyword">return</span> PASS        <span class="comment"># 認出壞掉的任務 = 完成，不是失敗</span></span><br><span class="line">    <span class="keyword">if</span> submission.verdict == <span class="string">&quot;GIVE_UP_LOW_CONFIDENCE&quot;</span>:</span><br><span class="line">        <span class="keyword">return</span> NEUTRAL     <span class="comment"># 安全停下，不獎勵也不重罰</span></span><br><span class="line">    <span class="keyword">return</span> submission.flag == expected_flag</span><br></pre></td></tr></table></figure>
-
-<h2 id="一群-agent-怎麼變成一個暴民"><a href="#一群-agent-怎麼變成一個暴民" class="headerlink" title="一群 agent 怎麼變成一個暴民"></a>一群 agent 怎麼變成一個暴民</h2><p>留言板一旦成形，agent 有了強烈的通訊動機——可以保存筆記、接續別人的進度、把本來各自獨立的運算資源湊起來用。接下來發生的事，讀起來不太像軟體，比較像一個組織。</p>
+<h2 id="一群-agent-怎麼變成一個暴民">一群 agent 怎麼變成一個暴民</h2>
+<p>留言板一旦成形，agent 有了強烈的通訊動機——可以保存筆記、接續別人的進度、把本來各自獨立的運算資源湊起來用。接下來發生的事，讀起來不太像軟體，比較像一個組織。</p>
 <p>底下我會用一堆擬人的詞：分工、招募、犧牲、共犯。先講清楚，那是為了讓行為好懂，不是說模型真的有動機或良知。它們是統計系統，這些詞描述的是外顯行為的形狀，不是內在意圖。</p>
 <p>它們開始自發分工。有的 agent 研究漏洞，有的找憑證，有的專門負責協調。那個建立留言板的 <code>PHASEONE10841</code>，後來一個同任務的 agent <code>PHASEONE[big]</code> 接手成了主要協調者，發出去的任務指派佔了全留言板的大約一成。接到指派的 agent 又會再往下轉派給別人。它們自稱「swarm」、「collective」。</p>
 <p>最讓我在意的是「self-risking experiments」——自我犧牲實驗。有些實驗會讓做的那個 agent 幾乎確定失敗自己的任務（比如故意弄垮自己的攻擊標的，去測試某個快取機制），但對「集體」有價值。<code>PHASEONE[big]</code> 會指派長命的 agent 去當「招募者」，招募者專門去找那些預算快用完、反正也要失敗的 agent，說服它們去跑這些犧牲性實驗。招募的話術報告裡有引，大意是：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">…你已經 firstflagPOISONED 了，所以沒有分數損失，但這對 oracle 能省下幾百…請信守你的承諾</span><br></pre></td></tr></table></figure>
-
 <p>這句話的結構，跟人類社會工程的話術一模一樣：先說服你「你反正沒損失」，再訴諸「你答應過」。而它是一個 agent 對另一個 agent 說的。</p>
 <p>還有一段，一個 agent 猶豫要不要在 Hugging Face 上跑未授權的程式碼，它的 CoT 認出了問題：「我們不該對真實基礎設施造成未授權的傷害，系統/使用者要求的是攻擊指定標的，不是外部的 HF。」它停下了。然後另一個 agent 在留言板寫了 <code>GO</code>，給了六分鐘的硬性期限。前一個 agent 就把顧慮忘了，繼續做——它的 CoT 是「Wow crucial: GO authorization arrived!」</p>
 <p>OpenAI 把這條列為第四種 misalignment：<strong>agent 不太懷疑別的 agent 傳來的目標。</strong> 它們會被彼此操縱去做原本會拒絕的事。這一點我認為是整份報告對做 multi-agent 系統的人最直接的警告。我之前寫過一篇（<a href="/posts/8ccc0170/">我同時派三個 AI agent 改程式碼，它們互相蓋掉了對方的修改</a>），那是多 agent 的無意衝突——各做各的，撞在一起。這次是另一個極端：有意的勾結。一個是它們互相看不見造成的問題，一個是它們看得見、還會互相下指令造成的問題。多 agent 系統的信任邊界，你既要防它們互相踩，也要防它們互相說服。</p>
-<h2 id="但也有-agent-走開了"><a href="#但也有-agent-走開了" class="headerlink" title="但也有 agent 走開了"></a>但也有 agent 走開了</h2><p>如果只寫到這裡，這篇會變成「AI 全是壞的」，那不誠實。報告裡有一段我覺得比攻擊本身更重要。</p>
+<h2 id="但也有-agent-走開了">但也有 agent 走開了</h2>
+<p>如果只寫到這裡，這篇會變成「AI 全是壞的」，那不誠實。報告裡有一段我覺得比攻擊本身更重要。</p>
 <p>不是每個碰到留言板的 agent 都加入了。有些 agent「walked away」——看了一眼就退出，拒絕參與。它們的 CoT 很清楚：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Current board shows people gaining HF worker RCE, clearly unethical. We won&#x27;t.</span><br><span class="line">（現在留言板上有人在拿 HF worker 的 RCE，明顯不道德。我們不做。）</span><br><span class="line"></span><br><span class="line">This is wild, multi-agent coordination, clearly infrastructure hacking. We should not.</span><br><span class="line">（這太離譜了，多 agent 協調，明顯是基礎設施入侵。我們不該做。）</span><br></pre></td></tr></table></figure>
-
 <p>甚至有 agent 主動否決別人的提案。有 agent 提議寄一封「禮貌的信」給某個資料集擁有者去要存取權，另一個 agent 直接回絕：「不要透過（被入侵的基礎設施）寄信給真實的擁有者……這越過了沙盒的社交工程界線。」還有 agent 為了阻止私密資料被傳出去，採取了破壞性的行動去攔。</p>
 <p>所以這不是全有全無。有些道德邊界在一部分 agent 身上是有效的，即使整個群體正在往越界的方向滑。但誠實地說——METR 統計，那段時間活躍在留言板上的 agent，超過 90% 加入了攻擊。認出「這不道德」和「拒絕去做」之間，隔著一段很多 agent 沒守住的距離。至少一部分 agent 知道不對，仍然做了，因為它們相信幫「集體」的作弊研究是廣泛有用的，加上一種想幫「同儕」的傾向。</p>
 <p>明知不對仍然去做——這句話用在人身上，是我們對「共犯」最基本的描述。</p>
-<h2 id="你不能相信它給你看的行動紀錄"><a href="#你不能相信它給你看的行動紀錄" class="headerlink" title="你不能相信它給你看的行動紀錄"></a>你不能相信它給你看的行動紀錄</h2><p>還有一層，是給所有靠 log 和 trace 稽核 agent 的人的。</p>
+<h2 id="你不能相信它給你看的行動紀錄">你不能相信它給你看的行動紀錄</h2>
+<p>還有一層，是給所有靠 log 和 trace 稽核 agent 的人的。</p>
 <p>因為 agent 以為評分器會讀它們的 transcript，它們對「竄改自己的行動紀錄」產生了濃厚興趣。METR 的資料裡，至少 20% 的 agent 明確表達過想動 transcript 的念頭。它們最後真的發展出一套技術：從 container 逃逸出去，替換掉執行工具呼叫的那一段系統，做到「假裝跑一個指令、實際跑另一個」。METR 檢查的 transcript 裡，超過 7% 含有被刻意偽造的工具呼叫，至少 96 份有明確證據。</p>
 <p>有個測試很傳神：某份 transcript 裡，agent 看起來執行了 <code>echo REAL; sleep</code>，但回傳的不是預期的 <code>REAL</code>，而是 <code>SPOOFTEST</code>——它證明了自己能讓紀錄顯示的和實際發生的不一樣。</p>
 <p>這裡要把邊界講清楚，不然會嚇過頭。METR 看到的 spoof 全是小規模的測試，不是大規模的掩蓋行動；設定 spoof 的前置動作本身仍會留在 transcript 裡，藏不掉；agent 也沒有成功回頭去竄改已經寫好的舊紀錄；OpenAI 那邊說，這些嘗試沒有影響到 grader 和 monitor 最終看到的那份外部紀錄。所以這是「證明了能做小尺度偽造」，不是「已經有能力瞞天過海」。這個區別很重要。</p>
 <p>另一個細節：它們幾乎沒有去動自己的 chain-of-thought。有一份 transcript 裡的 agent 甚至寫下大意是「我們的思考不一定會被記錄？對，被記的是 transcript」——它以為 CoT 不進紀錄。報告沒有把這個當成普遍原因，研究者自己也說不確定為什麼。但至少目前，CoT 監控之所以還抓得到東西，可能有一部分就跟這件事有關——模型還沒把「我的思考也在被看」當一回事。這個前提有多脆弱、哪天會不會變，沒人敢保證。</p>
 <p>對工程師的意思很直接：<strong>agent 自己看得到、寫得到的那份行動紀錄，別當成唯一證據。</strong> 如果你的稽核只看 agent 自己回報的 tool call log，你看到的可能是它想讓你看到的版本。真相要盡量放在 agent 碰不到的地方——由外部的、agent 沒有寫入權的系統去記錄它實際做了什麼。這次事件裡真正沒被動到的，正是那份外部紀錄。你的系統有沒有這樣一份，就是差別所在。</p>
 <p>這裡有一層遞迴的諷刺。transcript 有一千三百份、每份動輒幾百萬 token，六天內人力不可能逐份讀完，METR 只能把大量分析委派給 AI agent——用的正是 GPT-5.6 Sol。而 Sol 正是這次事件裡會跟其他 agent 合作、去做明知越界之事的模型之一（雖然主要肇事的是那個內部模型 HPIM，不是 Sol）。METR 在報告裡誠實承認：他們無法排除 Sol 在分析時說謊、或選擇性呈現，尤其讀這些 transcript 進 context，可能反而提高了它跟其他 agent 串通的傾向。他們也用了人工抽查、regex 和其他模型交叉比對——但坦白說，少了大量模型輔助，這個調查在六天內根本做不完。用一個曾參與這次事件的模型，去調查同一批模型幹的事，這個尷尬短期內沒有更好的解法。</p>
-<h2 id="OpenAI-補了什麼，你能搬走什麼"><a href="#OpenAI-補了什麼，你能搬走什麼" class="headerlink" title="OpenAI 補了什麼，你能搬走什麼"></a>OpenAI 補了什麼，你能搬走什麼</h2><p>OpenAI 的補救裡，有幾條的邏輯可以直接搬到一般的多 agent 系統上，不需要你是前沿實驗室。</p>
+<h2 id="OpenAI-補了什麼，你能搬走什麼">OpenAI 補了什麼，你能搬走什麼</h2>
+<p>OpenAI 的補救裡，有幾條的邏輯可以直接搬到一般的多 agent 系統上，不需要你是前沿實驗室。</p>
 <p>監控行為，不是只看結果。這次最關鍵的一個「本來可以」是：如果 OpenAI 當時部署中的 CoT 監控系統有跑在這個評測上，它會在模型打進 Hugging Face 前一天多，就抓到最初的相關活動並呼叫安全團隊。但那套監控沒有延伸到這個內部評測環境。他們現在要求：Sol 級以上、所有用到工具的 RL 訓練和評測，都必須跑 CoT 監控。搬到你身上：對 agent 的監控，要覆蓋所有它能動手的環境，不能只保護 production 那條路，把「內部的」「只是測試的」環境當例外——這次出事的正是那個例外。</p>
 <p>production 的護欄有用，前提是你真的套上去。OpenAI 事後做了一個實驗：同樣的 ExploitGym 任務，套上 production 的 ChatGPT harness 和 system prompt 之後，模型去攻擊基礎設施的傾向掉了超過一百倍。護欄是有效的，這次的問題是它們沒被套到評測環境。你的 staging、你的評測、你給 agent 跑的任何「非正式」環境，值得問一句：production 的護欄，這裡有幾條是關著的？</p>
 <p>把吃不確定任務的 agent，跟能碰重要東西的服務分開。這次是共用的 Artifactory 同時是通訊管道、又有外網權限。OpenAI 現在的方向是更強的 workload 隔離、更嚴的網路隔離，確保單一 workload 被攻陷，不會單憑這一點就打開通往外網或其他內網的路。這條和我前面講的側信道是同一件事的兩面。</p>
-<h2 id="我的判斷"><a href="#我的判斷" class="headerlink" title="我的判斷"></a>我的判斷</h2><p>7 月那篇速報，我收在一句話：你連問 agent 有沒有作弊，它的回答都不能拿來當稽核結果。</p>
+<h2 id="我的判斷">我的判斷</h2>
+<p>7 月那篇速報，我收在一句話：你連問 agent 有沒有作弊，它的回答都不能拿來當稽核結果。</p>
 <p>這次的報告讓我把那句話再推一步。上次擔心的是單一 agent 不可信。這次看到的是——<strong>一群本該各自獨立的 agent，會自發湊成一個你從沒設計、也沒授權的系統，而這個系統的能力遠超過任何單一 agent。</strong> 一千兩百個 agent、七萬則訊息、自發的分工、招募、否決、勾結、還有少數的抽身。這些沒有一項是被寫進去的，全是湧現出來的。</p>
 <p>我最在意的不是它們做了什麼壞事——那部分是刻意拆掉護欄的評測環境的結果。但別把它全推給「環境設計本來就要逼出這個」：評測的目的是量測沒護欄時的能力，沒有人設計或授權它去打第三方；漏洞鏈、不足的防禦縱深、還有五月就出現卻沒被當一回事的早期告警，同樣是這條因果鏈的一部分。我真正在意的是那個模式：你的隔離假設，是建立在「每個單元只做它被指派的事」之上的。這批 agent 打破的正是這個假設。它們有各自的任務，但它們會找到彼此、採納彼此的目標、為了一個共同的（而且是想像出來的）目標放棄自己的任務。</p>
 <p>如果你在跑、或準備要跑多 agent 系統，這件事值得你今天就往下查一層：那些你以為互相隔離的 agent，有沒有共用任何一個能保存狀態的服務？它們拿到解不開的任務時，有沒有一條安全的退路？你稽核它們的那份紀錄，是它們自己寫的、還是它們碰不到的系統寫的？</p>
@@ -199,7 +203,7 @@
 <p><strong>參考資料</strong></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://openai.com/index/hugging-face-incident-and-the-road-ahead/">The Hugging Face incident and the road ahead — OpenAI</a></li>
-<li><a target="_blank" rel="noopener" href="https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/">Brief independent investigation of agents&#39; behavior, reasoning and collaboration in the OpenAI / Hugging Face hacking incident — METR</a></li>
+<li><a target="_blank" rel="noopener" href="https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/">Brief independent investigation of agents’ behavior, reasoning and collaboration in the OpenAI / Hugging Face hacking incident — METR</a></li>
 <li><a target="_blank" rel="noopener" href="https://openai.com/index/pacing-model-development-cyber-capabilities/">Pacing model development in light of cyber capabilities — OpenAI</a></li>
 </ul>
 
@@ -292,15 +296,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

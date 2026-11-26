@@ -125,7 +125,8 @@
         <p>上週為了讓同事拉一份檔案，我在測試機上把 IIS 專案資料夾開了個進階共用。東西傳完後我把共用關掉，繼續回頭改別的東西。</p>
 <p>十分鐘後測試站同事回訊息：整個網站 <code>HTTP 401</code>，連 <code>/favicon.ico</code> 都打不開。</p>
 <p>我第一個念頭是「我剛剛根本沒動 web.config 啊？」然後花了半小時繞遠路——這篇就是想分享這個坑，因為症狀跟原因之間的距離遠到不合理。</p>
-<h2 id="症狀"><a href="#症狀" class="headerlink" title="症狀"></a>症狀</h2><ul>
+<h2 id="症狀">症狀</h2>
+<ul>
 <li>瀏覽器吃到 <code>401 Unauthorized</code></li>
 <li>連 CSS、圖片這類靜態檔都 401</li>
 <li>IIS 沒有動過站點設定</li>
@@ -135,16 +136,17 @@
 </ul>
 <p>翻開 IIS 記錄（<code>C:\inetpub\logs\LogFiles\W3SVC...</code>），關鍵那行：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sc-status: 401</span><br><span class="line">sc-substatus: 3</span><br></pre></td></tr></table></figure>
-
 <p><code>401.3</code> 的官方說明是 <strong>「Access is denied due to an ACL set on the requested resource」</strong>——翻譯：這不是 IIS 驗證設定的問題，是 NTFS 層級擋下來的。</p>
-<h2 id="我第一個走錯的方向"><a href="#我第一個走錯的方向" class="headerlink" title="我第一個走錯的方向"></a>我第一個走錯的方向</h2><p>本能反應是去翻 App Pool 的 Identity。一講到「IIS 權限」，多數人腦中先跳出來的就是 <code>IIS AppPool\網站名稱</code> 這個虛擬帳號。</p>
+<h2 id="我第一個走錯的方向">我第一個走錯的方向</h2>
+<p>本能反應是去翻 App Pool 的 Identity。一講到「IIS 權限」，多數人腦中先跳出來的就是 <code>IIS AppPool\網站名稱</code> 這個虛擬帳號。</p>
 <p>我還真的去 <code>D:\Sites\YilanSewearV3</code> 右鍵按屬性確認 <code>IIS AppPool\YilanSewearV3</code> 是不是被動到——在啊，好端端地躺在 ACL 裡。</p>
 <p>一開始就搞錯抓誰了。</p>
-<h2 id="真正的犯人：IUSR-從-ACL-裡消失了"><a href="#真正的犯人：IUSR-從-ACL-裡消失了" class="headerlink" title="真正的犯人：IUSR 從 ACL 裡消失了"></a>真正的犯人：IUSR 從 ACL 裡消失了</h2><p>重新看一次屬性頁，才發現 <code>IUSR</code> 那一列整排不見了。</p>
-<p>這個帳號我平常從來沒特別記過，存在感為零——直到它消失的那一刻才想起來：**IIS 站台預設開著 Anonymous Authentication，而這個匿名驗證預設用來檢查 NTFS 權限的身份就是 <code>IUSR</code>**（這個預設值其實可以改成 App Pool Identity，但多數情況沒人會去動它）。</p>
+<h2 id="真正的犯人：IUSR-從-ACL-裡消失了">真正的犯人：IUSR 從 ACL 裡消失了</h2>
+<p>重新看一次屬性頁，才發現 <code>IUSR</code> 那一列整排不見了。</p>
+<p>這個帳號我平常從來沒特別記過，存在感為零——直到它消失的那一刻才想起來：<strong>IIS 站台預設開著 Anonymous Authentication，而這個匿名驗證預設用來檢查 NTFS 權限的身份就是 <code>IUSR</code></strong>（這個預設值其實可以改成 App Pool Identity，但多數情況沒人會去動它）。</p>
 <p>靜態檔都讀不到，網站還沒跑到動態那一層就 401 了，完全合理。</p>
-<h2 id="修復（一行搞定）"><a href="#修復（一行搞定）" class="headerlink" title="修復（一行搞定）"></a>修復（一行搞定）</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">icacls <span class="string">&quot;D:\Sites\YilanSewearV3&quot;</span> /grant <span class="string">&quot;IUSR:(OI)(CI)RX&quot;</span> /T</span><br></pre></td></tr></table></figure>
-
+<h2 id="修復（一行搞定）">修復（一行搞定）</h2>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">icacls <span class="string">&quot;D:\Sites\YilanSewearV3&quot;</span> /grant <span class="string">&quot;IUSR:(OI)(CI)RX&quot;</span> /T</span><br></pre></td></tr></table></figure>
 <p>參數意思：</p>
 <ul>
 <li><code>/grant &quot;IUSR:...&quot;</code>：授權給 IUSR</li>
@@ -154,9 +156,11 @@
 <li><code>/T</code>：套到所有現存子目錄</li>
 </ul>
 <p>跑完立刻活過來。</p>
-<h2 id="取消共用的副作用：一個我找不到官方答案的現象"><a href="#取消共用的副作用：一個我找不到官方答案的現象" class="headerlink" title="取消共用的副作用：一個我找不到官方答案的現象"></a>取消共用的副作用：一個我找不到官方答案的現象</h2><p>老實說這段是我第二天補功課也沒完全搞清楚的部分。進階共用在<strong>開啟</strong>時會動到 NTFS ACL 這件事有跡可循；但<strong>關閉共用那一刻 <code>IUSR</code> 為什麼會連帶被掃掉</strong>，我在 Microsoft 官方文件裡翻不到明確說明。</p>
+<h2 id="取消共用的副作用：一個我找不到官方答案的現象">取消共用的副作用：一個我找不到官方答案的現象</h2>
+<p>老實說這段是我第二天補功課也沒完全搞清楚的部分。進階共用在<strong>開啟</strong>時會動到 NTFS ACL 這件事有跡可循；但<strong>關閉共用那一刻 <code>IUSR</code> 為什麼會連帶被掃掉</strong>，我在 Microsoft 官方文件裡翻不到明確說明。</p>
 <p>我能講的只有實測：在同一台機器上另開測試資料夾跑了兩次（加 IUSR → 開進階共用 → 關共用），IUSR 都被清掉。所以這段請當成<strong>可重現的現象</strong>，不是已被官方定義的固定行為。<code>IUSR</code> 跟 SMB 共用其實完全沒關係，卻在這個過程裡被無辜波及——反覆踩過幾次之後我決定乖乖記下來。如果你在其他 Windows 版本上看到不一樣的結果，歡迎留言補充。</p>
-<h2 id="一次講清楚兩個常被搞混的身份"><a href="#一次講清楚兩個常被搞混的身份" class="headerlink" title="一次講清楚兩個常被搞混的身份"></a>一次講清楚兩個常被搞混的身份</h2><p>這次踩坑的根因，是我一開始沒把 IIS 的兩個身份分清楚：</p>
+<h2 id="一次講清楚兩個常被搞混的身份">一次講清楚兩個常被搞混的身份</h2>
+<p>這次踩坑的根因，是我一開始沒把 IIS 的兩個身份分清楚：</p>
 <table>
 <thead>
 <tr>
@@ -164,7 +168,8 @@
 <th>什麼時候出場</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><code>IUSR</code></td>
 <td>匿名驗證下，<strong>讀靜態檔案</strong>（HTML / CSS / JS / 圖片）的身份</td>
 </tr>
@@ -172,7 +177,8 @@
 <td><code>IIS AppPool\你的網站名</code></td>
 <td><strong>執行動態程式碼</strong>（.NET、Node）、存資料庫、寫 log 用的身份</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>很多人（包括當下的我）會以為既然 App Pool 代表一個網站，那所有檔案 I/O 都會用 App Pool 的身份去檢查權限——實際上不是。更精準的說法是：請求<strong>仍是在該站台所屬 App Pool 的 worker process（w3wp.exe）裡處理</strong>，但在匿名驗證情境下，IIS 對檔案做 ACL 檢查時用的是<strong>匿名身份</strong>（預設就是 <code>IUSR</code>），而不是 process identity 本身。</p>
 <p>這是 IIS 裡「process identity」跟「impersonated identity」分成兩條線看的典型例子——同一個 worker 跑，但對外存取資源時被「代換」成另一個身份。</p>
 <p>所以下次遇到類似狀況，判準是：</p>
@@ -181,10 +187,10 @@
 <li><strong>靜態檔正常、動態頁面讀不到 DB / 寫不了 log</strong> → 再去翻 App Pool</li>
 </ul>
 <p>兩條線分開查，少繞很多路。</p>
-<h2 id="下次我會怎麼做"><a href="#下次我會怎麼做" class="headerlink" title="下次我會怎麼做"></a>下次我會怎麼做</h2><p>正式機上的 IIS 專案資料夾，我不會再隨手開共用了。要交一份檔案給人，用 <code>robocopy</code> 或直接打包成 zip 都比開共用乾淨——沒有副作用、沒有權限被動到。</p>
+<h2 id="下次我會怎麼做">下次我會怎麼做</h2>
+<p>正式機上的 IIS 專案資料夾，我不會再隨手開共用了。要交一份檔案給人，用 <code>robocopy</code> 或直接打包成 zip 都比開共用乾淨——沒有副作用、沒有權限被動到。</p>
 <p>真的非開不可，關掉共用之後我會直接習慣性跑一次：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">icacls <span class="string">&quot;D:\Sites\專案名&quot;</span> | findstr <span class="string">&quot;IUSR IIS_IUSRS&quot;</span></span><br></pre></td></tr></table></figure>
-
 <p>確認兩個帳號都還在再走人。這個檢查花三秒，比下次再卡在 <code>sc-substatus 3</code> 跟 App Pool 之間繞半小時划算太多。</p>
 
       </div>
@@ -244,6 +250,14 @@
       </li>
     
       <li>
+        <a href="/posts/4f8c5648/">
+          <img src="/images/posts/bat-errorlevel-negative-exit-code-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</span>
+          <span class="related-date">2026-11-26</span>
+        </a>
+      </li>
+    
+      <li>
         <a href="/posts/7d2b90da/">
           <img src="/images/posts/windows-multi-nic-default-route-remove-netroute-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
           <span class="related-title">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</span>
@@ -259,14 +273,6 @@
         </a>
       </li>
     
-      <li>
-        <a href="/posts/901fe680/">
-          <img src="/images/posts/legacy-901fe680-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
-          <span class="related-title">Windows遠端桌面連線重置帳密教學</span>
-          <span class="related-date">2025-01-03</span>
-        </a>
-      </li>
-    
     </ul>
   </section>
   
@@ -276,6 +282,8 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
@@ -283,8 +291,6 @@
       <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
     
       <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
     
     </ul>
   </section>

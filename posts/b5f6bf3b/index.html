@@ -119,63 +119,59 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>Hexo 是基於 Node.js 的靜態網站產生器，專門針對部落格設計。產出純 HTML/CSS/JS，不需要後端或資料庫，部署到 GitHub Pages 完全免費。這篇記錄從安裝到上線的完整流程，以及幾個實際會踩到的坑。</p>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>先確認電腦上有 Node.js 和 npm，然後全域安裝 Hexo CLI：</p>
+<h2 id="安裝">安裝</h2>
+<p>先確認電腦上有 Node.js 和 npm，然後全域安裝 Hexo CLI：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
-
 <p>建立新專案：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo init my-blog</span><br><span class="line"><span class="built_in">cd</span> my-blog</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure>
-
 <p><code>hexo init</code> 會拉一套預設骨架，包含設定檔 <code>_config.yml</code>、範例文章、以及預設主題 landscape。</p>
-<h2 id="寫文章"><a href="#寫文章" class="headerlink" title="寫文章"></a>寫文章</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new <span class="string">&quot;我的第一篇文章&quot;</span></span><br></pre></td></tr></table></figure>
-
+<h2 id="寫文章">寫文章</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new <span class="string">&quot;我的第一篇文章&quot;</span></span><br></pre></td></tr></table></figure>
 <p>指令執行後會在 <code>source/_posts/</code> 下產生一個 Markdown 檔，開頭是 front-matter（title、date、tags 等 YAML 區塊），內容用 Markdown 寫就行。</p>
-<h2 id="部署到-GitHub-Pages"><a href="#部署到-GitHub-Pages" class="headerlink" title="部署到 GitHub Pages"></a>部署到 GitHub Pages</h2><h3 id="建立-Repository"><a href="#建立-Repository" class="headerlink" title="建立 Repository"></a>建立 Repository</h3><p>GitHub Pages 的 repository 命名有規則：</p>
+<h2 id="部署到-GitHub-Pages">部署到 GitHub Pages</h2>
+<h3 id="建立-Repository">建立 Repository</h3>
+<p>GitHub Pages 的 repository 命名有規則：</p>
 <ul>
 <li><strong>個人站</strong>（<code>username.github.io</code>）：repository 必須命名為 <code>username.github.io</code>，Pages 來源用 <code>main</code> 分支。</li>
 <li><strong>專案站</strong>（<code>username.github.io/project-name</code>）：repository 名稱隨意，建議用 <code>gh-pages</code> 分支存放產生的靜態檔。</li>
 </ul>
 <p>建完 repository 後，到 Settings → Pages，確認已啟用並選定正確的來源分支。</p>
-<h3 id="設定-config-yml"><a href="#設定-config-yml" class="headerlink" title="設定 _config.yml"></a>設定 _config.yml</h3><p>修改專案根目錄的 <code>_config.yml</code>，找到 <code>deploy</code> 區塊：</p>
+<h3 id="設定-config-yml">設定 _config.yml</h3>
+<p>修改專案根目錄的 <code>_config.yml</code>，找到 <code>deploy</code> 區塊：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">https://github.com/username/username.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">main</span>   <span class="comment"># 個人站用 main；專案站用 gh-pages</span></span><br></pre></td></tr></table></figure>
-
 <p><code>repo</code> 也可以用 SSH 格式（<code>git@github.com:username/username.github.io.git</code>），SSH 設定好之後部署不需要輸入密碼。</p>
-<h3 id="安裝部署套件"><a href="#安裝部署套件" class="headerlink" title="安裝部署套件"></a>安裝部署套件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
-
-<h3 id="執行部署"><a href="#執行部署" class="headerlink" title="執行部署"></a>執行部署</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
-
+<h3 id="安裝部署套件">安裝部署套件</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+<h3 id="執行部署">執行部署</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
 <p>底層是 <code>git push</code>，認證方式取決於你的 git 設定：</p>
 <ul>
 <li><strong>SSH key</strong>：設好後完全靜默，不會提示任何輸入。</li>
 <li><strong>HTTPS + credential helper</strong>：首次可能提示輸入 GitHub 帳號密碼或 Personal Access Token，之後由系統憑證管理員快取。</li>
 <li><strong>HTTPS 但沒有 credential helper</strong>：每次都會要求輸入，這種情況建議改 SSH 或設定 <code>~/.netrc</code>。</li>
 </ul>
-<h3 id="日常更新流程"><a href="#日常更新流程" class="headerlink" title="日常更新流程"></a>日常更新流程</h3><p>每次改完文章後，依序跑三個指令：</p>
+<h3 id="日常更新流程">日常更新流程</h3>
+<p>每次改完文章後，依序跑三個指令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean    <span class="comment"># 清掉上次產生的靜態檔，避免快取殘留</span></span><br><span class="line">hexo generate <span class="comment"># 重新產生靜態頁面</span></span><br><span class="line">hexo deploy   <span class="comment"># 推到 GitHub</span></span><br></pre></td></tr></table></figure>
-
 <p><code>generate</code> 和 <code>deploy</code> 可以合併成一步：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo g -d</span><br></pre></td></tr></table></figure>
-
-<h2 id="換主題（以-NexT-為例）"><a href="#換主題（以-NexT-為例）" class="headerlink" title="換主題（以 NexT 為例）"></a>換主題（以 NexT 為例）</h2><p>Hexo 預設主題是 landscape，主題列表在 <a target="_blank" rel="noopener" href="https://hexo.io/themes/">hexo.io/themes</a>。這裡用 <a target="_blank" rel="noopener" href="https://github.com/next-theme/hexo-theme-next">NexT</a> 示範。</p>
+<h2 id="換主題（以-NexT-為例）">換主題（以 NexT 為例）</h2>
+<p>Hexo 預設主題是 landscape，主題列表在 <a target="_blank" rel="noopener" href="https://hexo.io/themes/">hexo.io/themes</a>。這裡用 <a target="_blank" rel="noopener" href="https://github.com/next-theme/hexo-theme-next">NexT</a> 示範。</p>
 <p>將主題 clone 到 <code>themes/next</code>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/next-theme/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
-
 <p>修改 <code>_config.yml</code>，把主題從 landscape 換掉：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">next</span></span><br><span class="line"><span class="attr">language:</span> <span class="string">zh-TW</span></span><br></pre></td></tr></table></figure>
-
 <p>NexT v8+ 建議用 Alternate Theme Config：在專案根目錄建立 <code>_config.next.yml</code>，把 NexT 的主題設定（配色、選單、社交連結等）寫在這裡，而不是直接改 <code>themes/next/_config.yml</code>。這樣升級主題時不會覆蓋你的設定。</p>
 <p>然後啟動本機預覽：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
-
-<h2 id="CRLF-換行問題（Windows）"><a href="#CRLF-換行問題（Windows）" class="headerlink" title="CRLF 換行問題（Windows）"></a>CRLF 換行問題（Windows）</h2><p>在 Windows 上執行 <code>hexo deploy</code> 時，可能會看到這類警告：</p>
+<h2 id="CRLF-換行問題（Windows）">CRLF 換行問題（Windows）</h2>
+<p>在 Windows 上執行 <code>hexo deploy</code> 時，可能會看到這類警告：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">warning: LF will be replaced by CRLF in ...</span><br></pre></td></tr></table></figure>
-
 <p>原因是 Windows 預設行尾是 <code>\r\n</code>（CRLF），Linux/macOS 是 <code>\n</code>（LF），git 在轉換時會發出警告。</p>
 <p><strong>快速修法</strong>——全域關掉自動轉換：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global core.autocrlf <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-
 <p>注意這是全域設定，會影響你電腦上所有的 git repository。如果只想對這個專案生效，在專案根目錄加一個 <code>.gitattributes</code>：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* text=auto eol=lf</span><br></pre></td></tr></table></figure>
-
 <p>設定後重新部署即可。</p>
 
       </div>
@@ -262,15 +258,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

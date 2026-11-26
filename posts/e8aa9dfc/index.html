@@ -126,7 +126,8 @@
 <p>「比 Hugging Face Tokenizers 快約 1000 倍」很難不點。但官方那筆 989 倍跑在雙路 AMD EPYC 9565，共 144 核心；另一筆 Apple M4 Max 甚至超過 1200 倍。這些數字是真的，直接搬到一般開發機上就很可疑。</p>
 <p>我讓 Codex 在我的 Windows 筆電建一個乾淨環境，拿實際開發專案裡的公開套件程式碼重跑。最後沒有 1000 倍。資料先讀進記憶體時，套件 CLI 回報的三次倍率落在 39.86～49.77 倍，中位數 43.55 倍；把磁碟讀取也算進去，中位數剩 15.57 倍。</p>
 <p>少掉一個零之後，速度仍然很兇。</p>
-<h2 id="我的測試環境"><a href="#我的測試環境" class="headerlink" title="我的測試環境"></a>我的測試環境</h2><p>這次用的是一台已經不新的開發筆電：</p>
+<h2 id="我的測試環境">我的測試環境</h2>
+<p>這次用的是一台已經不新的開發筆電：</p>
 <ul>
 <li>Windows 11</li>
 <li>AMD Ryzen 7 4800H，8 核心、16 執行緒</li>
@@ -138,80 +139,82 @@
 </ul>
 <p>語料來自 Hexo 專案 <code>node_modules</code> 裡的 JS、TS、JSON 與 Markdown。我排除 minified 檔、source map、lockfile 和超過 256 KiB 的單檔，留下 8,783 份文件，原始檔約 37.67 MB，編碼後共 1,617 萬個 token。</p>
 <p>這不是官方使用的 11.9 GB OpenWebText。它更接近我會拿 tokenizer 處理的東西：程式碼、設定檔、README，以及大量長短不一的小文件。</p>
-<h2 id="第一個坑：README-的相容模式範例跑不起來"><a href="#第一個坑：README-的相容模式範例跑不起來" class="headerlink" title="第一個坑：README 的相容模式範例跑不起來"></a>第一個坑：README 的相容模式範例跑不起來</h2><p>我先照 <a target="_blank" rel="noopener" href="https://pypi.org/project/gigatoken/0.10.0/">GigaToken 0.10.0 的 PyPI 說明</a>執行：</p>
+<h2 id="第一個坑：README-的相容模式範例跑不起來">第一個坑：README 的相容模式範例跑不起來</h2>
+<p>我先照 <a target="_blank" rel="noopener" href="https://pypi.org/project/gigatoken/0.10.0/">GigaToken 0.10.0 的 PyPI 說明</a>執行：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> gigatoken <span class="keyword">as</span> gt</span><br><span class="line"></span><br><span class="line">tokenizer = gt.Tokenizer(hf_tokenizer).as_hf()</span><br><span class="line">tokens = tokenizer.encode_batch([<span class="string">&quot;first document&quot;</span>, <span class="string">&quot;second document&quot;</span>])</span><br></pre></td></tr></table></figure>
-
 <p>結果直接噴：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AttributeError: &#x27;HFCompat&#x27; object has no attribute &#x27;encode_batch&#x27;</span><br></pre></td></tr></table></figure>
-
 <p><code>HFCompat</code> 實作的是 Transformers 風格的 <code>tokenizer(...)</code>，不是底層 <code>tokenizers.Tokenizer.encode_batch()</code>。0.10.0 能跑的寫法是：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> gigatoken <span class="keyword">as</span> gt</span><br><span class="line"><span class="keyword">from</span> tokenizers <span class="keyword">import</span> Tokenizer</span><br><span class="line"></span><br><span class="line">hf = Tokenizer.from_pretrained(<span class="string">&quot;openai-community/gpt2&quot;</span>)</span><br><span class="line">compat = gt.Tokenizer(hf).as_hf()</span><br><span class="line"></span><br><span class="line">tokens = compat(</span><br><span class="line">    [<span class="string">&quot;first document&quot;</span>, <span class="string">&quot;second document&quot;</span>],</span><br><span class="line">    add_special_tokens=<span class="literal">False</span>,</span><br><span class="line">    return_attention_mask=<span class="literal">False</span>,</span><br><span class="line">)[<span class="string">&quot;input_ids&quot;</span>]</span><br></pre></td></tr></table></figure>
-
 <p>0.10.0 是兩天前才發布的 beta 版本，README 和 API 沒對齊不算意外。問題是它把自己標成 drop-in replacement，文件範例就該能直接執行。評估新工具時，我現在會先跑最短範例；連這關都沒過，後面的遷移成本要多留一點空間。</p>
-<h2 id="用套件自己的-benchmark-重跑"><a href="#用套件自己的-benchmark-重跑" class="headerlink" title="用套件自己的 benchmark 重跑"></a>用套件自己的 benchmark 重跑</h2><p>我沒有自己發明計時方式。GigaToken 內建 <code>bench --validate</code>，會同時跑自己的實作與 Hugging Face <code>encode_batch()</code>，再逐份比對 token ID。</p>
+<h2 id="用套件自己的-benchmark-重跑">用套件自己的 benchmark 重跑</h2>
+<p>我沒有自己發明計時方式。GigaToken 內建 <code>bench --validate</code>，會同時跑自己的實作與 Hugging Face <code>encode_batch()</code>，再逐份比對 token ID。</p>
 <p>整理過的指令如下，<code>developer-corpus.txt</code> 是前面那 8,783 份文件合成的語料：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gigatoken bench <span class="string">&quot;openai-community/gpt2&quot;</span> <span class="string">&quot;developer-corpus.txt&quot;</span> `</span><br><span class="line">  <span class="literal">--validate</span> `</span><br><span class="line">  <span class="literal">--comparison-limit</span> none `</span><br><span class="line">  <span class="literal">--doc-separator</span> <span class="string">&quot;&lt;|giga_bench_document_20260727|&gt;&quot;</span></span><br></pre></td></tr></table></figure>
-
 <p>這條指令預設會在計時前把檔案讀進記憶體。GigaToken 走 <code>encode_batch(BytesSource)</code>，Hugging Face 則先在 Python 切成一份份字串，再呼叫 <code>encode_batch()</code>。所以接下來的 43.55 倍是記憶體內原生資料路徑，沒有磁碟 I/O，也不是 <code>encode_files()</code> 的成績。</p>
 <p>我連跑三次：</p>
 <table>
 <thead>
 <tr>
 <th>次數</th>
-<th align="right">GigaToken</th>
-<th align="right">Hugging Face</th>
-<th align="right">CLI 回報倍率</th>
+<th style="text-align:right">GigaToken</th>
+<th style="text-align:right">Hugging Face</th>
+<th style="text-align:right">CLI 回報倍率</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
-<td align="right">0.160 秒</td>
-<td align="right">6.904 秒</td>
-<td align="right">43.55×</td>
+<td style="text-align:right">0.160 秒</td>
+<td style="text-align:right">6.904 秒</td>
+<td style="text-align:right">43.55×</td>
 </tr>
 <tr>
 <td>2</td>
-<td align="right">0.121 秒</td>
-<td align="right">5.958 秒</td>
-<td align="right">49.77×</td>
+<td style="text-align:right">0.121 秒</td>
+<td style="text-align:right">5.958 秒</td>
+<td style="text-align:right">49.77×</td>
 </tr>
 <tr>
 <td>3</td>
-<td align="right">0.170 秒</td>
-<td align="right">6.743 秒</td>
-<td align="right">39.86×</td>
+<td style="text-align:right">0.170 秒</td>
+<td style="text-align:right">6.743 秒</td>
+<td style="text-align:right">39.86×</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>三次都得到 <code>validation OK: 8783 documents match</code>。GigaToken 處理的原始檔包含分隔符，CLI 顯示 37.67 MB；Hugging Face 收到切開後的文件，合計 37.39 MB。兩邊輸出的文件數和 1,617 萬個 token ID 一致，但輸入位元組不是完全相等。表裡的數字是 CLI 依各自 throughput 回報的倍率，這點不能藏在表格下面。</p>
 <p>我再加上 <code>--stream-from-disk</code> 重跑。這時 GigaToken 才會走 <code>encode_files()</code>；兩邊計時都包含讀檔、切文件與編碼：</p>
 <table>
 <thead>
 <tr>
 <th>次數</th>
-<th align="right">GigaToken</th>
-<th align="right">Hugging Face</th>
-<th align="right">CLI 回報倍率</th>
+<th style="text-align:right">GigaToken</th>
+<th style="text-align:right">Hugging Face</th>
+<th style="text-align:right">CLI 回報倍率</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
-<td align="right">0.752 秒</td>
-<td align="right">11.619 秒</td>
-<td align="right">15.57×</td>
+<td style="text-align:right">0.752 秒</td>
+<td style="text-align:right">11.619 秒</td>
+<td style="text-align:right">15.57×</td>
 </tr>
 <tr>
 <td>2</td>
-<td align="right">0.733 秒</td>
-<td align="right">10.511 秒</td>
-<td align="right">14.45×</td>
+<td style="text-align:right">0.733 秒</td>
+<td style="text-align:right">10.511 秒</td>
+<td style="text-align:right">14.45×</td>
 </tr>
 <tr>
 <td>3</td>
-<td align="right">0.462 秒</td>
-<td align="right">8.356 秒</td>
-<td align="right">18.20×</td>
+<td style="text-align:right">0.462 秒</td>
+<td style="text-align:right">8.356 秒</td>
+<td style="text-align:right">18.20×</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>三次的波動不小。我沒有固定 Windows 電源模式、暫停所有背景程式或控制 CPU 溫度，連跑時也可能命中 Windows 檔案快取。這只能算同一台開發機上的快速實測，43.55 倍與 15.57 倍都不是穩定常數。</p>
 <p>我另外把相容模式單獨計時，關掉 attention mask，並用同一批資料和 Hugging Face 的 <code>encode_batch_fast</code> 比較。三輪中位數是 0.431 秒對 6.046 秒，這組呼叫快 14.04 倍。兩邊輸出契約不同：<code>HFCompat.__call__()</code> 回傳 Python <code>input_ids</code>，<code>encode_batch_fast()</code> 回傳 Encoding 物件。因此 14.04 倍只描述這次遷移寫法，不能當成所有相容模式的固定收益；我只對前 128 份樣本逐筆驗證輸出一致。</p>
 <p>三種測試路徑的結果差很多：</p>
@@ -221,7 +224,8 @@
 <li>真正走 <code>encode_files()</code> 並計入磁碟 I/O，中位數約 16 倍。</li>
 </ul>
 <p>「1000 倍」描述的是特定硬體、tokenizer、語料與 API 路徑的組合。它不是安裝套件後每個呼叫都會自動拿到的固定倍率。</p>
-<h2 id="速度差在哪裡"><a href="#速度差在哪裡" class="headerlink" title="速度差在哪裡"></a>速度差在哪裡</h2><p>Hugging Face Tokenizers 本來就是多執行緒 Rust 程式。GigaToken 還能拉開距離，靠的不是把 Python 改寫成 Rust 這麼簡單。</p>
+<h2 id="速度差在哪裡">速度差在哪裡</h2>
+<p>Hugging Face Tokenizers 本來就是多執行緒 Rust 程式。GigaToken 還能拉開距離，靠的不是把 Python 改寫成 Rust 這麼簡單。</p>
 <p>依照 <a target="_blank" rel="noopener" href="https://github.com/marcelroed/gigatoken">專案作者的說明</a>，主要差異有三塊：</p>
 <ol>
 <li>它替常見 tokenizer 寫了 SIMD pretokenizer，減少 regex、分支與資料搬運的成本。</li>
@@ -230,10 +234,10 @@
 </ol>
 <p>這些設計都可能影響相容模式與原生模式的差距，但我的兩組呼叫連輸出型別都不同，不能用單次跑分把 14 倍與 43 倍的差額全算在 Python list 上。</p>
 <p>不同 tokenizer 的差距也很大。官方在 Ryzen 7 9800X3D 測 GPT-2 是 106 倍，Gemma 4 只有 18 倍，Gemma 3 則是 13 倍。首頁那筆 989 倍則讓 GigaToken 跑完整 11.9 GB，Hugging Face 只跑前 100 MB，再用 throughput 換算；這適合看穩態吞吐，不代表兩邊真的在同一輪花完相同工作量。專案也把 SentencePiece 效能列為 known issue，坦白 Windows 測得不多、目前偏好 WSL。只看首頁最大的數字，會漏掉這些條件。</p>
-<h2 id="你的-API-服務不一定會快-43-倍"><a href="#你的-API-服務不一定會快-43-倍" class="headerlink" title="你的 API 服務不一定會快 43 倍"></a>你的 API 服務不一定會快 43 倍</h2><p>Tokenizer 在大型語料前處理、模型訓練、離線 embedding 或索引建置裡可能是主角。一般聊天 API 則常常只占很小一段時間，網路和模型推論才是大頭。</p>
+<h2 id="你的-API-服務不一定會快-43-倍">你的 API 服務不一定會快 43 倍</h2>
+<p>Tokenizer 在大型語料前處理、模型訓練、離線 embedding 或索引建置裡可能是主角。一般聊天 API 則常常只占很小一段時間，網路和模型推論才是大頭。</p>
 <p>假設 tokenization 原本只占一次請求的 10%，就算那段快 43 倍，整體也只有約 1.11 倍：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">total_speedup</span>(<span class="params">tokenizer_share: <span class="built_in">float</span>, tokenizer_speedup: <span class="built_in">float</span></span>) -&gt; <span class="built_in">float</span>:</span><br><span class="line">    remaining = <span class="number">1</span> - tokenizer_share</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span> / (remaining + tokenizer_share / tokenizer_speedup)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(total_speedup(<span class="number">0.10</span>, <span class="number">43</span>))  <span class="comment"># 1.108...</span></span><br></pre></td></tr></table></figure>
-
 <p>真正值得換的場景，我會看三個條件：</p>
 <ul>
 <li>CPU profile 已經證明 tokenization 占了可觀時間。</li>
@@ -241,7 +245,8 @@
 <li>團隊願意替實際 tokenizer 建 golden sample，升級時逐筆驗 token ID。</li>
 </ul>
 <p>最後一條不能省。Tokenizer 輸出只要差一個 ID，後面的訓練資料、chunk 邊界或 token 計費都可能一起變。這次 CLI 原生路徑的 8,783 份文件全部通過驗證，我才把速度數字留下來；相容模式目前只驗了 128 份樣本，若真的遷移還要補全量 golden test。</p>
-<h2 id="我會不會用"><a href="#我會不會用" class="headerlink" title="我會不會用"></a>我會不會用</h2><p>會，但範圍很窄。</p>
+<h2 id="我會不會用">我會不會用</h2>
+<p>會，但範圍很窄。</p>
 <p>下次要做大型語料清理或批次索引，我會先拿 GigaToken 跑一份真實資料，再決定要不要改成原生介面。一般 Web API 專案沒有 profile 證據，我不會為了首頁的 1000 倍重構 tokenizer 層。</p>
 <p>我原本想拆穿一個誇張跑分，實測後的結論反而比較尷尬：1000 倍沒有出現在我的筆電上，記憶體內 43 倍、含讀檔約 16 倍，兩個數字都大到不能當行銷話術略過。這個工具值得測，README 還不值得盲信。</p>
 
@@ -334,15 +339,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

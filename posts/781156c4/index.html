@@ -123,14 +123,16 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>半夜接到電話說網站掛了的感覺，過一次就不想再有第二次。Cloudflare 不是什麼魔法，但它確實解決了大部分小網站會遇到的問題：DDoS、SSL 憑證、DNS 緩慢、靜態資源重複傳輸。</p>
-<h2 id="什麼是-Cloudflare？它站在你和流量之間"><a href="#什麼是-Cloudflare？它站在你和流量之間" class="headerlink" title="什麼是 Cloudflare？它站在你和流量之間"></a>什麼是 Cloudflare？它站在你和流量之間</h2><p>Cloudflare 是一個反向代理網路，全球超過 330 個資料中心，當使用者連到你的網域時，流量先經過 Cloudflare 的節點，再轉發到你的伺服器。這個架構帶來三件事：</p>
+<h2 id="什麼是-Cloudflare？它站在你和流量之間">什麼是 Cloudflare？它站在你和流量之間</h2>
+<p>Cloudflare 是一個反向代理網路，全球超過 330 個資料中心，當使用者連到你的網域時，流量先經過 Cloudflare 的節點，再轉發到你的伺服器。這個架構帶來三件事：</p>
 <ol>
 <li><strong>流量過濾</strong>：惡意請求在邊緣節點就被攔下，DDoS 流量能降低到達源站的機率，但沒有任何系統能保證攔下所有入侵手法。</li>
 <li><strong>靜態快取</strong>：Cloudflare 預設快取 CSS、JavaScript、圖片等特定靜態副檔名；HTML 預設不快取，要另外設 Cache Rules，且登入與個人化頁面通常不該快取。</li>
 <li><strong>邊緣 SSL</strong>：訪客到 Cloudflare 邊緣的連線自動加密，但端到端安全還取決於你選擇的 SSL/TLS 模式與源站憑證狀態（後面細說）。</li>
 </ol>
 <p>根據 <a target="_blank" rel="noopener" href="https://blog.cloudflare.com/ddos-threat-report-for-2025-q1/">Cloudflare 2025 年第一季報告</a>，Q1 阻擋了 2,050 萬次 DDoS 攻擊，較去年同期增長 358%。截至本文 2026 年更新，Cloudflare 公布的網路容量達 500 Tbps；容量數字只能表示吸收流量的基礎，不能推導單一網站必然不會中斷。</p>
-<h2 id="免費方案給你什麼"><a href="#免費方案給你什麼" class="headerlink" title="免費方案給你什麼"></a>免費方案給你什麼</h2><p>根據 <a target="_blank" rel="noopener" href="https://www.cloudflare.com/plans/free/">Cloudflare 官方文件</a>，免費方案涵蓋：</p>
+<h2 id="免費方案給你什麼">免費方案給你什麼</h2>
+<p>根據 <a target="_blank" rel="noopener" href="https://www.cloudflare.com/plans/free/">Cloudflare 官方文件</a>，免費方案涵蓋：</p>
 <ul>
 <li><strong>無頻寬上限的 DDoS 防護</strong>：攻擊流量不計費</li>
 <li><strong>全球 CDN</strong>：靜態資源快取，實際加速幅度取決於快取命中率與原站位置</li>
@@ -138,17 +140,24 @@
 <li><strong>DNS 代理</strong>：隱藏源站 IP，解析速度通常也比原本的 DNS 快</li>
 </ul>
 <p>截至 2026-07 的官方月繳價，Pro 為 US$25/月、Business 為 US$250/月；年繳單月換算較低，價格與功能仍以 <a target="_blank" rel="noopener" href="https://www.cloudflare.com/plans/">方案頁</a> 當下顯示為準。個人站和小型服務可先從免費方案開始，再依 WAF 規則與支援需求升級。</p>
-<h2 id="五步驟接管網域"><a href="#五步驟接管網域" class="headerlink" title="五步驟接管網域"></a>五步驟接管網域</h2><h3 id="步驟-1：註冊帳號"><a href="#步驟-1：註冊帳號" class="headerlink" title="步驟 1：註冊帳號"></a>步驟 1：註冊帳號</h3><p>前往 <a target="_blank" rel="noopener" href="https://www.cloudflare.com/">Cloudflare 官網</a>，用 Email 註冊。沒有坑。</p>
-<h3 id="步驟-2：新增網域"><a href="#步驟-2：新增網域" class="headerlink" title="步驟 2：新增網域"></a>步驟 2：新增網域</h3><p>登入後點「Add a site」，輸入裸網域（例如 <code>example.com</code>），不要加 <code>www</code> 或 <code>http://</code>。</p>
-<h3 id="步驟-3：選擇方案"><a href="#步驟-3：選擇方案" class="headerlink" title="步驟 3：選擇方案"></a>步驟 3：選擇方案</h3><p>個人用途選免費。不確定就選免費，之後隨時能升級。</p>
-<h3 id="步驟-4：確認-DNS-記錄"><a href="#步驟-4：確認-DNS-記錄" class="headerlink" title="步驟 4：確認 DNS 記錄"></a>步驟 4：確認 DNS 記錄</h3><p>Cloudflare 會掃描現有 DNS 記錄，但不能假設掃描結果完整。逐筆核對 A／AAAA、CNAME、MX、TXT（SPF、DKIM、DMARC）、CAA、SRV 與驗證用記錄。網站用的 HTTP／HTTPS 記錄才開橘雲；SMTP、IMAP、一般 FTP 等 Cloudflare HTTP proxy 不支援的服務維持 DNS only，否則郵件或檔案服務會中斷。</p>
-<h3 id="步驟-5：更新-Nameserver"><a href="#步驟-5：更新-Nameserver" class="headerlink" title="步驟 5：更新 Nameserver"></a>步驟 5：更新 Nameserver</h3><p>這是最關鍵的一步。Cloudflare 後台會給你兩個專屬的 nameserver，每個帳號分配到的名稱不同，格式類似：</p>
+<h2 id="五步驟接管網域">五步驟接管網域</h2>
+<h3 id="步驟-1：註冊帳號">步驟 1：註冊帳號</h3>
+<p>前往 <a target="_blank" rel="noopener" href="https://www.cloudflare.com">Cloudflare 官網</a>，用 Email 註冊。沒有坑。</p>
+<h3 id="步驟-2：新增網域">步驟 2：新增網域</h3>
+<p>登入後點「Add a site」，輸入裸網域（例如 <code>example.com</code>），不要加 <code>www</code> 或 <code>http://</code>。</p>
+<h3 id="步驟-3：選擇方案">步驟 3：選擇方案</h3>
+<p>個人用途選免費。不確定就選免費，之後隨時能升級。</p>
+<h3 id="步驟-4：確認-DNS-記錄">步驟 4：確認 DNS 記錄</h3>
+<p>Cloudflare 會掃描現有 DNS 記錄，但不能假設掃描結果完整。逐筆核對 A／AAAA、CNAME、MX、TXT（SPF、DKIM、DMARC）、CAA、SRV 與驗證用記錄。網站用的 HTTP／HTTPS 記錄才開橘雲；SMTP、IMAP、一般 FTP 等 Cloudflare HTTP proxy 不支援的服務維持 DNS only，否則郵件或檔案服務會中斷。</p>
+<h3 id="步驟-5：更新-Nameserver">步驟 5：更新 Nameserver</h3>
+<p>這是最關鍵的一步。Cloudflare 後台會給你兩個專屬的 nameserver，每個帳號分配到的名稱不同，格式類似：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xxxxxxxx.ns.cloudflare.com</span><br><span class="line">yyyyyyyy.ns.cloudflare.com</span><br></pre></td></tr></table></figure>
-
 <p><strong>以後台顯示的為準</strong>，不要自行填寫。到你的網域註冊商控制面板（GoDaddy、Namecheap 等），把原本的 nameserver 換成這兩組。</p>
 <p>如果原 DNS 已啟用 DNSSEC，先依 Cloudflare 的移轉流程處理：在註冊商移除舊 DNS 業者的 DS record，確認不再驗證舊金鑰後才更換 nameserver；Cloudflare 啟用後再加入它提供的新 DS record。舊 DS 留著直接換 NS，可能讓網站與郵件都因 DNSSEC 驗證失敗而消失。</p>
 <p>DNS 更新通常幾小時內生效，最多 48 小時。Cloudflare 後台會顯示驗證狀態，等它變成 Active 就完成了。</p>
-<h2 id="進階設定：幾個值得調的選項"><a href="#進階設定：幾個值得調的選項" class="headerlink" title="進階設定：幾個值得調的選項"></a>進階設定：幾個值得調的選項</h2><h3 id="SSL-TLS-模式"><a href="#SSL-TLS-模式" class="headerlink" title="SSL/TLS 模式"></a>SSL/TLS 模式</h3><p>前往 SSL/TLS 頁面，這裡有四個模式：</p>
+<h2 id="進階設定：幾個值得調的選項">進階設定：幾個值得調的選項</h2>
+<h3 id="SSL-TLS-模式">SSL/TLS 模式</h3>
+<p>前往 SSL/TLS 頁面，這裡有四個模式：</p>
 <table>
 <thead>
 <tr>
@@ -158,7 +167,8 @@
 <th>驗證源站憑證</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>Off</td>
 <td>明文</td>
 <td>明文</td>
@@ -182,10 +192,12 @@
 <td>加密</td>
 <td>是</td>
 </tr>
-</tbody></table>
-<p>建議選 **Full (Strict)**。Full 模式雖然加密了到源站的連線，但不驗證憑證，自簽或過期憑證照樣通過，有中間人攻擊的風險。Full (Strict) 才是真正的端到端驗證。</p>
+</tbody>
+</table>
+<p>建議選 <strong>Full (Strict)</strong>。Full 模式雖然加密了到源站的連線，但不驗證憑證，自簽或過期憑證照樣通過，有中間人攻擊的風險。Full (Strict) 才是真正的端到端驗證。</p>
 <p>前提是源站已能用正確 hostname 完成 TLS。若使用 Cloudflare Origin CA：在 SSL/TLS → Origin Server 申請涵蓋實際 hostname 的憑證，把憑證與私鑰安全安裝到 Nginx／Apache／IIS，設定 SNI／站台繫結並重新載入服務；先從源站端驗證憑證與 hostname，再切到 Full (Strict)。順序反過來，源站憑證無效時訪客會得到 526。Origin CA 只受 Cloudflare 信任，直接用瀏覽器連源站看到不受信任是預期行為。</p>
-<h3 id="別漏掉源站封鎖"><a href="#別漏掉源站封鎖" class="headerlink" title="別漏掉源站封鎖"></a>別漏掉源站封鎖</h3><p>做到 Full (Strict) 還不算完成。橘雲 DNS 只是不再公開回傳源站 IP，不代表那個 IP 從網路上消失。歷史 DNS、同機郵件服務、掃描紀錄都可能把它翻出來；攻擊者一旦直接連源站，就能繞過 Cloudflare 的 WAF、限流與 DDoS 防護。</p>
+<h3 id="別漏掉源站封鎖">別漏掉源站封鎖</h3>
+<p>做到 Full (Strict) 還不算完成。橘雲 DNS 只是不再公開回傳源站 IP，不代表那個 IP 從網路上消失。歷史 DNS、同機郵件服務、掃描紀錄都可能把它翻出來；攻擊者一旦直接連源站，就能繞過 Cloudflare 的 WAF、限流與 DDoS 防護。</p>
 <p>我會在正式環境二選一：</p>
 <ol>
 <li><strong>Cloudflare Tunnel</strong>：源站只建立對外連線，不開公開的 HTTP／HTTPS 入站埠。小型網站若能裝 <code>cloudflared</code>，這條最乾淨。</li>
@@ -193,18 +205,21 @@
 </ol>
 <p>別在只有 SSH／RDP 這一條遠端通道的機器上直接貼「全部 DROP」規則。先保留管理來源、確認有雲端主控台或 KVM 回退，再加入 Cloudflare IPv4／IPv6 網段，實測網站能回源後才封鎖其他來源。若環境允許，再開 Authenticated Origin Pulls 或 mTLS，讓源站除了來源 IP，也驗證連線確實由 Cloudflare 發起。</p>
 <p>驗證方式很直接：Cloudflare 網域應正常回應；從非白名單網路直接連源站 IP 的 80／443 則必須逾時或被拒絕。這一條沒過，前面的「隱藏源站」只能算 DNS 外觀改了，安全邊界還沒建立。</p>
-<h3 id="快取設定"><a href="#快取設定" class="headerlink" title="快取設定"></a>快取設定</h3><p>到 Caching 頁面：</p>
+<h3 id="快取設定">快取設定</h3>
+<p>到 Caching 頁面：</p>
 <ul>
 <li><strong>Browser Cache TTL</strong>：設定瀏覽器快取時間，靜態資源設長一點減少重複請求</li>
 <li><strong>Cache Rules</strong>：HTML 預設不快取；若要快取公開 HTML，先排除登入、帳號、購物車、帶 session Cookie 與個人化回應</li>
 <li><strong>Always Online</strong>：源站無回應時，Cloudflare 提供有限的快取版本給訪客看</li>
 </ul>
 <p>Always Online 會把近期熱門且成功的公開 URL 列為 Internet Archive 爬取候選；免費方案的實際爬取可能低至每 30 天一次。它只在 Cloudflare 無法連上源站時嘗試提供保存版本，源站仍可連線但回 500／503 時不一定介入，也不支援登入內容或 POST 結果。它是有限的靜態備援，不是五小時快取，更不能取代高可用架構。</p>
-<h3 id="效能設定"><a href="#效能設定" class="headerlink" title="效能設定"></a>效能設定</h3><p>Speed 頁面裡的 <strong>Brotli 壓縮</strong>值得啟用，壓縮效率比 Gzip 高，現代瀏覽器都支援。</p>
+<h3 id="效能設定">效能設定</h3>
+<p>Speed 頁面裡的 <strong>Brotli 壓縮</strong>值得啟用，壓縮效率比 Gzip 高，現代瀏覽器都支援。</p>
 <blockquote>
 <p>備注：Auto Minify 功能已於 2024 年 8 月從 Cloudflare 移除。Vite、webpack 等建置工具本來就會做 minify，由 CDN 層重新處理效益有限，Cloudflare 決定把這件事還給建置流程。HTML、CSS、JS 的壓縮在 <code>npm run build</code> 階段搞定就好。</p>
 </blockquote>
-<h2 id="設定完之後怎麼確認效果"><a href="#設定完之後怎麼確認效果" class="headerlink" title="設定完之後怎麼確認效果"></a>設定完之後怎麼確認效果</h2><p>幾個可以用的工具：</p>
+<h2 id="設定完之後怎麼確認效果">設定完之後怎麼確認效果</h2>
+<p>幾個可以用的工具：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://gtmetrix.com/">GTmetrix</a>：綜合效能分析，可以看到資源快取狀態</li>
 <li><a target="_blank" rel="noopener" href="https://pagespeed.web.dev/">Google PageSpeed Insights</a>：Core Web Vitals 分析</li>
@@ -212,13 +227,15 @@
 </ul>
 <p>另外用命令列交叉驗證：<code>dig NS example.com</code> 檢查 nameserver，<code>curl -I https://example.com/app.css</code> 看 <code>cf-cache-status</code>，<code>openssl s_client -connect example.com:443 -servername example.com</code> 檢查邊緣 TLS。再從非白名單網路測試源站 IP 的 80／443 確實不可直連。</p>
 <p>開通 Cloudflare 不會自動拿到 SSL Labs A+。HSTS 能提高評分，但一旦送出就會被瀏覽器記住；先確認所有子網域都能長期提供 HTTPS，再逐步增加 max-age，別為了分數直接勾 <code>includeSubDomains</code> 或 preload。</p>
-<h2 id="常見問題"><a href="#常見問題" class="headerlink" title="常見問題"></a>常見問題</h2><p><strong>Cloudflare 會影響 SEO 嗎？</strong></p>
+<h2 id="常見問題">常見問題</h2>
+<p><strong>Cloudflare 會影響 SEO 嗎？</strong></p>
 <p>設定正確時，較快的靜態資源與 HTTPS 通常有利；但錯誤快取、Challenge／WAF 誤擋搜尋引擎、重新導向迴圈或 TLS 錯誤都會傷害抓取與索引。上線後應在 Search Console 看抓取錯誤，並用未登入狀態抽查 Googlebot 能取得的回應。</p>
 <p><strong>免費方案有流量限制嗎？</strong></p>
 <p>HTML 頁面流量沒有頻寬上限。但如果想用 Cloudflare CDN 快取影片或大型二進位檔，服務條款要求使用 Cloudflare Stream、R2 等配套服務，直接快取放在其他地方的影片檔可能違反條款。</p>
 <p><strong>不想用了怎麼辦？</strong></p>
 <p>先把原 DNS 業者的完整記錄同步回去，再更換 nameserver；有 DNSSEC 時也要同步處理 DS record。只把 NS 改回去但舊區域不完整，一樣會中斷。</p>
-<h2 id="小結"><a href="#小結" class="headerlink" title="小結"></a>小結</h2><p>接上 Cloudflare、封鎖源站直連之後，外部流量才會被迫經過邊緣節點。靜態資源不再每次回源，DDoS 與 WAF 規則也不會被一個裸露的源站 IP 繞過。只改 nameserver 卻沒收源站防火牆，保護只做了一半。</p>
+<h2 id="小結">小結</h2>
+<p>接上 Cloudflare、封鎖源站直連之後，外部流量才會被迫經過邊緣節點。靜態資源不再每次回源，DDoS 與 WAF 規則也不會被一個裸露的源站 IP 繞過。只改 nameserver 卻沒收源站防火牆，保護只做了一半。</p>
 <p>這五步能建立基本的邊緣防護，但仍要持續維護源站憑證、DNS、WAF 規則、快取排除、Cloudflare IP 白名單與監控。Cloudflare 能降低 DDoS 與憑證管理風險，不能保證網站永不中斷。</p>
 
       </div>
@@ -310,15 +327,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

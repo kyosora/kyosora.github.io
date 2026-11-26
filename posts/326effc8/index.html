@@ -124,7 +124,8 @@
       <div class="prose" id="article">
         <p>智譜 5/22 對部分企業客戶推出 GLM-5.1 高速版，API 輸出速度達 400 tokens/s。新聞標題是「全球最快」，但這個說法不嚴謹——Cerebras 跑 Llama 405B 早就破 900 tps。真正值得單獨講的不是「誰快」，而是 400 tps 在工程上意味著什麼。</p>
 <p>這篇不是寫智譜的 PR 稿。我關心的問題是：旗艦級大模型過了某個速度門檻之後，工程師能做的事會出現質變——這個門檻大概在哪裡？哪些場景真的能因此解鎖？哪些只是看起來很厲害的行銷數字？</p>
-<h2 id="速度光譜定位"><a href="#速度光譜定位" class="headerlink" title="速度光譜定位"></a>速度光譜定位</h2><p>先把 400 tps 放到正確的座標上。市面上幾個常見的推理速度：</p>
+<h2 id="速度光譜定位">速度光譜定位</h2>
+<p>先把 400 tps 放到正確的座標上。市面上幾個常見的推理速度：</p>
 <table>
 <thead>
 <tr>
@@ -133,7 +134,8 @@
 <th>性質</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>GPT-5 / Claude Sonnet 4.6（標準 API）</td>
 <td>60-120 tps</td>
 <td>旗艦級的「典型」速度</td>
@@ -153,35 +155,42 @@
 <td>~970 tps</td>
 <td>旗艦級 + 晶圓級晶片</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>人類正常閱讀大約 15-20 tps。所以從 80 tps 升到 400 tps，<strong>對「人類在螢幕前讀回答」這件事完全沒有差別</strong>——80 已經夠快、400 也只是更快的「秒回」。</p>
 <p>真正會吃這個速度的，是「不給人看的中間 token」。</p>
-<h2 id="為什麼工程上有分水嶺"><a href="#為什麼工程上有分水嶺" class="headerlink" title="為什麼工程上有分水嶺"></a>為什麼工程上有分水嶺</h2><p>LLM 推理速度的工程意義不是 single call 的延遲，而是 token 出現的速度決定下一個動作多快能被觸發。</p>
+<h2 id="為什麼工程上有分水嶺">為什麼工程上有分水嶺</h2>
+<p>LLM 推理速度的工程意義不是 single call 的延遲，而是 token 出現的速度決定下一個動作多快能被觸發。</p>
 <p>從 80 到 400 tps 的真正意義不是「快五倍」，是讓三件原本做不到的事變可能、再加一個附帶收益。</p>
-<h3 id="場景一：Agent-工具鏈"><a href="#場景一：Agent-工具鏈" class="headerlink" title="場景一：Agent 工具鏈"></a>場景一：Agent 工具鏈</h3><p>Agent 跑一個任務常常要連續 5-20 次 LLM call。每次平均 500 output tokens：</p>
+<h3 id="場景一：Agent-工具鏈">場景一：Agent 工具鏈</h3>
+<p>Agent 跑一個任務常常要連續 5-20 次 LLM call。每次平均 500 output tokens：</p>
 <ul>
 <li>80 tps：每次 6.25 秒 × 20 = 125 秒</li>
 <li>400 tps：每次 1.25 秒 × 20 = 25 秒</li>
 </ul>
 <p>125 秒會讓使用者切換 tab、忘記在做什麼、跑去看 Twitter；25 秒會讓使用者保持注意力。這是「能不能進入產品主流程」的差別。</p>
 <p>而且這還沒算上 TTFT（time to first token，prefill 階段把 prompt 跑進去的時間）。長 prompt 的 TTFT 通常 200-500ms，串連 20 次就是另外 4-10 秒。實務上要看的是「TTFT + decode + 工具呼叫」全鏈延遲，不是 output tps 單一指標。但 decode 段升速 5 倍仍然是整鏈最大的單一改善。</p>
-<h3 id="場景二：語音對話（speech-to-speech）"><a href="#場景二：語音對話（speech-to-speech）" class="headerlink" title="場景二：語音對話（speech-to-speech）"></a>場景二：語音對話（speech-to-speech）</h3><p>完整的 voice agent 鏈路：ASR → LLM → TTS。要做到「跟人對話自然」，使用者開口結束後 LLM 要在 800ms 內吐出夠用的 token 給 TTS 接著念（streaming 不必等全部）。</p>
+<h3 id="場景二：語音對話（speech-to-speech）">場景二：語音對話（speech-to-speech）</h3>
+<p>完整的 voice agent 鏈路：ASR → LLM → TTS。要做到「跟人對話自然」，使用者開口結束後 LLM 要在 800ms 內吐出夠用的 token 給 TTS 接著念（streaming 不必等全部）。</p>
 <p>抓 600ms 給 decode（扣掉 TTFT 約 200ms）：</p>
 <ul>
 <li>80 tps：600ms 吐 48 tokens——一句完整中文話勉強夠</li>
 <li>400 tps：600ms 吐 240 tokens——四五句完整中文話，TTS 邊收邊念</li>
 </ul>
 <p>加上 ASR 跟 TTS 各自的 100-200ms first audio，整鏈延遲從 2-3 秒降到 1-1.5 秒。這是「跟 voice agent 自然對話」跟「在跟客服系統按 1 按 2」的差別。</p>
-<h3 id="場景三：IDE-inline-補全"><a href="#場景三：IDE-inline-補全" class="headerlink" title="場景三：IDE inline 補全"></a>場景三：IDE inline 補全</h3><p>Cursor、Codeium、Cody 這類產品的 ghost text 補全有個體感上限：你打字打到一半，補全要在 200ms 內出現，否則你已經繼續打下去。短 prompt 的 TTFT 大約 50-100ms，所以實際留給 decode 約 100-150ms。</p>
+<h3 id="場景三：IDE-inline-補全">場景三：IDE inline 補全</h3>
+<p>Cursor、Codeium、Cody 這類產品的 ghost text 補全有個體感上限：你打字打到一半，補全要在 200ms 內出現，否則你已經繼續打下去。短 prompt 的 TTFT 大約 50-100ms，所以實際留給 decode 約 100-150ms。</p>
 <ul>
 <li>80 tps：100ms 吐 8 tokens — 補半行勉強</li>
 <li>400 tps：100ms 吐 40 tokens — 整個函式雛形都出來</li>
 </ul>
 <p>200 tps 是「不打斷思考」的下限，400 tps 是「你還沒打完當前函式，下個函式的雛形已經 ghost 在那」的程度。</p>
 <p>順帶說一句，這也是為什麼 Cursor 自己有 Cursor Tab 模型而不是用 Claude——Tab 模型的設計目標就是極快。Anthropic 跟 OpenAI 的旗艦模型在這場景反而過慢。</p>
-<h3 id="附帶收益：批次內容處理"><a href="#附帶收益：批次內容處理" class="headerlink" title="附帶收益：批次內容處理"></a>附帶收益：批次內容處理</h3><p>摘要、翻譯、分類、抽 metadata、生成測試資料——這類「大量短任務」的吞吐量直接 5 倍。一萬筆地名要做 normalize、判斷類別、寫摘要，原本 80 tps 跑要一整夜，400 tps 跑早上來就好了。</p>
+<h3 id="附帶收益：批次內容處理">附帶收益：批次內容處理</h3>
+<p>摘要、翻譯、分類、抽 metadata、生成測試資料——這類「大量短任務」的吞吐量直接 5 倍。一萬筆地名要做 normalize、判斷類別、寫摘要，原本 80 tps 跑要一整夜，400 tps 跑早上來就好了。</p>
 <p>我把這列為「附帶收益」而不是「新產品形態」，因為這場景過去用慢一點的模型也能跑、只是要等更久。前三個場景是「過了 400 tps 才變得實用」，這個是「快了之後更便利」，性質不同。智譜沒公布 highspeed 的定價，所以「快 5 倍但成本不變」的假設不能直接套——實際選用前要算 token 單價 × 任務量。</p>
-<h2 id="看起來需要但其實不需要的場景"><a href="#看起來需要但其實不需要的場景" class="headerlink" title="看起來需要但其實不需要的場景"></a>看起來需要但其實不需要的場景</h2><p>避免被「全球最快」這個 marketing 詞迷惑。以下這些場景，80 tps 跟 400 tps 對使用者體感差不多：</p>
+<h2 id="看起來需要但其實不需要的場景">看起來需要但其實不需要的場景</h2>
+<p>避免被「全球最快」這個 marketing 詞迷惑。以下這些場景，80 tps 跟 400 tps 對使用者體感差不多：</p>
 <ul>
 <li>ChatGPT 風格的問答：人類閱讀速度跟不上，純粹噱頭</li>
 <li>RAG 問答：瓶頸在 retrieval / reranking（100-500ms），LLM 升速 5 倍只省整體時間 20%（前提是 output 不長）</li>
@@ -189,7 +198,8 @@
 <li>複雜推理（數學證明、深層分析）：思考鏈本身就長，每個 token 都要思考，吐 token 速度不是瓶頸</li>
 </ul>
 <p>如果你的產品瓶頸是其中之一，把預算花在 retrieval 優化、prompt engineering、模型品質上，比換更快的 API 划算。</p>
-<h2 id="TileRT-怎麼做到的"><a href="#TileRT-怎麼做到的" class="headerlink" title="TileRT 怎麼做到的"></a>TileRT 怎麼做到的</h2><p>這段給對 GPU 推理優化好奇的工程師。</p>
+<h2 id="TileRT-怎麼做到的">TileRT 怎麼做到的</h2>
+<p>這段給對 GPU 推理優化好奇的工程師。</p>
 <p>過去要把 LLM 跑快，常見路線有四條：</p>
 <ol>
 <li><strong>量化</strong>（FP8 / INT4）— 精度損失換速度</li>
@@ -201,11 +211,13 @@
 <p>編譯期靜態編排。一般 PyTorch / TensorRT 推理是 runtime 動態調度——每次 forward 都要決定 kernel launch 順序、做 memory allocation。TileRT 把所有 kernel 順序、memory layout 都在編譯時決定好，運行時直接執行，省了 runtime overhead。代價是模型結構固定後不能動態改 batch shape，但對線上推理服務這正好。</p>
 <p>Memory hierarchy 直傳。GPU 推理瓶頸 80% 在記憶體頻寬——HBM 讀寫比運算慢得多。一般做法是中間結果都從 Global Memory（HBM）走。TileRT 讓中間結果留在 Register → Shared Memory → L2 Cache 之間直接流動，不寫回 Global Memory。這在 NVIDIA H100 / H200 架構上是最有效的優化路線之一。</p>
 <p>多卡 Warp Specialization。GPU 的 warp（32 個 thread 一組）原本所有 thread 做一樣的事。Warp Specialization 是 H100 Hopper 架構支援的新模式——一部分 warp 專做 memory load、一部分專做 compute、一部分專做 store，三者並行流水化。等於把工廠裝配線的概念帶到 GPU thread 層級。</p>
-<h2 id="為什麼這次跟過去的「壓榨速度」不同"><a href="#為什麼這次跟過去的「壓榨速度」不同" class="headerlink" title="為什麼這次跟過去的「壓榨速度」不同"></a>為什麼這次跟過去的「壓榨速度」不同</h2><p>前三條路（量化、spec decoding、客製硬體）每條都有各自的品質保證取捨——具體掉多少要逐案核對 benchmark，不能一概而論。例如 Groq 的 spec-decoding 端點自己宣稱無精度損失、但社群實測 benchmark 略有差異；量化路線從 FP8 到 INT4 跌幅也不一樣。沒有「壓榨速度一定掉品質」這種簡單結論。</p>
+<h2 id="為什麼這次跟過去的「壓榨速度」不同">為什麼這次跟過去的「壓榨速度」不同</h2>
+<p>前三條路（量化、spec decoding、客製硬體）每條都有各自的品質保證取捨——具體掉多少要逐案核對 benchmark，不能一概而論。例如 Groq 的 spec-decoding 端點自己宣稱無精度損失、但社群實測 benchmark 略有差異；量化路線從 FP8 到 INT4 跌幅也不一樣。沒有「壓榨速度一定掉品質」這種簡單結論。</p>
 <p>TileRT 走的是第四條——沒動權重、沒換精度、沒做 draft model。純粹是「同樣的計算過程，安排得更聰明」。</p>
 <p>這是 GLM-5.1 高速版這個發佈跟其他「某廠商跑某 70B 又破紀錄」最大的差別。如果智譜的說法成立，這代表旗艦級大模型可以不犧牲品質、純靠工程走到 400 tps。</p>
 <p>關鍵是「如果成立」。</p>
-<h2 id="一個沒回答的問題"><a href="#一個沒回答的問題" class="headerlink" title="一個沒回答的問題"></a>一個沒回答的問題</h2><p>智譜這篇 PR 沒給 benchmark 對比。</p>
+<h2 id="一個沒回答的問題">一個沒回答的問題</h2>
+<p>智譜這篇 PR 沒給 benchmark 對比。</p>
 <p>「旗艦級能力 + 400 tps」是並列陳述，沒有實驗資料支撐——沒放 GLM-5.1 vs GLM-5.1-highspeed 在 MMLU / HumanEval / GSM8K 的對比表，沒放跟其他旗艦模型的同題對比。</p>
 <p>純編譯器優化理論上不掉品質，但實際上：</p>
 <ul>
@@ -215,7 +227,8 @@
 </ul>
 <p>這些都是「正常工程下會出現的小數字差異」。沒給對比表，採用前自己要跑一輪 eval。</p>
 <p>順帶說一句，highspeed 版的定價也沒公布。「快 5 倍」不代表「成本不變」——可能更貴、可能差不多、可能反而便宜。實際選用前要看單價乘任務量。</p>
-<h2 id="該不該試？"><a href="#該不該試？" class="headerlink" title="該不該試？"></a>該不該試？</h2><p>值得跑一個小規模試用的場景：</p>
+<h2 id="該不該試？">該不該試？</h2>
+<p>值得跑一個小規模試用的場景：</p>
 <ul>
 <li>AI Agent / 工具鏈（每個請求要連 5+ 次 LLM call）</li>
 <li>Voice agent / 即時語音</li>
@@ -284,15 +297,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

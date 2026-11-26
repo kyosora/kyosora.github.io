@@ -118,15 +118,20 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <p>最近發現圖片處理真的有夠麻煩 (╯°□°）╯︵ ┻━┻<br>特別是在使用 <code>hexo-asset-image</code> 和 <code>hexo-image-link</code> 這兩個套件時，竟然發現它們在最新版本都有 BUG！？<br>來分享一下我的經驗，希望能幫大家省下一些除錯時間 (｡･ω･｡)</p>
-<h2 id="為什麼要用本地圖片？"><a href="#為什麼要用本地圖片？" class="headerlink" title="為什麼要用本地圖片？"></a>為什麼要用本地圖片？</h2><p>在開始之前，先來聊聊為什麼要選擇在本地存放圖片，而不是使用圖床：</p>
+        <p>最近發現圖片處理真的有夠麻煩 (╯°□°）╯︵ ┻━┻<br>
+特別是在使用 <code>hexo-asset-image</code> 和 <code>hexo-image-link</code> 這兩個套件時，竟然發現它們在最新版本都有 BUG！？<br>
+來分享一下我的經驗，希望能幫大家省下一些除錯時間 (｡･ω･｡)</p>
+<h2 id="為什麼要用本地圖片？">為什麼要用本地圖片？</h2>
+<p>在開始之前，先來聊聊為什麼要選擇在本地存放圖片，而不是使用圖床：</p>
 <ul>
 <li>第三方圖床說不定哪天就掛掉，本地存放穩定多了</li>
 <li>文章和圖片放同一個資料夾，打包備份一次搞定</li>
 <li>離線也能看，不用擔心網路連線</li>
 <li>圖片跟文章放在同名資料夾，管理起來清楚很多</li>
 </ul>
-<h2 id="目前遇到的問題"><a href="#目前遇到的問題" class="headerlink" title="目前遇到的問題"></a>目前遇到的問題</h2><h3 id="hexo-asset-image-的狀況"><a href="#hexo-asset-image-的狀況" class="headerlink" title="hexo-asset-image 的狀況"></a>hexo-asset-image 的狀況</h3><p>最新版本在處理圖片路徑時會出現以下問題：</p>
+<h2 id="目前遇到的問題">目前遇到的問題</h2>
+<h3 id="hexo-asset-image-的狀況">hexo-asset-image 的狀況</h3>
+<p>最新版本在處理圖片路徑時會出現以下問題：</p>
 <ul>
 <li>圖片路徑重複出現</li>
 <li>預覽時正常，但發布後圖片掛掉</li>
@@ -134,33 +139,37 @@
 </ul>
 <p>例如原始路徑：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/2024/03/07/文章名稱/圖片.jpg</span><br></pre></td></tr></table></figure>
-
 <p>結果變成：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/2024/03/07/文章名稱/03/07/文章名稱/圖片.jpg</span><br></pre></td></tr></table></figure>
-
 <p>或是域名是 <code>xxx.io</code> 的情況下，圖片路徑會從原本的 <code>/xxx.jpg</code> 變成 <code>/.io/xxx.jpg</code>。</p>
-<h3 id="hexo-image-link-的狀況"><a href="#hexo-image-link-的狀況" class="headerlink" title="hexo-image-link 的狀況"></a>hexo-image-link 的狀況</h3><p>這個套件也有類似的問題：</p>
+<h3 id="hexo-image-link-的狀況">hexo-image-link 的狀況</h3>
+<p>這個套件也有類似的問題：</p>
 <ul>
 <li>路徑解析錯誤</li>
 <li>某些情況下完全無法顯示圖片</li>
 <li>與新版 Hexo 相容性不佳</li>
 </ul>
-<h2 id="目前的解決方案"><a href="#目前的解決方案" class="headerlink" title="目前的解決方案"></a>目前的解決方案</h2><h3 id="暫時性解決方案"><a href="#暫時性解決方案" class="headerlink" title="暫時性解決方案"></a>暫時性解決方案</h3><p>如果你一定要繼續用這些套件，可以：</p>
+<h2 id="目前的解決方案">目前的解決方案</h2>
+<h3 id="暫時性解決方案">暫時性解決方案</h3>
+<p>如果你一定要繼續用這些套件，可以：</p>
 <ul>
 <li>手動修改圖片路徑</li>
 <li>在 Markdown 中改用絕對路徑</li>
 </ul>
-<h3 id="替代方案：hexo-asset-img"><a href="#替代方案：hexo-asset-img" class="headerlink" title="替代方案：hexo-asset-img"></a>替代方案：hexo-asset-img</h3><p><code>hexo-asset-image</code> 從 Hexo 5 開始就已經失效，套件作者自己也這麼說。<br>目前改用 <code>hexo-asset-img</code> 後，圖片上傳到 GitHub Pages 有成功。</p>
+<h3 id="替代方案：hexo-asset-img">替代方案：hexo-asset-img</h3>
+<p><code>hexo-asset-image</code> 從 Hexo 5 開始就已經失效，套件作者自己也這麼說。<br>
+目前改用 <code>hexo-asset-img</code> 後，圖片上傳到 GitHub Pages 有成功。</p>
 <p>安裝方式：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-asset-img</span><br></pre></td></tr></table></figure>
-
 <p>安裝後，在 Markdown 裡用一般的相對路徑語法插圖即可，套件會自動轉換成 <code>asset_img</code> 格式。</p>
-<h2 id="小提醒"><a href="#小提醒" class="headerlink" title="小提醒"></a>小提醒</h2><ul>
+<h2 id="小提醒">小提醒</h2>
+<ul>
 <li>裝套件前先確認跟你的 Hexo 版本相容</li>
 <li>本地跑 <code>hexo server</code> 確認圖片正常後再發布</li>
 <li>善用 Git 版本控制，改壞了還能還原</li>
 </ul>
-<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ul>
+<h2 id="參考資料">參考資料</h2>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://github.com/yiyungent/hexo-asset-img">hexo-asset-img GitHub</a></li>
 <li><a target="_blank" rel="noopener" href="https://hexo.io/zh-tw/docs/">Hexo 官方文件</a></li>
 </ul>
@@ -254,15 +263,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -118,13 +118,15 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h2><p>某次正式環境使用者抱怨網頁速度極慢，卡了好幾分鐘，我連上 SSMS 查詢也一樣卡。追查後發現另一個專案的排程在跑，CPU 衝高，大型 sort／hash 查詢也在搶 query memory grant，把整台 SQL Server 拖慢。理想解法是切獨立主機，但沒有資源時，Resource Governor 是次佳選項——不需重建環境，先限制那支排程所使用的登入帳號。</p>
-<p><strong>版本限制（重要）：</strong> SQL Server 2022（16.x）及更舊版本只有 Enterprise 與 Developer Edition 支援 Resource Governor；SQL Server 2025（17.x）起才加入 Standard 與 Standard Developer Edition。請先查 <code>SELECT SERVERPROPERTY(&#39;ProductMajorVersion&#39;), SERVERPROPERTY(&#39;Edition&#39;)</code>，再依實際版本確認功能可用性。</p>
-<h2 id="2-Resource-Governor-的核心概念"><a href="#2-Resource-Governor-的核心概念" class="headerlink" title="2. Resource Governor 的核心概念"></a>2. Resource Governor 的核心概念</h2><p>Resource Governor 管理的單位有三層：</p>
+        <h2 id="1-背景">1. 背景</h2>
+<p>某次正式環境使用者抱怨網頁速度極慢，卡了好幾分鐘，我連上 SSMS 查詢也一樣卡。追查後發現另一個專案的排程在跑，CPU 衝高，大型 sort／hash 查詢也在搶 query memory grant，把整台 SQL Server 拖慢。理想解法是切獨立主機，但沒有資源時，Resource Governor 是次佳選項——不需重建環境，先限制那支排程所使用的登入帳號。</p>
+<p><strong>版本限制（重要）：</strong> SQL Server 2022（16.x）及更舊版本只有 Enterprise 與 Developer Edition 支援 Resource Governor；SQL Server 2025（17.x）起才加入 Standard 與 Standard Developer Edition。請先查 <code>SELECT SERVERPROPERTY('ProductMajorVersion'), SERVERPROPERTY('Edition')</code>，再依實際版本確認功能可用性。</p>
+<h2 id="2-Resource-Governor-的核心概念">2. Resource Governor 的核心概念</h2>
+<p>Resource Governor 管理的單位有三層：</p>
 <ul>
-<li>**資源池 (Resource Pool)**：定義 CPU 與記憶體的用量上限，可建立多個池子分別對應不同優先級的工作負載。</li>
-<li>**工作負載群組 (Workload Group)**：關聯到某個資源池，細分同一個池子內的工作分類。</li>
-<li>**分類函數 (Classifier Function)**：每個連線進來時由 SQL Server 呼叫此函數，回傳應該進入哪個工作負載群組的名稱。</li>
+<li><strong>資源池 (Resource Pool)</strong>：定義 CPU 與記憶體的用量上限，可建立多個池子分別對應不同優先級的工作負載。</li>
+<li><strong>工作負載群組 (Workload Group)</strong>：關聯到某個資源池，細分同一個池子內的工作分類。</li>
+<li><strong>分類函數 (Classifier Function)</strong>：每個連線進來時由 SQL Server 呼叫此函數，回傳應該進入哪個工作負載群組的名稱。</li>
 </ul>
 <p>這裡有一個會讓整套設定失效的邊界：Resource Governor 分類的是「剛建立的 session」，不是每一條 SQL，也不是目前正在查詢的資料庫。session 一旦被分組，直到連線結束都不會重新分類；中途執行 <code>USE OtherDatabase</code> 也一樣。</p>
 <p>所以別用 <code>DB_NAME()</code> 假裝限制整個資料庫。它最多只能看到登入當下的初始資料庫，遇到連線池、跨資料庫查詢或中途切換資料庫就不可靠。我最後採用專用登入帳號：讓高耗用排程固定用 <code>adhoc_batch</code> 連線，再由 classifier 依登入名稱分組。這限制的是那個工作負載，不會誤導成資料庫層級隔離。</p>
@@ -137,7 +139,8 @@
 <th>行為</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><code>MAX_CPU_PERCENT</code></td>
 <td><strong>軟性上限</strong>：只在多個池子互搶 CPU 時才強制執行。伺服器 CPU 空閒時，該資源池可超過此值，甚至用到 100%。</td>
 </tr>
@@ -145,16 +148,19 @@
 <td><code>CAP_CPU_PERCENT</code></td>
 <td><strong>硬性上限</strong>：不論伺服器是否空閒，該資源池永遠不能超過此值。</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>若你的目的是「無論如何不讓這個應用程式工作負載超過某個 CPU 比例」，必須用 <code>CAP_CPU_PERCENT</code>。只設 <code>MAX_CPU_PERCENT</code> 在離峰時段不會形成硬限制。</p>
 <p><code>MAX_MEMORY_PERCENT</code> 不能照 CPU 的 MAX／CAP 邏輯類推。對一般磁碟式資料表，它限制的是資源池可取得的 query workspace memory，也就是 sort、hash、索引建立等操作要求的 memory grant；buffer pool 裡的資料頁、索引頁與整個 SQL Server 程序記憶體不在這個上限內。若目標是限制單一查詢的 grant，還要在 workload group 設定 <code>REQUEST_MAX_MEMORY_GRANT_PERCENT</code>。</p>
-<h2 id="3-設定步驟"><a href="#3-設定步驟" class="headerlink" title="3. 設定步驟"></a>3. 設定步驟</h2><p>以下以限制 <code>adhoc_batch</code> 這個排程登入帳號為例，執行順序：建立資源池 → 建立工作負載群組 → 建立分類函數 → 啟用。這個帳號只授予目標資料庫需要的最低權限，避免它換到別的資料庫後仍帶著同一組資源限制與過大的存取權。</p>
-<h3 id="3-1-建立資源池"><a href="#3-1-建立資源池" class="headerlink" title="3.1 建立資源池"></a>3.1 建立資源池</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- MAX：壓力下最多使用 20% CPU，空閒時可超過</span></span><br><span class="line"><span class="comment">-- CAP：硬性不超過 30% CPU（依實際情況調整）</span></span><br><span class="line"><span class="keyword">CREATE</span> RESOURCE POOL PoolAdhocDB</span><br><span class="line"><span class="keyword">WITH</span> (</span><br><span class="line">    MIN_CPU_PERCENT    <span class="operator">=</span> <span class="number">0</span>,</span><br><span class="line">    MAX_CPU_PERCENT    <span class="operator">=</span> <span class="number">20</span>,</span><br><span class="line">    CAP_CPU_PERCENT    <span class="operator">=</span> <span class="number">30</span>,</span><br><span class="line">    MIN_MEMORY_PERCENT <span class="operator">=</span> <span class="number">0</span>,</span><br><span class="line">    MAX_MEMORY_PERCENT <span class="operator">=</span> <span class="number">25</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-
+<h2 id="3-設定步驟">3. 設定步驟</h2>
+<p>以下以限制 <code>adhoc_batch</code> 這個排程登入帳號為例，執行順序：建立資源池 → 建立工作負載群組 → 建立分類函數 → 啟用。這個帳號只授予目標資料庫需要的最低權限，避免它換到別的資料庫後仍帶著同一組資源限制與過大的存取權。</p>
+<h3 id="3-1-建立資源池">3.1 建立資源池</h3>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- MAX：壓力下最多使用 20% CPU，空閒時可超過</span></span><br><span class="line"><span class="comment">-- CAP：硬性不超過 30% CPU（依實際情況調整）</span></span><br><span class="line"><span class="keyword">CREATE</span> RESOURCE POOL PoolAdhocDB</span><br><span class="line"><span class="keyword">WITH</span> (</span><br><span class="line">    MIN_CPU_PERCENT    <span class="operator">=</span> <span class="number">0</span>,</span><br><span class="line">    MAX_CPU_PERCENT    <span class="operator">=</span> <span class="number">20</span>,</span><br><span class="line">    CAP_CPU_PERCENT    <span class="operator">=</span> <span class="number">30</span>,</span><br><span class="line">    MIN_MEMORY_PERCENT <span class="operator">=</span> <span class="number">0</span>,</span><br><span class="line">    MAX_MEMORY_PERCENT <span class="operator">=</span> <span class="number">25</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 <p><code>MIN_CPU_PERCENT = 0</code> 表示不保證最低量；若這個工作負載有關鍵查詢需要保底資源才考慮調高。<code>MAX_MEMORY_PERCENT = 25</code> 只限制這個 pool 的 query workspace memory，不能拿它推算整體 RAM 上限。</p>
-<h3 id="3-2-建立工作負載群組"><a href="#3-2-建立工作負載群組" class="headerlink" title="3.2 建立工作負載群組"></a>3.2 建立工作負載群組</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> WORKLOAD <span class="keyword">GROUP</span> GroupAdhocDB</span><br><span class="line"><span class="keyword">USING</span> PoolAdhocDB;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-3-建立分類函數"><a href="#3-3-建立分類函數" class="headerlink" title="3.3 建立分類函數"></a>3.3 建立分類函數</h3><p>分類函數有幾個強制規則：</p>
+<h3 id="3-2-建立工作負載群組">3.2 建立工作負載群組</h3>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> WORKLOAD <span class="keyword">GROUP</span> GroupAdhocDB</span><br><span class="line"><span class="keyword">USING</span> PoolAdhocDB;</span><br></pre></td></tr></table></figure>
+<h3 id="3-3-建立分類函數">3.3 建立分類函數</h3>
+<p>分類函數有幾個強制規則：</p>
 <ul>
 <li>必須建立在 <code>master</code> 資料庫</li>
 <li>必須是純量函數，回傳 <code>sysname</code></li>
@@ -162,39 +168,41 @@
 <li>classifier 可以讀取 <code>master</code> 中符合 schema-binding 要求的物件，官方 walkthrough 也有查表範例；但它位於所有新連線的分類路徑，查表、阻塞或複雜邏輯都會拖慢登入，因此能用 <code>SUSER_SNAME()</code> 等系統函數解決就不要查表</li>
 </ul>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">USE master;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> dbo.fn_WorkloadClassifier()</span><br><span class="line"><span class="keyword">RETURNS</span> sysname</span><br><span class="line"><span class="keyword">WITH</span> SCHEMABINDING</span><br><span class="line"><span class="keyword">AS</span></span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line">    <span class="keyword">RETURN</span> <span class="keyword">CASE</span></span><br><span class="line">               <span class="keyword">WHEN</span> SUSER_SNAME() <span class="operator">=</span> N<span class="string">&#x27;adhoc_batch&#x27;</span> <span class="keyword">THEN</span> N<span class="string">&#x27;GroupAdhocDB&#x27;</span></span><br><span class="line">               <span class="keyword">ELSE</span> <span class="string">&#x27;default&#x27;</span></span><br><span class="line">           <span class="keyword">END</span>;</span><br><span class="line"><span class="keyword">END</span>;</span><br><span class="line">GO</span><br></pre></td></tr></table></figure>
-
 <p>若要同時限制多個工作負載，可以替它們分配不同的專用登入帳號，再在 <code>CASE</code> 裡加條件：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">RETURN</span> <span class="keyword">CASE</span></span><br><span class="line">           <span class="keyword">WHEN</span> SUSER_SNAME() <span class="operator">=</span> N<span class="string">&#x27;adhoc_batch&#x27;</span>    <span class="keyword">THEN</span> N<span class="string">&#x27;GroupAdhocDB&#x27;</span></span><br><span class="line">           <span class="keyword">WHEN</span> SUSER_SNAME() <span class="operator">=</span> N<span class="string">&#x27;reporting_app&#x27;</span>  <span class="keyword">THEN</span> N<span class="string">&#x27;GroupReporting&#x27;</span></span><br><span class="line">           <span class="keyword">ELSE</span> <span class="string">&#x27;default&#x27;</span></span><br><span class="line">       <span class="keyword">END</span>;</span><br></pre></td></tr></table></figure>
-
 <p><code>APP_NAME()</code> 也能拿來輔助分類，但 application name 是客戶端連線字串自己提供的，不能當成安全邊界。需要可靠隔離時，專用登入帳號比 application name 更適合。</p>
-<h3 id="3-4-啟用設定"><a href="#3-4-啟用設定" class="headerlink" title="3.4 啟用設定"></a>3.4 啟用設定</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> RESOURCE GOVERNOR <span class="keyword">WITH</span> (CLASSIFIER_FUNCTION <span class="operator">=</span> dbo.fn_WorkloadClassifier);</span><br><span class="line"><span class="keyword">ALTER</span> RESOURCE GOVERNOR RECONFIGURE;</span><br></pre></td></tr></table></figure>
-
+<h3 id="3-4-啟用設定">3.4 啟用設定</h3>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> RESOURCE GOVERNOR <span class="keyword">WITH</span> (CLASSIFIER_FUNCTION <span class="operator">=</span> dbo.fn_WorkloadClassifier);</span><br><span class="line"><span class="keyword">ALTER</span> RESOURCE GOVERNOR RECONFIGURE;</span><br></pre></td></tr></table></figure>
 <p><code>RECONFIGURE</code> 會立即套用，<strong>不需要重啟服務</strong>，現有連線不中斷，新進連線才走新的分類邏輯。</p>
-<h2 id="4-驗證設定是否生效"><a href="#4-驗證設定是否生效" class="headerlink" title="4. 驗證設定是否生效"></a>4. 驗證設定是否生效</h2><p>光查系統檢視只能確認設定存在，看不出分類是否正確把連線路由過去。完整驗證流程如下：</p>
+<h2 id="4-驗證設定是否生效">4. 驗證設定是否生效</h2>
+<p>光查系統檢視只能確認設定存在，看不出分類是否正確把連線路由過去。完整驗證流程如下：</p>
 <p><strong>步驟一：確認 Resource Governor 已啟用、分類函數已掛上</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> is_enabled, classifier_function_id</span><br><span class="line"><span class="keyword">FROM</span> sys.dm_resource_governor_configuration;</span><br><span class="line"><span class="comment">-- is_enabled = 1 且 classifier_function_id 非 0 才算正常</span></span><br></pre></td></tr></table></figure>
-
 <p><strong>步驟二：確認資源池與工作負載群組的設定值</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> name, max_cpu_percent, cap_cpu_percent, max_memory_percent</span><br><span class="line"><span class="keyword">FROM</span> sys.resource_governor_resource_pools</span><br><span class="line"><span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;PoolAdhocDB&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> name, pool_id</span><br><span class="line"><span class="keyword">FROM</span> sys.resource_governor_workload_groups</span><br><span class="line"><span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;GroupAdhocDB&#x27;</span>;</span><br></pre></td></tr></table></figure>
-
 <p><strong>步驟三：確認現有連線被分到正確的群組（最關鍵）</strong></p>
 <p>用 <code>adhoc_batch</code> 開一個全新 session，然後在另一個視窗執行：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    s.session_id,</span><br><span class="line">    s.login_name,</span><br><span class="line">    s.host_name,</span><br><span class="line">    DB_NAME(s.database_id) <span class="keyword">AS</span> current_database,</span><br><span class="line">    wg.name               <span class="keyword">AS</span> workload_group,</span><br><span class="line">    rp.name               <span class="keyword">AS</span> resource_pool</span><br><span class="line"><span class="keyword">FROM</span> sys.dm_exec_sessions s</span><br><span class="line"><span class="keyword">JOIN</span> sys.dm_resource_governor_workload_groups wg</span><br><span class="line">    <span class="keyword">ON</span> s.group_id <span class="operator">=</span> wg.group_id</span><br><span class="line"><span class="keyword">JOIN</span> sys.dm_resource_governor_resource_pools rp</span><br><span class="line">    <span class="keyword">ON</span> wg.pool_id <span class="operator">=</span> rp.pool_id</span><br><span class="line"><span class="keyword">WHERE</span> s.login_name <span class="operator">=</span> N<span class="string">&#x27;adhoc_batch&#x27;</span>;</span><br></pre></td></tr></table></figure>
-
 <p><code>workload_group</code> 欄位應該顯示 <code>GroupAdhocDB</code>，而不是 <code>default</code>。若還是 <code>default</code>，先確認這是設定生效後建立的新連線；既有 session 不會重新分類。接著再查登入名稱與分類函數是否正確掛上。</p>
-<h2 id="5-監控資源實際耗用"><a href="#5-監控資源實際耗用" class="headerlink" title="5. 監控資源實際耗用"></a>5. 監控資源實際耗用</h2><p>設定完不等於結束，需要持續觀察實際效果。以下 DMV 可以看資源池的累計耗用：</p>
+<h2 id="5-監控資源實際耗用">5. 監控資源實際耗用</h2>
+<p>設定完不等於結束，需要持續觀察實際效果。以下 DMV 可以看資源池的累計耗用：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    rp.name,</span><br><span class="line">    rp.total_cpu_usage_ms,</span><br><span class="line">    rp.total_cpu_active_ms,</span><br><span class="line">    rp.out_of_memory_count,</span><br><span class="line">    rp.total_memgrant_count</span><br><span class="line"><span class="keyword">FROM</span> sys.dm_resource_governor_resource_pools rp</span><br><span class="line"><span class="keyword">WHERE</span> rp.name <span class="operator">=</span> <span class="string">&#x27;PoolAdhocDB&#x27;</span>;</span><br></pre></td></tr></table></figure>
-
 <p>若 <code>out_of_memory_count</code> 持續累積，代表資源池曾無法滿足記憶體配置，但不能直接下結論說上限太低。先查等待中的 memory grant、實際執行計畫、統計資訊、並行度與其他 pool 的競爭；大型 sort／hash 也可能是查詢或估算問題。確認容量確實不足後，才調整 <code>MAX_MEMORY_PERCENT</code> 或 workload group 的 <code>REQUEST_MAX_MEMORY_GRANT_PERCENT</code>，再執行 <code>ALTER RESOURCE GOVERNOR RECONFIGURE</code>。</p>
-<h2 id="6-常見問題"><a href="#6-常見問題" class="headerlink" title="6. 常見問題"></a>6. 常見問題</h2><p><strong>Q：RECONFIGURE 回報「找不到分類函數」</strong><br>確認函數存在於 <code>master</code> 資料庫，且函數名稱含結構描述（<code>dbo.fn_WorkloadClassifier</code>）。</p>
-<p><strong>Q：catalog view 和 DMV 顯示的設定不一樣？</strong><br><code>sys.resource_governor_configuration</code> 是已儲存的 metadata；<code>sys.dm_resource_governor_configuration</code> 才是目前生效的記憶體內設定。執行 <code>ALTER RESOURCE GOVERNOR RECONFIGURE</code> 後應以 DMV 驗證，必要時並列兩者找出尚未套用的差異。SQL Server 2022 之後，讀取相關伺服器層 DMV 的非 sysadmin 帳號通常還需要 <code>VIEW SERVER PERFORMANCE STATE</code>。</p>
-<p><strong>Q：設了 MAX_CPU_PERCENT = 20，但監控看到 CPU 超過 20%</strong><br>這是預期行為。<code>MAX_CPU_PERCENT</code> 是軟性上限，伺服器 CPU 空閒時不限制。若需要硬限，改用 <code>CAP_CPU_PERCENT</code>。</p>
-<p><strong>Q：Standard Edition 能用嗎？</strong><br>SQL Server 2022（16.x）及更舊版本不行，只有 Enterprise 與 Developer Edition 支援；SQL Server 2025（17.x）起 Standard 與 Standard Developer Edition 也能使用。</p>
-<h2 id="7-清除設定"><a href="#7-清除設定" class="headerlink" title="7. 清除設定"></a>7. 清除設定</h2><p>若實驗後要還原，依序執行：</p>
+<h2 id="6-常見問題">6. 常見問題</h2>
+<p><strong>Q：RECONFIGURE 回報「找不到分類函數」</strong><br>
+確認函數存在於 <code>master</code> 資料庫，且函數名稱含結構描述（<code>dbo.fn_WorkloadClassifier</code>）。</p>
+<p><strong>Q：catalog view 和 DMV 顯示的設定不一樣？</strong><br>
+<code>sys.resource_governor_configuration</code> 是已儲存的 metadata；<code>sys.dm_resource_governor_configuration</code> 才是目前生效的記憶體內設定。執行 <code>ALTER RESOURCE GOVERNOR RECONFIGURE</code> 後應以 DMV 驗證，必要時並列兩者找出尚未套用的差異。SQL Server 2022 之後，讀取相關伺服器層 DMV 的非 sysadmin 帳號通常還需要 <code>VIEW SERVER PERFORMANCE STATE</code>。</p>
+<p><strong>Q：設了 MAX_CPU_PERCENT = 20，但監控看到 CPU 超過 20%</strong><br>
+這是預期行為。<code>MAX_CPU_PERCENT</code> 是軟性上限，伺服器 CPU 空閒時不限制。若需要硬限，改用 <code>CAP_CPU_PERCENT</code>。</p>
+<p><strong>Q：Standard Edition 能用嗎？</strong><br>
+SQL Server 2022（16.x）及更舊版本不行，只有 Enterprise 與 Developer Edition 支援；SQL Server 2025（17.x）起 Standard 與 Standard Developer Edition 也能使用。</p>
+<h2 id="7-清除設定">7. 清除設定</h2>
+<p>若實驗後要還原，依序執行：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 1. 解除分類函數綁定</span></span><br><span class="line"><span class="keyword">ALTER</span> RESOURCE GOVERNOR <span class="keyword">WITH</span> (CLASSIFIER_FUNCTION <span class="operator">=</span> <span class="keyword">NULL</span>);</span><br><span class="line"><span class="keyword">ALTER</span> RESOURCE GOVERNOR RECONFIGURE;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 2. 刪除工作負載群組（要先移出資源池）</span></span><br><span class="line"><span class="keyword">DROP</span> WORKLOAD <span class="keyword">GROUP</span> GroupAdhocDB;</span><br><span class="line"><span class="keyword">ALTER</span> RESOURCE GOVERNOR RECONFIGURE;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 3. 刪除資源池</span></span><br><span class="line"><span class="keyword">DROP</span> RESOURCE POOL PoolAdhocDB;</span><br><span class="line"><span class="keyword">ALTER</span> RESOURCE GOVERNOR RECONFIGURE;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 4. 刪除分類函數</span></span><br><span class="line">USE master;</span><br><span class="line">GO</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">FUNCTION</span> dbo.fn_WorkloadClassifier;</span><br></pre></td></tr></table></figure>
-
 <p>順序不能反，Resource Governor 不允許刪除仍在使用中的池子或群組。</p>
-<h2 id="8-延伸閱讀"><a href="#8-延伸閱讀" class="headerlink" title="8. 延伸閱讀"></a>8. 延伸閱讀</h2><ul>
+<h2 id="8-延伸閱讀">8. 延伸閱讀</h2>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/sql/relational-databases/resource-governor/resource-governor">SQL Server 官方文件：Resource Governor</a></li>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/sql/relational-databases/resource-governor/resource-governor-resource-pool">Resource Governor Resource Pool（MAX vs CAP 詳細說明）</a></li>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/sql/relational-databases/extended-events/monitor-system-activity-using-extended-events">使用 Extended Events 監控系統活動</a></li>
@@ -289,15 +297,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

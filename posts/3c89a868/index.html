@@ -123,40 +123,40 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>PM 在 Notion 開了一張單：登入頁按「我的E政府」→「登入我的E政府」之後，畫面好幾秒沒反應，使用者會以為沒按到。PM 要的是一個 Loading。</p>
-<p>這個系統是 ASP.NET MVC 加 Web API，跑在 .NET Framework 上，前端是 Vue 3。按鈕背後有兩段：先跟後端要 E政府的登入網址（<code>GET api/auth/sso/gsp-url</code>），再整頁跳過去。兩段之間，登入頁什麼都沒變。</p>
+<p>這個系統是 <a target="_blank" rel="noopener" href="http://ASP.NET">ASP.NET</a> MVC 加 Web API，跑在 .NET Framework 上，前端是 Vue 3。按鈕背後有兩段：先跟後端要 E政府的登入網址（<code>GET api/auth/sso/gsp-url</code>），再整頁跳過去。兩段之間，登入頁什麼都沒變。</p>
 <p>第一輪的修法就是照單全收。E政府在外部，慢一點很正常，加個遮罩讓使用者知道有在動就好。Loading 的 commit 都進版控了，我才發現這個判斷只對了一半。</p>
-<h2 id="Loading-加好了，取樣次數卻從-12-變成-87"><a href="#Loading-加好了，取樣次數卻從-12-變成-87" class="headerlink" title="Loading 加好了，取樣次數卻從 12 變成 87"></a>Loading 加好了，取樣次數卻從 12 變成 87</h2><p>遮罩很好加：按下就顯示「正在前往我的E政府，請稍候…」，一路留到頁面換走。驗收我交給 Claude Code，請它寫一支 Playwright 腳本：從按下按鈕開始，每 200 毫秒檢查一次畫面上的遮罩，直到換頁。</p>
+<h2 id="Loading-加好了，取樣次數卻從-12-變成-87">Loading 加好了，取樣次數卻從 12 變成 87</h2>
+<p>遮罩很好加：按下就顯示「正在前往我的E政府，請稍候…」，一路留到頁面換走。驗收我交給 Claude Code，請它寫一支 Playwright 腳本：從按下按鈕開始，每 200 毫秒檢查一次畫面上的遮罩，直到換頁。</p>
 <p>本機跑的時候，腳本用 <code>page.route</code> 把 <code>gsp-url</code> 攔在瀏覽器裡，延遲 3 秒再回一個假網址。11 項全過，取樣 12 次。</p>
 <p>部署到測試機、改走真的後端，一樣全部 PASS。但其中一行長這樣：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PASS 從按下到換頁生效，遮罩一直在（取樣 87 次，最少 1 個、換頁前最後一次 1 個）</span><br></pre></td></tr></table></figure>
-
 <p>腳本每次取樣之間固定睡 200 毫秒，87 次取樣中間至少隔了 86 段，算下來遮罩至少掛了 17 秒，還沒算每次查詢本身花的時間。</p>
 <p>測試全過，使用者卻還是要等十幾秒。PM 說的「有點慢」就是這 17 秒，遮罩只是讓它看起來有在動。</p>
 <p>本機為什麼量不到，等找到原因才想通：本機那支 <code>gsp-url</code> 根本沒送到伺服器，在瀏覽器裡就被攔下來了。</p>
-<h2 id="按鈕會打的請求，單獨測都很快"><a href="#按鈕會打的請求，單獨測都很快" class="headerlink" title="按鈕會打的請求，單獨測都很快"></a>按鈕會打的請求，單獨測都很快</h2><p>Claude Code 接著用 curl 把按鈕前後會碰到的請求各打一次：</p>
+<h2 id="按鈕會打的請求，單獨測都很快">按鈕會打的請求，單獨測都很快</h2>
+<p>Claude Code 接著用 curl 把按鈕前後會碰到的請求各打一次：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gsp-url             200   0.093s</span><br><span class="line">gsp-url             200   0.088s</span><br><span class="line">gsp-url             200   0.087s</span><br><span class="line">UserLogin/SSOLogin  302   1.004s   → 轉址到 E政府</span><br><span class="line">sso-login (POST)    200  21.195s</span><br></pre></td></tr></table></figure>
-
 <p>本站的 <code>UserLogin/SSOLogin</code> 回 302 大約 1 秒（還不含 E政府頁面本身的載入），取網址 0.09 秒，按鈕自己會打的兩個請求加起來不到 1.2 秒。</p>
 <p>唯一慢的是 <code>sso-login</code>，可是按鈕不會打它。這支是登入頁一載入、在 <code>onMounted</code> 裡自動打的：縣府員工從內部的員工入口網點進來時，瀏覽器會帶著入口網發的 SSO cookie，系統就直接登入，不必再輸入帳密。</p>
 <p>一支跟按鈕無關的請求跑了 21 秒，按鈕的請求在瀏覽器裡就跟著慢。Claude Code 看到這組數字，第一個懷疑的是 Session 鎖。</p>
-<h2 id="帶同一個-cookie，才重現得出來"><a href="#帶同一個-cookie，才重現得出來" class="headerlink" title="帶同一個 cookie，才重現得出來"></a>帶同一個 cookie，才重現得出來</h2><p>ASP.NET（.NET Framework 的 System.Web 這一套）的 Session 有一把獨占鎖。微軟文件寫得很清楚：同一個 SessionID 的兩個請求同時進來，第一個拿到 Session 的獨占存取權，第二個要等第一個跑完才會執行，除非第一個握鎖握到逾時。</p>
+<h2 id="帶同一個-cookie，才重現得出來">帶同一個 cookie，才重現得出來</h2>
+<p><a target="_blank" rel="noopener" href="http://ASP.NET">ASP.NET</a>（.NET Framework 的 <a target="_blank" rel="noopener" href="http://System.Web">System.Web</a> 這一套）的 Session 有一把獨占鎖。微軟文件寫得很清楚：同一個 SessionID 的兩個請求同時進來，第一個拿到 Session 的獨占存取權，第二個要等第一個跑完才會執行，除非第一個握鎖握到逾時。</p>
 <p>這也解釋了單獨用 curl 為什麼量不到。curl 不帶 cookie，每次都是全新的 Session，誰也不用等誰。瀏覽器不一樣，送回同一個站台的請求都會自動帶上同一個 <code>ASP.NET_SessionId</code> cookie，開別的分頁也一樣。</p>
 <p>所以重現時，curl 要跟瀏覽器一樣共用 cookie。實際跑的指令多了幾個路徑變數，下面是整理過的：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">B=<span class="string">&quot;https://your-site/YourApp&quot;</span>   <span class="comment"># 換成你的測試站台</span></span><br><span class="line">J=jar.txt</span><br><span class="line"><span class="built_in">rm</span> -f <span class="string">&quot;<span class="variable">$J</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 先打一支會寫入 Session 的頁面，讓 cookie jar 拿到固定的 ASP.NET_SessionId</span></span><br><span class="line"><span class="comment">#    Session 還沒存過東西之前，ASP.NET 可能每個請求都發新的 SessionID</span></span><br><span class="line">curl -sk -c <span class="string">&quot;<span class="variable">$J</span>&quot;</span> -b <span class="string">&quot;<span class="variable">$J</span>&quot;</span> -o /dev/null <span class="string">&quot;<span class="variable">$B</span>/UserLogin/SSOLogin&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 背景送出慢的那支</span></span><br><span class="line">curl -sk -b <span class="string">&quot;<span class="variable">$J</span>&quot;</span> -o /dev/null -w <span class="string">&quot;sso-login（同 Session）%&#123;time_total&#125;s\n&quot;</span> \</span><br><span class="line">  -X POST -H <span class="string">&quot;Content-Type: application/json&quot;</span> -d <span class="string">&quot;&#123;&#125;&quot;</span> <span class="string">&quot;<span class="variable">$B</span>/api/auth/sso-login&quot;</span> &amp;</span><br><span class="line"></span><br><span class="line"><span class="built_in">sleep</span> 1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 同一個 Session 打快的那支</span></span><br><span class="line">curl -sk -b <span class="string">&quot;<span class="variable">$J</span>&quot;</span> -o /dev/null -w <span class="string">&quot;gsp-url（同 Session）%&#123;time_total&#125;s\n&quot;</span> <span class="string">&quot;<span class="variable">$B</span>/api/auth/sso/gsp-url&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 對照組：不帶 cookie</span></span><br><span class="line">curl -sk -o /dev/null -w <span class="string">&quot;gsp-url（不帶 Session）%&#123;time_total&#125;s\n&quot;</span> <span class="string">&quot;<span class="variable">$B</span>/api/auth/sso/gsp-url&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">wait</span></span><br></pre></td></tr></table></figure>
-
 <p>結果：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sso-login（同 Session）21.081s</span><br><span class="line">gsp-url（同 Session）20.275s</span><br><span class="line">gsp-url（不帶 Session）0.085s</span><br></pre></td></tr></table></figure>
-
 <p>同一支 <code>gsp-url</code>，帶著 Session 要 20.3 秒，不帶只要 0.08 秒。它晚 1 秒送出，一直等到 <code>sso-login</code> 放掉鎖才開始跑。</p>
 <p>這個對照組有個不夠嚴謹的地方：第 4 步是等前面兩支跑完才送的，只能證明 <code>gsp-url</code> 本身不慢。要排除「那 20 秒整個站台都在忙」，第 3 步也要丟到背景，緊接著送出不帶 cookie 的第 4 步，最後再 <code>wait</code>，三支請求才會真的重疊。</p>
 <p>PM 遇到的情況就是這樣：打開登入頁，<code>sso-login</code> 在背景握著 Session；這 21 秒內按「登入我的E政府」，<code>gsp-url</code> 就排在它後面。帳密登入也一樣會被卡住。</p>
-<h2 id="Global-asax-讓每個請求都搶同一把鎖"><a href="#Global-asax-讓每個請求都搶同一把鎖" class="headerlink" title="Global.asax 讓每個請求都搶同一把鎖"></a>Global.asax 讓每個請求都搶同一把鎖</h2><p>Web API 預設不用 Session。這個專案在 <code>Global.asax.cs</code> 裡強制打開：</p>
+<h2 id="Global-asax-讓每個請求都搶同一把鎖">Global.asax 讓每個請求都搶同一把鎖</h2>
+<p>Web API 預設不用 Session。這個專案在 <code>Global.asax.cs</code> 裡強制打開：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">Application_PostAuthorizeRequest</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    HttpContext.Current.SetSessionStateBehavior(SessionStateBehavior.Required);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>網路上搜「Web API 使用 Session」，很多答案就是這三行。它對<strong>每個進到 ASP.NET 的請求</strong>設 <code>Required</code>，也就是要讀也要寫，每個請求都得拿所屬 Session 的那把獨占鎖。同一個 Session 的請求，不管是 API 還是頁面，全部變成單線道。</p>
+<p>網路上搜「Web API 使用 Session」，很多答案就是這三行。它對<strong>每個進到 <a target="_blank" rel="noopener" href="http://ASP.NET">ASP.NET</a> 的請求</strong>設 <code>Required</code>，也就是要讀也要寫，每個請求都得拿所屬 Session 的那把獨占鎖。同一個 Session 的請求，不管是 API 還是頁面，全部變成單線道。</p>
 <p>平常每支 API 幾十毫秒，排隊也感覺不出來。只要有一支卡住，後面整排都在等。</p>
 <p>這三行也不能直接拿掉。系統的 E政府登入走 OIDC，<code>state</code> 和 PKCE 的 verifier 要先存在後端 Session，等 E政府導回來再拿出來比對。有些請求真的需要 Session。</p>
-<h2 id="21-秒跟-Windows-的連線逾時一樣長"><a href="#21-秒跟-Windows-的連線逾時一樣長" class="headerlink" title="21 秒跟 Windows 的連線逾時一樣長"></a>21 秒跟 Windows 的連線逾時一樣長</h2><p>再看 <code>sso-login</code> 為什麼要 21 秒。新版 API 只包了一層，實際邏輯在舊版的 controller 裡，順序是這樣：</p>
+<h2 id="21-秒跟-Windows-的連線逾時一樣長">21 秒跟 Windows 的連線逾時一樣長</h2>
+<p>再看 <code>sso-login</code> 為什麼要 21 秒。新版 API 只包了一層，實際邏輯在舊版的 controller 裡，順序是這樣：</p>
 <ol>
 <li>呼叫入口網的認證 API，用系統的應用程式帳號換一張 token</li>
 <li>看瀏覽器有沒有帶入口網的 SSO cookie</li>
@@ -165,17 +165,15 @@
 <p>入口網的認證 API 在縣府內部，測試機和我的開發機都連不到，第 1 步就一直等到連線逾時。</p>
 <p>21 這個數字很眼熟。我在自己的 Windows 11 上，對一個不會回應的位址開 TCP 連線：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 10.255.255.1 在我的網路裡不會回應；你的環境要換一個確定沒人接的位址</span></span><br><span class="line"><span class="variable">$sw</span> = [<span class="type">Diagnostics.Stopwatch</span>]::StartNew()</span><br><span class="line"><span class="keyword">try</span> &#123; [<span class="type">System.Net.Sockets.TcpClient</span>]::new().Connect(<span class="string">&#x27;10.255.255.1&#x27;</span>, <span class="number">443</span>) &#125;</span><br><span class="line"><span class="keyword">catch</span> &#123; <span class="variable">$_</span>.Exception.InnerException.Message &#125;</span><br><span class="line"><span class="string">&quot;&#123;0:N2&#125; 秒&quot;</span> <span class="operator">-f</span> <span class="variable">$sw</span>.Elapsed.TotalSeconds</span><br></pre></td></tr></table></figure>
-
 <p>21.09 秒後失敗，跟測試機上的 21.19 秒幾乎一樣。程式裡沒有人設 21 秒，所以我判斷測試機也是卡在建立 TCP 連線：SYN 送出去沒有回應，Windows 重送幾次後放棄。這是推論，我沒有在測試機上抓封包確認，而且 Windows 的重送次數和間隔可以調，你的機器不一定剛好 21 秒。</p>
 <p>問題出在順序。沒有 cookie 的時候，第 3 步的結果在一開始就決定了；第 1 步等完 21 秒，換來的還是同一句「沒有取得SSOToken」。外部廠商、PM、所有不是從入口網進來的人，每次打開登入頁都要在背景陪它等 21 秒，而且等的時候手上握著 Session 鎖。</p>
-<h2 id="修法：把便宜的檢查搬到最前面"><a href="#修法：把便宜的檢查搬到最前面" class="headerlink" title="修法：把便宜的檢查搬到最前面"></a>修法：把便宜的檢查搬到最前面</h2><p>改動只有一個 <code>if</code>，加在 <code>sso-login</code> 的最前面，後面的舊流程一行都沒動：</p>
+<h2 id="修法：把便宜的檢查搬到最前面">修法：把便宜的檢查搬到最前面</h2>
+<p>改動只有一個 <code>if</code>，加在 <code>sso-login</code> 的最前面，後面的舊流程一行都沒動：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">HttpPost</span>]</span><br><span class="line">[<span class="meta">Route(<span class="string">&quot;sso-login&quot;</span>)</span>]</span><br><span class="line">[<span class="meta">AllowAnonymous</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> IHttpActionResult <span class="title">SsoLogin</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 沒有入口網發的 cookie，舊流程等完外部認證，最後也只會回這一句。</span></span><br><span class="line">        <span class="comment">// 先檢查，就不必握著 Session 鎖去等一個連不到的外部 API。</span></span><br><span class="line">        <span class="keyword">if</span> (HttpContext.Current?.Request.Cookies[<span class="string">&quot;PUBLIC_APP_USER_SSO_TOKEN&quot;</span>] == <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> Json(<span class="keyword">new</span> &#123; isSuccess = <span class="literal">false</span>, Result = <span class="string">&quot;&quot;</span>, ErrorMsg = <span class="string">&quot;沒有取得SSOToken&quot;</span> &#125;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 以下是原本的流程：有 cookie（從員工入口網進來）照舊呼叫外部認證</span></span><br><span class="line">        <span class="keyword">var</span> legacyResult = <span class="keyword">new</span> ODBCController().SSOLogin();</span><br><span class="line">        <span class="keyword">return</span> Json(<span class="keyword">new</span> &#123; legacyResult.isSuccess, legacyResult.Result, legacyResult.ErrorMsg &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (Exception ex)</span><br><span class="line">    &#123;</span><br><span class="line">        XLogFile.WriteLog(<span class="string">&quot;AuthApi-&gt;SsoLogin-&gt;&quot;</span> + ex);</span><br><span class="line">        <span class="keyword">return</span> Json(<span class="keyword">new</span> &#123; isSuccess = <span class="literal">false</span>, ErrorMsg = <span class="string">&quot;SSO 登入失敗，請稍後再試&quot;</span> &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>（後半段為了篇幅縮成兩行，實際檔案裡還是原本的寫法。）</p>
 <p>前端的 <code>handleSSOLogin</code> 只看 <code>isSuccess</code>，失敗就留在一般登入畫面，訊息內容不影響流程。早退的回傳直接照抄舊流程那一句，前端一行都不用改。</p>
 <p>本機驗兩種情況：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">不帶 cookie   0.006s   &#123;&quot;isSuccess&quot;:false,&quot;Result&quot;:&quot;&quot;,&quot;ErrorMsg&quot;:&quot;沒有取得SSOToken&quot;&#125;</span><br><span class="line">帶假 cookie  21.176s   &#123;&quot;isSuccess&quot;:false,&quot;ErrorMsg&quot;:&quot;SSO 登入失敗，請稍後再試&quot;&#125;</span><br></pre></td></tr></table></figure>
-
 <p>帶假 cookie 還是 21 秒，這正是要看的：只要有 cookie，就照樣走進舊的認證流程，那條路沒被跳過。至於帶著有效 cookie 的員工能不能登入成功，測試機連不到入口網，這裡驗不了。</p>
 <p>部署到測試機後，同樣用一個 cookie jar 量：</p>
 <table>
@@ -186,7 +184,8 @@
 <th>修改後</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><code>sso-login</code>（不帶入口網 cookie）</td>
 <td>21 秒</td>
 <td>0.78 秒</td>
@@ -201,9 +200,11 @@
 <td>17 秒以上</td>
 <td>約 2 秒</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>0.78 秒是部署完第一次呼叫，同一個 Session 緊接著再打一次是 0.11 秒。</p>
-<h2 id="Global-asax-先不動"><a href="#Global-asax-先不動" class="headerlink" title="Global.asax 先不動"></a>Global.asax 先不動</h2><p>根治的做法是只讓需要 Session 的請求拿鎖。我比較過三條路：</p>
+<h2 id="Global-asax-先不動">Global.asax 先不動</h2>
+<p>根治的做法是只讓需要 Session 的請求拿鎖。我比較過三條路：</p>
 <table>
 <thead>
 <tr>
@@ -212,7 +213,8 @@
 <th>代價</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><code>sso-login</code> 沒 cookie 就早退</td>
 <td>一般使用者不再卡 21 秒</td>
 <td>只修好這一支；別支 API 慢起來，一樣整排塞住</td>
@@ -227,27 +229,26 @@
 <td>不碰 Session 的 API 不再陪著排隊（要寫同一個 Session 的請求還是互斥）</td>
 <td>要先盤點每一支 API 有沒有讀寫 Session，漏一支就是某個功能壞掉</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>第三條最乾淨，但動到的是整個系統的每一個請求。為了一張「加個 Loading」的單去改全域設定，我認為不划算，先記成技術債，這次選第一條。</p>
 <p>真的要做，大概長這樣（沒有上線，只是示意）：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">Application_PostAuthorizeRequest</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> path = HttpContext.Current.Request.AppRelativeCurrentExecutionFilePath;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 確定完全不碰 Session 的路由才關掉。</span></span><br><span class="line">    <span class="comment">// ReadOnly 救不了排隊：唯讀請求不拿獨占鎖，但別人正握著寫入鎖時，它還是可能要等。</span></span><br><span class="line">    <span class="keyword">if</span> (path.StartsWith(<span class="string">&quot;~/api/public/&quot;</span>, StringComparison.OrdinalIgnoreCase))</span><br><span class="line">    &#123;</span><br><span class="line">        HttpContext.Current.SetSessionStateBehavior(SessionStateBehavior.Disabled);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    HttpContext.Current.SetSessionStateBehavior(SessionStateBehavior.Required);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p><code>SetSessionStateBehavior</code> 必須在 <code>AcquireRequestState</code> 之前呼叫，<code>PostAuthorizeRequest</code> 剛好在它前面。拖到 <code>AcquireRequestState</code> 當下或之後才呼叫，會丟 <code>InvalidOperationException</code>。</p>
-<p>ASP.NET Core 的 Session 不上鎖，不會有這種排隊。代價換成兩個請求同時寫 Session 時，後寫的會蓋掉先寫的，連改不同的 key 都可能互蓋。</p>
-<h2 id="修好之後，Loading-的測試反而-FAIL"><a href="#修好之後，Loading-的測試反而-FAIL" class="headerlink" title="修好之後，Loading 的測試反而 FAIL"></a>修好之後，Loading 的測試反而 FAIL</h2><p>沒有入口網 cookie 時的 21 秒排除之後，Loading 還是留著。網路慢、E政府那邊慢的時候，使用者至少知道有在動。</p>
+<p><a target="_blank" rel="noopener" href="http://ASP.NET">ASP.NET</a> Core 的 Session 不上鎖，不會有這種排隊。代價換成兩個請求同時寫 Session 時，後寫的會蓋掉先寫的，連改不同的 key 都可能互蓋。</p>
+<h2 id="修好之後，Loading-的測試反而-FAIL">修好之後，Loading 的測試反而 FAIL</h2>
+<p>沒有入口網 cookie 時的 21 秒排除之後，Loading 還是留著。網路慢、E政府那邊慢的時候，使用者至少知道有在動。</p>
 <p>部署完再跑一次驗收，真後端那組反而 FAIL 了：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">FAIL 按下登入我的E政府 0.3 秒內出現 Loading 遮罩</span><br><span class="line">FAIL 從按下到換頁生效，遮罩一直在（取樣 0 次，最少 Infinity 個、換頁前最後一次 undefined 個）</span><br></pre></td></tr></table></figure>
-
 <p>後端變快了，按下去不到半秒就開始換頁。腳本從頁面外面一次次查元素，換頁中途不是拿不到結果，就是拿到的已經是下一頁，舊頁面上的遮罩一次都沒量到。</p>
 <p>這支腳本之前就卡過一次。為了不真的跳去 E政府，腳本也把換頁要去的那個頁面攔下來，回一個假頁面。一開始在攔換頁的 callback 裡查同一頁的遮罩，結果整支卡到 30 秒逾時。看起來是換頁請求在等 callback 回應，callback 裡的查詢又在等換頁結束，兩邊互等。後來 callback 只負責延遲和回假頁面，取樣交給主流程，才有前面那個「87 次」。</p>
 <p>最後的做法是從頁面裡面回報：用 <code>MutationObserver</code> 盯 DOM，再掛 <code>pagehide</code>，透過 <code>page.exposeFunction</code> 把每次變化送回 Node。這個專案的遮罩是用 <code>v-if</code> 整個節點加進去的，所以只盯節點增減就夠；如果你的遮罩是切 class 或 style 顯示，要再加 <code>attributes: true</code>。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">recordOverlay</span>(<span class="params">page</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> events = []</span><br><span class="line">  <span class="keyword">await</span> page.<span class="title function_">exposeFunction</span>(<span class="string">&#x27;__overlay&#x27;</span>, <span class="function">(<span class="params">t, n, why</span>) =&gt;</span> events.<span class="title function_">push</span>(&#123; t, n, why &#125;))</span><br><span class="line">  <span class="keyword">await</span> page.<span class="title function_">evaluate</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">report</span> = why =&gt;</span><br><span class="line">      <span class="variable language_">window</span>.<span class="title function_">__overlay</span>(performance.<span class="title function_">now</span>(), <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.loading&#x27;</span>).<span class="property">length</span>, why)</span><br><span class="line">    <span class="keyword">new</span> <span class="title class_">MutationObserver</span>(<span class="function">() =&gt;</span> <span class="title function_">report</span>(<span class="string">&#x27;dom&#x27;</span>)).<span class="title function_">observe</span>(<span class="variable language_">document</span>.<span class="property">body</span>, &#123; <span class="attr">childList</span>: <span class="literal">true</span>, <span class="attr">subtree</span>: <span class="literal">true</span> &#125;)</span><br><span class="line">    <span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;pagehide&#x27;</span>, <span class="function">() =&gt;</span> <span class="title function_">report</span>(<span class="string">&#x27;pagehide&#x27;</span>))</span><br><span class="line">    <span class="comment">// 起算點用頁面實際收到 click 的時間，不含 Playwright 呼叫 click 的往返</span></span><br><span class="line">    <span class="variable language_">document</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;click&#x27;</span>, <span class="function">() =&gt;</span> <span class="title function_">report</span>(<span class="string">&#x27;click&#x27;</span>), <span class="literal">true</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="keyword">return</span> events</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>這樣量到的是：頁面收到點擊後 2 毫秒，DOM 裡就有 <code>.loading</code> 節點；2050 毫秒離開登入頁，離開那一刻節點還在。它證明的是節點存在，畫面有沒有真的畫出來，要看截圖。另外，這次只有換到同網域的頁面時收得到 <code>pagehide</code> 的回報，換到跨網域的假頁面就收不到，原因我還沒查清楚。</p>
 <p>遮罩本身還有一個容易漏的地方：使用者到了 E政府又按「上一頁」，瀏覽器可能直接從 bfcache 還原離開前的畫面，頁面不重新載入，遮罩就原封不動蓋在登入頁上。要在 <code>pageshow</code> 收掉：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">onPageShow</span>(<span class="params">event</span>) &#123;</span><br><span class="line">  <span class="comment">// persisted = 這一頁是從 bfcache 還原的，onMounted 不會再跑一次</span></span><br><span class="line">  <span class="keyword">if</span> (event.<span class="property">persisted</span>) loadingStore.<span class="title function_">hide</span>()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">onMounted</span>(<span class="function">() =&gt;</span> <span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;pageshow&#x27;</span>, onPageShow))</span><br><span class="line"><span class="title function_">onUnmounted</span>(<span class="function">() =&gt;</span> <span class="variable language_">window</span>.<span class="title function_">removeEventListener</span>(<span class="string">&#x27;pageshow&#x27;</span>, onPageShow))</span><br></pre></td></tr></table></figure>
-
-<h2 id="這次記住的事"><a href="#這次記住的事" class="headerlink" title="這次記住的事"></a>這次記住的事</h2><p>回頭看，PM 開單寫的是 Loading，真正在意的是慢。如果第一輪加完遮罩就交差，這 21 秒會一直藏在遮罩後面。之後接手的人只會看到單上寫著「已加 Loading」，不會知道後面還有 21 秒在等。</p>
+<h2 id="這次記住的事">這次記住的事</h2>
+<p>回頭看，PM 開單寫的是 Loading，真正在意的是慢。如果第一輪加完遮罩就交差，這 21 秒會一直藏在遮罩後面。之後接手的人只會看到單上寫著「已加 Loading」，不會知道後面還有 21 秒在等。</p>
 <p>讓我回頭看的，是 PASS 那行裡的「87 次」。測試過了，數字怪怪的，還是值得停下來看一眼。</p>
 <p>下次再遇到「單獨打很快、從瀏覽器按很慢」，我會先拿同一個 cookie 並發打一次，再決定要不要加 Loading。</p>
 
@@ -301,15 +302,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
     
     </ul>
   </section>

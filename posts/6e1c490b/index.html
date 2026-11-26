@@ -122,7 +122,8 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>大型 SQL Server 環境裡，資料匯入匯出緩慢、維護作業得人工拖到半夜、備份還原偶爾出包、跨伺服器操作一多就容易漏步驟，這些幾乎是每個 DBA 遲早會遇到的問題。</p>
+        <h2 id="前言">前言</h2>
+<p>大型 SQL Server 環境裡，資料匯入匯出緩慢、維護作業得人工拖到半夜、備份還原偶爾出包、跨伺服器操作一多就容易漏步驟，這些幾乎是每個 DBA 遲早會遇到的問題。</p>
 <p><code>sqlcmd</code> 是 SQL Server 內建的命令列工具，把這些操作腳本化、掛上排程，能省下大量重複的手動工作。這篇整理我實際用過的幾種場景，並且特別把網路教學裡常見的幾個錯誤參數說明糾正過來——尤其是 <code>-m</code> 和 <code>-k</code>，被講錯的機率高得驚人。</p>
 <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
   <text x="400" y="40" text-anchor="middle" font-size="24" fill="#333">SQLCMD 功能與效能概觀</text>
@@ -160,17 +161,17 @@
     <text x="420" y="170" text-anchor="middle" font-size="12">最小記錄載入</text>
   </g>
 </svg>
-
-<h2 id="先搞清楚：命令列參數-vs-T-SQL-腳本"><a href="#先搞清楚：命令列參數-vs-T-SQL-腳本" class="headerlink" title="先搞清楚：命令列參數 vs T-SQL 腳本"></a>先搞清楚：命令列參數 vs T-SQL 腳本</h2><p>很多人把 <code>sqlcmd</code> 學壞，是因為一開始就把兩件事混在一起。<code>sqlcmd</code> 後面接的東西分兩層：</p>
+<h2 id="先搞清楚：命令列參數-vs-T-SQL-腳本">先搞清楚：命令列參數 vs T-SQL 腳本</h2>
+<p>很多人把 <code>sqlcmd</code> 學壞，是因為一開始就把兩件事混在一起。<code>sqlcmd</code> 後面接的東西分兩層：</p>
 <ul>
 <li><strong>命令列參數</strong>（<code>-S</code>、<code>-U</code>、<code>-i</code> 這些）：寫在 shell（cmd / PowerShell / bash）裡，控制 sqlcmd 怎麼連線、怎麼跑。</li>
 <li><strong>T-SQL 與 sqlcmd 指令</strong>（<code>:setvar</code>、<code>:r</code>、<code>BACKUP DATABASE</code>）：寫在 <code>.sql</code> 腳本檔裡，由 sqlcmd 讀進去送給資料庫引擎執行。</li>
 </ul>
 <p>這兩層用的註解語法不一樣：shell 裡 <code>--</code> 不是註解（cmd 會把它當參數），T-SQL 裡 <code>--</code> 才是。所以下面命令列我用 cmd 的 <code>::</code> 註解，腳本內容才用 <code>--</code>。混在同一行貼上去，多半跑不動。<code>::</code> 只在 cmd 批次檔裡算註解，PowerShell 要用 <code>#</code>；在 PowerShell 裡複製時只取指令那一行。</p>
-<h2 id="大型資料庫匯入"><a href="#大型資料庫匯入" class="headerlink" title="大型資料庫匯入"></a>大型資料庫匯入</h2><p>匯入大量資料時，逐筆 <code>INSERT</code> 是最慢的選擇，每一筆都要寫完整交易記錄。真正能把時間從「數天」壓到「數小時」的關鍵，是用 <code>BULK INSERT</code>（或 <code>bcp</code>）搭配<strong>最小記錄載入</strong>。</p>
+<h2 id="大型資料庫匯入">大型資料庫匯入</h2>
+<p>匯入大量資料時，逐筆 <code>INSERT</code> 是最慢的選擇，每一筆都要寫完整交易記錄。真正能把時間從「數天」壓到「數小時」的關鍵，是用 <code>BULK INSERT</code>（或 <code>bcp</code>）搭配<strong>最小記錄載入</strong>。</p>
 <p>先把匯入邏輯寫進腳本檔：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- import_script.sql</span></span><br><span class="line">:<span class="keyword">on</span> error exit</span><br><span class="line">:setvar TargetDB &quot;TargetDB&quot;</span><br><span class="line">:setvar DataFile &quot;D:\export\bigtable.dat&quot;</span><br><span class="line"></span><br><span class="line">USE [$(TargetDB)];</span><br><span class="line">GO</span><br><span class="line"><span class="keyword">SET</span> NOCOUNT <span class="keyword">ON</span>;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 最小記錄載入條件見下方說明，這裡只列必要的 WITH 選項</span></span><br><span class="line">BULK <span class="keyword">INSERT</span> dbo.BigTable</span><br><span class="line"><span class="keyword">FROM</span> <span class="string">&#x27;$(DataFile)&#x27;</span></span><br><span class="line"><span class="keyword">WITH</span> (</span><br><span class="line">    DATAFILETYPE   <span class="operator">=</span> <span class="string">&#x27;native&#x27;</span>,   <span class="comment">-- 用 bcp -n 匯出的原生格式</span></span><br><span class="line">    BATCHSIZE      <span class="operator">=</span> <span class="number">100000</span>,      <span class="comment">-- 每 10 萬筆 commit 一次，控制交易記錄成長</span></span><br><span class="line">    TABLOCK,                      <span class="comment">-- 表級鎖，最小記錄載入的必要條件</span></span><br><span class="line">    KEEPNULLS</span><br><span class="line">    <span class="comment">-- 沒寫 CHECK_CONSTRAINTS：預設就不檢查 CHECK／FOREIGN KEY 約束</span></span><br><span class="line">);</span><br><span class="line">GO</span><br></pre></td></tr></table></figure>
-
 <p><code>CHECK_CONSTRAINTS</code> 是不帶值的開關，寫了才檢查，沒寫就不檢查。<code>CHECK_CONSTRAINTS = OFF</code> 這種寫法是語法錯誤，本文舊版也寫錯過。不檢查的代價是：載入後這些約束會被標成 not trusted，查詢最佳化工具不再拿它們當依據（<code>UNIQUE</code> 和 <code>PRIMARY KEY</code> 則永遠會檢查）。資料驗完後跑一次 <code>ALTER TABLE dbo.BigTable WITH CHECK CHECK CONSTRAINT ALL;</code>，約束才會重新變回 trusted。</p>
 <p>最小記錄載入（minimally logged import）有三個前提：①資料庫復原模式為 <code>SIMPLE</code> 或 <code>BULK_LOGGED</code>（<code>FULL</code> 底下一律完整記錄）；②<code>BULK INSERT</code> 加上 <code>TABLOCK</code>（表級鎖）；③目標表沒有啟用異動複寫（replication 啟用時無論復原模式都完整記錄）。前提都過了，哪些頁能最小記錄，還要看目標表的索引（以下是一般 rowstore 表，clustered columnstore 另有規則）：</p>
 <table>
@@ -181,7 +182,8 @@
 <th>索引頁</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>沒有索引的 heap</td>
 <td>最小記錄</td>
 <td>沒有索引頁</td>
@@ -206,11 +208,11 @@
 <td>完整記錄</td>
 <td>完整記錄</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>另外，任何一個索引設了 <code>IGNORE_DUP_KEY = ON</code>，資料頁和索引頁都會完整記錄。完整記錄的頁越多，磁碟 I/O 和記錄檔成長就放大越多。</p>
 <p>再用命令列把這支腳本跑起來：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">:: 在 cmd / PowerShell 執行（同一行，不要換行）</span><br><span class="line">sqlcmd -S ServerName -U DBAdmin -P Password -b -t 600 -i &quot;D:\import_script.sql&quot;</span><br></pre></td></tr></table></figure>
-
 <p>命令列參數說明：</p>
 <ul>
 <li><code>-b</code>：遇到嚴重性大於 10 的錯誤時，sqlcmd 結束並回傳非 0 的 ERRORLEVEL，方便排程判斷成敗。</li>
@@ -227,66 +229,66 @@
 <p>注意一點：<code>:setvar</code> 只是宣告 sqlcmd 腳本變數，宣告完之後一定要在後面用 <code>$(變數名)</code> 引用才有作用。光寫 <code>:setvar BATCHSIZE 10000</code> 而下面從沒用到，那行就是死碼，什麼都沒設定。</p>
 <p>如果變數值需要從排程外部動態傳入（例如每次跑不同的日期或路徑），可以用命令列的 <code>-v</code> 參數傳值：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">:: 從命令列傳入變數，腳本裡用 $(DataFile) 引用即可</span><br><span class="line">sqlcmd -S ServerName -U DBAdmin -P Password -b -t 600 -i &quot;D:\import_script.sql&quot; -v DataFile=&quot;D:\export\20240101.dat&quot;</span><br></pre></td></tr></table></figure>
-
 <p>這裡有個坑，本文舊版也寫錯過：<code>-v</code> <strong>蓋不過</strong>腳本裡的 <code>:setvar</code>。官方的變數優先順序由低到高是：系統環境變數 → 使用者環境變數 → 執行 sqlcmd 前的 <code>SET X=Y</code> → <code>-v</code> → <code>:setvar</code>。上面的 <code>import_script.sql</code> 開頭已經寫了 <code>:setvar DataFile</code>，命令列傳什麼都會被腳本那一行蓋掉，而且不報錯，照樣去匯入舊檔案。</p>
 <p>要讓 <code>-v</code> 生效，就把腳本裡的 <code>:setvar DataFile</code> 拿掉，一律由呼叫端傳值。忘了傳、環境變數裡也沒有同名的 <code>DataFile</code> 時，sqlcmd 會報「scripting variable not defined」，總比悄悄吃到寫死的舊路徑好。同一支腳本掛在排程器上、每次帶不同參數跑，就是這樣寫。</p>
-<h2 id="自動化備份"><a href="#自動化備份" class="headerlink" title="自動化備份"></a>自動化備份</h2><p>把備份寫成腳本掛排程，是減少半夜加班的第一步。下面這支可以直接跑，關鍵是腳本內用到的每個變數都要先 <code>:setvar</code> 定義，否則在 <code>:on error exit</code> 下遇到未定義變數會直接中止。</p>
+<h2 id="自動化備份">自動化備份</h2>
+<p>把備份寫成腳本掛排程，是減少半夜加班的第一步。下面這支可以直接跑，關鍵是腳本內用到的每個變數都要先 <code>:setvar</code> 定義，否則在 <code>:on error exit</code> 下遇到未定義變數會直接中止。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- backup_script.sql</span></span><br><span class="line">:<span class="keyword">on</span> error exit</span><br><span class="line">:setvar BackupPath &quot;D:\Backups&quot;</span><br><span class="line">:setvar DatabaseName &quot;TargetDB&quot;</span><br><span class="line"></span><br><span class="line">USE [master];</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line"><span class="keyword">BEGIN</span> TRY</span><br><span class="line">    <span class="keyword">DECLARE</span> <span class="variable">@StartTime</span> datetime <span class="operator">=</span> GETDATE();</span><br><span class="line">    <span class="keyword">DECLARE</span> <span class="variable">@BackupFile</span> nvarchar(<span class="number">500</span>) <span class="operator">=</span></span><br><span class="line">        N<span class="string">&#x27;$(BackupPath)\&#x27;</span> <span class="operator">+</span> N<span class="string">&#x27;$(DatabaseName)&#x27;</span> <span class="operator">+</span> N<span class="string">&#x27;_&#x27;</span> <span class="operator">+</span></span><br><span class="line">        FORMAT(GETDATE(), <span class="string">&#x27;yyyyMMdd_HHmmss&#x27;</span>) <span class="operator">+</span> N<span class="string">&#x27;.bak&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    BACKUP DATABASE [$(DatabaseName)]</span><br><span class="line">    <span class="keyword">TO</span> DISK <span class="operator">=</span> <span class="variable">@BackupFile</span></span><br><span class="line">    <span class="keyword">WITH</span> COMPRESSION,   <span class="comment">-- 啟用備份壓縮</span></span><br><span class="line">         CHECKSUM,      <span class="comment">-- 計算並驗證備份頁的總和檢查碼</span></span><br><span class="line">         STATS <span class="operator">=</span> <span class="number">10</span>;    <span class="comment">-- 每完成 10% 顯示一次進度</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">DECLARE</span> <span class="variable">@Duration</span> <span class="type">int</span> <span class="operator">=</span> DATEDIFF(<span class="keyword">SECOND</span>, <span class="variable">@StartTime</span>, GETDATE());</span><br><span class="line">    PRINT N<span class="string">&#x27;備份完成：&#x27;</span> <span class="operator">+</span> <span class="variable">@BackupFile</span>;</span><br><span class="line">    PRINT N<span class="string">&#x27;耗時：&#x27;</span> <span class="operator">+</span> <span class="built_in">CAST</span>(<span class="variable">@Duration</span> <span class="keyword">AS</span> <span class="type">varchar</span>) <span class="operator">+</span> N<span class="string">&#x27; 秒&#x27;</span>;</span><br><span class="line"><span class="keyword">END</span> TRY</span><br><span class="line"><span class="keyword">BEGIN</span> CATCH</span><br><span class="line">    <span class="comment">-- 直接重拋原始錯誤，保留原本的錯誤號、訊息與狀態</span></span><br><span class="line">    <span class="comment">-- 比起用 RAISERROR 把 ERROR_MESSAGE() 重組再丟，THROW; 不會遺失原始錯誤資訊</span></span><br><span class="line">    THROW;</span><br><span class="line"><span class="keyword">END</span> CATCH</span><br><span class="line">GO</span><br></pre></td></tr></table></figure>
-
 <p>這裡刻意用 <code>THROW;</code>（不帶參數）而不是 <code>RAISERROR(@msg, @severity, 1)</code>。原因有兩個：</p>
 <ul>
 <li><code>RAISERROR</code> 重拋時得自己用 <code>ERROR_MESSAGE()</code>、<code>ERROR_SEVERITY()</code> 把錯誤重組，過程中原始錯誤號會遺失。</li>
 <li><code>RAISERROR</code> 重拋時嚴重性得自己帶。原始錯誤若是 19 以上，<code>RAISERROR</code> 必須加 <code>WITH LOG</code>，而且執行者要是 sysadmin 或有 <code>ALTER TRACE</code> 權限，否則重拋這一步自己又會報錯，反而蓋掉真正的原因。（20 以上、會中斷連線的錯誤連 CATCH 都進不去，那種情況只能靠 <code>-b</code> 回傳的 ERRORLEVEL 和錯誤記錄檔。）</li>
 </ul>
 <p><code>THROW;</code> 在 CATCH 區塊裡會原封不動把原始錯誤丟回呼叫端，是新版（SQL Server 2012 起）官方建議的寫法。</p>
-<h2 id="進階效能調校"><a href="#進階效能調校" class="headerlink" title="進階效能調校"></a>進階效能調校</h2><h3 id="平行處理（MAXDOP）"><a href="#平行處理（MAXDOP）" class="headerlink" title="平行處理（MAXDOP）"></a>平行處理（MAXDOP）</h3><p><code>MAXDOP</code>（max degree of parallelism）控制單一查詢能用幾個邏輯處理器。它是伺服器層級設定，用 <code>sp_configure</code> 設定，跟 sqlcmd 命令列無關：</p>
+<h2 id="進階效能調校">進階效能調校</h2>
+<h3 id="平行處理（MAXDOP）">平行處理（MAXDOP）</h3>
+<p><code>MAXDOP</code>（max degree of parallelism）控制單一查詢能用幾個邏輯處理器。它是伺服器層級設定，用 <code>sp_configure</code> 設定，跟 sqlcmd 命令列無關：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 把腳本變數帶進 sp_configure</span></span><br><span class="line">:setvar MAXDOP <span class="number">4</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">EXEC</span> sp_configure <span class="string">&#x27;show advanced options&#x27;</span>, <span class="number">1</span>;</span><br><span class="line">RECONFIGURE;</span><br><span class="line">GO</span><br><span class="line"><span class="keyword">EXEC</span> sp_configure <span class="string">&#x27;max degree of parallelism&#x27;</span>, $(MAXDOP);</span><br><span class="line">RECONFIGURE;</span><br><span class="line">GO</span><br></pre></td></tr></table></figure>
-
 <p><code>MAXDOP</code> 該設多少，沒有「核心數超過 8 就一律設 8」這種死規則。Microsoft 對 SQL Server 2016 以後的建議看 NUMA 節點：單一 NUMA 節點時，邏輯處理器 8 個以下就設成不超過處理器數，超過 8 個設 8；多個 NUMA 節點時，每個節點 16 個以下就設成不超過每節點的處理器數，超過 16 個設每節點處理器數的一半、最高 16。這裡的 NUMA 節點指 SQL Server 自動切出來的 soft-NUMA 節點（關掉 soft-NUMA 才看硬體 NUMA）。SQL Server 2019 的安裝精靈（Database Engine Configuration 頁面新增的 MAXDOP 頁籤）會依當前硬體算出建議值，安裝時就套用你接受或修改後的值；裝好後要依工作負載調整，執行個體層級用 <code>sp_configure</code>，單一資料庫另外用 <code>ALTER DATABASE SCOPED CONFIGURATION</code>。在大型 NUMA 機器上盲套「8」反而可能設錯，實務上要看自己機器的 NUMA 配置與工作負載類型（OLTP 通常設低、批次/報表可放寬）。</p>
-<h3 id="伺服器記憶體"><a href="#伺服器記憶體" class="headerlink" title="伺服器記憶體"></a>伺服器記憶體</h3><p>這裡要特別澄清一個網路上流傳很廣的錯誤：<strong>sqlcmd 沒有任何控制伺服器記憶體的命令列參數</strong>。</p>
+<h3 id="伺服器記憶體">伺服器記憶體</h3>
+<p>這裡要特別澄清一個網路上流傳很廣的錯誤：<strong>sqlcmd 沒有任何控制伺服器記憶體的命令列參數</strong>。</p>
 <p>很多教學把 <code>sqlcmd -m 65535</code> 講成「設定最大記憶體使用量」，這是完全錯的。<code>-m</code> 是<strong>錯誤訊息嚴重性等級</strong>開關：只有嚴重性大於等於該值的訊息才會送到輸出。SQL Server 錯誤嚴重性從 0 到 25，<code>-m</code> 另有一個特殊值 <code>-m-1</code>，帶它時連資訊訊息也一起送出。</p>
 <p>關於 <code>-m-1</code> 的寫法，在 cmd 環境下 <code>-m -1</code>（加空格）是不合法語法，必須連寫成 <code>-m-1</code>。<strong>PowerShell 行為略有不同</strong>：PowerShell 在解析命令列參數時，<code>-1</code> 開頭的字串可能被視為獨立引數而非 <code>-m</code> 的值，導致 sqlcmd 拿到的 <code>-m</code> 無值或解析異常；保險起見在 PowerShell 裡也統一連寫 <code>-m-1</code>，不要依賴空格分隔。</p>
 <p>65535 早已超出錯誤嚴重性上限，就算引擎不報錯，效果也只是把訊息門檻拉到天花板——換句話說，幾乎所有訊息都被你關掉了，跟記憶體一點關係都沒有。</p>
-<p>要設記憶體上限，是用 <code>sp_configure &#39;max server memory&#39;</code>：</p>
+<p>要設記憶體上限，是用 <code>sp_configure 'max server memory'</code>：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 設定 SQL Server 最大記憶體（單位：MB），這才是真正在管記憶體</span></span><br><span class="line"><span class="keyword">EXEC</span> sp_configure <span class="string">&#x27;show advanced options&#x27;</span>, <span class="number">1</span>;</span><br><span class="line">RECONFIGURE;</span><br><span class="line">GO</span><br><span class="line"><span class="keyword">EXEC</span> sp_configure <span class="string">&#x27;max server memory (MB)&#x27;</span>, <span class="number">49152</span>;   <span class="comment">-- 例：48 GB</span></span><br><span class="line">RECONFIGURE;</span><br><span class="line">GO</span><br></pre></td></tr></table></figure>
-
 <p>建議值通常是「實體記憶體扣掉作業系統與其他服務所需」之後留給 SQL Server，常見抓 75%–90% 視機器專用程度而定，要保留足夠記憶體給 OS。</p>
-<h3 id="分割檔案匯入"><a href="#分割檔案匯入" class="headerlink" title="分割檔案匯入"></a>分割檔案匯入</h3><p>來源檔太大時，先在外部切成多個檔，再用 sqlcmd 的 <code>:r</code> 指令逐一帶進主腳本。注意 <code>:r</code> 是把檔案內容<strong>內嵌</strong>進當前腳本，不是迴圈讀檔：</p>
+<h3 id="分割檔案匯入">分割檔案匯入</h3>
+<p>來源檔太大時，先在外部切成多個檔，再用 sqlcmd 的 <code>:r</code> 指令逐一帶進主腳本。注意 <code>:r</code> 是把檔案內容<strong>內嵌</strong>進當前腳本，不是迴圈讀檔：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 主匯入腳本：依序帶入每個分割檔</span></span><br><span class="line">:<span class="keyword">on</span> error exit</span><br><span class="line">:r &quot;D:\chunks\part_001.sql&quot;</span><br><span class="line">:r &quot;D:\chunks\part_002.sql&quot;</span><br><span class="line">:r &quot;D:\chunks\part_003.sql&quot;</span><br></pre></td></tr></table></figure>
-
 <p>如果分割檔數量是動態的，比較實際的做法是在 shell（PowerShell / 批次檔）那一層用迴圈，把每個檔丟給一次 sqlcmd 呼叫，而不是想在單一 <code>.sql</code> 裡用 T-SQL 的 <code>WHILE</code> 去讀外部檔案——T-SQL 本身沒有直接列舉磁碟檔案的標準方法。</p>
-<h2 id="安全性設定"><a href="#安全性設定" class="headerlink" title="安全性設定"></a>安全性設定</h2><h3 id="驗證方式"><a href="#驗證方式" class="headerlink" title="驗證方式"></a>驗證方式</h3><p>範例裡一直用 <code>-U DBAdmin -P Password</code> 的 SQL 驗證，但在有 Active Directory 的企業環境，Windows 整合驗證（<code>-E</code>）才是主流且更安全的選項：</p>
+<h2 id="安全性設定">安全性設定</h2>
+<h3 id="驗證方式">驗證方式</h3>
+<p>範例裡一直用 <code>-U DBAdmin -P Password</code> 的 SQL 驗證，但在有 Active Directory 的企業環境，Windows 整合驗證（<code>-E</code>）才是主流且更安全的選項：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">:: Windows 整合驗證，不需要帳號密碼參數</span><br><span class="line">sqlcmd -S ServerName -E -i backup_script.sql</span><br></pre></td></tr></table></figure>
-
 <p><code>-E</code> 用目前執行 sqlcmd 的 Windows 使用者身分登入，帳密不出現在腳本或排程任務裡，也不怕被人在 Process List 裡看到明文密碼。沒有 AD 或需要連跨網域的伺服器才用 SQL 驗證。</p>
-<h3 id="加密連線"><a href="#加密連線" class="headerlink" title="加密連線"></a>加密連線</h3><p><code>-N</code> 控制加密連線，而且這裡有版本差異：ODBC 版 sqlcmd 18（mssql-tools18，底層是預設 <code>Encrypt=yes</code> 的 ODBC Driver 18）起，預設就是 <code>-Nm</code>（強制加密），沒加 <code>-C</code> 時會<strong>驗證伺服器憑證</strong>；舊版預設不強制加密。所以從舊版升到 18 之後，就算命令列完全沒寫 <code>-N</code>，連自簽憑證的伺服器也可能突然報憑證錯誤。明確寫出來比較不會搞混：</p>
+<h3 id="加密連線">加密連線</h3>
+<p><code>-N</code> 控制加密連線，而且這裡有版本差異：ODBC 版 sqlcmd 18（mssql-tools18，底層是預設 <code>Encrypt=yes</code> 的 ODBC Driver 18）起，預設就是 <code>-Nm</code>（強制加密），沒加 <code>-C</code> 時會<strong>驗證伺服器憑證</strong>；舊版預設不強制加密。所以從舊版升到 18 之後，就算命令列完全沒寫 <code>-N</code>，連自簽憑證的伺服器也可能突然報憑證錯誤。明確寫出來比較不會搞混：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">:: 強制加密並驗證伺服器憑證（SQL 驗證）</span><br><span class="line">sqlcmd -S ServerName -U DBAdmin -P Password -N</span><br><span class="line"></span><br><span class="line">:: 強制加密並驗證伺服器憑證（Windows 整合驗證）</span><br><span class="line">sqlcmd -S ServerName -E -N</span><br></pre></td></tr></table></figure>
-
 <p>如果伺服器用的是自簽憑證、客戶端又沒匯入信任，會連不上並報憑證錯誤。測試環境若要在自簽憑證下仍加密但不驗證，可加 <code>-C</code>（信任伺服器憑證）——但正式環境不該這樣放行，應該佈署受信任的憑證。</p>
-<h3 id="稽核記錄"><a href="#稽核記錄" class="headerlink" title="稽核記錄"></a>稽核記錄</h3><p>要記錄登入與資料庫變更，需要建立伺服器稽核（Server Audit）與稽核規格（Audit Specification）。這裡有個容易踩的坑：<code>CREATE SERVER AUDIT</code> 建立出來預設是<strong>停用</strong>狀態，必須額外用 <code>ALTER SERVER AUDIT ... WITH (STATE = ON)</code> 才會真的開始寫記錄：</p>
+<h3 id="稽核記錄">稽核記錄</h3>
+<p>要記錄登入與資料庫變更，需要建立伺服器稽核（Server Audit）與稽核規格（Audit Specification）。這裡有個容易踩的坑：<code>CREATE SERVER AUDIT</code> 建立出來預設是<strong>停用</strong>狀態，必須額外用 <code>ALTER SERVER AUDIT ... WITH (STATE = ON)</code> 才會真的開始寫記錄：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 1. 建立伺服器稽核（此時為停用狀態）</span></span><br><span class="line"><span class="keyword">CREATE</span> SERVER AUDIT SQLCMDExecAudit</span><br><span class="line"><span class="keyword">TO</span> FILE (FILEPATH <span class="operator">=</span> <span class="string">&#x27;D:\Audit\&#x27;</span>);</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 2. 建立稽核規格並啟用</span></span><br><span class="line"><span class="keyword">CREATE</span> SERVER AUDIT SPECIFICATION SQLCMDExecSpec</span><br><span class="line"><span class="keyword">FOR</span> SERVER AUDIT SQLCMDExecAudit</span><br><span class="line"><span class="keyword">ADD</span> (FAILED_LOGIN_GROUP),</span><br><span class="line"><span class="keyword">ADD</span> (SUCCESSFUL_LOGIN_GROUP),</span><br><span class="line"><span class="keyword">ADD</span> (DATABASE_CHANGE_GROUP)</span><br><span class="line"><span class="keyword">WITH</span> (STATE <span class="operator">=</span> <span class="keyword">ON</span>);</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 3. 關鍵步驟：啟用稽核本體，少了這步整套稽核不會寫任何記錄</span></span><br><span class="line"><span class="keyword">ALTER</span> SERVER AUDIT SQLCMDExecAudit</span><br><span class="line"><span class="keyword">WITH</span> (STATE <span class="operator">=</span> <span class="keyword">ON</span>);</span><br><span class="line">GO</span><br></pre></td></tr></table></figure>
-
 <p>只在 SPECIFICATION 上加 <code>STATE = ON</code>、卻忘了開 audit 本體，是很常見的設定失誤——介面上看起來建好了，實際一條記錄都沒進檔案。</p>
-<h2 id="常見問題"><a href="#常見問題" class="headerlink" title="常見問題"></a>常見問題</h2><p><strong>1. 連線逾時</strong></p>
+<h2 id="常見問題">常見問題</h2>
+<p><strong>1. 連線逾時</strong></p>
 <p>分清楚兩種逾時：<code>-l</code> 是登入逾時，<code>-t</code> 是查詢逾時。連線階段卡住要調 <code>-l</code>：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlcmd -S ServerName -U DBAdmin -P Password -l 60 -t 600</span><br></pre></td></tr></table></figure>
-
 <p><strong>2. 想看完整錯誤輸出</strong></p>
 <p>把錯誤訊息導到 stderr 用 <code>-r</code>：<code>-r0</code> 只導嚴重性 11 以上的錯誤，<code>-r1</code> 連 PRINT 都導。傳統 ODBC 版 sqlcmd 單寫 <code>-r</code> 等於 <code>-r0</code>；新的 go-sqlcmd 則規定一定要帶 <code>0</code> 或 <code>1</code>。兩邊都通的寫法是直接寫出數字：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">:: 把 stdout 與 stderr 分開存檔</span><br><span class="line">sqlcmd -S ServerName -U DBAdmin -P Password -i run.sql -r1 1&gt; out.log 2&gt; err.log</span><br></pre></td></tr></table></figure>
-
 <p><strong>3. 輸出裡有多餘的控制字元</strong></p>
 <p><code>-k</code> 是處理輸出裡的控制字元（如 tab、換行），不是「保留」。單寫 <code>-k</code> 是直接移除；<code>-k1</code> 把每個控制字元換成一個空白；<code>-k2</code> 把連續的控制字元縮成一個空白。需要把結果餵給下游程式、不想被換行符搞亂時很好用：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlcmd -S ServerName -U DBAdmin -P Password -i query.sql -k1</span><br></pre></td></tr></table></figure>
-
 <p><strong>4. 權限不足</strong></p>
 <p>依需要授予對應層級的權限，盡量別直接給 <code>CONTROL SERVER</code> 這種等同 sysadmin 的大權限：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- BACKUP DATABASE／BACKUP LOG 是資料庫層級權限：</span></span><br><span class="line"><span class="comment">-- 要在目標資料庫裡執行，授予對象是該資料庫的使用者，不是伺服器登入</span></span><br><span class="line">USE [TargetDB];</span><br><span class="line">GO</span><br><span class="line"><span class="keyword">GRANT</span> BACKUP DATABASE <span class="keyword">TO</span> [DBAdmin];</span><br><span class="line"><span class="keyword">GRANT</span> BACKUP LOG <span class="keyword">TO</span> [DBAdmin];</span><br><span class="line"><span class="comment">-- 只負責備份的話，也可以直接加進內建角色：</span></span><br><span class="line"><span class="comment">-- ALTER ROLE db_backupoperator ADD MEMBER [DBAdmin];</span></span><br></pre></td></tr></table></figure>
-
 <p>還原沒有對應的 <code>GRANT</code>。還原既有資料庫要 sysadmin、dbcreator 或資料庫擁有者，權限本來就大，建議只給專門的 DBA 帳號。也別為了省事給 <code>CONTROL ON DATABASE</code>，它幾乎等於 db_owner。</p>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>sqlcmd 本身不複雜，難的是分清楚哪一層該寫什麼，以及哪些參數被網路教學講壞了。幾個最容易踩到的地方：大量匯入要靠 <code>BULK INSERT</code> + <code>TABLOCK</code> + <code>BULK_LOGGED</code>，最小記錄載入的條件一個都不能少，正式機切 <code>SIMPLE</code> 會斷記錄備份鏈；<code>-v</code> 蓋不過腳本裡的 <code>:setvar</code>；<code>-m</code> 跟記憶體完全無關，它控制的是訊息嚴重性門檻，<code>-m-1</code> 要連寫，加空格在 cmd 就壞；<code>-k</code> 單寫是移除控制字元、<code>-k1</code>／<code>-k2</code> 是換成空白，<code>-r</code> 明確帶 <code>0</code> 或 <code>1</code> 最保險；CATCH 區塊重拋用 <code>THROW;</code> 而不是 <code>RAISERROR</code>；<code>CREATE SERVER AUDIT</code> 建好是停用狀態，少了 <code>ALTER ... STATE = ON</code> 那一行，稽核等於沒開。</p>
+<h2 id="結論">結論</h2>
+<p>sqlcmd 本身不複雜，難的是分清楚哪一層該寫什麼，以及哪些參數被網路教學講壞了。幾個最容易踩到的地方：大量匯入要靠 <code>BULK INSERT</code> + <code>TABLOCK</code> + <code>BULK_LOGGED</code>，最小記錄載入的條件一個都不能少，正式機切 <code>SIMPLE</code> 會斷記錄備份鏈；<code>-v</code> 蓋不過腳本裡的 <code>:setvar</code>；<code>-m</code> 跟記憶體完全無關，它控制的是訊息嚴重性門檻，<code>-m-1</code> 要連寫，加空格在 cmd 就壞；<code>-k</code> 單寫是移除控制字元、<code>-k1</code>／<code>-k2</code> 是換成空白，<code>-r</code> 明確帶 <code>0</code> 或 <code>1</code> 最保險；CATCH 區塊重拋用 <code>THROW;</code> 而不是 <code>RAISERROR</code>；<code>CREATE SERVER AUDIT</code> 建好是停用狀態，少了 <code>ALTER ... STATE = ON</code> 那一行，稽核等於沒開。</p>
 <p>把這些腳本掛上排程，半夜被叫起來手動跑作業的機會就少很多。</p>
-<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
+<h2 id="參考資源">參考資源</h2>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-tw/sql/tools/sqlcmd/sqlcmd-utility">sqlcmd 公用程式 - Microsoft Learn</a></li>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-tw/sql/t-sql/language-elements/throw-transact-sql">THROW (Transact-SQL) - Microsoft Learn</a></li>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-tw/sql/relational-databases/security/auditing/create-a-server-audit-and-server-audit-specification">建立伺服器稽核與伺服器稽核規格 - Microsoft Learn</a></li>
@@ -382,15 +384,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

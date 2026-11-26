@@ -25,8 +25,8 @@
 <meta property="article:modified_time" content="2026-09-30T02:43:08.000Z">
 <meta property="article:author" content="kyosora">
 <meta property="article:section" content="AI工具實戰">
-<meta property="article:tag" content="Shopify">
 <meta property="article:tag" content="React Native">
+<meta property="article:tag" content="Shopify">
 <meta property="article:tag" content="AI 輔助開發">
 <meta property="article:tag" content="行動開發">
 <meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k">
@@ -42,7 +42,7 @@
 <script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"去年還看好 React Native，Shopify 為什麼回頭寫原生","description":"Shopify 為何從 React Native 回到原生開發？拆解 Shop 的 12 週遷移、AI 協作與行為驗證，給評估跨平台重寫的工程師一份成本判斷依據。","url":"https://kyosora.github.io/posts/1a513958/","mainEntityOfPage":"https://kyosora.github.io/posts/1a513958/","image":"https://kyosora.github.io/images/posts/shopify-react-native-back-to-native-cover.webp","datePublished":"2026-09-30T02:40:00.000Z","dateModified":"2026-09-30T02:43:08.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI工具實戰","keywords":"Shopify, React Native, AI 輔助開發, 行動開發"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI工具實戰","item":"https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"},{"@type":"ListItem","position":3,"name":"去年還看好 React Native，Shopify 為什麼回頭寫原生","item":"https://kyosora.github.io/posts/1a513958/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"去年還看好 React Native，Shopify 為什麼回頭寫原生","description":"Shopify 為何從 React Native 回到原生開發？拆解 Shop 的 12 週遷移、AI 協作與行為驗證，給評估跨平台重寫的工程師一份成本判斷依據。","url":"https://kyosora.github.io/posts/1a513958/","mainEntityOfPage":"https://kyosora.github.io/posts/1a513958/","image":"https://kyosora.github.io/images/posts/shopify-react-native-back-to-native-cover.webp","datePublished":"2026-09-30T02:40:00.000Z","dateModified":"2026-09-30T02:43:08.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI工具實戰","keywords":"React Native, Shopify, AI 輔助開發, 行動開發"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI工具實戰","item":"https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"},{"@type":"ListItem","position":3,"name":"去年還看好 React Native，Shopify 為什麼回頭寫原生","item":"https://kyosora.github.io/posts/1a513958/"}]}]}</script>
 
 <script data-sri-getscript>(function(){var m={"https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js":"sha384-1ggI9FC3CkghppRD/XCR4aD+jp4DxwXlJIW0wxhyTLNKuiZEW3c4BwcjKXl0iVAJ"};var b=window.btf;if(!b||typeof b.getScript!=='function')return;var g=b.getScript;b.getScript=function(u,a){var h=m[u];if(!h)return g.call(b,u,a);var o={};if(a)for(var k in a)o[k]=a[k];o.integrity=h;o.crossorigin='anonymous';return g.call(b,u,o)}})();</script></head>
 <body class="kind-post">
@@ -124,11 +124,12 @@
         <p>2025 年 1 月，Shopify 發表採用 React Native 五年的回顧，認為這條路走得成功，還看好它的未來。2026 年 9 月，同一家公司宣布要把行動 App 搬回 Swift 與 Kotlin。</p>
 <p>我讀完這兩次說明，最在意的是一個很現實的問題：如果 AI 讓寫兩套程式的成本降下來，跨平台還省得下多少工作？Shopify 給了一個值得看的案例，但答案得連同它投入的驗證工具、原生工程師與既有產品一起算。<a target="_blank" rel="noopener" href="https://shopify.engineering/five-years-of-react-native-at-shopify">2025 年回顧</a>、<a target="_blank" rel="noopener" href="https://shopify.engineering/back-to-native">2026 年回歸原生說明</a></p>
 <span id="more"></span>
-
-<h2 id="先看清楚是哪個-App-搬完了"><a href="#先看清楚是哪個-App-搬完了" class="headerlink" title="先看清楚是哪個 App 搬完了"></a>先看清楚是哪個 App 搬完了</h2><p>Shopify 的產品名稱很容易讓人看錯。9 月公布的 12 週遷移成果，指的是消費者使用的 <strong>Shop app</strong>。商家管理生意的 <strong>Shopify app</strong> 是另一個專案；依 9 月 21 日的文章，它有超過 300 個畫面，遷移仍在進行。<a target="_blank" rel="noopener" href="https://shopify.engineering/shop-app-migration">Shop 遷移紀錄</a>、<a target="_blank" rel="noopener" href="https://shopify.engineering/helix">Shopify app 的 Helix 工具</a></p>
+<h2 id="先看清楚是哪個-App-搬完了">先看清楚是哪個 App 搬完了</h2>
+<p>Shopify 的產品名稱很容易讓人看錯。9 月公布的 12 週遷移成果，指的是消費者使用的 <strong>Shop app</strong>。商家管理生意的 <strong>Shopify app</strong> 是另一個專案；依 9 月 21 日的文章，它有超過 300 個畫面，遷移仍在進行。<a target="_blank" rel="noopener" href="https://shopify.engineering/shop-app-migration">Shop 遷移紀錄</a>、<a target="_blank" rel="noopener" href="https://shopify.engineering/helix">Shopify app 的 Helix 工具</a></p>
 <p>網路上很吸睛的「一個工程師、一週」也得補上後半句：那是 iOS SwiftUI 的概念驗證，尚未達到正式上線要求。Shop 從驗證到雙平台商店發布花了 12 週，有六位核心工程師，功能團隊中途也加入處理細節與相容行為。團隊手上還有能跑的舊 App，可以逐項對照。<a target="_blank" rel="noopener" href="https://shopify.engineering/shop-app-migration">Shop 遷移紀錄</a></p>
 <p>這些條件直接影響案例能不能搬到自己的團隊。接手一個已經知道要長什麼樣、怎麼運作的產品，和從零猜使用者需要什麼，是兩種工作。AI 再會翻譯程式，也無法替沒有定案的產品需求做最後決定。</p>
-<h2 id="跨平台當初省下的錢，重新算了一次"><a href="#跨平台當初省下的錢，重新算了一次" class="headerlink" title="跨平台當初省下的錢，重新算了一次"></a>跨平台當初省下的錢，重新算了一次</h2><p>Shopify 在 2025 年回顧中，談到共用程式碼、跨 Web 與行動端調動人才的好處，也承認框架升級與依賴需要持續投入。到了 2025 年 9 月，Shopify Mobile 與 POS 還完成了 React Native New Architecture 遷移。這段歷史說明，回歸原生前，他們確實長期投資過這條路。<a target="_blank" rel="noopener" href="https://shopify.engineering/five-years-of-react-native-at-shopify">五年回顧</a>、<a target="_blank" rel="noopener" href="https://shopify.engineering/react-native-new-architecture">New Architecture 遷移</a></p>
+<h2 id="跨平台當初省下的錢，重新算了一次">跨平台當初省下的錢，重新算了一次</h2>
+<p>Shopify 在 2025 年回顧中，談到共用程式碼、跨 Web 與行動端調動人才的好處，也承認框架升級與依賴需要持續投入。到了 2025 年 9 月，Shopify Mobile 與 POS 還完成了 React Native New Architecture 遷移。這段歷史說明，回歸原生前，他們確實長期投資過這條路。<a target="_blank" rel="noopener" href="https://shopify.engineering/five-years-of-react-native-at-shopify">五年回顧</a>、<a target="_blank" rel="noopener" href="https://shopify.engineering/react-native-new-architecture">New Architecture 遷移</a></p>
 <p>2026 年的決策則把 coding agent 放進成本估算：平台間可以互相參考實作，重複撰寫功能變得便宜；直接使用原生 API，也減少了框架與依賴的中間層。Shopify 同時承認，兩套平台程式碼的維護成本依然存在。<a target="_blank" rel="noopener" href="https://shopify.engineering/back-to-native">回歸原生說明</a></p>
 <p>我會把這筆帳拆成四項：</p>
 <table>
@@ -139,7 +140,8 @@
 <th>團隊仍要負責的部分</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>實作功能</td>
 <td>從另一平台與既有程式產生初稿</td>
 <td>決定架構，審查平台慣例</td>
@@ -159,20 +161,21 @@
 <td>協助追查、同步修正</td>
 <td>雙平台驗收與長期所有權</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>這是我的分析拆法，並非 Shopify 公布的成本報表。官方沒有提供完整的人時、模型費用與長期維護帳目，無法據此算出你的團隊能省幾成。</p>
 <p>寫程式變便宜，是重新評估架構的理由。拿它直接推導「現在都該重寫」，中間跳過的工作太多了。</p>
-<h2 id="真正麻煩的是那些看不見的行為"><a href="#真正麻煩的是那些看不見的行為" class="headerlink" title="真正麻煩的是那些看不見的行為"></a>真正麻煩的是那些看不見的行為</h2><p>Shop 的紀錄特別提到登入狀態、推播，以及分析事件和下游推薦系統需要的上下文。它們做了 Tardis 工具，讓工程師與 agent 查看執行中的事件、日誌和狀態，對照遷移前後的行為。<a target="_blank" rel="noopener" href="https://shopify.engineering/shop-app-migration">Shop 遷移紀錄</a></p>
+<h2 id="真正麻煩的是那些看不見的行為">真正麻煩的是那些看不見的行為</h2>
+<p>Shop 的紀錄特別提到登入狀態、推播，以及分析事件和下游推薦系統需要的上下文。它們做了 Tardis 工具，讓工程師與 agent 查看執行中的事件、日誌和狀態，對照遷移前後的行為。<a target="_blank" rel="noopener" href="https://shopify.engineering/shop-app-migration">Shop 遷移紀錄</a></p>
 <p>畫面像不像，比較容易引起注意。少送一個事件、同一次點擊送兩遍，或者推薦來源掉了，使用者當下可能完全無感。等報表和推薦效果出現變化，問題已經跨過好幾個系統。</p>
 <p>用一個我整理的教學例子來看。以下是假想購物 App 的事件契約，<strong>不代表 Shopify 的事件格式或內部程式碼</strong>：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;product_opened&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;product_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;p42&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;source&quot;</span><span class="punctuation">:</span> <span class="string">&quot;home_recommendation&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p>舊版與新版各走一次「從首頁推薦點進商品」，只確認都有 <code>product_opened</code> 還不夠。商品、來源與次數都得對上。下面這段 Python 示範一個很小的比較器：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> Counter</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">signature</span>(<span class="params">events</span>):</span><br><span class="line">    <span class="keyword">return</span> Counter(</span><br><span class="line">        (e[<span class="string">&quot;name&quot;</span>], e[<span class="string">&quot;product_id&quot;</span>], e[<span class="string">&quot;source&quot;</span>])</span><br><span class="line">        <span class="keyword">for</span> e <span class="keyword">in</span> events</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">expected = [&#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;product_opened&quot;</span>, <span class="string">&quot;product_id&quot;</span>: <span class="string">&quot;p42&quot;</span>,</span><br><span class="line">             <span class="string">&quot;source&quot;</span>: <span class="string">&quot;home_recommendation&quot;</span>, <span class="string">&quot;timestamp&quot;</span>: <span class="number">100</span>&#125;]</span><br><span class="line">actual = [&#123;**expected[<span class="number">0</span>], <span class="string">&quot;timestamp&quot;</span>: <span class="number">200</span>&#125;]</span><br><span class="line"></span><br><span class="line"><span class="keyword">assert</span> signature(expected) == signature(actual)</span><br><span class="line"><span class="keyword">assert</span> signature(expected) != signature(actual * <span class="number">2</span>)  <span class="comment"># 重複送出</span></span><br><span class="line"><span class="keyword">assert</span> signature(expected) != signature(</span><br><span class="line">    [&#123;**actual[<span class="number">0</span>], <span class="string">&quot;source&quot;</span>: <span class="string">&quot;search&quot;</span>&#125;]              <span class="comment"># 來源錯了</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
 <p>這個比較器只檢查事件名稱、商品、來源與出現次數；時間戳及其他欄位不在比較範圍。真實系統還要按事件定義檢查順序、關聯 ID 與非同步事件的觀察時間；這段程式只能示範上述單一步驟，不能拿來保證整個 App 行為一致。</p>
 <p>我認為這正是值得帶走的工程方法：先寫清楚產品應該留下什麼可觀測結果，才有辦法判斷 AI 產出的另一套實作能不能接班。</p>
-<h2 id="Helix-把大包重寫拆成能驗收的小段"><a href="#Helix-把大包重寫拆成能驗收的小段" class="headerlink" title="Helix 把大包重寫拆成能驗收的小段"></a>Helix 把大包重寫拆成能驗收的小段</h2><p>Shopify 在回歸原生的說明裡，提過一次產出整個重寫版本的嘗試：即使事前準備規格，結果仍不適合維護與交付。後續商家 App 的遷移採用內部工具 Helix，將工作切成小段。<a target="_blank" rel="noopener" href="https://shopify.engineering/back-to-native">回歸原生說明</a></p>
+<h2 id="Helix-把大包重寫拆成能驗收的小段">Helix 把大包重寫拆成能驗收的小段</h2>
+<p>Shopify 在回歸原生的說明裡，提過一次產出整個重寫版本的嘗試：即使事前準備規格，結果仍不適合維護與交付。後續商家 App 的遷移採用內部工具 Helix，將工作切成小段。<a target="_blank" rel="noopener" href="https://shopify.engineering/back-to-native">回歸原生說明</a></p>
 <p>這和 Shop 的 Pi、Tardis 是不同專案裡的工具，不能混成同一套已完成的遷移流程。</p>
 <p>Helix 每段工作要經過行為測試、畫面比對、兩個獨立 agent 審稿，預設再由工程師核准。行為可以先透過 CLI 驗證，省下每次都啟動模擬器的等待。畫面比對若發現兩張截圖根本處於不同狀態，會要求重新擷取。<a target="_blank" rel="noopener" href="https://shopify.engineering/helix">Helix 工程說明</a></p>
 <pre><code class="highlight mermaid">flowchart LR
@@ -181,10 +184,10 @@
     C --&gt; D[獨立程式碼審查]
     D --&gt; E[預設由工程師核准]
     E --&gt; F[提交後進下一段]</code></pre>
-
 <p>工程師可以選擇自主模式，略過逐段人工核准；測試、畫面檢查與 agent 審稿仍需通過。因此不能把它描述成所有步驟永遠有人簽字，也不能把自動檢查當成零缺陷保證。<a target="_blank" rel="noopener" href="https://shopify.engineering/helix">Helix 工程說明</a></p>
 <p>這個設計吸引我的地方很具體：出錯時，要回頭檢查的範圍可以限制在一小段讀得完的 diff。一次生成幾萬行程式碼，最後才請人驗收，光確認哪些地方值得信任就可能耗光力氣。</p>
-<h2 id="效能有進步，但還不足以替所有團隊選框架"><a href="#效能有進步，但還不足以替所有團隊選框架" class="headerlink" title="效能有進步，但還不足以替所有團隊選框架"></a>效能有進步，但還不足以替所有團隊選框架</h2><p>Shop 公布的冷啟動數字，從點擊圖示算到首頁動態出現：iOS 由 3,200 ms 降到 2,466 ms，Android 由 4,433 ms 降到 2,233 ms。<a target="_blank" rel="noopener" href="https://shopify.engineering/shop-app-migration">Shop 遷移紀錄</a></p>
+<h2 id="效能有進步，但還不足以替所有團隊選框架">效能有進步，但還不足以替所有團隊選框架</h2>
+<p>Shop 公布的冷啟動數字，從點擊圖示算到首頁動態出現：iOS 由 3,200 ms 降到 2,466 ms，Android 由 4,433 ms 降到 2,233 ms。<a target="_blank" rel="noopener" href="https://shopify.engineering/shop-app-migration">Shop 遷移紀錄</a></p>
 <p>這些是同一團隊公布的遷移前後成果，沒有控制所有變因。Shop 團隊明說遷移時移除了部分畫面，也調整了其他流程，因此這組數字無法分離框架與產品改動的影響，更不能當成原生對 React Native 的通用跑分。</p>
 <p>如果我在評估類似遷移，會先挑一條包含登入、推播入口和分析事件的完整流程。量測實作時間時，把原生審查、測試補齊、裝置驗證一起記進去；再安排一次雙平台需求修改，看看後續同步要花多少工。只做一張漂亮的新首頁，證據還太薄。</p>
 <p>如果這次試做連驗證工具的投入都攤不回來，或團隊沒有人能判斷 Swift、Kotlin 的維護品質，我會先留在現有架構。正在穩定交付的產品，本來就不欠任何框架一次重寫。</p>
@@ -195,7 +198,7 @@
 <footer class="post-end">
   
   <ul class="post-tags" aria-label="標籤">
-    <li><a href="/tags/Shopify/">Shopify</a></li><li><a href="/tags/React-Native/">React Native</a></li><li><a href="/tags/AI-%E8%BC%94%E5%8A%A9%E9%96%8B%E7%99%BC/">AI 輔助開發</a></li><li><a href="/tags/%E8%A1%8C%E5%8B%95%E9%96%8B%E7%99%BC/">行動開發</a></li>
+    <li><a href="/tags/React-Native/">React Native</a></li><li><a href="/tags/Shopify/">Shopify</a></li><li><a href="/tags/AI-%E8%BC%94%E5%8A%A9%E9%96%8B%E7%99%BC/">AI 輔助開發</a></li><li><a href="/tags/%E8%A1%8C%E5%8B%95%E9%96%8B%E7%99%BC/">行動開發</a></li>
   </ul>
   
 
@@ -279,15 +282,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

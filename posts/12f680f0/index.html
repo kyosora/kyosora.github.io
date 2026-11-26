@@ -119,40 +119,40 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>水平置中看似基礎，但選錯方法往往要多加幾行補丁才能修正。以下五種寫法各有適用條件，選之前先確認目標元素是行內還是區塊、有無固定寬度、父容器是否允許改動。</p>
-<h2 id="1-text-align-center"><a href="#1-text-align-center" class="headerlink" title="1. text-align: center"></a>1. text-align: center</h2><p>作用在父容器，讓其中的<strong>行內元素或行內區塊元素</strong>水平置中。</p>
+<h2 id="1-text-align-center">1. text-align: center</h2>
+<p>作用在父容器，讓其中的<strong>行內元素或行內區塊元素</strong>水平置中。</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.parent</span> &#123;</span><br><span class="line">  <span class="attribute">text-align</span>: center;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>文字、<code>&lt;span&gt;</code>、<code>&lt;img&gt;</code>、<code>display: inline-block</code> 的元素都吃這個規則；<code>display: block</code> 的子元素不受影響。如果要置中的是區塊元素，這條沒用。</p>
-<h2 id="2-margin-auto"><a href="#2-margin-auto" class="headerlink" title="2. margin: auto"></a>2. margin: auto</h2><p>把區塊元素的左右邊距都設為 <code>auto</code>，瀏覽器會平均分配剩餘空間。</p>
+<h2 id="2-margin-auto">2. margin: auto</h2>
+<p>把區塊元素的左右邊距都設為 <code>auto</code>，瀏覽器會平均分配剩餘空間。</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.child</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">300px</span>;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">0</span> auto;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>不想寫死寬度的話，可以用 <code>width: fit-content</code>，寬度跟著內容走，同樣能置中：</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.child</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: fit-content;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">0</span> auto;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>兩種寫法的前提一樣：元素必須是區塊元素，且寬度小於父容器。行內元素不適用。</p>
-<h2 id="3-Flexbox"><a href="#3-Flexbox" class="headerlink" title="3. Flexbox"></a>3. Flexbox</h2><p>把父容器設為 flex container，再用 <code>justify-content</code> 控制主軸（預設橫向）的排列。</p>
+<h2 id="3-Flexbox">3. Flexbox</h2>
+<p>把父容器設為 flex container，再用 <code>justify-content</code> 控制主軸（預設橫向）的排列。</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.parent</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: flex;</span><br><span class="line">  <span class="attribute">justify-content</span>: center;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>子元素不需要指定寬度，也不需要知道自己的尺寸。要同時垂直置中就加 <code>align-items: center</code>。Flexbox 是一維佈局工具，處理單行或單列排列是它的強項；現代瀏覽器全面支援，不需要擔心相容性問題。</p>
-<h2 id="4-Grid"><a href="#4-Grid" class="headerlink" title="4. Grid"></a>4. Grid</h2><p>把父容器設為 grid container，<code>justify-content: center</code> 會讓整個 grid 在父容器中水平置中：</p>
+<h2 id="4-Grid">4. Grid</h2>
+<p>把父容器設為 grid container，<code>justify-content: center</code> 會讓整個 grid 在父容器中水平置中：</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.parent</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: grid;</span><br><span class="line">  <span class="attribute">justify-content</span>: center;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>如果只有一個子元素，用 <code>place-items: center</code> 更簡潔（同時處理水平與垂直）；或是在子元素上設 <code>margin: auto</code>，Grid 子元素的 <code>margin: auto</code> 會吃掉剩餘空間：</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 子元素自己置中 */</span></span><br><span class="line"><span class="selector-class">.child</span> &#123;</span><br><span class="line">  <span class="attribute">margin</span>: auto;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>Grid 的核心優勢是<strong>二維佈局</strong>（同時控制行與列）。單純做水平置中的話，Flexbox 語意更直觀；需要同時管理行列結構時才值得拉 Grid 進來。</p>
-<h2 id="5-絕對定位加-transform"><a href="#5-絕對定位加-transform" class="headerlink" title="5. 絕對定位加 transform"></a>5. 絕對定位加 transform</h2><p>父容器設相對定位，子元素用絕對定位推到 50% 再用 <code>translateX</code> 拉回自身一半寬度：</p>
+<h2 id="5-絕對定位加-transform">5. 絕對定位加 transform</h2>
+<p>父容器設相對定位，子元素用絕對定位推到 50% 再用 <code>translateX</code> 拉回自身一半寬度：</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.parent</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: relative;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.child</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: absolute;</span><br><span class="line">  <span class="attribute">left</span>: <span class="number">50%</span>;</span><br><span class="line">  <span class="attribute">transform</span>: <span class="built_in">translateX</span>(-<span class="number">50%</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>子元素會脫離正常文件流，不佔據原本的空間，父容器高度也不會被它撐開。這個寫法的使用場景通常是 overlay、tooltip 或需要精確定位的浮層元件，而不是一般的內容置中。程式碼本身不複雜，但副作用（脫離文件流）是要留意的地方。</p>
-<h2 id="選哪個"><a href="#選哪個" class="headerlink" title="選哪個"></a>選哪個</h2><table>
+<h2 id="選哪個">選哪個</h2>
+<table>
 <thead>
 <tr>
 <th>情境</th>
 <th>建議</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>行內元素、文字置中</td>
 <td><code>text-align: center</code></td>
 </tr>
@@ -172,7 +172,8 @@
 <td>浮層、overlay、需脫離文件流</td>
 <td>絕對定位 + <code>translateX(-50%)</code></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 
       </div>
       
@@ -263,15 +264,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -123,33 +123,37 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="Github頁面：Context7mcp"><a href="#Github頁面：Context7mcp" class="headerlink" title="Github頁面：Context7mcp"></a>Github頁面：<a target="_blank" rel="noopener" href="https://github.com/upstash/context7">Context7mcp</a></h2><h2 id="問題：AI-助手的知識截止日"><a href="#問題：AI-助手的知識截止日" class="headerlink" title="問題：AI 助手的知識截止日"></a>問題：AI 助手的知識截止日</h2><p>「這段程式碼有問題，Upstash Redis 的連線方式好像不對...」</p>
+        <h2 id="Github頁面：Context7mcp">Github頁面：<a target="_blank" rel="noopener" href="https://github.com/upstash/context7">Context7mcp</a></h2>
+<h2 id="問題：AI-助手的知識截止日">問題：AI 助手的知識截止日</h2>
+<p>「這段程式碼有問題，Upstash Redis 的連線方式好像不對…」</p>
 <p>即使是最新的 LLM，處理快速迭代的函式庫時都有同樣的罩門：訓練資料有截止日，新的 API 或 breaking change 根本不在它的知識範圍內。你貼給它的是 Next.js 14 的問題，它給你的可能是 Next.js 12 的寫法。</p>
 <p>這正是 Upstash 團隊開發 Context7 要解決的事。</p>
-<h2 id="Context7-怎麼運作"><a href="#Context7-怎麼運作" class="headerlink" title="Context7 怎麼運作"></a>Context7 怎麼運作</h2><p>Context7 是一個 MCP 伺服器（Model Context Protocol server）。它不是靠爬蟲快取一份舊文件，而是在 AI 助手提出請求時，即時從官方文件與原始碼庫抽取相關片段，組成 AI 可直接讀取的上下文，再送回對話。</p>
+<h2 id="Context7-怎麼運作">Context7 怎麼運作</h2>
+<p>Context7 是一個 MCP 伺服器（Model Context Protocol server）。它不是靠爬蟲快取一份舊文件，而是在 AI 助手提出請求時，即時從官方文件與原始碼庫抽取相關片段，組成 AI 可直接讀取的上下文，再送回對話。</p>
 <p>整個流程對使用者是透明的：你問問題，AI 在背景呼叫 Context7 的工具取回文件，然後根據真實文件回答。和直接問 AI 的差別是 — 它參考的是你指定版本的官方說明，不是兩年前訓練進去的印象。</p>
 <p>Context7 的核心設計有幾點值得注意：</p>
 <p>文件來源直接指向原始碼儲存庫和官方文件站，不經第三方轉手。過濾演算法會根據你的查詢主題篩掉不相關的段落，避免把整份 README 塞進上下文把 token 燒光。現在支援 Cursor、Windsurf、VS Code、Zed、Claude Desktop 等主流編輯器，只要客戶端支援 MCP 協定就能接入。</p>
-<h2 id="安裝設定"><a href="#安裝設定" class="headerlink" title="安裝設定"></a>安裝設定</h2><p>以 Cursor 為例，在 MCP 設定檔加入以下內容：</p>
+<h2 id="安裝設定">安裝設定</h2>
+<p>以 Cursor 為例，在 MCP 設定檔加入以下內容：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;mcpServers&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;context7&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;npx&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;args&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;-y&quot;</span><span class="punctuation">,</span> <span class="string">&quot;@upstash/context7-mcp@latest&quot;</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p>Claude Desktop 的設定檔路徑在 <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>（macOS）或 <code>%APPDATA%\Claude\claude_desktop_config.json</code>（Windows），格式相同：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;mcpServers&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;context7&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;npx&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;args&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;-y&quot;</span><span class="punctuation">,</span> <span class="string">&quot;@upstash/context7-mcp@latest&quot;</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p>設定完成後，Context7 會在 MCP 客戶端中暴露兩個工具：</p>
 <ol>
 <li><strong>resolve-library-id</strong>：把一般的函式庫名稱（如 <code>nuxt-ui</code>）轉換成 Context7 內部 ID（如 <code>/nuxt/ui</code>）</li>
 <li><strong>query-docs</strong>：拿著上一步取得的 ID，加上你的查詢主題，取回對應的文件片段</li>
 </ol>
 <p>這兩個工具通常由 AI 自動串接呼叫，你不需要手動輸入工具名稱。在支援 MCP 的編輯器中提示 AI「use context7」是在告訴它優先走 Context7 這條路徑取得文件，底層還是靠 AI 判斷何時呼叫哪個工具。如果 AI 沒有自動取用文件，可以在提示裡明確說「用 context7 查 X 的文件」，或直接指定 <code>resolve-library-id</code> 工具。</p>
-<h2 id="實際使用情境"><a href="#實際使用情境" class="headerlink" title="實際使用情境"></a>實際使用情境</h2><p>舉個具體例子：你要求 AI 助手「用 Nuxt UI 建立一個有自動完成功能的下拉選單」。</p>
+<h2 id="實際使用情境">實際使用情境</h2>
+<p>舉個具體例子：你要求 AI 助手「用 Nuxt UI 建立一個有自動完成功能的下拉選單」。</p>
 <p>沒有 Context7 的情況下，AI 可能會套用它訓練時見過的舊版 component API，組件名稱或 prop 名稱跟現在的版本對不上。有了 Context7，AI 會先呼叫 <code>resolve-library-id</code> 取得 <code>/nuxt/ui</code> 的 ID，再用 <code>query-docs</code> 查「autocomplete combobox」相關段落，拿到目前版本的實際用法後再產生程式碼。</p>
 <p>對於 AI 幾乎沒見過的小眾函式庫或公司內部的 SDK，效果更明顯 — 它不再需要靠猜的。</p>
-<h2 id="取得-API-金鑰"><a href="#取得-API-金鑰" class="headerlink" title="取得 API 金鑰"></a>取得 API 金鑰</h2><p>不帶 API 金鑰也能使用，但匿名請求走 IP 限流，高頻查詢容易觸發 429。到 <a target="_blank" rel="noopener" href="https://context7.com/dashboard">context7.com/dashboard</a> 申請免費 API 金鑰後，把它加進設定的 <code>headers</code>：</p>
+<h2 id="取得-API-金鑰">取得 API 金鑰</h2>
+<p>不帶 API 金鑰也能使用，但匿名請求走 IP 限流，高頻查詢容易觸發 429。到 <a target="_blank" rel="noopener" href="https://context7.com/dashboard">context7.com/dashboard</a> 申請免費 API 金鑰後，把它加進設定的 <code>headers</code>：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;mcpServers&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;context7&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;url&quot;</span><span class="punctuation">:</span> <span class="string">&quot;https://mcp.context7.com/mcp&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;headers&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;CONTEXT7_API_KEY&quot;</span><span class="punctuation">:</span> <span class="string">&quot;你的金鑰&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p>有金鑰之後可以在 dashboard 查看用量和重置時間，限額依方案而定。</p>
-<h2 id="適合的使用場景"><a href="#適合的使用場景" class="headerlink" title="適合的使用場景"></a>適合的使用場景</h2><p>Context7 在下列情況最有感：</p>
+<h2 id="適合的使用場景">適合的使用場景</h2>
+<p>Context7 在下列情況最有感：</p>
 <ul>
 <li><strong>快速迭代的框架</strong>：Next.js、React Query、Tailwind CSS 這類版本更新頻繁、breaking change 多的工具，AI 靠訓練記憶容易出錯。</li>
 <li><strong>較新或小眾的函式庫</strong>：訓練資料覆蓋率低，AI 本來就不熟。</li>
@@ -246,15 +250,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

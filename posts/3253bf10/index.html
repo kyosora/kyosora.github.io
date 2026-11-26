@@ -125,7 +125,8 @@
         <p>3 月 11 日，Perplexity 在首屆 Ask 開發者大會上發表了 Personal Computer。不是一台新電腦，而是一套軟體——裝在你的 Mac mini 上，讓它變成一個 24 小時不關機的 AI 員工。</p>
 <p>月費 200 美元。每個敏感操作需要你點一下「同意」。有 kill switch。</p>
 <p>企業版的宣傳數字是「四週完成 3.25 年的工作量」。先別急著翻白眼，架構本身值得拆解。</p>
-<h2 id="三種「AI-控制你的電腦」路線"><a href="#三種「AI-控制你的電腦」路線" class="headerlink" title="三種「AI 控制你的電腦」路線"></a>三種「AI 控制你的電腦」路線</h2><p>2026 年至少有五家在做這件事。但技術路線完全不同：</p>
+<h2 id="三種「AI-控制你的電腦」路線">三種「AI 控制你的電腦」路線</h2>
+<p>2026 年至少有五家在做這件事。但技術路線完全不同：</p>
 <table>
 <thead>
 <tr>
@@ -134,7 +135,8 @@
 <th>核心差異</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><strong>Perplexity Personal Computer</strong></td>
 <td>本地硬體 + 雲端大腦</td>
 <td>Mac mini 24 小時跑，agent 直接存取本地檔案和 app</td>
@@ -159,16 +161,20 @@
 <td>開源自建</td>
 <td>自己架設、自己控制，最大彈性</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>Perplexity 選了一條獨特的路：不是在雲端遠端操控你的電腦，也不是模擬人類看螢幕點滑鼠，而是直接跑在你的本地硬體上，用程式化的方式存取檔案和應用。</p>
-<h2 id="架構拆解：雲端的腦-本地的手"><a href="#架構拆解：雲端的腦-本地的手" class="headerlink" title="架構拆解：雲端的腦 + 本地的手"></a>架構拆解：雲端的腦 + 本地的手</h2><p>Personal Computer 的架構是混合式的。理解這一點很重要，因為它決定了這套系統的能力邊界和安全模型。</p>
-<h3 id="分工"><a href="#分工" class="headerlink" title="分工"></a>分工</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">┌─────────────────────────────┐</span><br><span class="line">│     Perplexity 雲端          │</span><br><span class="line">│  ┌───────────────────────┐  │</span><br><span class="line">│  │  LLM 推理（多模型）     │  │  ← 大腦：複雜推理、規劃、決策</span><br><span class="line">│  │  GPT-5.1 / Claude 4.5  │  │</span><br><span class="line">│  │  Gemini 3.1 / 自家模型  │  │</span><br><span class="line">│  └───────────────────────┘  │</span><br><span class="line">└──────────────┬──────────────┘</span><br><span class="line">               │ API</span><br><span class="line">┌──────────────▼──────────────┐</span><br><span class="line">│     Mac mini（本地）          │</span><br><span class="line">│  ┌───────────────────────┐  │</span><br><span class="line">│  │  任務管理器             │  │  ← 神經系統：排程、執行、檔案存取</span><br><span class="line">│  │  Cron-like 排程         │  │</span><br><span class="line">│  │  本地腳本執行           │  │</span><br><span class="line">│  │  檔案 &amp; App 存取        │  │</span><br><span class="line">│  └───────────────────────┘  │</span><br><span class="line">└─────────────────────────────┘</span><br></pre></td></tr></table></figure>
-
+<h2 id="架構拆解：雲端的腦-本地的手">架構拆解：雲端的腦 + 本地的手</h2>
+<p>Personal Computer 的架構是混合式的。理解這一點很重要，因為它決定了這套系統的能力邊界和安全模型。</p>
+<h3 id="分工">分工</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">┌─────────────────────────────┐</span><br><span class="line">│     Perplexity 雲端          │</span><br><span class="line">│  ┌───────────────────────┐  │</span><br><span class="line">│  │  LLM 推理（多模型）     │  │  ← 大腦：複雜推理、規劃、決策</span><br><span class="line">│  │  GPT-5.1 / Claude 4.5  │  │</span><br><span class="line">│  │  Gemini 3.1 / 自家模型  │  │</span><br><span class="line">│  └───────────────────────┘  │</span><br><span class="line">└──────────────┬──────────────┘</span><br><span class="line">               │ API</span><br><span class="line">┌──────────────▼──────────────┐</span><br><span class="line">│     Mac mini（本地）          │</span><br><span class="line">│  ┌───────────────────────┐  │</span><br><span class="line">│  │  任務管理器             │  │  ← 神經系統：排程、執行、檔案存取</span><br><span class="line">│  │  Cron-like 排程         │  │</span><br><span class="line">│  │  本地腳本執行           │  │</span><br><span class="line">│  │  檔案 &amp; App 存取        │  │</span><br><span class="line">│  └───────────────────────┘  │</span><br><span class="line">└─────────────────────────────┘</span><br></pre></td></tr></table></figure>
 <p>大腦（LLM 推理）在雲端，神經系統（任務排程和執行）在本地。Mac mini 是 orchestrator，Perplexity 的雲端是 reasoner。</p>
 <p>這個設計的好處是：即使網路斷了，已排程的本地任務可以繼續跑。LLM 的算力不受本地硬體限制。但本地的檔案不需要上傳到雲端就能被操作。</p>
-<h3 id="模組化-Skill-系統"><a href="#模組化-Skill-系統" class="headerlink" title="模組化 Skill 系統"></a>模組化 Skill 系統</h3><p>Personal Computer 用模組化的 skill 系統來解決 context window 爆炸的問題。不是把所有指令塞進一個巨大的 system prompt，而是按需載入特定領域的指令集。</p>
+<h3 id="模組化-Skill-系統">模組化 Skill 系統</h3>
+<p>Personal Computer 用模組化的 skill 系統來解決 context window 爆炸的問題。不是把所有指令塞進一個巨大的 system prompt，而是按需載入特定領域的指令集。</p>
 <p>這跟 plugin 架構解決 monolith 臃腫是同一個思路——你不會把所有功能都編譯進一個二進位檔，為什麼要把所有指令都塞進一個 prompt？</p>
-<h3 id="安全模型"><a href="#安全模型" class="headerlink" title="安全模型"></a>安全模型</h3><p>每個敏感操作都必須呼叫 <code>confirm_action</code> 並等待使用者批准。這不是選項，是內建在執行模型裡的強制 tool call。</p>
+<h3 id="安全模型">安全模型</h3>
+<p>每個敏感操作都必須呼叫 <code>confirm_action</code> 並等待使用者批准。這不是選項，是內建在執行模型裡的強制 tool call。</p>
 <p>具體來說，以下操作需要明確授權：</p>
 <ul>
 <li>發送 email 或訊息</li>
@@ -178,7 +184,8 @@
 <li>存取敏感檔案</li>
 </ul>
 <p>每個操作都會被記錄。加上一鍵 kill switch，使用者可以隨時中斷一切。</p>
-<h2 id="跟-Claude-Computer-Use-的根本差異"><a href="#跟-Claude-Computer-Use-的根本差異" class="headerlink" title="跟 Claude Computer Use 的根本差異"></a>跟 Claude Computer Use 的根本差異</h2><p>Claude Computer Use 的方式是「看螢幕、移滑鼠」——它透過截圖理解畫面，然後模擬人類的鍵盤和滑鼠操作。像是一個遠端桌面的使用者。</p>
+<h2 id="跟-Claude-Computer-Use-的根本差異">跟 Claude Computer Use 的根本差異</h2>
+<p>Claude Computer Use 的方式是「看螢幕、移滑鼠」——它透過截圖理解畫面，然後模擬人類的鍵盤和滑鼠操作。像是一個遠端桌面的使用者。</p>
 <p>Perplexity Personal Computer 不看螢幕。它直接透過程式化介面存取你的檔案系統、日曆、郵件用戶端。像是一個跑在你本機的後端服務。</p>
 <table>
 <thead>
@@ -188,7 +195,8 @@
 <th>Perplexity Personal Computer</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>操作方式</td>
 <td>截圖→理解→模擬點擊</td>
 <td>程式化 API 呼叫</td>
@@ -218,24 +226,30 @@
 <td>任何有螢幕的 Mac</td>
 <td>專門的 Mac mini</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>兩者不是互斥的。Claude 擅長處理「沒有 API 但有 GUI」的應用；Perplexity 擅長處理「有結構化介面」的批量任務。</p>
-<h2 id="對開發者的意義"><a href="#對開發者的意義" class="headerlink" title="對開發者的意義"></a>對開發者的意義</h2><h3 id="「Always-on-agent」是新的基礎設施層"><a href="#「Always-on-agent」是新的基礎設施層" class="headerlink" title="「Always-on agent」是新的基礎設施層"></a>「Always-on agent」是新的基礎設施層</h3><p>過去我們部署 cron job、background worker、message queue 來處理非同步任務。Perplexity Personal Computer 本質上是一個通用的 always-on agent runtime——你告訴它「每天早上 9 點整理昨天的會議記錄並寄給團隊」，它就去做了。</p>
+<h2 id="對開發者的意義">對開發者的意義</h2>
+<h3 id="「Always-on-agent」是新的基礎設施層">「Always-on agent」是新的基礎設施層</h3>
+<p>過去我們部署 cron job、background worker、message queue 來處理非同步任務。Perplexity Personal Computer 本質上是一個通用的 always-on agent runtime——你告訴它「每天早上 9 點整理昨天的會議記錄並寄給團隊」，它就去做了。</p>
 <p>這暗示了一個趨勢：未來的個人電腦不只是你打開來用的工具，還是一個持續替你工作的 agent 宿主。</p>
-<h3 id="Agent-的本地-vs-雲端抉擇"><a href="#Agent-的本地-vs-雲端抉擇" class="headerlink" title="Agent 的本地 vs 雲端抉擇"></a>Agent 的本地 vs 雲端抉擇</h3><p>Perplexity 選擇把執行層放在本地，有幾個好處：</p>
+<h3 id="Agent-的本地-vs-雲端抉擇">Agent 的本地 vs 雲端抉擇</h3>
+<p>Perplexity 選擇把執行層放在本地，有幾個好處：</p>
 <ol>
 <li><strong>隱私</strong>：檔案不需要上傳到雲端</li>
 <li><strong>延遲</strong>：本地操作不走網路</li>
 <li><strong>控制</strong>：使用者的 kill switch 是物理性的（直接拔網路線就斷了）</li>
 </ol>
 <p>但也有代價：你得專門拿一台 Mac mini 來跑這個東西。$200/月的訂閱費加上一台 $599 起的 Mac mini，這不是隨便試試的成本。</p>
-<h3 id="開發者可以建什麼"><a href="#開發者可以建什麼" class="headerlink" title="開發者可以建什麼"></a>開發者可以建什麼</h3><p>如果你正在建 AI agent 相關的產品，Perplexity 的架構選擇提供了一個參考：</p>
+<h3 id="開發者可以建什麼">開發者可以建什麼</h3>
+<p>如果你正在建 AI agent 相關的產品，Perplexity 的架構選擇提供了一個參考：</p>
 <ul>
 <li><strong>Skill 模組化</strong>：按需載入指令集，解決 context window 膨脹問題</li>
 <li><strong>混合架構</strong>：重度推理放雲端，執行和排程放本地</li>
 <li><strong>強制授權機制</strong>：敏感操作不是「預設允許，出事再處理」，而是「預設禁止，明確授權」</li>
 </ul>
-<h2 id="我的判斷"><a href="#我的判斷" class="headerlink" title="我的判斷"></a>我的判斷</h2><p>200 美元月費不便宜，但如果它真的能可靠地處理日常行政工作——整理文件、排程會議、追蹤待辦事項——對獨立工作者或小團隊來說，這比請一個兼職助理便宜得多。</p>
+<h2 id="我的判斷">我的判斷</h2>
+<p>200 美元月費不便宜，但如果它真的能可靠地處理日常行政工作——整理文件、排程會議、追蹤待辦事項——對獨立工作者或小團隊來說，這比請一個兼職助理便宜得多。</p>
 <p>關鍵問題是「可靠」。一個 24 小時不停運作的 agent，犯一次嚴重錯誤（比如發錯 email、刪錯檔案）就夠你頭痛好幾天。<code>confirm_action</code> 的強制授權設計是對的方向，但如果每個操作都要你按一下，那跟自己做有什麼差別？</p>
 <p>這個張力——自動化程度 vs 安全控制——會是 2026 年所有 computer use 產品面臨的核心設計難題。</p>
 <hr>
@@ -329,15 +343,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

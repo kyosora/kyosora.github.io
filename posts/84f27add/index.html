@@ -124,11 +124,12 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>作為 Python 開發者，你大概都踩過同一批坑：requirements.txt 在本機跑得好好的，換一台機器就版本衝突；conda 解析依賴跑了二十分鐘；新人入職第一天光搭環境就花掉半天。</p>
+        <h2 id="前言">前言</h2>
+<p>作為 Python 開發者，你大概都踩過同一批坑：requirements.txt 在本機跑得好好的，換一台機器就版本衝突；conda 解析依賴跑了二十分鐘；新人入職第一天光搭環境就花掉半天。</p>
 <p>這篇文章比較 venv、conda 和 uv 三種工具，重點放在實際使用差異，以及 uv 為什麼不只是「更快的 pip」——它其實已經是一套完整的專案管理工具鏈。</p>
-<h2 id="venv：Python-內建的解決方案"><a href="#venv：Python-內建的解決方案" class="headerlink" title="venv：Python 內建的解決方案"></a>venv：Python 內建的解決方案</h2><p>venv 從 Python 3.3 起內建，不需要額外安裝是它最大的優點。</p>
+<h2 id="venv：Python-內建的解決方案">venv：Python 內建的解決方案</h2>
+<p>venv 從 Python 3.3 起內建，不需要額外安裝是它最大的優點。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">python -m venv myenv</span><br><span class="line"><span class="built_in">source</span> myenv/bin/activate       <span class="comment"># Linux / macOS</span></span><br><span class="line">myenv\Scripts\activate          <span class="comment"># Windows</span></span><br><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
-
 <p><strong>適合的場景：</strong></p>
 <ul>
 <li>快速開一個臨時環境驗證想法</li>
@@ -142,9 +143,9 @@
 <li>多個環境之間沒有統一的管理介面，只能靠自己記住路徑</li>
 </ul>
 <p>在一個中型專案中，requirements.txt 達到 50 幾個套件時，每次在新機器上 <code>pip install</code> 要等 5 到 10 分鐘——對頻繁開環境的工作流來說，這個等待是真實的摩擦。</p>
-<h2 id="conda：資料科學生態的選擇"><a href="#conda：資料科學生態的選擇" class="headerlink" title="conda：資料科學生態的選擇"></a>conda：資料科學生態的選擇</h2><p>conda 是 Anaconda 發布的套件管理與環境管理系統，在資料科學領域有豐富的積累。</p>
+<h2 id="conda：資料科學生態的選擇">conda：資料科學生態的選擇</h2>
+<p>conda 是 Anaconda 發布的套件管理與環境管理系統，在資料科學領域有豐富的積累。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">conda create -n myenv python=3.10</span><br><span class="line">conda activate myenv</span><br><span class="line">conda install numpy pandas scikit-learn</span><br></pre></td></tr></table></figure>
-
 <p><strong>conda 的核心優勢：</strong></p>
 <ul>
 <li>管理的不只是 Python 套件，還包含 C/C++ 預編譯 binary（例如 Intel MKL、libstdc++）。這對 numpy、scipy 這類底層依賴 C 函式庫的套件特別有用——conda 直接給你編好的 binary，不需要本機有編譯工具鏈</li>
@@ -158,25 +159,26 @@
 <li>依賴解析在複雜環境下可能跑很久，甚至解析失敗回報「無法滿足」但 pip 裝得起來</li>
 <li>在某些企業網路環境，<code>defaults</code> 頻道受限，需要切換到 conda-forge 或設 proxy</li>
 </ul>
-<h2 id="uv：不只是更快的-pip"><a href="#uv：不只是更快的-pip" class="headerlink" title="uv：不只是更快的 pip"></a>uv：不只是更快的 pip</h2><h3 id="uv-是什麼"><a href="#uv-是什麼" class="headerlink" title="uv 是什麼"></a>uv 是什麼</h3><p>uv 是由 Astral 開發、以 Rust 撰寫的 Python 套件與專案管理工具，2024 年 2 月釋出第一版。Astral 的核心成員包括 Ruff linter 的原作者 Charlie Marsh，以及 ripgrep、bat、hyperfine 等工具的作者。</p>
+<h2 id="uv：不只是更快的-pip">uv：不只是更快的 pip</h2>
+<h3 id="uv-是什麼">uv 是什麼</h3>
+<p>uv 是由 Astral 開發、以 Rust 撰寫的 Python 套件與專案管理工具，2024 年 2 月釋出第一版。Astral 的核心成員包括 Ruff linter 的原作者 Charlie Marsh，以及 ripgrep、bat、hyperfine 等工具的作者。</p>
 <p><strong>安裝方式：</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># macOS / Linux</span></span><br><span class="line">curl -LsSf https://astral.sh/uv/install.sh | sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># Windows</span></span><br><span class="line">powershell -ExecutionPolicy ByPass -c <span class="string">&quot;irm https://astral.sh/uv/install.ps1 | iex&quot;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="uv-的兩個使用模式"><a href="#uv-的兩個使用模式" class="headerlink" title="uv 的兩個使用模式"></a>uv 的兩個使用模式</h3><p>很多人看到 uv 只想到「pip 加速器」，但這只用到了表面功能。uv 實際上提供兩套工作流：</p>
+<h3 id="uv-的兩個使用模式">uv 的兩個使用模式</h3>
+<p>很多人看到 uv 只想到「pip 加速器」，但這只用到了表面功能。uv 實際上提供兩套工作流：</p>
 <p><strong>模式一：pip 相容介面（現有專案的直接替換）</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">uv venv myenv</span><br><span class="line"><span class="built_in">source</span> myenv/bin/activate</span><br><span class="line">uv pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
-
 <p>指令結構和 pip 幾乎一樣，速度大幅提升。這是最低阻力的切入點。</p>
 <p>注意「幾乎」：uv 不是 100% 相容 pip。主要差異包括：多個 index 來源時 uv 遇到第一個包含目標套件的 index 就停止（pip 會合併所有 index 的版本再選最佳）；預設不允許安裝到沒有虛擬環境的全域環境；pre-release 版本需要明確 opt-in。多數情況沒問題，但如果你的環境有複雜的 <code>--extra-index-url</code> 設定，切換前值得測試一下。</p>
 <p><strong>模式二：uv 專案管理工作流（新專案推薦）</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">uv init my-project</span><br><span class="line"><span class="built_in">cd</span> my-project</span><br><span class="line">uv add requests pandas</span><br><span class="line">uv run python main.py</span><br><span class="line">uv <span class="built_in">sync</span>                  <span class="comment"># 根據 uv.lock 同步環境</span></span><br></pre></td></tr></table></figure>
-
 <p><code>uv init</code> 會建立 <code>pyproject.toml</code>、<code>.python-version</code>、<code>.venv</code> 和 <code>uv.lock</code>。之後 <code>uv add</code> 直接更新 <code>pyproject.toml</code> 並重新鎖定依賴，<code>uv sync</code> 讓環境和鎖定檔保持一致。這個工作流和 Poetry/PDM 類似，但速度快很多，且不需要另外安裝工具。</p>
-<h3 id="Python-版本管理"><a href="#Python-版本管理" class="headerlink" title="Python 版本管理"></a>Python 版本管理</h3><p>uv 內建 Python 版本管理，這是它相對 venv 最大的差異化功能之一：</p>
+<h3 id="Python-版本管理">Python 版本管理</h3>
+<p>uv 內建 Python 版本管理，這是它相對 venv 最大的差異化功能之一：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">uv python install 3.12        <span class="comment"># 下載並安裝指定版本</span></span><br><span class="line">uv python install 3.11 3.12   <span class="comment"># 一次安裝多個版本</span></span><br><span class="line">uv python pin 3.12            <span class="comment"># 建立 .python-version，鎖定專案用的版本</span></span><br><span class="line">uv python list                <span class="comment"># 列出所有已安裝版本</span></span><br></pre></td></tr></table></figure>
-
 <p>有了這個功能，你不再需要 pyenv——uv 一個工具就涵蓋了 pyenv + venv + pip 的職責。Python 版本會在需要時自動下載，也可以手動預先安裝。</p>
-<h3 id="速度實測"><a href="#速度實測" class="headerlink" title="速度實測"></a>速度實測</h3><p>以下是在同一台機器上安裝相同 50 個套件（含 numpy、pandas、django 等）的時間比較：</p>
+<h3 id="速度實測">速度實測</h3>
+<p>以下是在同一台機器上安裝相同 50 個套件（含 numpy、pandas、django 等）的時間比較：</p>
 <table>
 <thead>
 <tr>
@@ -186,7 +188,8 @@
 <th>合計</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>venv + pip</td>
 <td>2 秒</td>
 <td>325 秒</td>
@@ -204,9 +207,11 @@
 <td>32 秒</td>
 <td>34 秒</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>uv 快的原因是多層快取機制：套件 wheel 快取在本機後，後續安裝直接從快取取得，冷快取（第一次）和熱快取（重複安裝）的速度差異很大。這份測試沒有說明快取狀態與網速，數字僅供參考量級，實際差異因環境而異。</p>
-<h2 id="三種工具的選擇邏輯"><a href="#三種工具的選擇邏輯" class="headerlink" title="三種工具的選擇邏輯"></a>三種工具的選擇邏輯</h2><p>這不是「uv 最好所以大家都該換」的問題，而是不同工具適合不同情境：</p>
+<h2 id="三種工具的選擇邏輯">三種工具的選擇邏輯</h2>
+<p>這不是「uv 最好所以大家都該換」的問題，而是不同工具適合不同情境：</p>
 <p><strong>維持 venv + pip 的理由：</strong></p>
 <ul>
 <li>專案在嚴格受管的企業環境，新工具需要審批流程</li>
@@ -226,17 +231,17 @@
 <li>在 CI 環境裡，安裝速度直接影響 pipeline 費用</li>
 <li>套件數量多，每天重複建立環境的時間累積可觀</li>
 </ul>
-<h2 id="從現有工作流遷移到-uv"><a href="#從現有工作流遷移到-uv" class="headerlink" title="從現有工作流遷移到 uv"></a>從現有工作流遷移到 uv</h2><p><strong>最低風險的方式：先在 pip 相容模式下試水</strong></p>
+<h2 id="從現有工作流遷移到-uv">從現有工作流遷移到 uv</h2>
+<p><strong>最低風險的方式：先在 pip 相容模式下試水</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 只替換 pip install 這一步</span></span><br><span class="line">uv venv .venv</span><br><span class="line"><span class="built_in">source</span> .venv/bin/activate</span><br><span class="line">uv pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
-
 <p>行為和 pip 幾乎相同，速度明顯提升，風險低。</p>
 <p><strong>進一步採用專案管理模式（新專案）：</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">uv init my-project</span><br><span class="line"><span class="built_in">cd</span> my-project</span><br><span class="line"></span><br><span class="line"><span class="comment"># 新增依賴</span></span><br><span class="line">uv add fastapi uvicorn</span><br><span class="line"></span><br><span class="line"><span class="comment"># 新增開發用依賴</span></span><br><span class="line">uv add --dev pytest ruff</span><br><span class="line"></span><br><span class="line"><span class="comment"># 同步環境（適合 CI 或新機器）</span></span><br><span class="line">uv <span class="built_in">sync</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 執行腳本（不用手動 activate）</span></span><br><span class="line">uv run python main.py</span><br><span class="line">uv run pytest</span><br></pre></td></tr></table></figure>
-
 <p><code>uv.lock</code> 是跨平台的鎖定檔，應該加入版控。新成員拉下 repo 後只需執行 <code>uv sync</code>，uv 會自動處理 Python 版本和所有依賴。</p>
 <p><strong>在 conda 環境旁邊使用 uv：</strong></p>
 <p>如果專案依賴 conda 提供的非 Python binary（例如 CUDA、Intel MKL），可以繼續用 conda 管理系統層依賴，只把 Python 套件管理這層換成 uv。兩者並不互斥。</p>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>venv 的定位是隔離 Python 環境，conda 的強項是管理科學計算的系統依賴，uv 則是把 pyenv + virtualenv + pip + pip-tools 的功能整合成一個工具。</p>
+<h2 id="結語">結語</h2>
+<p>venv 的定位是隔離 Python 環境，conda 的強項是管理科學計算的系統依賴，uv 則是把 pyenv + virtualenv + pip + pip-tools 的功能整合成一個工具。</p>
 <p>如果你正在起一個新的 Python 專案，uv 的 <code>init → add → sync</code> 工作流值得試一次——安裝速度快只是附帶效果，整套工作流的一致性才是更大的收益。</p>
 
       </div>
@@ -312,10 +317,10 @@
       </li>
     
       <li>
-        <a href="/posts/2a83fb82/">
-          <img src="/images/posts/legacy-2a83fb82-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
-          <span class="related-title">圖解 C# yield - 5分鐘讓你輕鬆掌握迭代器</span>
-          <span class="related-date">2024-12-19</span>
+        <a href="/posts/8df7e6a/">
+          <img src="/images/posts/legacy-8df7e6a-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">使用 Python 和 FFmpeg 打造簡易影片轉換器</span>
+          <span class="related-date">2024-09-26</span>
         </a>
       </li>
     
@@ -328,15 +333,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

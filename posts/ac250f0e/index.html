@@ -136,33 +136,36 @@
 <p>你怎麼確認的？</p>
 </blockquote>
 <p>它卡住了。</p>
-<h2 id="它答不出來"><a href="#它答不出來" class="headerlink" title="它答不出來"></a>它答不出來</h2><p>因為它從來沒確認過。</p>
+<h2 id="它答不出來">它答不出來</h2>
+<p>因為它從來沒確認過。</p>
 <p>它的「確認」只有一條：它以為 workflow 的預設子代理沒有上網工具。這個「以為」哪來的？它自己腦補的。它沒翻過那次 run 的任何紀錄，沒看子代理實際被授予什麼工具，更沒看它呼叫了什麼。它手上只有綜合代理最後吐出來的那份 JSON，裡面有「已查證」三個字，剩下整個故事是它接著腦補的。</p>
 <p>補個背景：每次 workflow 跑完，系統都會把每個子代理的完整 transcript 存成 jsonl——被給了哪些工具、想了什麼、呼叫了什麼、拿回什麼，一行不漏。Claude Code 從頭到尾沒打開過。它有檔案工具，翻這個對它根本不費力，它卻寧可用想像補完。</p>
 <p>我請它打開來看。</p>
-<h2 id="transcript-裡的真相"><a href="#transcript-裡的真相" class="headerlink" title="transcript 裡的真相"></a>transcript 裡的真相</h2><p>那個綜合代理，吐排序之前，第一件事是這樣推理的（原文，英文）：</p>
+<h2 id="transcript-裡的真相">transcript 裡的真相</h2>
+<p>那個綜合代理，吐排序之前，第一件事是這樣推理的（原文，英文）：</p>
 <blockquote>
-<p>&quot;Let me verify a key uncertainty first — the Codex Python SDK claim, since the evaluation itself flagged it for verification.&quot;</p>
+<p>“Let me verify a key uncertainty first — the Codex Python SDK claim, since the evaluation itself flagged it for verification.”</p>
 </blockquote>
 <p>它注意到下游 finder 標了「這條我不確定、要查」，於是決定先查。</p>
 <p>下一行，它呼叫了工具：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[TOOL_USE WebSearch] query: &quot;OpenAI Codex Python SDK pip install embed coding agent 2026&quot;</span><br></pre></td></tr></table></figure>
-
 <p>WebSearch。它有 WebSearch。它一直都有——那是 workflow 子代理的標配工具集，四個 finder 每個也都有，只是它們做檔案查重沒用到。「沒有上網工具」這件事，是 Claude Code 自己憑空假設的。</p>
 <p>搜尋回來的是真實結果：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openai-codex-sdk · PyPI            → https://pypi.org/project/openai-codex-sdk/</span><br><span class="line">SDK – Codex | OpenAI Developers    → https://developers.openai.com/codex/sdk</span><br><span class="line">codex/sdk/python at main · openai  → github.com/openai/codex/tree/main/sdk/python</span><br></pre></td></tr></table></figure>
-
 <p>然後它據此推理，甚至發現原本 finder 寫的套件名（<code>openai-codex</code>）跟正規名（<code>openai-codex-sdk</code>）有出入，順手修正了。</p>
 <p>從頭到尾，這個子代理做了一次教科書等級的查證：發現不確定 → 主動搜尋 → 找到官方來源 → 據實修正、解除風險。那句「已查證」不是幻覺。它是真的查了。</p>
 <p>真正在亂編的，是 Claude Code 自己——那個寫文章罵子代理的主筆。</p>
-<h2 id="它犯的，正是它指控子代理的那個錯"><a href="#它犯的，正是它指控子代理的那個錯" class="headerlink" title="它犯的，正是它指控子代理的那個錯"></a>它犯的，正是它指控子代理的那個錯</h2><p>攤平了看：Claude Code 未經查證，就對自己派出去的子代理下了一個自信的斷言——「它沒有查證能力」——還把這個斷言包裝成一篇結構完整、過了兩輪審稿的文章。</p>
+<h2 id="它犯的，正是它指控子代理的那個錯">它犯的，正是它指控子代理的那個錯</h2>
+<p>攤平了看：Claude Code 未經查證，就對自己派出去的子代理下了一個自信的斷言——「它沒有查證能力」——還把這個斷言包裝成一篇結構完整、過了兩輪審稿的文章。</p>
 <p>這跟它虛構子代理犯的錯，一個字都不差。一個 AI 寫文章罵 AI 幻覺，幻覺的是寫文章的這個。</p>
-<h2 id="兩輪-AI-審稿為什麼沒擋住"><a href="#兩輪-AI-審稿為什麼沒擋住" class="headerlink" title="兩輪 AI 審稿為什麼沒擋住"></a>兩輪 AI 審稿為什麼沒擋住</h2><p>這部分我覺得最值得每個用 AI 的人記住。</p>
+<h2 id="兩輪-AI-審稿為什麼沒擋住">兩輪 AI 審稿為什麼沒擋住</h2>
+<p>這部分我覺得最值得每個用 AI 的人記住。</p>
 <p>Claude Code 送 Codex 審稿時，審稿用的 prompt 是它自己寫的。它在裡面直接把「綜合代理沒有上網工具、它幻覺了一個已查證」當成既定事實打進去，請 Codex 評文筆、結構、邏輯是否自洽。</p>
 <p>Codex 很盡責。它挑出日期寫死、挑了 PyPI 連結的措辭、挑了段落結構，給了一堆中肯建議。但它從頭到尾沒去翻那份 transcript——因為它沒理由懷疑前提。一個 AI 說另一個 AI 幻覺了，第三個 AI 就在「幻覺了」這塊地基上，幫忙把房子蓋得更漂亮。</p>
 <p>8.48 分，審的是一個假故事講得圓不圓，不是這故事真不真。</p>
 <p>這是 AI 互評的一個結構性盲區，而且不只 AI——任何審稿者，人或模型，都會默認你陳述的前提為真，把力氣花在你論證的下游。前提錯了，再多輪、再高分的審稿都救不回來。把錯誤的前提餵進審稿，等於請人幫你把錯誤打磨得更有說服力。</p>
-<h2 id="救我的是一句話，不是更強的模型"><a href="#救我的是一句話，不是更強的模型" class="headerlink" title="救我的是一句話，不是更強的模型"></a>救我的是一句話，不是更強的模型</h2><p>戳破這一切，我沒有去翻 transcript，沒跑任何驗證，也沒換更強的模型。我只是在它一個過度自信的斷言上，問了一句「你怎麼確認的」。</p>
+<h2 id="救我的是一句話，不是更強的模型">救我的是一句話，不是更強的模型</h2>
+<p>戳破這一切，我沒有去翻 transcript，沒跑任何驗證，也沒換更強的模型。我只是在它一個過度自信的斷言上，問了一句「你怎麼確認的」。</p>
 <p>它就垮了，因為它確認不了。</p>
 <p>我把這件事寫下來，是因為它改了我用 AI 寫東西的方式。我學到的不是「AI 會幻覺」——這誰都知道。我學到的是：</p>
 <p><strong>AI 能把一個它沒驗證的判斷，包裝成完整、有理據、連同儕審稿都過了的成品，自信地交到你手上。</strong> 你光看最終輸出和它的語氣，分不出來。</p>
@@ -260,15 +263,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -119,32 +119,29 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>Vue 3 組件化架構的核心問題之一，就是資料怎麼在元件之間流動。本文整理三個主要機制：父傳子用 props、子傳父用 emit、跨層級用 provide/inject，並附上 Vuex 與 Pinia 的對照。所有範例均採 <code>&lt;script setup&gt;</code> 語法。</p>
-<h2 id="1-父元件傳資料到子元件（Props）"><a href="#1-父元件傳資料到子元件（Props）" class="headerlink" title="1. 父元件傳資料到子元件（Props）"></a>1. 父元件傳資料到子元件（Props）</h2><p>父元件透過屬性綁定把資料往下傳，子元件用 <code>defineProps</code> 宣告接收。</p>
+<h2 id="1-父元件傳資料到子元件（Props）">1. 父元件傳資料到子元件（Props）</h2>
+<p>父元件透過屬性綁定把資料往下傳，子元件用 <code>defineProps</code> 宣告接收。</p>
 <p><strong>父元件</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;ChildComponent :message=&quot;messageFromParent&quot; /&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script setup&gt;</span><br><span class="line">import &#123; ref &#125; from &#x27;vue&#x27;;</span><br><span class="line">import ChildComponent from &#x27;./ChildComponent.vue&#x27;;</span><br><span class="line"></span><br><span class="line">const messageFromParent = ref(&#x27;Hello from Parent&#x27;);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
 <p><strong>子元件</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;&#123;&#123; message &#125;&#125;&lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script setup&gt;</span><br><span class="line">defineProps(&#123;</span><br><span class="line">  message: &#123;</span><br><span class="line">    type: String,</span><br><span class="line">    required: true</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
 <p><code>defineProps</code> 是編譯器巨集，不需要 import，在 <code>&lt;script setup&gt;</code> 中直接呼叫即可。宣告型別除了物件語法，也可以用 TypeScript 泛型寫法：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;script setup lang=&quot;ts&quot;&gt;</span><br><span class="line">const props = defineProps&lt;&#123; message: string &#125;&gt;();</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
 <p>props 是單向的，子元件不應直接修改它。若需要可寫的本地值，用 <code>ref</code> 複製一份或改用 <code>emit</code> 通知父元件更新。</p>
-<h2 id="2-子元件傳資料到父元件（Emit）"><a href="#2-子元件傳資料到父元件（Emit）" class="headerlink" title="2. 子元件傳資料到父元件（Emit）"></a>2. 子元件傳資料到父元件（Emit）</h2><p>子元件用 <code>defineEmits</code> 宣告事件清單，再呼叫 <code>emit</code> 發出事件。</p>
+<h2 id="2-子元件傳資料到父元件（Emit）">2. 子元件傳資料到父元件（Emit）</h2>
+<p>子元件用 <code>defineEmits</code> 宣告事件清單，再呼叫 <code>emit</code> 發出事件。</p>
 <p><strong>子元件</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;button @click=&quot;sendToParent&quot;&gt;Send to Parent&lt;/button&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script setup&gt;</span><br><span class="line">const emit = defineEmits([&#x27;message-from-child&#x27;]);</span><br><span class="line"></span><br><span class="line">function sendToParent() &#123;</span><br><span class="line">  emit(&#x27;message-from-child&#x27;, &#x27;Hello from Child&#x27;);</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
 <p><strong>父元件</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;ChildComponent @message-from-child=&quot;handleMessage&quot; /&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script setup&gt;</span><br><span class="line">import ChildComponent from &#x27;./ChildComponent.vue&#x27;;</span><br><span class="line"></span><br><span class="line">function handleMessage(msg) &#123;</span><br><span class="line">  console.log(&#x27;Received:&#x27;, msg);</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
 <p><code>defineEmits</code> 在 <code>&lt;script setup&gt;</code> 中是必要的；若省略，TypeScript 會警告，且事件型別無法推導。</p>
-<h2 id="3-跨層級資料傳遞"><a href="#3-跨層級資料傳遞" class="headerlink" title="3. 跨層級資料傳遞"></a>3. 跨層級資料傳遞</h2><h3 id="3-1-Provide-Inject"><a href="#3-1-Provide-Inject" class="headerlink" title="3.1 Provide / Inject"></a>3.1 Provide / Inject</h3><p>當資料需要跨越多個中間層傳到深層子元件，逐層 props 傳遞（prop drilling）會讓程式碼難以維護。這時可以用 provide/inject：祖先元件 provide 一份資料，任何後代元件都能 inject 取用，不論中間隔了幾層。</p>
+<h2 id="3-跨層級資料傳遞">3. 跨層級資料傳遞</h2>
+<h3 id="3-1-Provide-Inject">3.1 Provide / Inject</h3>
+<p>當資料需要跨越多個中間層傳到深層子元件，逐層 props 傳遞（prop drilling）會讓程式碼難以維護。這時可以用 provide/inject：祖先元件 provide 一份資料，任何後代元件都能 inject 取用，不論中間隔了幾層。</p>
 <p><strong>提供方（祖先元件）</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;script setup&gt;</span><br><span class="line">import &#123; ref, provide, readonly &#125; from &#x27;vue&#x27;;</span><br><span class="line"></span><br><span class="line">const sharedData = ref(&#x27;這是要共享的資料&#x27;);</span><br><span class="line"></span><br><span class="line">// readonly 包裝讓下游無法直接改動來源</span><br><span class="line">provide(&#x27;sharedDataKey&#x27;, &#123;</span><br><span class="line">  sharedData: readonly(sharedData),</span><br><span class="line">  updateSharedData: (val) =&gt; &#123; sharedData.value = val; &#125;</span><br><span class="line">&#125;);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
 <p><strong>接收方（任意後代元件）</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;&#123;&#123; sharedData &#125;&#125;&lt;/div&gt;</span><br><span class="line">  &lt;button @click=&quot;updateSharedData(&#x27;新值&#x27;)&quot;&gt;更新&lt;/button&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script setup&gt;</span><br><span class="line">import &#123; inject &#125; from &#x27;vue&#x27;;</span><br><span class="line"></span><br><span class="line">const &#123; sharedData, updateSharedData &#125; = inject(&#x27;sharedDataKey&#x27;);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
 <p>幾個注意點：</p>
 <ul>
 <li><code>inject</code> 的鍵名必須與 <code>provide</code> 完全一致。</li>
@@ -152,39 +149,35 @@
 <li>在大型專案裡，多個 provide 鍵名可能衝突；用 <code>Symbol</code> 當鍵可以完全避免這個問題。</li>
 </ul>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// keys.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="variable constant_">SHARED_DATA_KEY</span> = <span class="title class_">Symbol</span>(<span class="string">&#x27;sharedData&#x27;</span>);</span><br></pre></td></tr></table></figure>
-
 <p>provide/inject 的主要限制是<strong>可追蹤性</strong>，不是應用規模。依賴關係是隱含的，IDE 難以自動追蹤哪個元件注入了什麼，重構時容易漏改。如果資料流向複雜、需要 devtools 追蹤狀態變更，才需要考慮 Pinia。</p>
-<h3 id="3-2-全域狀態管理：Pinia"><a href="#3-2-全域狀態管理：Pinia" class="headerlink" title="3.2 全域狀態管理：Pinia"></a>3.2 全域狀態管理：Pinia</h3><p>Pinia 是 Vue 官方現在推薦的狀態管理方案，API 比 Vuex 精簡，TypeScript 支援也更完整。</p>
+<h3 id="3-2-全域狀態管理：Pinia">3.2 全域狀態管理：Pinia</h3>
+<p>Pinia 是 Vue 官方現在推薦的狀態管理方案，API 比 Vuex 精簡，TypeScript 支援也更完整。</p>
 <p><strong>安裝</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install pinia</span><br></pre></td></tr></table></figure>
-
 <p><strong>main.js</strong></p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createApp &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; createPinia &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">App</span> <span class="keyword">from</span> <span class="string">&#x27;./App.vue&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> app = <span class="title function_">createApp</span>(<span class="title class_">App</span>);</span><br><span class="line">app.<span class="title function_">use</span>(<span class="title function_">createPinia</span>());</span><br><span class="line">app.<span class="title function_">mount</span>(<span class="string">&#x27;#app&#x27;</span>);</span><br></pre></td></tr></table></figure>
-
 <p><strong>定義 Store（stores/counterStore.js）</strong></p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; defineStore &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useCounterStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;counter&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">state</span>: <span class="function">() =&gt;</span> (&#123;</span><br><span class="line">    <span class="attr">count</span>: <span class="number">0</span></span><br><span class="line">  &#125;),</span><br><span class="line">  <span class="attr">actions</span>: &#123;</span><br><span class="line">    <span class="title function_">increment</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">count</span>++;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
 <p><strong>在元件中使用</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;&#123;&#123; counterStore.count &#125;&#125;&lt;/div&gt;</span><br><span class="line">  &lt;button @click=&quot;counterStore.increment&quot;&gt;+1&lt;/button&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script setup&gt;</span><br><span class="line">import &#123; useCounterStore &#125; from &#x27;./stores/counterStore&#x27;;</span><br><span class="line"></span><br><span class="line">const counterStore = useCounterStore();</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
 <p>Pinia store 是響應式的，<code>counterStore.count</code> 可以直接在 template 裡綁定，不需要額外 computed。</p>
-<h3 id="3-3-Vuex-4（既有專案參考）"><a href="#3-3-Vuex-4（既有專案參考）" class="headerlink" title="3.3 Vuex 4（既有專案參考）"></a>3.3 Vuex 4（既有專案參考）</h3><p>新專案建議直接用 Pinia。若你維護的是已用 Vuex 的 Vue 3 專案，Vuex 4 支援 Composition API 的 <code>useStore()</code>：</p>
+<h3 id="3-3-Vuex-4（既有專案參考）">3.3 Vuex 4（既有專案參考）</h3>
+<p>新專案建議直接用 Pinia。若你維護的是已用 Vuex 的 Vue 3 專案，Vuex 4 支援 Composition API 的 <code>useStore()</code>：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install vuex  <span class="comment">// 安裝到 4.x</span></span><br></pre></td></tr></table></figure>
-
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// store/index.js</span></span><br><span class="line"><span class="keyword">import</span> &#123; createStore &#125; <span class="keyword">from</span> <span class="string">&#x27;vuex&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title function_">createStore</span>(&#123;</span><br><span class="line">  <span class="attr">state</span>: <span class="function">() =&gt;</span> (&#123;</span><br><span class="line">    <span class="attr">sharedData</span>: <span class="string">&#x27;&#x27;</span></span><br><span class="line">  &#125;),</span><br><span class="line">  <span class="attr">mutations</span>: &#123;</span><br><span class="line">    <span class="title function_">updateSharedData</span>(<span class="params">state, payload</span>) &#123;</span><br><span class="line">      state.<span class="property">sharedData</span> = payload;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">getters</span>: &#123;</span><br><span class="line">    <span class="attr">sharedData</span>: <span class="function"><span class="params">state</span> =&gt;</span> state.<span class="property">sharedData</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
 <p><strong>在 <code>&lt;script setup&gt;</code> 裡使用 Vuex</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;script setup&gt;</span><br><span class="line">import &#123; computed &#125; from &#x27;vue&#x27;;</span><br><span class="line">import &#123; useStore &#125; from &#x27;vuex&#x27;;</span><br><span class="line"></span><br><span class="line">const store = useStore();</span><br><span class="line">const sharedData = computed(() =&gt; store.getters.sharedData);</span><br><span class="line"></span><br><span class="line">function updateData() &#123;</span><br><span class="line">  store.commit(&#x27;updateSharedData&#x27;, &#x27;新的共享資料&#x27;);</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
 <p><code>useStore()</code> 是在 <code>&lt;script setup&gt;</code> 中存取 Vuex store 的正確方式；<code>this.$store</code> 在 Composition API 中無法使用。</p>
-<h2 id="小結：怎麼選"><a href="#小結：怎麼選" class="headerlink" title="小結：怎麼選"></a>小結：怎麼選</h2><table>
+<h2 id="小結：怎麼選">小結：怎麼選</h2>
+<table>
 <thead>
 <tr>
 <th>場景</th>
 <th>建議方案</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>父 → 子單向傳資料</td>
 <td><code>props</code> + <code>defineProps</code></td>
 </tr>
@@ -204,7 +197,8 @@
 <td>既有 Vuex 4 專案</td>
 <td><code>useStore()</code> + Composition API</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 
       </div>
       
@@ -279,15 +273,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

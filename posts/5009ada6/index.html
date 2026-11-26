@@ -125,7 +125,8 @@
         <p>Oxford China Policy Lab 研究員 Zilan Qian 五月發表了一篇調查，八月被 The Decoder 重新報導，也因此進了我這週的新聞雷達——以下市場結構的細節，主要依她的原文整理。她講的事情一句話講完：中國開發者能用官方十分之一的價格，買到 Claude 的用量。</p>
 <p>但真正讓我停下來的不是這個折扣數字，是她點出的一個視角落差。今年 2 月 23 日，Anthropic 發布報告，說偵測到三家中國實驗室協調操作、透過約 24,000 個詐欺帳號進行逾 1,600 萬次互動的蒸餾攻擊，其中「一個代理網路同時管理超過 20,000 個詐欺帳號」；兩個月後的 4 月 23 日，白宮的備忘錄也用「數萬個代理帳號」的說法描述同一類威脅。這兩份文件都從實驗室蒸餾攻擊的角度描述代理網路——Anthropic 說的是這些實驗室使用商業代理服務規避偵測，同時也提到這些代理服務會混著無關客戶的流量，不算完全沒看到一般使用者，但整體敘事的重心還是放在實驗室追趕進度這個地緣政治框架上。</p>
 <p>Zilan Qian 認為，這個以實驗室蒸餾攻擊為中心的敘事，漏掉了代理經濟服務一般使用者的那一面——底下不是「一小撮實驗室想追上進度」，是一整個對公眾開放、在 GitHub、淘寶、Twitter、Telegram 上運作的灰色市場，使用者不限於實驗室，也包括教授、學生、工程師與業餘開發者。</p>
-<h2 id="中轉站：一個架在你和-Anthropic-之間的陌生人"><a href="#中轉站：一個架在你和-Anthropic-之間的陌生人" class="headerlink" title="中轉站：一個架在你和 Anthropic 之間的陌生人"></a>中轉站：一個架在你和 Anthropic 之間的陌生人</h2><p>這個灰色市場的核心單位，中國開發者社群叫它「中轉站」——一台海外伺服器，架在開發者和 Anthropic 的基礎設施中間。你的軟體改連去這台伺服器，它把請求轉發出去、偽裝成從它自己的位置發出，再把回應傳回來給你。你用微信或支付寶付人民幣，繞過原本需要的海外信用卡和帳單地址。</p>
+<h2 id="中轉站：一個架在你和-Anthropic-之間的陌生人">中轉站：一個架在你和 Anthropic 之間的陌生人</h2>
+<p>這個灰色市場的核心單位，中國開發者社群叫它「中轉站」——一台海外伺服器，架在開發者和 Anthropic 的基礎設施中間。你的軟體改連去這台伺服器，它把請求轉發出去、偽裝成從它自己的位置發出，再把回應傳回來給你。你用微信或支付寶付人民幣，繞過原本需要的海外信用卡和帳單地址。</p>
 <p>價格通常訂在 1 人民幣換 1 美元的 token 額度——比官方價格低七到九成。GitHub 上有社群倉庫專門整理、排名這些中轉站的即時價格和穩定度，長尾的個人小站更是來來去去。</p>
 <p>這條供應鏈分三層，彼此大多互不認識：</p>
 <ul>
@@ -134,30 +135,34 @@
 <li><strong>下游</strong>是用 Claude Code 或 Codex 的個人開發者、把 API 接進內部流程的企業、把它包進自家產品的應用開發者，還有在淘寶上把批發來的用量拆開零售的二級轉售商。</li>
 </ul>
 <p>Zilan Qian 講得很白：幾乎沒有人一個人吃下整條供應鏈，大部分參與者只握一兩個環節、各自把那個環節做到有錢賺。結果是一個高度模組化、打不死的系統——你封掉一個中轉站，上游的帳號池和下游的客戶都還在，幾小時內就有新的頂上來。</p>
-<h2 id="一魚三吃：Qian-提出的三種可能機制"><a href="#一魚三吃：Qian-提出的三種可能機制" class="headerlink" title="一魚三吃：Qian 提出的三種可能機制"></a>一魚三吃：Qian 提出的三種可能機制</h2><p>中國開發者社群把折扣的來源總結成「一魚三吃」。這是 Qian 整理出的三種被提出的低價機制，彼此證據強度不一樣，我按她標注的等級分開講。</p>
+<h2 id="一魚三吃：Qian-提出的三種可能機制">一魚三吃：Qian 提出的三種可能機制</h2>
+<p>中國開發者社群把折扣的來源總結成「一魚三吃」。這是 Qian 整理出的三種被提出的低價機制，彼此證據強度不一樣，我按她標注的等級分開講。</p>
 <p><strong>第一吃：轉售價差。</strong> 上游至少有四種文件裡稱為「相對無害」的招式：薅 Anthropic 的 $5 免費額度、轉賣別人閒置的配額、企業／教育折扣套利、「APImaxxing」（把一份 $200 的 Max 方案按每小時額度拆給多個人用，賺的是訂閱定價和逐 token 計費之間的價差）。除此之外還有更黑的一條上游：用被盜或詐欺信用卡開的帳號，成本趨近於零直接進池——Qian 自己也說，這條黑市和前面四種「無害」招式的比例很難估計，只能確定兩邊共用一些基礎設施和人力。這一整段主要依據 Qian 的公開討論整理和非正式訪談，實際各招式占比多少，並沒有查證數字。</p>
 <p><strong>第二吃：模型替換有抽樣研究支撐；用量膨脹仍屬可能機制。</strong> 你的請求和模型的回應都經過中轉站轉手，沒辦法驗證你的請求真的被送到了哪個模型。你選了 Opus 4.7，中轉站可以悄悄改路由到 Sonnet、Haiku，甚至換成 GLM 或 Qwen，再把輸出偽標成你點的那個模型。德國 CISPA 亥姆霍茲資訊安全中心的一篇論文從 17 個候選 shadow API 裡，挑了 3 個具代表性的服務做深入稽核。他們用了兩種不同的檢驗方法，證明的東西不一樣：接下來這組 MedQA 成績測的是 Gemini-2.5-Flash，不是 Claude——官方 API 拿 83.82%，這 3 個代理平均只有約 36.95%——但這種分數落差只能證明行為和能力不一致，落差的成因可能是路由不穩定、模型被微調、或降級，不能單憑分數就判定模型真的被換掉了。真正證明「模型身分跟宣稱不符」的，是另一組用模型指紋和統計檢驗做的身分驗證：論文抓到 GPT-5 在其中兩個 shadow API（A 與 E）上，指紋比對出來其實是便宜的開源模型 GLM-4-9B；DeepSeek-Reasoner 則在其中兩個 shadow API（A 與 H）上，被指紋辨識成沒有推理能力的 DeepSeek-Chat——兩組測試共用了 shadow API A。這組身分驗證才是模型替換確實存在的直接依據，論文裡有 45.83% 的受測端點沒通過指紋驗證。使用者這端唯一的訊號，是複雜任務做出來感覺「降智」，但很難證明。至於頻繁輪換帳號會不會刻意膨脹用量、破壞快取連續性逼你燒全價 token，Qian 沒有把它定性成刻意操作，CISPA 那篇論文也沒有驗證這一段——比較像是一個合理但還沒被證實的機制。</p>
 <p><strong>第三吃：日誌可能成為商品——高價值，但系統性販售尚未證實。</strong> 每一筆經過中轉站的請求——prompt、回應、工具呼叫、每一輪迭代——都經過中轉站營運者控制的伺服器；如果服務本身有記錄請求，就可能被完整留存。對寫程式的 agent 來說，這些日誌裡可能裝著可見的推理文字、agent 操作軌跡、儲存庫上下文、還有人類已經驗證過是對的輸出——對訓練下一個模型來說是理想的資料集。中國開發者社群多處聲稱這確實在發生，但中轉站是不是有系統地收集轉賣、賣給誰，Qian 自己講得很清楚：尚未證實。她能確認的是，公開網路上確實流通著幾個 Claude Opus 4.6 推理輸出的資料集，來源不明——我去查了其中一個掛在 HuggingFace 上的（Crownelius/Opus-4.6-Reasoning-3300x）。資料卡上有清理報告、token 數量統計、還有一個依 OpenRouter 定價換算出來的成本估計（約 500 加幣），但沒有交代資料實際是透過什麼管道生成的。依 OpenRouter 價格估算成本，不代表資料真的是透過 OpenRouter 取得——這份資料卡沒辦法判定資料是自己生成的、是中轉站流出的日誌、還是其他來源，「來源不明」在這裡就是字面意思，我查完也沒有多知道什麼。Qian 認為第三吃是把折扣壓到 5%、10% 這種誇張數字最關鍵的一環，但這個判斷主要依據公開討論和開發者說法，不是已驗證的財務數字。</p>
-<h2 id="Anthropic-的防線為什麼一路升級還是擋不住"><a href="#Anthropic-的防線為什麼一路升級還是擋不住" class="headerlink" title="Anthropic 的防線為什麼一路升級還是擋不住"></a>Anthropic 的防線為什麼一路升級還是擋不住</h2><p>Anthropic 不是沒在防。帳號註冊要海外電話、海外信用卡、對得上的帳單地址；2025 年 9 月開始，只要一家公司 50% 以上股權在中國這類受限地區，不管實際營運地在哪裡都被封；2026 年 4 月更進一步，要求特定使用者拿政府核發的證件加即時自拍做生物辨識驗證。Qian 稱這是主流消費級 AI 平台第一次做到這個等級的身分查核，我沒有另外查證這個「第一次」的說法。</p>
+<h2 id="Anthropic-的防線為什麼一路升級還是擋不住">Anthropic 的防線為什麼一路升級還是擋不住</h2>
+<p>Anthropic 不是沒在防。帳號註冊要海外電話、海外信用卡、對得上的帳單地址；2025 年 9 月開始，只要一家公司 50% 以上股權在中國這類受限地區，不管實際營運地在哪裡都被封；2026 年 4 月更進一步，要求特定使用者拿政府核發的證件加即時自拍做生物辨識驗證。Qian 稱這是主流消費級 AI 平台第一次做到這個等級的身分查核，我沒有另外查證這個「第一次」的說法。</p>
 <p>一個引人聯想、但不能證明因果的訊號是：新加坡人均使用 Claude 的量全球第一，而新加坡人口比紐約市還少。中國開發者自己在 Twitter 上開玩笑：「我們偶爾都是新加坡人」「每天自己指派國籍」——這只是社群的玩笑和推測，不是已經證實的轉送證據。上游的因應手段這條線，Qian 舉的是可能的供應來源和類比先例，不是已證實大規模發生的手法：AI 已經有能力生出過得了大平台身分驗證的假證件，深偽技術也能做出通過遠端生物辨識的數位分身；再不行，還有更人力密集的做法。她舉的類比先例是 Worldcoin 黑市——原始報導只說有人在網路上兜售號稱是柬埔寨、肯亞使用者的虹膜掃描資料、一筆不到 30 美元，報導本身也講明無法確認這些資料是不是真的、有沒有真的被拿去成功完成驗證，不是一個已經證實成功規避的案例，只是同類黑市確實存在的一個佐證。</p>
 <p>Anthropic 自己的偵測系統 Clio，主要靠對話特徵和語意群集去找個別對話層級看不出來的協調性濫用，也曾靠跨帳號模式抓到過協調性的濫用案例；中轉站帶來的麻煩，是帳號輪換、流量混雜、終端使用者歸因被中間人切斷。Qian 據此判斷，單一帳號封禁難以阻止底層行為，替代代理可能在數小時內出現——這是她的判斷，我沒有找到獨立驗證這個時間尺度的資料。</p>
-<h2 id="順便訂正我自己三月的一則筆記"><a href="#順便訂正我自己三月的一則筆記" class="headerlink" title="順便訂正我自己三月的一則筆記"></a>順便訂正我自己三月的一則筆記</h2><p>這次查證，也逼我回頭訂正了自己三月寫的一篇筆記。那則筆記曾把一個工具的功能、贊助商組成、跟「灰市轉售」這個標籤連在一起；重新核對之後，我找不到支持這個連結的證據，而且裡面有兩處我自己記錯的地方。</p>
+<h2 id="順便訂正我自己三月的一則筆記">順便訂正我自己三月的一則筆記</h2>
+<p>這次查證，也逼我回頭訂正了自己三月寫的一篇筆記。那則筆記曾把一個工具的功能、贊助商組成、跟「灰市轉售」這個標籤連在一起；重新核對之後，我找不到支持這個連結的證據，而且裡面有兩處我自己記錯的地方。</p>
 <p>三月三十一日，我寫過一篇 CLIProxyAPI 的評估筆記——一個 Go 寫的開源專案，功能是把 Claude Code、Gemini CLI、OpenAI Codex 這些 CLI 工具的 OAuth 訂閱，轉換成標準的 API endpoint（我記錄當時是 21,400 顆星，現在的數字我沒有重查）。它支援多帳號 round-robin 負載平衡、有裝置指紋固定機制、還有一個 Claude「cloak 模式」——偽裝成官方 Claude Code 用戶端在發送請求。當時的筆記寫著：「贊助商清一色是中國大陸的 API relay 服務」「commercial-mode 和企業版的存在，暗示有人拿它做商業轉售」。</p>
 <p>這次為了寫這篇文章重新核對，這兩條都記錯了。翻開它的設定檔原始碼，<code>commercial-mode</code> 的官方註解寫的是「高併發時關閉高成本的 HTTP middleware，降低每個請求的記憶體用量」——單純是效能優化開關。三月那份 README 裡的贊助商，也不是清一色 relay，還包含模型訂閱和帳號代購服務。</p>
 <p>原始碼能證明的只有功能：OAuth 封裝、多帳號輪詢、針對非官方用戶端的 cloak 設定。這些功能本身沒辦法判定任何一次具體部署的用途——雙重用途軟體本來就是這樣，「具備某個可能被濫用的功能」對辨別誰真的在濫用，幾乎沒有區分力。我沒有找到 CLIProxyAPI、它的維護者、或任何贊助商，跟 Qian 描述的灰市之間有什麼證據上的連結，這篇文章也不打算暗示這件事存在。</p>
-<h2 id="我的判斷"><a href="#我的判斷" class="headerlink" title="我的判斷"></a>我的判斷</h2><p>我不會把這篇讀成「中國開發者道德有問題」——Qian 自己講得很清楚，用中轉站的是教授、學生、工程師、業餘愛好者，動機跟「追上前沿模型」的地緣政治敘事完全是兩回事。而且如果你人在台灣，直接開戶就能用 Claude，這整套繞地區限制的架構聽起來離你很遠——但「一魚三吃」這個框架本身，跟中國、跟地區限制沒有必然關係。任何你透過第三方 relay、代理、聚合服務去用一個 AI API 的時候，同樣三個問題都值得先問：異常低價而供應來源不透明時，價差有沒有可檢驗的解釋？你拿到的，真的是你付費的那個模型嗎——沒有中轉的直連，你至少知道請求去了哪裡，一旦多了一層你不掌控的轉發，這件事就變成你只能相信、沒辦法驗證。你的 prompt 和輸出去了哪裡？對寫程式的 agent 尤其重要，你餵進去的可能是公司的程式庫上下文，一旦經過一個你不認識的中間人，下落就不在你手上了。</p>
+<h2 id="我的判斷">我的判斷</h2>
+<p>我不會把這篇讀成「中國開發者道德有問題」——Qian 自己講得很清楚，用中轉站的是教授、學生、工程師、業餘愛好者，動機跟「追上前沿模型」的地緣政治敘事完全是兩回事。而且如果你人在台灣，直接開戶就能用 Claude，這整套繞地區限制的架構聽起來離你很遠——但「一魚三吃」這個框架本身，跟中國、跟地區限制沒有必然關係。任何你透過第三方 relay、代理、聚合服務去用一個 AI API 的時候，同樣三個問題都值得先問：異常低價而供應來源不透明時，價差有沒有可檢驗的解釋？你拿到的，真的是你付費的那個模型嗎——沒有中轉的直連，你至少知道請求去了哪裡，一旦多了一層你不掌控的轉發，這件事就變成你只能相信、沒辦法驗證。你的 prompt 和輸出去了哪裡？對寫程式的 agent 尤其重要，你餵進去的可能是公司的程式庫上下文，一旦經過一個你不認識的中間人，下落就不在你手上了。</p>
 <p>我自己這次意外的收穫，是重新核對三月那篇筆記時，抓到自己當時記錯的兩個具體細節（commercial-mode 的用途、贊助商的組成）。判斷一個工具「疑慮與風險」的時候，把當下的觀察認真記下來是對的；但那些記錄終究是某個時間點的猜測，過幾個月拿出來對照原始碼或別人做過的調查，該訂正就訂正——這篇文章能做到的最好結果，也就是把這幾個細節核對清楚，而不是把舊筆記包裝成先見之明。</p>
 <hr>
 <p><strong>參考資料</strong></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.chinatalk.media/p/how-to-buy-cheap-claude-tokens-in">How to Buy Cheap Claude Tokens in China — Zilan Qian, ChinaTalk</a></li>
-<li><a target="_blank" rel="noopener" href="https://the-decoder.com/how-chinas-gray-market-sells-claude-tokens-at-a-fraction-of-the-price/">How China&#39;s gray market sells Claude tokens at a fraction of the price — The Decoder</a></li>
+<li><a target="_blank" rel="noopener" href="https://the-decoder.com/how-chinas-gray-market-sells-claude-tokens-at-a-fraction-of-the-price/">How China’s gray market sells Claude tokens at a fraction of the price — The Decoder</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.anthropic.com/news/detecting-and-preventing-distillation-attacks">Detecting and countering misuse of AI: distillation attacks — Anthropic</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.whitehouse.gov/wp-content/uploads/2026/04/NSTM-4.pdf">NSTM-4 — The White House</a></li>
 <li><a target="_blank" rel="noopener" href="https://arxiv.org/html/2603.01919v2">CISPA shadow API audit paper</a></li>
 <li><a target="_blank" rel="noopener" href="https://support.claude.com/en/articles/14328960-identity-verification-on-claude">Identity verification on Claude — Anthropic Support</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.anthropic.com/research/clio">Clio: Privacy-preserving insights into real-world AI use — Anthropic</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.businesstimes.com.sg/companies-markets/singapore-leads-global-capita-use-anthropics-claude-ai-businesses-ramp-adoption-gic">Singapore leads global per-capita use of Anthropic&#39;s Claude — Business Times</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.businesstimes.com.sg/companies-markets/singapore-leads-global-capita-use-anthropics-claude-ai-businesses-ramp-adoption-gic">Singapore leads global per-capita use of Anthropic’s Claude — Business Times</a></li>
 <li><a target="_blank" rel="noopener" href="https://huggingface.co/datasets/Crownelius/Opus-4.6-Reasoning-3300x">Opus-4.6-Reasoning-3300x dataset — HuggingFace</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.biometricupdate.com/202305/worldcoin-may-have-a-biometric-data-black-market-problem">Worldcoin may have a biometric data black market problem — Biometric Update</a></li>
 <li><a target="_blank" rel="noopener" href="https://github.com/router-for-me/CLIProxyAPI">CLIProxyAPI — GitHub</a></li>
@@ -252,15 +257,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

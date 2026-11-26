@@ -119,53 +119,62 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>資料表裡出現重複記錄，通常有幾個來源：ETL 流程沒做冪等性保護、應用層缺少唯一約束、或手動匯入時重複執行。本文介紹幾種查法與對應的效能取捨。</p>
-<h2 id="目錄"><a href="#目錄" class="headerlink" title="目錄"></a>目錄</h2><ol>
+<h2 id="目錄">目錄</h2>
+<ol>
 <li>什麼是重複資料？</li>
 <li>基礎查詢方法</li>
 <li>進階查詢技巧</li>
 <li>實務案例分析</li>
 <li>效能優化建議</li>
 </ol>
-<h2 id="1-什麼是重複資料？"><a href="#1-什麼是重複資料？" class="headerlink" title="1. 什麼是重複資料？"></a>1. 什麼是重複資料？</h2><p>重複資料指的是在資料表中，某些欄位或欄位組合的值完全相同的記錄。例如，在員工資料表中，可能會出現相同姓名、生日和部門的多筆記錄。</p>
-<h2 id="2-基礎查詢方法"><a href="#2-基礎查詢方法" class="headerlink" title="2. 基礎查詢方法"></a>2. 基礎查詢方法</h2><h3 id="2-1-使用-GROUP-BY-和-HAVING"><a href="#2-1-使用-GROUP-BY-和-HAVING" class="headerlink" title="2.1 使用 GROUP BY 和 HAVING"></a>2.1 使用 GROUP BY 和 HAVING</h3><p>最基本的查詢重複資料方式是使用 GROUP BY 和 HAVING 子句：</p>
+<h2 id="1-什麼是重複資料？">1. 什麼是重複資料？</h2>
+<p>重複資料指的是在資料表中，某些欄位或欄位組合的值完全相同的記錄。例如，在員工資料表中，可能會出現相同姓名、生日和部門的多筆記錄。</p>
+<h2 id="2-基礎查詢方法">2. 基礎查詢方法</h2>
+<h3 id="2-1-使用-GROUP-BY-和-HAVING">2.1 使用 GROUP BY 和 HAVING</h3>
+<p>最基本的查詢重複資料方式是使用 GROUP BY 和 HAVING 子句：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> 欄位<span class="number">1</span>, 欄位<span class="number">2</span>, <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">as</span> 重複次數</span><br><span class="line"><span class="keyword">FROM</span> 資料表</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> 欄位<span class="number">1</span>, 欄位<span class="number">2</span></span><br><span class="line"><span class="keyword">HAVING</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="operator">&gt;</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-2-查看重複記錄的完整資訊"><a href="#2-2-查看重複記錄的完整資訊" class="headerlink" title="2.2 查看重複記錄的完整資訊"></a>2.2 查看重複記錄的完整資訊</h3><p>若要查看重複記錄的所有欄位資訊，可以使用以下方式：</p>
+<h3 id="2-2-查看重複記錄的完整資訊">2.2 查看重複記錄的完整資訊</h3>
+<p>若要查看重複記錄的所有欄位資訊，可以使用以下方式：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">WITH</span> 重複資料 <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> 欄位<span class="number">1</span>, 欄位<span class="number">2</span></span><br><span class="line">    <span class="keyword">FROM</span> 資料表</span><br><span class="line">    <span class="keyword">GROUP</span> <span class="keyword">BY</span> 欄位<span class="number">1</span>, 欄位<span class="number">2</span></span><br><span class="line">    <span class="keyword">HAVING</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="operator">&gt;</span> <span class="number">1</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> A.<span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> 資料表 A</span><br><span class="line"><span class="keyword">INNER</span> <span class="keyword">JOIN</span> 重複資料 B</span><br><span class="line">    <span class="keyword">ON</span> A.欄位<span class="number">1</span> <span class="operator">=</span> B.欄位<span class="number">1</span></span><br><span class="line">    <span class="keyword">AND</span> A.欄位<span class="number">2</span> <span class="operator">=</span> B.欄位<span class="number">2</span>;</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-進階查詢技巧"><a href="#3-進階查詢技巧" class="headerlink" title="3. 進階查詢技巧"></a>3. 進階查詢技巧</h2><h3 id="3-1-使用-ROW-NUMBER-函數"><a href="#3-1-使用-ROW-NUMBER-函數" class="headerlink" title="3.1 使用 ROW_NUMBER() 函數"></a>3.1 使用 ROW_NUMBER() 函數</h3><p>ROW_NUMBER() 在每個重複群組內編號，再依號碼篩選。下例 <code>WHERE row_num &gt; 1</code> 取出每組第二筆以後的記錄（即「多出來的那些」），若需要列出整組重複列（含第一筆），請改用 CTE 回頭 JOIN 原表，或改用 2.2 節的做法：</p>
+<h2 id="3-進階查詢技巧">3. 進階查詢技巧</h2>
+<h3 id="3-1-使用-ROW-NUMBER-函數">3.1 使用 ROW_NUMBER() 函數</h3>
+<p>ROW_NUMBER() 在每個重複群組內編號，再依號碼篩選。下例 <code>WHERE row_num &gt; 1</code> 取出每組第二筆以後的記錄（即「多出來的那些」），若需要列出整組重複列（含第一筆），請改用 CTE 回頭 JOIN 原表，或改用 2.2 節的做法：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">WITH</span> 編號資料 <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> <span class="operator">*</span>,</span><br><span class="line">           <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span>(<span class="keyword">PARTITION</span> <span class="keyword">BY</span> 欄位<span class="number">1</span>, 欄位<span class="number">2</span> </span><br><span class="line">                            <span class="keyword">ORDER</span> <span class="keyword">BY</span> 欄位<span class="number">3</span>) <span class="keyword">as</span> row_num</span><br><span class="line">    <span class="keyword">FROM</span> 資料表</span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> 編號資料</span><br><span class="line"><span class="keyword">WHERE</span> row_num <span class="operator">&gt;</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-2-使用-EXISTS-子查詢"><a href="#3-2-使用-EXISTS-子查詢" class="headerlink" title="3.2 使用 EXISTS 子查詢"></a>3.2 使用 EXISTS 子查詢</h3><p>這種方法的語意直觀，適合中小型資料量或已在比對欄位上建立索引的情境。注意：這是 correlated subquery，外層每一列都會觸發一次內層掃描，在資料量大且缺乏索引時複雜度接近 O(n²)，效能不如視窗函數 ROW_NUMBER()：</p>
+<h3 id="3-2-使用-EXISTS-子查詢">3.2 使用 EXISTS 子查詢</h3>
+<p>這種方法的語意直觀，適合中小型資料量或已在比對欄位上建立索引的情境。注意：這是 correlated subquery，外層每一列都會觸發一次內層掃描，在資料量大且缺乏索引時複雜度接近 O(n²)，效能不如視窗函數 ROW_NUMBER()：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> 資料表 A</span><br><span class="line"><span class="keyword">WHERE</span> <span class="keyword">EXISTS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">FROM</span> 資料表 B</span><br><span class="line">    <span class="keyword">WHERE</span> A.欄位<span class="number">1</span> <span class="operator">=</span> B.欄位<span class="number">1</span></span><br><span class="line">    <span class="keyword">AND</span> A.欄位<span class="number">2</span> <span class="operator">=</span> B.欄位<span class="number">2</span></span><br><span class="line">    <span class="keyword">AND</span> A.主鍵 <span class="operator">&lt;&gt;</span> B.主鍵</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-
-<h2 id="4-實務案例分析"><a href="#4-實務案例分析" class="headerlink" title="4. 實務案例分析"></a>4. 實務案例分析</h2><p>假設設備檢查資料表以「設備名稱 + 位置代碼」為業務唯一鍵，但沒有建 UNIQUE constraint，導致重複寫入。查法如下：</p>
+<h2 id="4-實務案例分析">4. 實務案例分析</h2>
+<p>假設設備檢查資料表以「設備名稱 + 位置代碼」為業務唯一鍵，但沒有建 UNIQUE constraint，導致重複寫入。查法如下：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 先確認哪些業務鍵重複及筆數</span></span><br><span class="line"><span class="keyword">WITH</span> 重複設備 <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> </span><br><span class="line">        設備名稱,</span><br><span class="line">        位置代碼</span><br><span class="line">    <span class="keyword">FROM</span> 設備檢查表</span><br><span class="line">    <span class="keyword">GROUP</span> <span class="keyword">BY</span> </span><br><span class="line">        設備名稱,</span><br><span class="line">        位置代碼</span><br><span class="line">    <span class="keyword">HAVING</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="operator">&gt;</span> <span class="number">1</span></span><br><span class="line">)</span><br><span class="line"><span class="comment">-- 再拉回所有重複列的完整資料（含設備ID，方便後續刪除）</span></span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    檢查表.<span class="operator">*</span> </span><br><span class="line"><span class="keyword">FROM</span> 設備檢查表 檢查表</span><br><span class="line"><span class="keyword">INNER</span> <span class="keyword">JOIN</span> 重複設備</span><br><span class="line">    <span class="keyword">ON</span> 檢查表.設備名稱 <span class="operator">=</span> 重複設備.設備名稱</span><br><span class="line">    <span class="keyword">AND</span> 檢查表.位置代碼 <span class="operator">=</span> 重複設備.位置代碼</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> 檢查表.設備名稱, 檢查表.位置代碼, 檢查表.設備ID;</span><br></pre></td></tr></table></figure>
-
 <blockquote>
 <p>重複判斷鍵應使用業務邏輯上「應唯一」的欄位組合（如姓名+生日、email、序號等），而非代理主鍵（如自增 ID）。代理主鍵每列都不同，放進 GROUP BY 永遠查不到重複。</p>
 </blockquote>
-<h2 id="5-效能優化建議"><a href="#5-效能優化建議" class="headerlink" title="5. 效能優化建議"></a>5. 效能優化建議</h2><ol>
-<li><p><strong>善用索引</strong>：</p>
+<h2 id="5-效能優化建議">5. 效能優化建議</h2>
+<ol>
+<li>
+<p><strong>善用索引</strong>：</p>
 <ul>
 <li>在常用於群組或排序的欄位上建立適當的索引</li>
 <li>複合索引的欄位順序要配合查詢條件</li>
 </ul>
 </li>
-<li><p><strong>依資料量選查法</strong>：</p>
+<li>
+<p><strong>依資料量選查法</strong>：</p>
 <ul>
 <li>小資料量或比對欄位有索引：GROUP BY / EXISTS 都可</li>
 <li>大資料量無索引：優先用 ROW_NUMBER()（單次掃描）；EXISTS correlated subquery 複雜度接近 O(n²)，效能顯著較差</li>
 </ul>
 </li>
-<li><p><strong>避免全表掃描</strong>：</p>
+<li>
+<p><strong>避免全表掃描</strong>：</p>
 <ul>
 <li>盡可能加入 WHERE 條件縮小查詢範圍</li>
 <li>使用覆蓋索引減少資料讀取</li>
 </ul>
 </li>
 </ol>
-<h2 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h2><p>幾個落地要點：</p>
+<h2 id="總結">總結</h2>
+<p>幾個落地要點：</p>
 <ul>
 <li>定期對關鍵資料表跑 GROUP BY + HAVING 做健康檢查</li>
 <li>在業務唯一鍵上加 UNIQUE constraint 或 UNIQUE INDEX，從源頭防止重複寫入</li>
@@ -262,15 +271,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -26,10 +26,10 @@
 <meta property="article:author" content="kyosora">
 <meta property="article:section" content="AI產業觀察">
 <meta property="article:tag" content="AI Agent">
-<meta property="article:tag" content="權限設計">
 <meta property="article:tag" content="資訊安全">
 <meta property="article:tag" content="社會工程">
 <meta property="article:tag" content="Meta">
+<meta property="article:tag" content="權限設計">
 <meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k">
 <meta name="msvalidate.01" content="567E47D75E8DCF1282B9623AD914701E">
 <meta name="baidu-site-verification" content="code-pE5rnuxcfD">
@@ -43,7 +43,7 @@
 <script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Meta AI 客服漏洞：20,225 個 Instagram 帳號的驗證缺口","description":"Meta 的 AI 輔助帳號恢復工具漏做 email 核對，讓重設連結寄到陌生信箱。本文拆開官方通報與駭客說法，說明 agent 高權限操作該放哪些驗證關卡。","url":"https://kyosora.github.io/posts/68b58a92/","mainEntityOfPage":"https://kyosora.github.io/posts/68b58a92/","image":"https://kyosora.github.io/images/posts/meta-ai-instagram-takeover-cover.webp","datePublished":"2026-06-15T03:59:18.000Z","dateModified":"2026-07-27T10:00:00.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI產業觀察","keywords":"AI Agent, 權限設計, 資訊安全, 社會工程, Meta"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI產業觀察","item":"https://kyosora.github.io/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/"},{"@type":"ListItem","position":3,"name":"Meta AI 客服漏洞：20,225 個 Instagram 帳號的驗證缺口","item":"https://kyosora.github.io/posts/68b58a92/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Meta AI 客服漏洞：20,225 個 Instagram 帳號的驗證缺口","description":"Meta 的 AI 輔助帳號恢復工具漏做 email 核對，讓重設連結寄到陌生信箱。本文拆開官方通報與駭客說法，說明 agent 高權限操作該放哪些驗證關卡。","url":"https://kyosora.github.io/posts/68b58a92/","mainEntityOfPage":"https://kyosora.github.io/posts/68b58a92/","image":"https://kyosora.github.io/images/posts/meta-ai-instagram-takeover-cover.webp","datePublished":"2026-06-15T03:59:18.000Z","dateModified":"2026-07-27T10:00:00.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI產業觀察","keywords":"AI Agent, 資訊安全, 社會工程, Meta, 權限設計"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI產業觀察","item":"https://kyosora.github.io/categories/AI%E7%94%A2%E6%A5%AD%E8%A7%80%E5%AF%9F/"},{"@type":"ListItem","position":3,"name":"Meta AI 客服漏洞：20,225 個 Instagram 帳號的驗證缺口","item":"https://kyosora.github.io/posts/68b58a92/"}]}]}</script>
 
 </head>
 <body class="kind-post">
@@ -125,7 +125,8 @@
         <p>我第一次看到這則事件時，也被標題帶著走了：駭客只對 Meta AI 客服說「這是我的帳號，請把新 email 連上去」，AI 就信了，接著把帳號交出去。</p>
 <p>讀完 Meta 提交給緬因州檢察總長的事件通報後，我得修正這個判斷。公開證據能確認的是：AI 輔助的 Instagram 帳號恢復系統有一條後端程式路徑漏做 email 比對。至於語言模型有沒有判斷「這個人就是帳號擁有者」、駭客是否靠話術說服模型，目前沒有公開技術資料可以證明。</p>
 <p>這個差別很重要。若把原因寫成「AI 太好騙」，工程團隊可能去調整提示詞或模型；官方通報指出的缺口，卻是每次高權限操作都該執行的身份核對沒有執行。</p>
-<h2 id="Meta-官方到底確認了什麼？"><a href="#Meta-官方到底確認了什麼？" class="headerlink" title="Meta 官方到底確認了什麼？"></a>Meta 官方到底確認了什麼？</h2><p><a target="_blank" rel="noopener" href="https://www.all-about-security.de/wp-content/uploads/2026/06/Meta_AI_Support_Tool_Incident_-_AG_Notification_ME.pdf">Meta 的事件通報</a>把系統稱為 High Touch Support（HTS），是一套 AI 輔助的 Instagram 帳號恢復工具。使用者被鎖在帳號外時，可以要求系統把密碼重設連結寄到 email。</p>
+<h2 id="Meta-官方到底確認了什麼？">Meta 官方到底確認了什麼？</h2>
+<p><a target="_blank" rel="noopener" href="https://www.all-about-security.de/wp-content/uploads/2026/06/Meta_AI_Support_Tool_Incident_-_AG_Notification_ME.pdf">Meta 的事件通報</a>把系統稱為 High Touch Support（HTS），是一套 AI 輔助的 Instagram 帳號恢復工具。使用者被鎖在帳號外時，可以要求系統把密碼重設連結寄到 email。</p>
 <p>Meta 在通報裡寫得很具體：HTS 工具本身依原先設計運作，但「另一條程式路徑」有 bug，沒有確認使用者提供的 email 是否與該 Instagram 帳號原本綁定的 email 相符。因此，不屬於帳號的信箱也可能收到密碼重設連結。</p>
 <p>從這份通報可以確認的最短攻擊鏈是：</p>
 <ol>
@@ -135,26 +136,29 @@
 </ol>
 <p>Meta 表示 5 月 31 日發現問題，當天停用 AI 輔助支援工具、移除有問題的路徑、撤銷相關重設連結，並要求可能受影響的帳號重新驗證。重新上線前，Meta 也承諾修正帳號恢復入口的身份檢查，並檢查其他相似流程。</p>
 <p>所以這起事件確實發生在 AI 輔助客服裡，也確實造成帳號接管風險；但目前的第一手證據指向後端驗證缺漏，沒有證明模型把一句自然語言當成身份授權。</p>
-<h2 id="20-225-個帳號不等於-20-225-個帳號都被盜"><a href="#20-225-個帳號不等於-20-225-個帳號都被盜" class="headerlink" title="20,225 個帳號不等於 20,225 個帳號都被盜"></a>20,225 個帳號不等於 20,225 個帳號都被盜</h2><p><a target="_blank" rel="noopener" href="https://www.incibe.es/en/incibe-cert/publications/cybersecurity-highlights/instagram-accounts-compromised-due-vulnerability-metas-automated-technical">西班牙國家網路安全研究院 INCIBE 的事件整理</a>列出 2026 年 4 月 17 日至 5 月 31 日的事件區間，以及全球 20,225 個潛在受影響帳號。這個數字很大，但「潛在受影響」和「確認遭到接管」不能混用。</p>
+<h2 id="20-225-個帳號不等於-20-225-個帳號都被盜">20,225 個帳號不等於 20,225 個帳號都被盜</h2>
+<p><a target="_blank" rel="noopener" href="https://www.incibe.es/en/incibe-cert/publications/cybersecurity-highlights/instagram-accounts-compromised-due-vulnerability-metas-automated-technical">西班牙國家網路安全研究院 INCIBE 的事件整理</a>列出 2026 年 4 月 17 日至 5 月 31 日的事件區間，以及全球 20,225 個潛在受影響帳號。這個數字很大，但「潛在受影響」和「確認遭到接管」不能混用。</p>
 <p>Meta 的通報以緬因州 30 名使用者為例，明確把人數稱為上限：這些帳號曾透過該工具重設密碼、沒有開啟 2FA，而且活動看來可能未經授權；其中仍可能包含帳號本人正常使用恢復流程。Meta 也表示，當時不知道有哪些個人資料真的被讀取。</p>
 <p>可能被看到的資料則包括聯絡資訊、生日、貼文、私訊、帳號活動、個人檔案與相連帳號。即使最後只有一部分帳號遭接管，風險仍然夠嚴重；沒必要把上限寫成已確認受害人數來增加戲劇性。</p>
-<h2 id="歐巴馬、太空部隊與-Sephora-是哪一層證據？"><a href="#歐巴馬、太空部隊與-Sephora-是哪一層證據？" class="headerlink" title="歐巴馬、太空部隊與 Sephora 是哪一層證據？"></a>歐巴馬、太空部隊與 Sephora 是哪一層證據？</h2><p><a target="_blank" rel="noopener" href="https://www.404media.co/hackers-simply-asked-meta-ai-to-give-them-access-to-high-profile-instagram-accounts-it-worked/">404 Media 的報導</a>引述駭客說法、Telegram 流傳的影片與截圖，描述攻擊者把新 email 交給 Meta AI 客服，並稱這套手法與歐巴馬白宮封存帳號、美國太空部隊一名資深士官長及 Sephora 帳號遭接管的時間相符。</p>
+<h2 id="歐巴馬、太空部隊與-Sephora-是哪一層證據？">歐巴馬、太空部隊與 Sephora 是哪一層證據？</h2>
+<p><a target="_blank" rel="noopener" href="https://www.404media.co/hackers-simply-asked-meta-ai-to-give-them-access-to-high-profile-instagram-accounts-it-worked/">404 Media 的報導</a>引述駭客說法、Telegram 流傳的影片與截圖，描述攻擊者把新 email 交給 Meta AI 客服，並稱這套手法與歐巴馬白宮封存帳號、美國太空部隊一名資深士官長及 Sephora 帳號遭接管的時間相符。</p>
 <p>這些材料足以讓記者追查，也能補上官方通報沒有寫出的攻擊現場；它們仍不是 Meta 對個別帳號的技術鑑識結論。比較準確的寫法是「媒體報導將這些高知名度帳號與該手法連結」，不能寫成「Meta 已公開確認這些帳號都被同一漏洞接管」。</p>
 <p>同樣地，VPN 偽裝目標所在地、駭客在地下市場轉售帳號等細節，目前來自媒體與攻擊者材料。它們可能是真的，但證據層級和 Meta 的事件通報不同。</p>
-<h2 id="2FA-有沒有被繞過？"><a href="#2FA-有沒有被繞過？" class="headerlink" title="2FA 有沒有被繞過？"></a>2FA 有沒有被繞過？</h2><p>部分二手文章寫成攻擊者「繞過 2FA」。這和 Meta 給監管機構的說法衝突。</p>
+<h2 id="2FA-有沒有被繞過？">2FA 有沒有被繞過？</h2>
+<p>部分二手文章寫成攻擊者「繞過 2FA」。這和 Meta 給監管機構的說法衝突。</p>
 <p>Meta 的通報寫的是：攻擊者取得密碼重設連結後，只有在帳號持有人未啟用 2FA 時，才可能登入帳號。緬因州列入通知的 30 個帳號也都沒有開啟 2FA。除非後續出現事故鑑識或 Meta 更新說法，這裡應以第一手通報為準。</p>
 <p>2FA 因而成了這條攻擊鏈的第二道獨立關卡。第一道 email 核對失效後，它仍要求攻擊者提出另一份證明。這不代表 2FA 可以替後端漏掉的驗證收拾所有錯誤，只表示多層防線確實減少了單點失誤的傷害。</p>
-<h2 id="AI-在這起事件裡扮演什麼角色？"><a href="#AI-在這起事件裡扮演什麼角色？" class="headerlink" title="AI 在這起事件裡扮演什麼角色？"></a>AI 在這起事件裡扮演什麼角色？</h2><p>Meta 在 2026 年 3 月介紹 AI 客服時，用了「Solutions, not just suggestions」這句話。<a target="_blank" rel="noopener" href="https://www.meta.com/account-recovery-support/ai-support-assistant/">官方產品頁</a>也說 AI 支援可以處理帳號安全與恢復等任務。這顯示 Meta 正讓客服 AI 從回答問題走向執行操作，但不能據此斷定 3 月公告的每項功能就是這次 HTS 的完整架構。</p>
+<h2 id="AI-在這起事件裡扮演什麼角色？">AI 在這起事件裡扮演什麼角色？</h2>
+<p>Meta 在 2026 年 3 月介紹 AI 客服時，用了「Solutions, not just suggestions」這句話。<a target="_blank" rel="noopener" href="https://www.meta.com/account-recovery-support/ai-support-assistant/">官方產品頁</a>也說 AI 支援可以處理帳號安全與恢復等任務。這顯示 Meta 正讓客服 AI 從回答問題走向執行操作，但不能據此斷定 3 月公告的每項功能就是這次 HTS 的完整架構。</p>
 <p>AI 介面仍會擴大需要防守的輸入範圍。使用者不再只能填固定表單，而能用自由文字描述意圖；模型還可能選擇工具、整理參數，再把請求送到後端。這種系統若把模型輸出的帳號、email 或「已驗證」狀態直接當成可信資料，風險會很高。</p>
 <p>不過，安全邊界不該放在模型是否聽話。無論前面是 LLM、真人客服或傳統表單，後端在送出密碼重設連結前，都必須獨立確認收件信箱有權為該帳號執行恢復。前端傳來的每個身份聲明，都只能算待驗證輸入。</p>
 <p><a target="_blank" rel="noopener" href="https://genai.owasp.org/llmrisk/llm062025-excessive-agency/">OWASP 的 Excessive Agency 說明</a>也把重點放在下游系統：授權檢查要由確定性的元件執行，不能指望 LLM 自己判斷何時有權操作。對高影響動作，才視風險加入人工核准；人工不是每次操作都必備的萬靈丹，完整且不可跳過的後端驗證才是底線。</p>
-<h2 id="Tool-介面該怎麼畫？"><a href="#Tool-介面該怎麼畫？" class="headerlink" title="Tool 介面該怎麼畫？"></a>Tool 介面該怎麼畫？</h2><p>最危險的設計，是讓模型自己提供 <code>username</code>、<code>is_verified</code> 和 <code>new_email</code>，然後由一個 tool 直接完成變更。模型若能填入「已驗證」，那個欄位沒有任何安全價值；模型若能指定任意帳號，後端也失去從登入狀態限制操作範圍的機會。</p>
+<h2 id="Tool-介面該怎麼畫？">Tool 介面該怎麼畫？</h2>
+<p>最危險的設計，是讓模型自己提供 <code>username</code>、<code>is_verified</code> 和 <code>new_email</code>，然後由一個 tool 直接完成變更。模型若能填入「已驗證」，那個欄位沒有任何安全價值；模型若能指定任意帳號，後端也失去從登入狀態限制操作範圍的機會。</p>
 <p>比較合理的做法，是把身份與帳號從受信任的執行環境注入。模型只負責表達「使用者想變更 email」以及新的信箱值：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@tool</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">request_contact_email_change</span>(<span class="params">new_email: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;建立待核准的信箱變更，不直接修改帳號。&quot;&quot;&quot;</span></span><br><span class="line">    actor = auth.require_principal(tool_context.session_id)</span><br><span class="line">    account = accounts.for_principal(actor)</span><br><span class="line"></span><br><span class="line">    intent = changes.create_pending(</span><br><span class="line">        actor_id=actor.<span class="built_in">id</span>,</span><br><span class="line">        account_id=account.<span class="built_in">id</span>,</span><br><span class="line">        action=<span class="string">&quot;change_contact_email&quot;</span>,</span><br><span class="line">        normalized_params=&#123;<span class="string">&quot;new_email&quot;</span>: normalize_email(new_email)&#125;,</span><br><span class="line">    )</span><br><span class="line">    challenge = step_up.issue(</span><br><span class="line">        principal=actor,</span><br><span class="line">        action_hash=intent.action_hash,</span><br><span class="line">        methods=account.allowed_recovery_methods,</span><br><span class="line">        expires_in_minutes=<span class="number">10</span>,</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> render_next_step(challenge)</span><br></pre></td></tr></table></figure>
-
 <p>真正生效則由另一個不交給模型自由呼叫的流程處理：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">commit_contact_email_change</span>(<span class="params">intent_id, signed_approval</span>):</span><br><span class="line">    intent = changes.load(intent_id)</span><br><span class="line">    policy.verify_exact_action(intent, signed_approval)</span><br><span class="line">    policy.require_not_expired(signed_approval)</span><br><span class="line">    policy.require_not_replayed(signed_approval)</span><br><span class="line"></span><br><span class="line">    accounts.change_email(</span><br><span class="line">        account_id=intent.account_id,</span><br><span class="line">        new_email=intent.normalized_params[<span class="string">&quot;new_email&quot;</span>],</span><br><span class="line">    )</span><br><span class="line">    notifications.send_to_previous_channels(intent.account_id)</span><br></pre></td></tr></table></figure>
-
 <p>這段示意碼有幾個刻意的限制：</p>
 <ul>
 <li>模型不能指定 <code>actor_id</code> 或 <code>account_id</code>，帳號只能從已驗證 session 取得。</li>
@@ -164,7 +168,8 @@
 </ul>
 <p><a target="_blank" rel="noopener" href="https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html">OWASP AI Agent Security Cheat Sheet</a>把這種分工寫成「agent 提出動作，政策與執行元件獨立驗證」。對帳號恢復、付款與權限變更等敏感動作，還應要求升級驗證，並把核准綁定確切的對象、工具、參數與有效時間。</p>
 <p>真人審核適合處理舊信箱、可信裝置與復原碼都不可用的例外案件。一般流程若每次都靠真人看一眼，仍可能被社會工程；真人需要的是獨立證據、清楚的核准範圍與可追溯紀錄，而不是憑對話內容猜誰比較像帳號主人。</p>
-<h2 id="寫在最後"><a href="#寫在最後" class="headerlink" title="寫在最後"></a>寫在最後</h2><p>我原本把這件事理解成「模型被一句話騙走帳號」，讀完事件通報後，這個說法站不住。更準確的結論是：Meta 把帳號恢復接進 AI 輔助流程時，其中一條後端路徑沒有核對 email，讓未綁定帳號的信箱收到重設連結。</p>
+<h2 id="寫在最後">寫在最後</h2>
+<p>我原本把這件事理解成「模型被一句話騙走帳號」，讀完事件通報後，這個說法站不住。更準確的結論是：Meta 把帳號恢復接進 AI 輔助流程時，其中一條後端路徑沒有核對 email，讓未綁定帳號的信箱收到重設連結。</p>
 <p>這個修正沒有讓事件變得比較輕微，反而把問題指向更基本的工程責任。模型會誤判，真人客服也會受騙；高權限操作不能把正確性押在對話者的判斷上。只要一次漏掉完整驗證，任何入口都可能變成帳號接管路徑。</p>
 <p>我會從這次誤判記住一條更實際的規則：先讀事故通報，再把新聞標題轉成架構教訓。對 agent 系統而言，模型可以理解意圖、整理資料、提出動作；身份、授權與真正生效的決定，必須留在模型碰不到的邊界後面。</p>
 
@@ -173,7 +178,7 @@
 <footer class="post-end">
   
   <ul class="post-tags" aria-label="標籤">
-    <li><a href="/tags/AI-Agent/">AI Agent</a></li><li><a href="/tags/%E6%AC%8A%E9%99%90%E8%A8%AD%E8%A8%88/">權限設計</a></li><li><a href="/tags/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/">資訊安全</a></li><li><a href="/tags/%E7%A4%BE%E6%9C%83%E5%B7%A5%E7%A8%8B/">社會工程</a></li><li><a href="/tags/Meta/">Meta</a></li>
+    <li><a href="/tags/AI-Agent/">AI Agent</a></li><li><a href="/tags/%E8%B3%87%E8%A8%8A%E5%AE%89%E5%85%A8/">資訊安全</a></li><li><a href="/tags/%E7%A4%BE%E6%9C%83%E5%B7%A5%E7%A8%8B/">社會工程</a></li><li><a href="/tags/Meta/">Meta</a></li><li><a href="/tags/%E6%AC%8A%E9%99%90%E8%A8%AD%E8%A8%88/">權限設計</a></li>
   </ul>
   
 
@@ -257,15 +262,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

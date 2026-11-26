@@ -118,40 +118,48 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>光裝了 Git 不夠，沒有分支規範的團隊遲早會踩到「main 被直接推壞」或「三個人同時改同一支分支」的坑。這篇整理一套以 Gitflow 為基礎的分支模型，適合中小型專案直接套用。</p>
-<h2 id="1-主要分支"><a href="#1-主要分支" class="headerlink" title="1. 主要分支"></a>1. 主要分支</h2><h3 id="1-1-主分支-main"><a href="#1-1-主分支-main" class="headerlink" title="1.1 主分支 (main)"></a>1.1 主分支 (main)</h3><p>主分支代表產品的穩定版本，任何時候都應該可以直接部署到正式環境。</p>
+        <h2 id="引言">引言</h2>
+<p>光裝了 Git 不夠，沒有分支規範的團隊遲早會踩到「main 被直接推壞」或「三個人同時改同一支分支」的坑。這篇整理一套以 Gitflow 為基礎的分支模型，適合中小型專案直接套用。</p>
+<h2 id="1-主要分支">1. 主要分支</h2>
+<h3 id="1-1-主分支-main">1.1 主分支 (main)</h3>
+<p>主分支代表產品的穩定版本，任何時候都應該可以直接部署到正式環境。</p>
 <ul>
 <li><strong>用途</strong>：對應正式環境的可部署版本</li>
 <li><strong>規則</strong>：禁止直接在 main 分支上開發，所有變更必須經過 PR 審查</li>
 </ul>
 <p>每次合併到 main 的程式碼都應該通過完整測試，不能引入未知的不穩定因素。</p>
-<h3 id="1-2-開發分支-develop"><a href="#1-2-開發分支-develop" class="headerlink" title="1.2 開發分支 (develop)"></a>1.2 開發分支 (develop)</h3><p>develop 是日常開發的整合中心，從 main 建出來，最終穩定後再合回 main。</p>
+<h3 id="1-2-開發分支-develop">1.2 開發分支 (develop)</h3>
+<p>develop 是日常開發的整合中心，從 main 建出來，最終穩定後再合回 main。</p>
 <ul>
 <li><strong>用途</strong>：整合各功能分支的開發成果</li>
 <li><strong>特點</strong>：包含最新的開發進度，相對不穩定</li>
 <li><strong>規則</strong>：功能與修復都先進 develop，確認穩定後才往 main 合</li>
 </ul>
-<h2 id="2-支援性分支"><a href="#2-支援性分支" class="headerlink" title="2. 支援性分支"></a>2. 支援性分支</h2><h3 id="2-1-功能分支-feature"><a href="#2-1-功能分支-feature" class="headerlink" title="2.1 功能分支 (feature)"></a>2.1 功能分支 (feature)</h3><ul>
+<h2 id="2-支援性分支">2. 支援性分支</h2>
+<h3 id="2-1-功能分支-feature">2.1 功能分支 (feature)</h3>
+<ul>
 <li><strong>命名規則</strong>：<code>feature/功能名稱</code>（例如：<code>feature/user-authentication</code>）</li>
 <li><strong>來源</strong>：從 develop 建立</li>
 <li><strong>合併目標</strong>：完成後合回 develop</li>
 </ul>
 <p>每個新功能都應該有自己的 feature 分支，避免互相干擾。開發完成後透過 Pull Request 合回 develop：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b feature/user-authentication develop</span><br><span class="line"><span class="comment"># 開發新功能</span></span><br><span class="line">git checkout develop</span><br><span class="line">git merge --no-ff feature/user-authentication</span><br><span class="line">git branch -d feature/user-authentication</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-2-發布分支-release"><a href="#2-2-發布分支-release" class="headerlink" title="2.2 發布分支 (release)"></a>2.2 發布分支 (release)</h3><ul>
+<h3 id="2-2-發布分支-release">2.2 發布分支 (release)</h3>
+<ul>
 <li><strong>命名規則</strong>：<code>release/版本號</code>（例如：<code>release/1.2.0</code>）</li>
 <li><strong>來源</strong>：從 develop 建立</li>
 <li><strong>合併目標</strong>：完成後同時合到 main 和 develop</li>
 </ul>
 <p>release 分支用來做發布前的最後準備——跑測試、修小 bug、更新版本號。這段時間 develop 可以繼續接新功能，互不影響。確認沒問題後同時合進 main 和 develop，並在 main 打 tag 標記版本。</p>
-<h3 id="2-3-熱修復分支-hotfix"><a href="#2-3-熱修復分支-hotfix" class="headerlink" title="2.3 熱修復分支 (hotfix)"></a>2.3 熱修復分支 (hotfix)</h3><ul>
+<h3 id="2-3-熱修復分支-hotfix">2.3 熱修復分支 (hotfix)</h3>
+<ul>
 <li><strong>命名規則</strong>：<code>hotfix/問題描述</code>（例如：<code>hotfix/login-crash</code>）</li>
 <li><strong>來源</strong>：從 main 建立</li>
 <li><strong>合併目標</strong>：完成後同時合到 main 和 develop</li>
 </ul>
 <p>正式環境出緊急問題時，不能等 develop 穩定，直接從 main 開 hotfix 分支，修完立刻合回 main 和 develop。</p>
-<h2 id="3-工作流程"><a href="#3-工作流程" class="headerlink" title="3. 工作流程"></a>3. 工作流程</h2><p>典型的開發流程：</p>
+<h2 id="3-工作流程">3. 工作流程</h2>
+<p>典型的開發流程：</p>
 <ol>
 <li>從 develop 建立 feature 分支</li>
 <li>在 feature 分支上開發與測試</li>
@@ -163,18 +171,27 @@
 </ol>
 <p>實際操作範例：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 開始新功能開發</span></span><br><span class="line">git checkout -b feature/shopping-cart develop</span><br><span class="line"></span><br><span class="line"><span class="comment"># 開發完成，合回 develop</span></span><br><span class="line">git checkout develop</span><br><span class="line">git merge --no-ff feature/shopping-cart</span><br><span class="line">git push origin develop</span><br><span class="line"></span><br><span class="line"><span class="comment"># 準備發布</span></span><br><span class="line">git checkout -b release/1.0.0 develop</span><br><span class="line"></span><br><span class="line"><span class="comment"># 最後的調整</span></span><br><span class="line">git commit -am <span class="string">&quot;Bump version number to 1.0.0&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 完成發布，合進 main 和 develop</span></span><br><span class="line">git checkout main</span><br><span class="line">git merge --no-ff release/1.0.0</span><br><span class="line">git push origin main</span><br><span class="line"></span><br><span class="line">git checkout develop</span><br><span class="line">git merge --no-ff release/1.0.0</span><br><span class="line">git push origin develop</span><br><span class="line"></span><br><span class="line"><span class="comment"># 標記發布版本</span></span><br><span class="line">git tag -a 1.0.0 -m <span class="string">&quot;Version 1.0.0&quot;</span> main</span><br><span class="line">git push origin --tags</span><br><span class="line"></span><br><span class="line"><span class="comment"># 刪除 release 分支</span></span><br><span class="line">git branch -d release/1.0.0</span><br></pre></td></tr></table></figure>
-
-<h2 id="4-最佳實踐"><a href="#4-最佳實踐" class="headerlink" title="4. 最佳實踐"></a>4. 最佳實踐</h2><h3 id="4-1-小步提交"><a href="#4-1-小步提交" class="headerlink" title="4.1 小步提交"></a>4.1 小步提交</h3><p>頻繁提交、每次只做一件事。這樣合併衝突的範圍小，出問題時也更容易找到是哪一步出的包。</p>
-<h3 id="4-2-清楚的提交訊息"><a href="#4-2-清楚的提交訊息" class="headerlink" title="4.2 清楚的提交訊息"></a>4.2 清楚的提交訊息</h3><p>格式統一，讓 <code>git log</code> 變得可讀。提交訊息要說清楚「做了什麼」，有必要時補上「為什麼這樣做」：</p>
+<h2 id="4-最佳實踐">4. 最佳實踐</h2>
+<h3 id="4-1-小步提交">4.1 小步提交</h3>
+<p>頻繁提交、每次只做一件事。這樣合併衝突的範圍小，出問題時也更容易找到是哪一步出的包。</p>
+<h3 id="4-2-清楚的提交訊息">4.2 清楚的提交訊息</h3>
+<p>格式統一，讓 <code>git log</code> 變得可讀。提交訊息要說清楚「做了什麼」，有必要時補上「為什麼這樣做」：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">feat: 加入購物車功能</span><br><span class="line"></span><br><span class="line">- 實作新增商品到購物車</span><br><span class="line">- 實作從購物車移除商品</span><br><span class="line">- 計算購物車總價</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-3-定期同步上游"><a href="#4-3-定期同步上游" class="headerlink" title="4.3 定期同步上游"></a>4.3 定期同步上游</h3><p>開 feature 分支開了一週，develop 已經往前走很多步。定期把 develop 的更新 merge 進來，避免最後合併時一次爆大量衝突。</p>
-<h3 id="4-4-透過-PR-做程式碼審查"><a href="#4-4-透過-PR-做程式碼審查" class="headerlink" title="4.4 透過 PR 做程式碼審查"></a>4.4 透過 PR 做程式碼審查</h3><p>Pull Request 不只是合併的入口，也是讓隊友看程式碼、提早抓問題的機會。比起事後 debug，PR 的成本低很多。</p>
-<h3 id="4-5-CI-CD-自動化測試"><a href="#4-5-CI-CD-自動化測試" class="headerlink" title="4.5 CI/CD 自動化測試"></a>4.5 CI/CD 自動化測試</h3><p>每次 push 或 PR 都自動跑測試，不要靠人工記得。配好 CI，把「這段有沒有壞東西」的問題交給機器回答。</p>
-<h2 id="5-工具"><a href="#5-工具" class="headerlink" title="5. 工具"></a>5. 工具</h2><h3 id="5-1-git-flow"><a href="#5-1-git-flow" class="headerlink" title="5.1 git-flow"></a>5.1 git-flow</h3><p><a target="_blank" rel="noopener" href="https://github.com/nvie/gitflow">git-flow</a> 是 Vincent Driessen 開發的 Git 擴充工具，直接把這套分支模型包成指令（<code>git flow feature start</code>、<code>git flow release finish</code> 等），不用每次手動打 checkout 和 merge。</p>
-<h3 id="5-2-SourceTree"><a href="#5-2-SourceTree" class="headerlink" title="5.2 SourceTree"></a>5.2 SourceTree</h3><p>SourceTree 提供圖形介面，可以視覺化呈現分支結構，對不熟悉 CLI 的成員比較友善，也內建 git-flow 支援。</p>
-<h3 id="5-3-GitHub-Flow"><a href="#5-3-GitHub-Flow" class="headerlink" title="5.3 GitHub Flow"></a>5.3 GitHub Flow</h3><p>如果專案走持續部署、沒有明確的版本號概念，GitHub Flow 是更輕量的選擇：只有 main 和 feature 分支，feature 完成就合進 main 直接上線。架構比 Gitflow 簡單，適合快速迭代的小團隊。</p>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>分支規範的核心只有一條：<strong>讓 main 隨時可以部署</strong>。其他的 develop、feature、release、hotfix 都是圍繞這個目標設計的保護層。</p>
+<h3 id="4-3-定期同步上游">4.3 定期同步上游</h3>
+<p>開 feature 分支開了一週，develop 已經往前走很多步。定期把 develop 的更新 merge 進來，避免最後合併時一次爆大量衝突。</p>
+<h3 id="4-4-透過-PR-做程式碼審查">4.4 透過 PR 做程式碼審查</h3>
+<p>Pull Request 不只是合併的入口，也是讓隊友看程式碼、提早抓問題的機會。比起事後 debug，PR 的成本低很多。</p>
+<h3 id="4-5-CI-CD-自動化測試">4.5 CI/CD 自動化測試</h3>
+<p>每次 push 或 PR 都自動跑測試，不要靠人工記得。配好 CI，把「這段有沒有壞東西」的問題交給機器回答。</p>
+<h2 id="5-工具">5. 工具</h2>
+<h3 id="5-1-git-flow">5.1 git-flow</h3>
+<p><a target="_blank" rel="noopener" href="https://github.com/nvie/gitflow">git-flow</a> 是 Vincent Driessen 開發的 Git 擴充工具，直接把這套分支模型包成指令（<code>git flow feature start</code>、<code>git flow release finish</code> 等），不用每次手動打 checkout 和 merge。</p>
+<h3 id="5-2-SourceTree">5.2 SourceTree</h3>
+<p>SourceTree 提供圖形介面，可以視覺化呈現分支結構，對不熟悉 CLI 的成員比較友善，也內建 git-flow 支援。</p>
+<h3 id="5-3-GitHub-Flow">5.3 GitHub Flow</h3>
+<p>如果專案走持續部署、沒有明確的版本號概念，GitHub Flow 是更輕量的選擇：只有 main 和 feature 分支，feature 完成就合進 main 直接上線。架構比 Gitflow 簡單，適合快速迭代的小團隊。</p>
+<h2 id="結論">結論</h2>
+<p>分支規範的核心只有一條：<strong>讓 main 隨時可以部署</strong>。其他的 develop、feature、release、hotfix 都是圍繞這個目標設計的保護層。</p>
 <p>規範定好之後，團隊裡每個人都要照著走——工具再好，只有一半人遵守效果也會打折。</p>
 
       </div>
@@ -258,15 +275,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

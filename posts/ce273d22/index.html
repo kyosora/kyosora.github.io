@@ -119,7 +119,8 @@
     <div class="post-main">
       <div class="prose" id="article">
         <p>近幾年的網頁開發生態裡，HTMX 這類強調後端渲染的框架悄悄累積了不少關注度。它某種程度上是對「前後端分離才是正道」的反動，值得拆開來看看背後的邏輯。</p>
-<h2 id="前後端分離帶來的代價"><a href="#前後端分離帶來的代價" class="headerlink" title="前後端分離帶來的代價"></a>前後端分離帶來的代價</h2><p>前後端分離確實有其優勢：前端專注使用者體驗、後端專注商業邏輯、API 可以服務多種客戶端、水平擴展也比較直觀。</p>
+<h2 id="前後端分離帶來的代價">前後端分離帶來的代價</h2>
+<p>前後端分離確實有其優勢：前端專注使用者體驗、後端專注商業邏輯、API 可以服務多種客戶端、水平擴展也比較直觀。</p>
 <p>但實際做下來，代價也不小：</p>
 <ul>
 <li>要同時維護兩個獨立的程式碼庫</li>
@@ -129,29 +130,31 @@
 <li>效能調校要在前後端各自處理一遍</li>
 </ul>
 <p>對許多規模不大的專案來說，這些成本其實不太划算。</p>
-<h2 id="HTMX-的做法"><a href="#HTMX-的做法" class="headerlink" title="HTMX 的做法"></a>HTMX 的做法</h2><p>HTMX 的核心概念很直接：把原本要用 JavaScript 才能做的互動，直接寫成 HTML 屬性。</p>
-<h3 id="引入方式"><a href="#引入方式" class="headerlink" title="引入方式"></a>引入方式</h3><p>最快的方式是走 CDN，加一行進 <code>&lt;head&gt;</code> 就行：</p>
+<h2 id="HTMX-的做法">HTMX 的做法</h2>
+<p>HTMX 的核心概念很直接：把原本要用 JavaScript 才能做的互動，直接寫成 HTML 屬性。</p>
+<h3 id="引入方式">引入方式</h3>
+<p>最快的方式是走 CDN，加一行進 <code>&lt;head&gt;</code> 就行：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://unpkg.com/htmx.org@2.0.3&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p>正式環境建議改用 npm 安裝或自行托管，避免依賴第三方 CDN；若仍走 CDN，可從 <a target="_blank" rel="noopener" href="https://htmx.org/docs/#installing">htmx.org 官方文件</a> 取得帶 <code>integrity</code> hash 的完整標籤。</p>
 <p>也可以用 npm 安裝：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install htmx.org</span><br></pre></td></tr></table></figure>
-
-<h3 id="基本語法"><a href="#基本語法" class="headerlink" title="基本語法"></a>基本語法</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">hx-post</span>=<span class="string">&quot;/submit&quot;</span> </span></span><br><span class="line"><span class="tag">        <span class="attr">hx-target</span>=<span class="string">&quot;#result&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">hx-swap</span>=<span class="string">&quot;outerHTML&quot;</span>&gt;</span></span><br><span class="line">  送出</span><br><span class="line"><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
+<h3 id="基本語法">基本語法</h3>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">hx-post</span>=<span class="string">&quot;/submit&quot;</span> </span></span><br><span class="line"><span class="tag">        <span class="attr">hx-target</span>=<span class="string">&quot;#result&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">hx-swap</span>=<span class="string">&quot;outerHTML&quot;</span>&gt;</span></span><br><span class="line">  送出</span><br><span class="line"><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>這三個屬性做的事：<code>hx-post</code> 指定送出 POST 請求的 URL，<code>hx-target</code> 指定要更新哪個 DOM 元素，<code>hx-swap</code> 指定怎麼替換（<code>outerHTML</code> 代表整個目標元素都被替換掉）。</p>
 <p>關鍵在伺服器端：HTMX 期望伺服器回傳的是 <strong>HTML fragment</strong>，不是 JSON。後端直接吐一段 HTML，HTMX 把它插進指定位置，整個流程不需要任何 JavaScript。</p>
 <p>以 Python/Flask 為例：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&quot;/submit&quot;</span>, methods=[<span class="string">&quot;POST&quot;</span>]</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">submit</span>():</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;&lt;div id=&#x27;result&#x27;&gt;送出成功！&lt;/div&gt;&quot;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="主要優勢"><a href="#主要優勢" class="headerlink" title="主要優勢"></a>主要優勢</h3><p><strong>開發效率</strong>：省去前端狀態同步的那層工作。在簡單的 CRUD 情境下，不需要在 API response 和前端狀態之間來回對應。</p>
+<h3 id="主要優勢">主要優勢</h3>
+<p><strong>開發效率</strong>：省去前端狀態同步的那層工作。在簡單的 CRUD 情境下，不需要在 API response 和前端狀態之間來回對應。</p>
 <p><strong>前端資源</strong>：HTMX 本身壓縮後約 14KB，沒有額外的 runtime。對比 React 加上狀態管理套件，差距相當明顯。</p>
 <p><strong>學習曲線</strong>：懂 HTML 的開發者基本上看幾個範例就能上手，不需要先學 JSX、hooks 或 reactive 的概念。</p>
-<h2 id="為什麼現在開始受到重視？"><a href="#為什麼現在開始受到重視？" class="headerlink" title="為什麼現在開始受到重視？"></a>為什麼現在開始受到重視？</h2><p>幾個背景因素加在一起：</p>
+<h2 id="為什麼現在開始受到重視？">為什麼現在開始受到重視？</h2>
+<p>幾個背景因素加在一起：</p>
 <p><strong>複雜度的反彈</strong>：不少開發者做過幾個 SPA 後意識到，並不是每個專案都需要那個複雜度。一個內部管理系統、一個 blog、一個資料檢索介面，根本用不到完整的前端框架。</p>
 <p><strong>效能壓力</strong>：Core Web Vitals 變成 Google 排名因素之後，初始載入速度被正式量化。後端渲染天生就在這一塊佔優勢。</p>
 <p><strong>實用主義</strong>：選「最適合這個專案的技術」而不是「現在最流行的技術」，這種態度在社群裡越來越普遍。</p>
-<h2 id="適合的使用場景"><a href="#適合的使用場景" class="headerlink" title="適合的使用場景"></a>適合的使用場景</h2><p>HTMX 比較適合：</p>
+<h2 id="適合的使用場景">適合的使用場景</h2>
+<p>HTMX 比較適合：</p>
 <ul>
 <li>內部管理系統</li>
 <li>資料導向的應用程式（報表、搜尋、篩選）</li>
@@ -160,7 +163,8 @@
 <li>後端開發者想自己包辦前端互動的情境</li>
 </ul>
 <p>反過來，如果專案需要高度複雜的前端狀態（例如即時協作、複雜的動畫流程、大量的離線操作），HTMX 就不是合適的工具。</p>
-<h2 id="取捨"><a href="#取捨" class="headerlink" title="取捨"></a>取捨</h2><p>HTMX 不是要取代 React 或 Vue，而是在兩者之間補了一個位置——比純 HTML 表單靈活，比完整 SPA 框架輕。</p>
+<h2 id="取捨">取捨</h2>
+<p>HTMX 不是要取代 React 或 Vue，而是在兩者之間補了一個位置——比純 HTML 表單靈活，比完整 SPA 框架輕。</p>
 <p>評估要不要引入時，幾個問題值得先想清楚：專案的互動複雜度到底在哪裡？團隊後端能力強還是前端能力強？部署環境能不能配合後端渲染的架構？這些答案比技術本身更能決定 HTMX 是不是對的選擇。</p>
 
       </div>
@@ -213,15 +217,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -125,21 +125,24 @@
         <p>那天我想偷懶。一個中型重構，要動 api 層、service 層，順便把一個命名很爛的函式全專案改名。我手上有能並行派 sub-agent 的工具，腦袋一熱就想：三件事互不相干，派三個 agent 同時做，理論上三分之一時間搞定。</p>
 <p>結果跑完一看，service 層的修改不見了。不是壞掉，是憑空消失，像我從來沒改過。</p>
 <p>這篇就是那次的紀錄。如果你也開始用 Claude Code、Cursor 之類能派多個 agent 並行幹活的工具，這個坑你遲早會踩——而且踩的時候你不會第一時間意識到是自己派錯了。</p>
-<h2 id="本來以為會發生的事"><a href="#本來以為會發生的事" class="headerlink" title="本來以為會發生的事"></a>本來以為會發生的事</h2><p>我的盤算很單純：</p>
+<h2 id="本來以為會發生的事">本來以為會發生的事</h2>
+<p>我的盤算很單純：</p>
 <ul>
 <li>Agent A：改 <code>api/</code> 底下的 controller，調整回傳格式</li>
 <li>Agent B：改 <code>service/</code> 底下的業務邏輯，補一段快取</li>
 <li>Agent C：把 <code>getUserData</code> 這個函式全專案改名成 <code>fetchUserProfile</code></li>
 </ul>
 <p>三個任務，三個 agent，同時開跑。我甚至在每個 agent 的指令最後都加了一句「請小心，不要動到不屬於你任務範圍的檔案」。自我感覺良好。</p>
-<h2 id="第一個坑：它們看不到彼此"><a href="#第一個坑：它們看不到彼此" class="headerlink" title="第一個坑：它們看不到彼此"></a>第一個坑：它們看不到彼此</h2><p>跑完之後，我打開 <code>service/</code> 想看 B 加的快取，發現整段不見了。<code>git diff</code> 一比，B 那段程式碼根本不在工作目錄裡——像沒寫過。</p>
+<h2 id="第一個坑：它們看不到彼此">第一個坑：它們看不到彼此</h2>
+<p>跑完之後，我打開 <code>service/</code> 想看 B 加的快取，發現整段不見了。<code>git diff</code> 一比，B 那段程式碼根本不在工作目錄裡——像沒寫過。</p>
 <p>我第一個反應是「Claude Code 出 bug 了吧」，差點就要去開 issue。冷靜下來看檔案的修改時間和 diff，才發現根本不是工具的錯，是我自己的問題。</p>
 <p>關鍵在這裡：並行的 sub-agent 之間，context 是完全隔離的。A 不知道 B 在幹嘛，B 也不知道 C 存在。它們不是一個團隊，是三個各自關在小房間、起點都是磁碟上同一份程式碼的人。</p>
 <p>那句「請不要動到別人的檔案」完全沒用——你沒辦法叫一個看不到同事的人去配合同事。</p>
 <p>真正出事的是 Agent C。改名 <code>getUserData</code> 這個任務天生橫跨整個專案，<code>service/</code> 裡也有好幾處呼叫到它。C 為了改名，把 <code>service/</code> 的檔案讀進自己的 context、改完寫回去——但 C 讀進去的是重構開始那一刻的版本，裡面還沒有 B 加的快取。C 寫回去的瞬間，就用這份舊版本把 B 辛苦加的東西整個蓋掉了。</p>
 <p>這就是並行寫入最典型的死法：last-write-wins，最後寫的人贏。誰最後完成，誰的版本覆蓋全部。B 沒有比較弱，B 只是比較早寫完而已。</p>
 <p>而且因為 B 那段從沒 commit 過，被蓋掉就是真的沒了——<code>git reflog</code> 救不回它，reflog 記的是 commit 歷史，工作目錄裡還沒提交的修改根本不在它管轄範圍。我最後是對著 B agent 當初的回報、手動把那段快取重打了一遍。沒 commit 的並行寫入翻車，沒有 Ctrl+Z。</p>
-<h2 id="第二個坑：任務的切法錯了"><a href="#第二個坑：任務的切法錯了" class="headerlink" title="第二個坑：任務的切法錯了"></a>第二個坑：任務的切法錯了</h2><p>問題不在「並行」本身，在我切任務的方式。</p>
+<h2 id="第二個坑：任務的切法錯了">第二個坑：任務的切法錯了</h2>
+<p>問題不在「並行」本身，在我切任務的方式。</p>
 <p>A 和 B 是按目錄邊界切的——一個管 <code>api/</code>，一個管 <code>service/</code>，井水不犯河水。這種切法沒問題。</p>
 <p>C 不一樣。「全專案改名」是一個橫切（cross-cutting）任務，它的本質就是要碰每一個用到那個函式的檔案，跟 A、B 的領地天然重疊。把橫切任務跟縱切任務丟進同一批並行，等於在賭誰先寫完，這不是並行，是 race condition。</p>
 <p>我事後想了個判準，蠻好用的：</p>
@@ -148,24 +151,24 @@
 </blockquote>
 <p>A 碰 <code>api/*</code>，B 碰 <code>service/*</code>，交集是空的，可以並行。C 碰「所有檔案」，跟誰都有交集，它必須單獨跑，要嘛排在最前面（先改完名，後續 agent 拿到的就是新名字），要嘛排在最後面（等 A、B 都寫完，C 再統一掃一遍）。</p>
 <p>（順帶一提，我也試過更笨的辦法：把三個任務都縮小範圍，叫 C 只改 <code>api/</code> 和 <code>service/</code> 以外的地方。結果是改名改一半，剩下的呼叫點還是舊名字，編譯直接掛。橫切任務不能硬切成幾塊塞進不同 agent，會切出一個誰都跑不起來的中間狀態。）</p>
-<h2 id="第三個坑：就算切對了，還是可能撞"><a href="#第三個坑：就算切對了，還是可能撞" class="headerlink" title="第三個坑：就算切對了，還是可能撞"></a>第三個坑：就算切對了，還是可能撞</h2><p>把 C 抽出來單獨跑之後，A 和 B 並行確實沒事了。但我又想得更遠一點：如果哪天 A 和 B 的領地有一小塊模糊地帶，比方說它們都需要改一個共用的 type 定義檔，就算我以為切乾淨了，還是會撞。</p>
+<h2 id="第三個坑：就算切對了，還是可能撞">第三個坑：就算切對了，還是可能撞</h2>
+<p>把 C 抽出來單獨跑之後，A 和 B 並行確實沒事了。但我又想得更遠一點：如果哪天 A 和 B 的領地有一小塊模糊地帶，比方說它們都需要改一個共用的 type 定義檔，就算我以為切乾淨了，還是會撞。</p>
 <p>人是會判斷錯的。與其每次都祈禱自己切得夠乾淨，不如讓環境物理上不可能撞。</p>
 <p>這就是 git worktree 派上用場的地方。worktree 讓你從同一個 repo 開出多個獨立的工作目錄，各自有自己的檔案，共用底層的 git 物件庫：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 從目前的 repo 開三個獨立工作目錄，各自一個分支</span></span><br><span class="line">git worktree add ../wt-agent-a -b agent-a</span><br><span class="line">git worktree add ../wt-agent-b -b agent-b</span><br><span class="line">git worktree add ../wt-agent-c -b agent-c</span><br></pre></td></tr></table></figure>
-
 <p>接著派 agent 的時候，在指令裡明確告訴每個 agent 它的工作目錄是哪一個——「你的工作目錄是 <code>../wt-agent-a</code>，所有讀寫都只在這裡面」。A 寫 <code>../wt-agent-a</code> 的檔案，怎麼樣都碰不到 B 的 <code>../wt-agent-b</code>。它們從根本上沒有共享的可寫狀態，last-write-wins 這種事情不可能發生——因為沒有「同一個檔案」讓它們搶。</p>
 <p>跑完之後，衝突被推遲到你能控制的那一刻，也就是 merge：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git merge agent-a</span><br><span class="line">git merge agent-b</span><br><span class="line">git merge agent-c   <span class="comment"># 真有衝突，git 會明明白白告訴你哪幾行</span></span><br></pre></td></tr></table></figure>
-
 <p>並行直接寫同一個目錄，衝突是靜默的，B 的東西消失了你完全不會收到通知；走 worktree + merge，衝突是顯式的，git 會停下來、把撞到的那幾行標給你看。把一個你看不見的問題，換成一個你看得見的問題——這個換法穩賺不賠。</p>
 <p>事後收完的工作目錄記得清掉，順手把合併完的分支也刪一刪：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git worktree remove ../wt-agent-a</span><br><span class="line">git worktree prune</span><br><span class="line">git branch -d agent-a   <span class="comment"># merge 進主線後就可以刪了</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="那到底什麼時候該並行？"><a href="#那到底什麼時候該並行？" class="headerlink" title="那到底什麼時候該並行？"></a>那到底什麼時候該並行？</h2><p>並行 agent 不是「能用就用」的加速器，它有明確的適用邊界。</p>
+<h2 id="那到底什麼時候該並行？">那到底什麼時候該並行？</h2>
+<p>並行 agent 不是「能用就用」的加速器，它有明確的適用邊界。</p>
 <p>適合並行的情況：任務之間檔案集合不重疊。典型的是「每個 agent 負責一個獨立模組」「分頭去讀不同子系統然後各自回報」這種扇出（fan-out）型工作。讀取類的任務尤其安全——大家都只讀不寫，怎麼撞都沒事。</p>
 <p>不適合並行的情況：橫切任務（全域改名、改一個被到處引用的介面、調整共用設定）、有先後依賴的任務（B 要用 A 的產出）、以及任何兩個 agent 會寫到同一個檔案的情況。這些老老實實串行，或用 worktree 隔離。</p>
 <p>判斷其實就一句話：先問「這幾個任務碰的檔案會不會重疊」，會就別並行。我現在派 agent 之前都先在腦袋裡跑一遍這個檢查，比事後撈回消失的程式碼快多了。</p>
-<h2 id="踩過的坑，列一下"><a href="#踩過的坑，列一下" class="headerlink" title="踩過的坑，列一下"></a>踩過的坑，列一下</h2><ul>
+<h2 id="踩過的坑，列一下">踩過的坑，列一下</h2>
+<ul>
 <li>以為加一句「別動別人的檔案」就能讓 agent 互相讓路——它們根本看不到彼此，這句話是寫給空氣的</li>
 <li>把橫切任務（全域改名）跟縱切任務（改某個模組）丟同一批並行——橫切任務碰所有檔案，必撞</li>
 <li>衝突是靜默的——被覆蓋的修改不會報錯，它只是安靜地消失，而且沒 commit 的話 reflog 也救不回</li>
@@ -263,15 +266,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

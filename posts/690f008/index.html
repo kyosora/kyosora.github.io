@@ -121,7 +121,8 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SQLCMD 是隨 SQL Server 一起安裝的命令列工具，日常用途涵蓋執行維護腳本、匯入匯出資料、串接 Windows 排程器自動跑批次作業。比起 SSMS 的 GUI，它的優勢在於可以寫成批次檔、進版控、在沒有桌面環境的伺服器上執行。</p>
+        <h2 id="前言">前言</h2>
+<p>SQLCMD 是隨 SQL Server 一起安裝的命令列工具，日常用途涵蓋執行維護腳本、匯入匯出資料、串接 Windows 排程器自動跑批次作業。比起 SSMS 的 GUI，它的優勢在於可以寫成批次檔、進版控、在沒有桌面環境的伺服器上執行。</p>
 <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
   <text x="400" y="40" text-anchor="middle" font-size="24" fill="#333">SQLCMD 功能概觀</text>
   <circle cx="400" cy="200" r="60" fill="#4A90E2"/>
@@ -141,54 +142,51 @@
     <line x1="460" y1="230" x2="560" y2="280" stroke="#666" stroke-width="2"/>
   </g>
 </svg>
-
-<h2 id="SQLCMD-基本語法"><a href="#SQLCMD-基本語法" class="headerlink" title="SQLCMD 基本語法"></a>SQLCMD 基本語法</h2><p>常用旗標一覽：</p>
+<h2 id="SQLCMD-基本語法">SQLCMD 基本語法</h2>
+<p>常用旗標一覽：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">sqlcmd</span><br><span class="line">  -S &lt;伺服器名稱&gt;    -- 指定 SQL Server 執行個體（可含 \InstanceName 或 ,Port）</span><br><span class="line">  -U &lt;使用者名稱&gt;    -- SQL Server 登入帳號</span><br><span class="line">  -P &lt;密碼&gt;          -- 對應密碼</span><br><span class="line">  -E                 -- 使用 Windows 整合驗證（省略 -U/-P，優先選此）</span><br><span class="line">  -d &lt;資料庫名稱&gt;    -- 連線後預設切換到這個資料庫</span><br><span class="line">  -i &lt;輸入檔案&gt;      -- 執行指定的 SQL 指令檔</span><br><span class="line">  -o &lt;輸出檔案&gt;      -- 把查詢結果寫到檔案</span><br><span class="line">  -Q &quot;&lt;查詢&gt;&quot;        -- 執行單行查詢後自動結束</span><br><span class="line">  -v 變數=值         -- 定義腳本變數（在腳本內以 $(變數名) 引用）</span><br><span class="line">  -r                 -- 將錯誤訊息輸出到 stderr（預設是 stdout）</span><br></pre></td></tr></table></figure>
-
-<h3 id="Windows-整合驗證（-E）"><a href="#Windows-整合驗證（-E）" class="headerlink" title="Windows 整合驗證（-E）"></a>Windows 整合驗證（-E）</h3><p>在 Windows 網域環境下，<code>-E</code> 比帳密更常用也更安全——執行帳號的 Windows 身份直接對應到 SQL Server 登入，不需要在指令或環境變數裡放密碼：</p>
+<h3 id="Windows-整合驗證（-E）">Windows 整合驗證（-E）</h3>
+<p>在 Windows 網域環境下，<code>-E</code> 比帳密更常用也更安全——執行帳號的 Windows 身份直接對應到 SQL Server 登入，不需要在指令或環境變數裡放密碼：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlcmd -S ServerName -E -d MyDB -i &quot;D:\scripts\maintenance.sql&quot;</span><br></pre></td></tr></table></figure>
-
 <p>若伺服器設定了具名執行個體或非預設埠：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sqlcmd -S ServerName\SQLEXPRESS -E -d MyDB -Q &quot;SELECT @@VERSION&quot;</span><br><span class="line">sqlcmd -S ServerName,<span class="number">1433</span> -E -d MyDB -Q &quot;SELECT @@VERSION&quot;</span><br></pre></td></tr></table></figure>
-
-<h2 id="主要應用場景"><a href="#主要應用場景" class="headerlink" title="主要應用場景"></a>主要應用場景</h2><h3 id="1-執行-SQL-指令檔"><a href="#1-執行-SQL-指令檔" class="headerlink" title="1. 執行 SQL 指令檔"></a>1. 執行 SQL 指令檔</h3><p><code>-i</code> 一次只接受一個輸入檔，重複寫 <code>-i file1 -i file2</code> 後面的會蓋掉前面的，只有最後一個生效。要依序執行多個腳本，有兩種做法：</p>
+<h2 id="主要應用場景">主要應用場景</h2>
+<h3 id="1-執行-SQL-指令檔">1. 執行 SQL 指令檔</h3>
+<p><code>-i</code> 一次只接受一個輸入檔，重複寫 <code>-i file1 -i file2</code> 後面的會蓋掉前面的，只有最後一個生效。要依序執行多個腳本，有兩種做法：</p>
 <p><strong>做法一：用 <code>:r</code> 在主腳本內 include 其他檔案</strong></p>
 <p>建一支 <code>run_all.sql</code>，用 <code>:r</code> 逐一引入：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- run_all.sql</span></span><br><span class="line">:r D:\scripts\step1_schema.sql</span><br><span class="line">:r D:\scripts\step2_data.sql</span><br><span class="line">:r D:\scripts\step3_index.sql</span><br></pre></td></tr></table></figure>
-
 <p>然後只呼叫一次 sqlcmd：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlcmd -S ServerName -E -d MyDB -i &quot;D:\scripts\run_all.sql&quot; -o &quot;D:\logs\run.log&quot;</span><br></pre></td></tr></table></figure>
-
 <p><strong>做法二：在批次檔裡分次呼叫</strong></p>
 <figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line">sqlcmd -S ServerName -E -d MyDB -i &quot;D:\scripts\step1_schema.sql&quot;</span><br><span class="line"><span class="keyword">IF</span> <span class="variable">%ERRORLEVEL%</span> <span class="keyword">NEQ</span> <span class="number">0</span> ( <span class="built_in">echo</span> step1 失敗 &amp; <span class="keyword">exit</span> /b <span class="number">1</span> )</span><br><span class="line"></span><br><span class="line">sqlcmd -S ServerName -E -d MyDB -i &quot;D:\scripts\step2_data.sql&quot;</span><br><span class="line"><span class="keyword">IF</span> <span class="variable">%ERRORLEVEL%</span> <span class="keyword">NEQ</span> <span class="number">0</span> ( <span class="built_in">echo</span> step2 失敗 &amp; <span class="keyword">exit</span> /b <span class="number">1</span> )</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-資料匯入"><a href="#2-資料匯入" class="headerlink" title="2. 資料匯入"></a>2. 資料匯入</h3><p>執行外部 SQL 腳本把資料匯入目標資料庫（常見於還原純文字備份或跑遷移腳本）：</p>
+<h3 id="2-資料匯入">2. 資料匯入</h3>
+<p>執行外部 SQL 腳本把資料匯入目標資料庫（常見於還原純文字備份或跑遷移腳本）：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlcmd -S <span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">3</span> -E -d TargetDB -i &quot;D:\backup.sql&quot;</span><br></pre></td></tr></table></figure>
-
 <p>若伺服器只開 SQL Server 驗證：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlcmd -S <span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">3</span> -U DBAdmin -P MyPassword -d TargetDB -i &quot;D:\backup.sql&quot;</span><br></pre></td></tr></table></figure>
-
 <p><code>-r</code> 旗標的用途是把錯誤訊息導向 stderr（以便在 shell 管線中分離正常輸出與錯誤），跟「匯入」本身無直接關係，加不加不影響匯入行為。</p>
-<h3 id="3-查詢結果輸出"><a href="#3-查詢結果輸出" class="headerlink" title="3. 查詢結果輸出"></a>3. 查詢結果輸出</h3><p>用 <code>-Q</code> 加 <code>-o</code> 把查詢結果寫入檔案：</p>
+<h3 id="3-查詢結果輸出">3. 查詢結果輸出</h3>
+<p>用 <code>-Q</code> 加 <code>-o</code> 把查詢結果寫入檔案：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlcmd -S ServerName -E -d SourceDB -Q &quot;SELECT * FROM Users&quot; -o &quot;D:\export.txt&quot;</span><br></pre></td></tr></table></figure>
-
 <p>注意：<code>-o</code> 輸出的是 sqlcmd 預設的純文字表格格式（含欄位對齊空白），<strong>不是 CSV</strong>。若要後續用程式處理這份輸出，建議改用 <code>-s&quot;,&quot;</code> 設定欄位分隔符加 <code>-W</code> 去掉尾端空白：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlcmd -S ServerName -E -d SourceDB -Q &quot;<span class="built_in">SET</span> NOCOUNT ON; SELECT col1, col2 FROM Users&quot; -s&quot;,&quot; -W -o &quot;D:\export.csv&quot;</span><br></pre></td></tr></table></figure>
-
 <p>若資料量大或格式需求複雜，<code>bcp</code> 工具是更適合的選擇。</p>
-<h3 id="4-資料庫備份"><a href="#4-資料庫備份" class="headerlink" title="4. 資料庫備份"></a>4. 資料庫備份</h3><p>透過 SQLCMD 執行 BACKUP 語句：</p>
+<h3 id="4-資料庫備份">4. 資料庫備份</h3>
+<p>透過 SQLCMD 執行 BACKUP 語句：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">:: 完整備份</span><br><span class="line">sqlcmd -S ServerName -E -Q &quot;BACKUP DATABASE MyDB TO DISK=&#x27;D:\Backups\MyDB.bak&#x27;&quot;</span><br><span class="line"></span><br><span class="line">:: 差異備份</span><br><span class="line">sqlcmd -S ServerName -E -Q &quot;BACKUP DATABASE MyDB TO DISK=&#x27;D:\Backups\MyDB_Diff.bak&#x27; WITH DIFFERENTIAL&quot;</span><br></pre></td></tr></table></figure>
-
-<h3 id="5-自動化排程（批次檔）"><a href="#5-自動化排程（批次檔）" class="headerlink" title="5. 自動化排程（批次檔）"></a>5. 自動化排程（批次檔）</h3><p>結合 Windows 工作排程器：</p>
+<h3 id="5-自動化排程（批次檔）">5. 自動化排程（批次檔）</h3>
+<p>結合 Windows 工作排程器：</p>
 <figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line">sqlcmd -S ServerName -E -d MyDB -i &quot;D:\DailyMaintenance.sql&quot; -o &quot;D:\logs\daily.log&quot;</span><br><span class="line"><span class="keyword">IF</span> <span class="variable">%ERRORLEVEL%</span> <span class="keyword">NEQ</span> <span class="number">0</span> (</span><br><span class="line">    <span class="built_in">echo</span> [ERROR] 維護腳本執行失敗，結束碼：<span class="variable">%ERRORLEVEL%</span></span><br><span class="line">    <span class="keyword">exit</span> /b <span class="number">1</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<h2 id="進階技巧"><a href="#進階技巧" class="headerlink" title="進階技巧"></a>進階技巧</h2><h3 id="變數使用"><a href="#變數使用" class="headerlink" title="變數使用"></a>變數使用</h3><p>SQLCMD 腳本變數（<code>$(變數名)</code>）只在<strong>腳本內容或 <code>-Q</code> 的查詢字串</strong>中做替換，不適用於 <code>-S</code>、<code>-U</code>、<code>-P</code> 這些連線參數——那些位置由 shell 展開，不是 SQLCMD 處理。</p>
+<h2 id="進階技巧">進階技巧</h2>
+<h3 id="變數使用">變數使用</h3>
+<p>SQLCMD 腳本變數（<code>$(變數名)</code>）只在<strong>腳本內容或 <code>-Q</code> 的查詢字串</strong>中做替換，不適用於 <code>-S</code>、<code>-U</code>、<code>-P</code> 這些連線參數——那些位置由 shell 展開，不是 SQLCMD 處理。</p>
 <p>用 <code>-v</code> 定義變數，在腳本或查詢字串內引用：</p>
 <figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">:: 腳本內使用（maintenance.sql 內寫 $(DB)）</span><br><span class="line">sqlcmd -S MyServer -E -v DB=&quot;MyDatabase&quot; -i maintenance.sql</span><br><span class="line"></span><br><span class="line">:: 在 -Q 查詢字串內直接引用</span><br><span class="line">sqlcmd -S MyServer -E -v DB=&quot;MyDatabase&quot; -Q &quot;SELECT COUNT(*) FROM $(DB).dbo.Users&quot;</span><br></pre></td></tr></table></figure>
-
 <p><strong>注意</strong>：變數值直接做字串替換，沒有任何 quoting 或逸出。若變數值來自外部輸入，攻擊者可以注入任意 SQL。僅在受控的管理腳本中使用 <code>-v</code>，不要把外部輸入直接當作變數值帶入。</p>
 <p>若要讓伺服器名稱也可替換，用 shell 變數帶入連線參數（批次檔的 <code>%SERVER%</code>、PowerShell 的 <code>$env:SERVER</code>）；或在腳本內用 <code>:connect $(MyServer)</code> 語法。</p>
-<h3 id="錯誤處理"><a href="#錯誤處理" class="headerlink" title="錯誤處理"></a>錯誤處理</h3><p>SQLCMD 有兩套獨立的機制，用途不同：</p>
+<h3 id="錯誤處理">錯誤處理</h3>
+<p>SQLCMD 有兩套獨立的機制，用途不同：</p>
 <ul>
 <li><strong>SQLCMD 端</strong>：<code>:on error exit</code> 讓 sqlcmd 遇到批次錯誤時立即結束並回傳非零結束碼。</li>
 <li><strong>T-SQL 層</strong>：<code>BEGIN TRY / BEGIN CATCH</code> 在伺服器端攔截執行錯誤。</li>
@@ -196,14 +194,11 @@
 <p><code>:setvar</code>、<code>:on error</code> 等 SQLCMD 命令在解析階段就無條件處理，跟 T-SQL 執行流程無關——把 <code>:setvar</code> 寫進 <code>BEGIN CATCH</code> 裡不會讓它變成「只在錯誤時執行」。</p>
 <p>實務上兩者分開各司其職：</p>
 <figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">:: 批次檔層：判斷 sqlcmd 結束碼</span><br><span class="line">sqlcmd -S MyServer -E -i &quot;D:\scripts\task.sql&quot;</span><br><span class="line"><span class="keyword">IF</span> <span class="variable">%ERRORLEVEL%</span> <span class="keyword">NEQ</span> <span class="number">0</span> (</span><br><span class="line">    <span class="built_in">echo</span> [ERROR] SQLCMD 執行失敗，結束碼：<span class="variable">%ERRORLEVEL%</span></span><br><span class="line">    <span class="keyword">exit</span> /b <span class="number">1</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- task.sql：T-SQL 層的錯誤處理</span></span><br><span class="line"><span class="keyword">BEGIN</span> TRY</span><br><span class="line">    <span class="keyword">SELECT</span> <span class="number">1</span> <span class="operator">/</span> <span class="number">1</span>;</span><br><span class="line"><span class="keyword">END</span> TRY</span><br><span class="line"><span class="keyword">BEGIN</span> CATCH</span><br><span class="line">    <span class="keyword">SELECT</span></span><br><span class="line">        ERROR_NUMBER()    <span class="keyword">AS</span> ErrorNumber,</span><br><span class="line">        ERROR_MESSAGE()   <span class="keyword">AS</span> ErrorMessage,</span><br><span class="line">        ERROR_SEVERITY()  <span class="keyword">AS</span> Severity;</span><br><span class="line">    <span class="comment">-- THROW 讓 sqlcmd 偵測到錯誤並回傳非零結束碼</span></span><br><span class="line">    THROW;</span><br><span class="line"><span class="keyword">END</span> CATCH</span><br><span class="line">GO</span><br></pre></td></tr></table></figure>
-
-<h2 id="安全注意事項"><a href="#安全注意事項" class="headerlink" title="安全注意事項"></a>安全注意事項</h2><p><strong>密碼管理</strong>：避免把密碼直接寫在指令裡（容易出現在 shell history 和批次檔裡）。有兩種常見替代方式：</p>
+<h2 id="安全注意事項">安全注意事項</h2>
+<p><strong>密碼管理</strong>：避免把密碼直接寫在指令裡（容易出現在 shell history 和批次檔裡）。有兩種常見替代方式：</p>
 <figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">:: 方式一：用 SQLCMDPASSWORD 環境變數</span><br><span class="line"><span class="built_in">set</span> SQLCMDPASSWORD=MyPassword</span><br><span class="line">sqlcmd -S ServerName -U DBAdmin -d MyDB -i &quot;D:\scripts\task.sql&quot;</span><br><span class="line"><span class="built_in">set</span> SQLCMDPASSWORD=</span><br></pre></td></tr></table></figure>
-
 <figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">:: 方式二（Windows 網域環境首選）：-E 整合驗證，完全不需要密碼</span><br><span class="line">sqlcmd -S ServerName -E -d MyDB -i &quot;D:\scripts\task.sql&quot;</span><br></pre></td></tr></table></figure>
-
 <p>其他要點：</p>
 <ul>
 <li>大型檔案匯入時建議用批次處理，避免單一交易過大導致記錄檔爆增</li>
@@ -300,15 +295,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

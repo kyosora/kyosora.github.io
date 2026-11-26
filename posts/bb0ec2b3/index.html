@@ -111,23 +111,27 @@
     <aside class="post-aside">
       <details class="toc-box" open>
         <summary>目錄</summary>
-        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%9E-NET-Framework-%E5%88%B0-NET-Core%EF%BC%9A%E4%B8%80%E5%80%8B%E5%BF%85%E8%A6%81%E7%9A%84%E8%BD%89%E8%AE%8A"><span class="toc-text">從 .NET Framework 到 .NET Core：一個必要的轉變</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%A8%E5%B9%B3%E5%8F%B0"><span class="toc-text">跨平台</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%88%E8%83%BD"><span class="toc-text">效能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2"><span class="toc-text">部署</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%96%8B%E7%99%BC%E7%94%9F%E6%85%8B%E8%88%87%E5%BE%8C%E7%BA%8C%E7%B6%AD%E8%AD%B7"><span class="toc-text">開發生態與後續維護</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%93%AA%E4%BA%9B%E6%87%89%E7%94%A8%E9%81%B7%E7%A7%BB%E6%AF%94%E8%BC%83%E9%BA%BB%E7%85%A9"><span class="toc-text">哪些應用遷移比較麻煩</span></a></li></ol></li></ol></nav>
+        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">從 .NET Framework 到 .NET Core：一個必要的轉變</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%A8%E5%B9%B3%E5%8F%B0"><span class="toc-text">跨平台</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%88%E8%83%BD"><span class="toc-text">效能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2"><span class="toc-text">部署</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%96%8B%E7%99%BC%E7%94%9F%E6%85%8B%E8%88%87%E5%BE%8C%E7%BA%8C%E7%B6%AD%E8%AD%B7"><span class="toc-text">開發生態與後續維護</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%93%AA%E4%BA%9B%E6%87%89%E7%94%A8%E9%81%B7%E7%A7%BB%E6%AF%94%E8%BC%83%E9%BA%BB%E7%85%A9"><span class="toc-text">哪些應用遷移比較麻煩</span></a></li></ol></li></ol></nav>
       </details>
     </aside>
     
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="從-NET-Framework-到-NET-Core：一個必要的轉變"><a href="#從-NET-Framework-到-NET-Core：一個必要的轉變" class="headerlink" title="從 .NET Framework 到 .NET Core：一個必要的轉變"></a>從 .NET Framework 到 .NET Core：一個必要的轉變</h2><p>.NET Framework 和 .NET Core（現稱 .NET）不是競爭的替代品——它們代表不同世代的設計決策。.NET Framework 誕生於 2002 年，綁死在 Windows 上；.NET Core 從 2016 年起重新設計，跨平台、開源、模組化。微軟已明確宣告 .NET Framework 4.8.1 是最後一個主要版本，不再加入新功能，只做安全性修補。這個時間點對正在評估是否遷移的團隊來說是最實際的理由。</p>
+        <h2>從 .NET Framework 到 .NET Core：一個必要的轉變</h2>
+<p>.NET Framework 和 .NET Core（現稱 .NET）不是競爭的替代品——它們代表不同世代的設計決策。.NET Framework 誕生於 2002 年，綁死在 Windows 上；.NET Core 從 2016 年起重新設計，跨平台、開源、模組化。微軟已明確宣告 .NET Framework 4.8.1 是最後一個主要版本，不再加入新功能，只做安全性修補。這個時間點對正在評估是否遷移的團隊來說是最實際的理由。</p>
 <p>以下從四個面向說明差異。</p>
 <hr>
-<h3 id="跨平台"><a href="#跨平台" class="headerlink" title="跨平台"></a>跨平台</h3><p>.NET Core 從設計之初就以跨平台為目標，同一份程式碼可以在 Windows、Linux 和 macOS 上建置與執行。這對想把工作負載搬上 Linux 容器或雲端的團隊影響最直接：容器基底映像可以選更精簡的 Linux 版本，不必帶著 Windows Server 授權費。</p>
+<h3 id="跨平台">跨平台</h3>
+<p>.NET Core 從設計之初就以跨平台為目標，同一份程式碼可以在 Windows、Linux 和 macOS 上建置與執行。這對想把工作負載搬上 Linux 容器或雲端的團隊影響最直接：容器基底映像可以選更精簡的 Linux 版本，不必帶著 Windows Server 授權費。</p>
 <p>.NET Framework 本身只支援 Windows。Mono 是另一個獨立的開源 .NET 實作（最初由 Novell/Xamarin 開發，2016 年 Microsoft 收購 Xamarin 後納入管理），可以讓 C# 程式碼跑在 Linux 和 macOS 上，但它和 .NET Framework 是兩套分開的 runtime，API 相容程度並非百分之百，遇到 Windows-only API 仍然會踩坑。原生跨平台和「透過另一套 runtime 間接相容」是完全不同的事。</p>
 <hr>
-<h3 id="效能"><a href="#效能" class="headerlink" title="效能"></a>效能</h3><p>.NET Core 歷代版本在效能上有系統性投入，從 JIT 編譯器（RyuJIT）、<code>Span&lt;T&gt;</code> 低配置 API，到 ASP.NET Core 的 HTTP pipeline 重寫，都有可量測的改進。TechEmpower Web Framework Benchmarks 的 plaintext 項目中，ASP.NET Core 長期排在各主流框架的前段，並不是行銷語言。</p>
+<h3 id="效能">效能</h3>
+<p>.NET Core 歷代版本在效能上有系統性投入，從 JIT 編譯器（RyuJIT）、<code>Span&lt;T&gt;</code> 低配置 API，到 <a target="_blank" rel="noopener" href="http://ASP.NET">ASP.NET</a> Core 的 HTTP pipeline 重寫，都有可量測的改進。TechEmpower Web Framework Benchmarks 的 plaintext 項目中，<a target="_blank" rel="noopener" href="http://ASP.NET">ASP.NET</a> Core 長期排在各主流框架的前段，並不是行銷語言。</p>
 <p>.NET Framework 的效能受限於當年的設計選擇，很多低層實作難以在不破壞向下相容的前提下替換，這也是微軟決定從頭重寫的根本原因之一。</p>
 <hr>
-<h3 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h3><p>.NET Core 提供兩種主要部署模式：</p>
+<h3 id="部署">部署</h3>
+<p>.NET Core 提供兩種主要部署模式：</p>
 <ul>
 <li><strong>SCD（自包含部署）</strong>：把 runtime 和應用程式一起打包。目標機器不需要預裝 .NET，可以完全控制所用的 runtime 版本，代價是產出物較大。</li>
 <li><strong>FDD（框架依賴部署）</strong>：只打包應用程式本身，目標機器必須預裝對應版本的 .NET runtime。產出物小，但環境必須先備妥。</li>
@@ -135,10 +139,12 @@
 <p>值得注意的是：FDD <strong>不是</strong>「不必擔心目標環境的 .NET 版本」——恰恰相反，FDD 高度依賴目標機器的 runtime 版本。只有 SCD 才能完全隔離環境差異。.NET 5 之後還加入了 Single-file publish（整個應用打成單一執行檔）和 ReadyToRun（預編譯降低冷啟動時間）等選項，可以視需求疊加使用。</p>
 <p>.NET Framework 的部署綁在 Windows Update 和系統預裝的 .NET Framework 版本上，升版本時往往需要依賴作業系統的更新週期，彈性較低。</p>
 <hr>
-<h3 id="開發生態與後續維護"><a href="#開發生態與後續維護" class="headerlink" title="開發生態與後續維護"></a>開發生態與後續維護</h3><p>.NET Core 是 Microsoft 目前的主線開發平台，新版 C# 語言特性、新的 BCL API、效能改進都只在這條線上出現。.NET Framework 維持在 4.8.1，微軟的官方立場是：只做安全性修補，不加功能。</p>
+<h3 id="開發生態與後續維護">開發生態與後續維護</h3>
+<p>.NET Core 是 Microsoft 目前的主線開發平台，新版 C# 語言特性、新的 BCL API、效能改進都只在這條線上出現。.NET Framework 維持在 4.8.1，微軟的官方立場是：只做安全性修補，不加功能。</p>
 <p>長期來看，留在 .NET Framework 等於接受技術凍結。套件生態也在往 .NET 5+ 傾斜，部分 NuGet 套件已停止發布支援 .NET Framework 的版本。</p>
 <hr>
-<h3 id="哪些應用遷移比較麻煩"><a href="#哪些應用遷移比較麻煩" class="headerlink" title="哪些應用遷移比較麻煩"></a>哪些應用遷移比較麻煩</h3><p>並非所有 .NET Framework 應用都能順利搬過去。幾類典型的高難度情況：</p>
+<h3 id="哪些應用遷移比較麻煩">哪些應用遷移比較麻煩</h3>
+<p>並非所有 .NET Framework 應用都能順利搬過去。幾類典型的高難度情況：</p>
 <ul>
 <li><strong>WCF 服務端</strong>：.NET 上沒有內建的 WCF 服務端實作。CoreWCF 是社群維護的替代方案，覆蓋率不完整。</li>
 <li><strong>WebForms</strong>：架構差異太大，沒有對應的 .NET Core 版本，只能改寫。</li>
@@ -238,15 +244,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

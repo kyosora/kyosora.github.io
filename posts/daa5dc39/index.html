@@ -124,7 +124,8 @@
       <div class="prose" id="article">
         <p>5 月 14 日 Calif 安全團隊在自家部落格丟出一個炸彈：他們用 Anthropic 的 Mythos Preview，在 5 天內針對 Apple M5 macOS 內核做出了一條完整的 LPE（本地提權）exploit，<strong>繞過了 Apple 花 5 年、燒了不知道幾個億打造的 MIE 硬體記憶體安全機制</strong>。</p>
 <p>接著媒體標題集體起飛：「AI 5 天破解 Apple 5 年防線」「AI 顛覆網路安全」。但你把 Calif 自己那篇技術揭露讀完會發現——這故事真正的重點不在那個 5 vs 5 的爽快對比，而在一個更安靜也更恐怖的事實。</p>
-<h2 id="5-天裡實際發生了什麼"><a href="#5-天裡實際發生了什麼" class="headerlink" title="5 天裡實際發生了什麼"></a>5 天裡實際發生了什麼</h2><p>照 Calif 官方公開的時間軸：</p>
+<h2 id="5-天裡實際發生了什麼">5 天裡實際發生了什麼</h2>
+<p>照 Calif 官方公開的時間軸：</p>
 <ul>
 <li><strong>4/25</strong>：Bruce Dang 發現了 bugs</li>
 <li><strong>4/27</strong>：Dion Blazakis 加入 Calif</li>
@@ -133,7 +134,8 @@
 </ul>
 <p>從 bug 被發現到可用 exploit，4/25 到 5/1，加起來 5 天。注意是「找到 bug 之後 5 天內做出 exploit」，不是「Mythos 從零開始 5 天破解 Apple」。</p>
 <p>也別忽略名單。Bruce Dang 是業界知道的資深逆向工程師，寫過《Practical Reverse Engineering》；Dion Blazakis 是長期做 iOS / macOS 漏洞研究的老兵。<strong>這不是兩個剛出社會的工程師讓 Mythos 自己跑，是兩位業界頂尖的硬殼老手配上 AI 工具</strong>。差異很大。</p>
-<h2 id="攻擊本身講什麼（已揭露的部分）"><a href="#攻擊本身講什麼（已揭露的部分）" class="headerlink" title="攻擊本身講什麼（已揭露的部分）"></a>攻擊本身講什麼（已揭露的部分）</h2><p>Calif 的技術描述很節制，因為 Apple 還沒修，完整細節要等修補後才會公開。目前已知：</p>
+<h2 id="攻擊本身講什麼（已揭露的部分）">攻擊本身講什麼（已揭露的部分）</h2>
+<p>Calif 的技術描述很節制，因為 Apple 還沒修，完整細節要等修補後才會公開。目前已知：</p>
 <ul>
 <li>目標：macOS 26.4.1 (25E253)，bare-metal M5 硬體，<strong>kernel MIE 已啟用</strong></li>
 <li>攻擊型態：<strong>data-only kernel local privilege escalation chain</strong></li>
@@ -144,7 +146,8 @@
 <p>最後那句「不操作指標、純資料攻擊」是這次 bypass 的關鍵。Apple 的 MIE 基於 ARM 的 MTE（Memory Tagging Extension）——每塊 16-byte 的記憶體切片帶 4-bit tag，指標也帶 tag，存取時硬體會檢查兩者是否相符。這套機制是針對<strong>透過破壞指標達成記憶體腐蝕</strong>的攻擊設計的。</p>
 <p>但如果你的攻擊<strong>完全不動指標</strong>——只透過合法系統呼叫操弄資料結構，讓核心自己走到一個錯誤的狀態——MIE 整套設計就過去了。它不是防護「不正確的執行流」，它是防護「指標被改」。資料層的攻擊不在它的威脅模型裡。</p>
 <p>這就是為什麼 Calif 的描述是 data-only。Apple 5 年防的是 A 類問題，攻擊者用了 B 類方法。MIE 沒有失敗，是它的威脅模型被繞過了。</p>
-<h2 id="Mythos-真正可怕的不是「快」"><a href="#Mythos-真正可怕的不是「快」" class="headerlink" title="Mythos 真正可怕的不是「快」"></a>Mythos 真正可怕的不是「快」</h2><p>Calif 部落格裡有一句被很多人錯過的話：</p>
+<h2 id="Mythos-真正可怕的不是「快」">Mythos 真正可怕的不是「快」</h2>
+<p>Calif 部落格裡有一句被很多人錯過的話：</p>
 <blockquote>
 <p>Mythos Preview is powerful: once it has learned how to attack a class of problems, it generalizes to nearly any problem in that class.</p>
 </blockquote>
@@ -152,23 +155,29 @@
 <p>對攻擊者來說，這是降維打擊。傳統的漏洞研究有個天然瓶頸——研究員學會一類攻擊技術，要把這套技術應用到每個新目標都需要時間。AI 把這個複用速度抬到了完全不同的量級。同樣一個老手研究員，過去一年能完成 N 條 exploit chain，配上 Mythos 之後可能變 5N 或 10N。</p>
 <p>防禦端有同樣的工具嗎？理論上有——Apple 內部也在用 AI 做安全研究。但攻守不對稱在這裡很明顯：<strong>攻擊只需要找到一個漏洞，防禦要堵住所有漏洞</strong>。AI 把「找一個」這件事的成本壓低，遠比把「堵所有」的成本壓低來得快。</p>
 <p>這才是這次事件的真正訊息。不是 AI 5 天破了 Apple 5 年，是<strong>漏洞研究的單位時間產出曲線整條被往上推</strong>——而推上去的這條曲線，攻擊者那邊的斜率更陡。</p>
-<h2 id="不要把這件事讀成「AI-自己會駭」"><a href="#不要把這件事讀成「AI-自己會駭」" class="headerlink" title="不要把這件事讀成「AI 自己會駭」"></a>不要把這件事讀成「AI 自己會駭」</h2><p>媒體標題容易讓讀者腦補出一個畫面：你打開一個聊天視窗，輸入「幫我駭 Apple」，AI 就吐出 exploit。實際完全不是這樣。</p>
+<h2 id="不要把這件事讀成「AI-自己會駭」">不要把這件事讀成「AI 自己會駭」</h2>
+<p>媒體標題容易讓讀者腦補出一個畫面：你打開一個聊天視窗，輸入「幫我駭 Apple」，AI 就吐出 exploit。實際完全不是這樣。</p>
 <p>從 Calif 公開的流程看，Mythos 的角色像是一個「極其耐操的高級助教」——它幫頂尖研究員加速辨識 bug class、生成 fuzzer、嘗試 exploit 路徑、跟著研究員的直覺迭代。<strong>沒有 Bruce Dang 那種等級的研究員看著它，它生不出可用的 exploit chain</strong>。Calif 那 5 天不是 AI 5 天，是「Bruce Dang + Dion Blazakis + Mythos」5 天。</p>
 <p>把這件事讀成 AI 神話，會錯失它真正的工程啟示——AI 在「需要極強領域 expertise 才能上手的工作」裡，會放大頂尖人才的產出，但<strong>不會降低入門門檻</strong>。一個沒有漏洞研究經驗的人拿 Mythos 也駭不了 M5；一個 Bruce Dang 拿 Mythos 變成兩個 Bruce Dang。</p>
 <p>軟體開發那邊我們已經在這個轉折點上：Claude Code、Codex 都讓資深工程師產出倍增，讓沒底子的人寫出表面像樣但細節崩潰的 code。安全研究現在進入同一條曲線。</p>
-<h2 id="為什麼他們親自飛-Apple-總部"><a href="#為什麼他們親自飛-Apple-總部" class="headerlink" title="為什麼他們親自飛 Apple 總部"></a>為什麼他們親自飛 Apple 總部</h2><p>Calif 部落格說明這個決策時用了一句很江湖的話：</p>
+<h2 id="為什麼他們親自飛-Apple-總部">為什麼他們親自飛 Apple 總部</h2>
+<p>Calif 部落格說明這個決策時用了一句很江湖的話：</p>
 <blockquote>
 <p>我們想當面報告，免得被淹沒在提交洪流裡。也算是在永恆的 Twitter 五分鐘榮光競賽裡多搶一點 edge。</p>
 </blockquote>
 <p>這段話表面是自嘲，底層是個產業訊號——<strong>Apple 的安全漏洞回報量正在爆炸</strong>。當 AI 工具讓漏洞研究的單位時間產出大漲，所有大公司的 security response team 都會被淹沒。提交一份高品質報告現在不一定能拿到 Apple 的注意力，因為他們的隊伍裡可能塞了一堆 AI 自動產生的低品質「疑似漏洞」。</p>
 <p>這對任何維運大型平台的團隊都是新挑戰：<strong>你的漏洞分流系統能不能撐住 AI 時代的提交流量？</strong> 過去靠人工讀 PoC 的流程要被重做。Calif 親自飛 Apple 是一個因應，但他們要解決的問題，所有維運大型平台的人遲早都要正面對上。</p>
-<h2 id="我從這條新聞帶走什麼"><a href="#我從這條新聞帶走什麼" class="headerlink" title="我從這條新聞帶走什麼"></a>我從這條新聞帶走什麼</h2><p>不寫安全研究，但寫日常用 Claude Code / Codex 寫 code 的工程師，這條新聞值得想三件事：</p>
+<h2 id="我從這條新聞帶走什麼">我從這條新聞帶走什麼</h2>
+<p>不寫安全研究，但寫日常用 Claude Code / Codex 寫 code 的工程師，這條新聞值得想三件事：</p>
 <ol>
-<li><p><strong>產出曲線的不對稱性適用到任何工作</strong>。寫 code 也好、做安全研究也好，AI 把「深度依賴 expertise 的工作」放大，把「沒有 expertise 就無法判斷品質的工作」拖下水。決定自己在哪一邊，比挑工具重要。</p>
+<li>
+<p><strong>產出曲線的不對稱性適用到任何工作</strong>。寫 code 也好、做安全研究也好，AI 把「深度依賴 expertise 的工作」放大，把「沒有 expertise 就無法判斷品質的工作」拖下水。決定自己在哪一邊，比挑工具重要。</p>
 </li>
-<li><p><strong>基礎設施類的 OWASP / 弱點掃描思路要升級</strong>。我們維運的系統大部分還在「人類能想到的攻擊向量」這個假設下設計。AI 會幫攻擊者生成更多 unconventional 路徑，data-only 那一類就是典型例子。靜態分析、fuzzing 工具該重新評估。</p>
+<li>
+<p><strong>基礎設施類的 OWASP / 弱點掃描思路要升級</strong>。我們維運的系統大部分還在「人類能想到的攻擊向量」這個假設下設計。AI 會幫攻擊者生成更多 unconventional 路徑，data-only 那一類就是典型例子。靜態分析、fuzzing 工具該重新評估。</p>
 </li>
-<li><p><strong>不要被「AI 自己會 X」這種敘事騙過去</strong>。Mythos 不是自己會駭，是 Bruce Dang 配上 Mythos 變成超人。對應到我自己工作上：Claude Code 也不是自己會寫 code，是我配上 Claude Code 變得更快。<strong>主詞是我，不是 AI</strong>。失去這個 framing，下一篇被打臉的論文遲早會落到自己頭上。</p>
+<li>
+<p><strong>不要被「AI 自己會 X」這種敘事騙過去</strong>。Mythos 不是自己會駭，是 Bruce Dang 配上 Mythos 變成超人。對應到我自己工作上：Claude Code 也不是自己會寫 code，是我配上 Claude Code 變得更快。<strong>主詞是我，不是 AI</strong>。失去這個 framing，下一篇被打臉的論文遲早會落到自己頭上。</p>
 </li>
 </ol>
 <p>Apple 修補後 Calif 會公開完整技術細節，到時候 data-only attack 的具體手法應該值得單獨寫一篇。這篇先收在「不要被新聞標題騙了」這個層次。</p>
@@ -177,7 +186,7 @@
 <ul>
 <li>Calif 官方技術揭露：<a target="_blank" rel="noopener" href="https://blog.calif.io/p/first-public-kernel-memory-corruption">First public macOS kernel memory corruption exploit on Apple M5</a></li>
 <li>9to5Mac 報導：<a target="_blank" rel="noopener" href="https://9to5mac.com/2026/05/14/calif-team-details-how-anthropic-mythos-helped-build-a-working-macos-exploit-in-five-days/">Calif team details how Anthropic Mythos helped build a working macOS exploit in five days</a></li>
-<li>Tom&#39;s Hardware：<a target="_blank" rel="noopener" href="https://www.tomshardware.com/tech-industry/cyber-security/apple-m5-architecture-suffers-first-privilege-escalation-exploit-anthropics-claude-mythos-helps-researchers-bypass-memory-integrity-enforcement">First Apple M5 memory exploit discovered using Anthropic AI</a></li>
+<li>Tom’s Hardware：<a target="_blank" rel="noopener" href="https://www.tomshardware.com/tech-industry/cyber-security/apple-m5-architecture-suffers-first-privilege-escalation-exploit-anthropics-claude-mythos-helps-researchers-bypass-memory-integrity-enforcement">First Apple M5 memory exploit discovered using Anthropic AI</a></li>
 <li>TechRadar 引述：<a target="_blank" rel="noopener" href="https://www.techradar.com/pro/security/this-work-is-a-glimpse-of-what-is-coming-security-team-lays-out-how-anthropic-mythos-helped-build-a-working-macos-exploit-in-five-days">Security team lays out how Anthropic Mythos helped build a working macOS exploit in five days</a></li>
 </ul>
 
@@ -270,15 +279,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

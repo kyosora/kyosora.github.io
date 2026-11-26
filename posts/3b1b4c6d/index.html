@@ -124,17 +124,21 @@
       <div class="prose" id="article">
         <p>DeepSeek-R1 在 2025 年 1 月 20 日發布時，最讓人意外的不是它會推理，而是它又會推理又便宜。同樣一題複雜推理，成本可能只有 GPT-4o 的零頭。</p>
 <p>便宜加上能推理，這組合怎麼來的？這篇拆 R1 背後的兩個關鍵——它怎麼學會推理、架構為什麼省——順便把網路上幾個對不上的數字澄清掉。</p>
-<h2 id="R1-怎麼學會推理：GRPO"><a href="#R1-怎麼學會推理：GRPO" class="headerlink" title="R1 怎麼學會推理：GRPO"></a>R1 怎麼學會推理：GRPO</h2><p>R1 會推理，靠的是強化學習，而且是一種叫 GRPO（Group Relative Policy Optimization）的做法。</p>
+<h2 id="R1-怎麼學會推理：GRPO">R1 怎麼學會推理：GRPO</h2>
+<p>R1 會推理，靠的是強化學習，而且是一種叫 GRPO（Group Relative Policy Optimization）的做法。</p>
 <p>傳統訓練推理模型，常要人工標註大量「正確的推理步驟」餵給模型學。GRPO 換了個思路：對同一個問題讓模型生成一組答案，用組內互相比較的相對好壞當獎勵訊號，不需要額外訓練一個 critic 模型來打分，也不靠人工標推理軌跡。</p>
 <p>最有意思的是它的前身 R1-Zero——純靠這套強化學習，模型自己「長出」了長鏈推理的能力。AIME 2024 這個數學競賽 benchmark，pass@1 從 15.6% 一路漲到 71.0%，中間沒有人教它該怎麼一步步想。</p>
 <p>實際使用時，R1 會把思考過程放在 <code>&lt;think&gt;&lt;/think&gt;</code> 標籤之間，再給最終答案；走 DeepSeek API 的話，這段思維鏈會放在 <code>reasoning_content</code> 欄位回傳，跟正式答案分開。</p>
-<h2 id="架構為什麼省：MoE-加-MLA"><a href="#架構為什麼省：MoE-加-MLA" class="headerlink" title="架構為什麼省：MoE 加 MLA"></a>架構為什麼省：MoE 加 MLA</h2><p>便宜這邊，關鍵在架構。R1 是 671B 參數的 MoE（Mixture of Experts，混合專家）模型，但每次推理只啟動其中約 37B——你有一支很大的專家團隊，但每個問題只叫醒相關的幾個，算力花在刀口上。</p>
+<h2 id="架構為什麼省：MoE-加-MLA">架構為什麼省：MoE 加 MLA</h2>
+<p>便宜這邊，關鍵在架構。R1 是 671B 參數的 MoE（Mixture of Experts，混合專家）模型，但每次推理只啟動其中約 37B——你有一支很大的專家團隊，但每個問題只叫醒相關的幾個，算力花在刀口上。</p>
 <p>另一個省的地方是 MLA（Multi-head Latent Attention）。它把注意力機制裡很吃記憶體的 KV cache 壓到低維空間——可以想成把一疊攤開的講義先摺好收進抽屜，要用再展開，佔的空間小很多。加上訓練用 FP8 混合精度，整體把成本壓得很低。</p>
 <p>所以 R1 的便宜不是玄學，是 MoE 少算、MLA 省記憶體、FP8 省訓練疊出來的。</p>
-<h2 id="真實的-benchmark"><a href="#真實的-benchmark" class="headerlink" title="真實的 benchmark"></a>真實的 benchmark</h2><p>講到數字就要小心了，因為這也是 R1 相關介紹最容易出錯的地方。</p>
+<h2 id="真實的-benchmark">真實的 benchmark</h2>
+<p>講到數字就要小心了，因為這也是 R1 相關介紹最容易出錯的地方。</p>
 <p>R1 的 MMLU 大約 90.8%，確實高於 GPT-4o（約 88.7%）和 Claude 3.5 Sonnet（約 88.3%）。但它沒有「刷新世界紀錄」——同期 OpenAI 的 o1 大約 91.8%，仍在 R1 之上，DeepSeek 官方自己也說 R1 略低於 o1。</p>
 <p>蒸餾版也要看清楚定位。DeepSeek-R1-Distill-Qwen-32B 在數學和推理很強（AIME 72.6、MATH-500 94.3），體積小、適合本地部署或資源有限的場景；但它官方對標的是 o1-mini，不是 GPT-4o。把它講成「整體性能接近 GPT-4o」是搞錯了對照組。</p>
-<h2 id="真實的成本帳"><a href="#真實的成本帳" class="headerlink" title="真實的成本帳"></a>真實的成本帳</h2><p>幾個主流模型的 API 定價（美元／百萬 tokens）：</p>
+<h2 id="真實的成本帳">真實的成本帳</h2>
+<p>幾個主流模型的 API 定價（美元／百萬 tokens）：</p>
 <table>
 <thead>
 <tr>
@@ -143,7 +147,8 @@
 <th>輸出</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>DeepSeek-R1</td>
 <td>0.55（快取未命中）/ 0.14（命中）</td>
 <td>2.19</td>
@@ -163,10 +168,12 @@
 <td>0.50</td>
 <td>1.50</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>光看輸出端，R1 比 GPT-4o 便宜約 78%、比 Claude 3.5 Sonnet 便宜約 85%。而且推理任務的輸出量常是輸入的數倍——模型要把整串思考過程吐出來——所以這差距反映在實際帳單上，比表面數字更明顯。</p>
 <p>順帶提醒一個判斷數字的原則：有些介紹會給出「R1 顯存佔用幾 GB、推理延遲幾毫秒，對比 GPT-4o 多少」這種精確對比。看到要存疑——GPT-4o 是閉源 API，OpenAI 從沒公布參數量、顯存或內部延遲，這類拿來跟它逐項比較的精確數字，多半是湊出來的。R1 是 671B 模型，完整跑起來的硬體需求也遠不是消費級顯卡那個量級。</p>
-<h2 id="收尾"><a href="#收尾" class="headerlink" title="收尾"></a>收尾</h2><p>R1 的意義，與其說是「贏過誰」，不如說是把「會推理的模型」這件事的成本門檻整個拉低了，而且是開源的。GRPO 證明了不靠大量人工標註也能訓出推理能力，這對後面的開源模型影響很大。</p>
+<h2 id="收尾">收尾</h2>
+<p>R1 的意義，與其說是「贏過誰」，不如說是把「會推理的模型」這件事的成本門檻整個拉低了，而且是開源的。GRPO 證明了不靠大量人工標註也能訓出推理能力，這對後面的開源模型影響很大。</p>
 <p>我的建議是：R1 值得用、性價比是真的，但選型時自己跑一遍你真正的任務，別只看別人轉貼的 benchmark 數字——尤其那些跟閉源模型逐項對比的精確數字，先打個問號。</p>
 
       </div>
@@ -242,15 +249,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -125,10 +125,12 @@
         <p>這篇文章的題目，是一個機器假扮成人類、去敲另一台機器的門撈回來的。</p>
 <p>今天我想更新部落格，照慣例讓 Claude Code 上網找找熱點。它撈資料的指令我順手看了一眼——<code>curl</code> 後面掛著一長串 <code>Mozilla/5.0 ... Chrome/124.0.0.0 Safari/537.36</code> 的 User-Agent。那串字翻成白話是：「我是一個人類，正在用 Chrome 瀏覽器」。但下指令的不是人，是我的 AI 工具；它連的也不是給人看的網頁，是一個只吐 JSON 的 API。原因很實際：那個 API 用 nginx 擋掉所有看起來像程式的請求，預設的 <code>curl/8.x</code> UA 會被直接 403 回絕。所以為了幫我這個真人找今天的新聞，機器得先假裝自己也是個正在滑網頁的人。</p>
 <p>撈回來的那堆 JSON 裡，有一條新聞正好在講這件事的全貌。</p>
-<h2 id="過了那條線：57-5-對-42-5"><a href="#過了那條線：57-5-對-42-5" class="headerlink" title="過了那條線：57.5% 對 42.5%"></a>過了那條線：57.5% 對 42.5%</h2><p>2026 年中，一個分水嶺數字開始在圈子裡流傳：在 Cloudflare 網路上、對 HTML 網頁內容的 HTTP 請求裡，57.5% 來自機器人，只有 42.5% 來自真人瀏覽器——這是 Cloudflare Radar 的 bot 流量統計，CEO Matthew Prince 也公開引用過。在 Cloudflare 的觀測範圍內，這是機器請求第一次壓過真人。</p>
+<h2 id="過了那條線：57-5-對-42-5">過了那條線：57.5% 對 42.5%</h2>
+<p>2026 年中，一個分水嶺數字開始在圈子裡流傳：在 Cloudflare 網路上、對 HTML 網頁內容的 HTTP 請求裡，57.5% 來自機器人，只有 42.5% 來自真人瀏覽器——這是 Cloudflare Radar 的 bot 流量統計，CEO Matthew Prince 也公開引用過。在 Cloudflare 的觀測範圍內，這是機器請求第一次壓過真人。</p>
 <p>更值得玩味的是時間。Cloudflare 執行長 Matthew Prince 今年三月在 SXSW 講這個趨勢時，預測的是 2027 年底。後來他改口說大概 2027 年初。結果連 2027 都沒等到——用他自己的話說，是「agentic 流量長得太快」。一個由產業龍頭親口給出、還留了一年多緩衝的預測，被自己的資料提前打臉。我做技術的這些年，很少看到趨勢預測錯得這麼快，而且是往「更快發生」的方向錯。</p>
 <p>驅動力不難理解。一個 AI agent 接到任務，可能要打數千個網站才湊齊答案；換成人類，同樣的事大概點開五個分頁就放棄了。把這個乘數套到數百萬個「把任務丟給 AI」的使用者身上，流量的組成就被改寫了。今天早上我讓 Claude Code 撈一次 AI 新聞，它背後就是好幾個 API 請求加上後續的網頁核實——我一個人、一個動作，貢獻的機器請求數遠超過我自己手動瀏覽一整天。</p>
-<h2 id="先別急，這個數字得會讀"><a href="#先別急，這個數字得會讀" class="headerlink" title="先別急，這個數字得會讀"></a>先別急，這個數字得會讀</h2><p>在拿它去嚇唬同事之前，有幾個範圍要先框清楚，不然很容易讀成「全世界真人只剩四成」——那是過度解讀。</p>
+<h2 id="先別急，這個數字得會讀">先別急，這個數字得會讀</h2>
+<p>在拿它去嚇唬同事之前，有幾個範圍要先框清楚，不然很容易讀成「全世界真人只剩四成」——那是過度解讀。</p>
 <p>它量的是請求數（request），不是使用者數，也不是流量大小（bytes）。一個 agent 半秒打一百個請求，跟一個人讀十分鐘文章，在這個指標裡前者輾壓後者，但你不會因此說「人類只剩 1%」。</p>
 <p>它的範圍是「對 HTML 內容的請求」，不是所有 HTTP 流量。這個限定等一下那節會看到，反而藏著更尖銳的東西。</p>
 <p>它看到的是 Cloudflare 這張網路上的流量，不是整個網際網路。Cloudflare 很大，但它不是全部，取樣本身就帶著它客群的偏斜。</p>
@@ -138,34 +140,36 @@
 <p>而且還有個反方向的麻煩，會讓這數字偏低。我今天剛裝了一個叫 CloakBrowser 的工具：它不靠執行時的 JavaScript 去偽裝指紋，而是直接改 Chromium 的 C++ 原始碼、重新編譯，把 canvas、WebGL、字型、GPU、WebRTC 那幾十個會洩漏「我是自動化程式」的指紋面全部 baked 進 binary。偵測系統看到的是一個如假包換的 Chrome，因為它底層真的是 Chrome。專案宣稱通過 30 項業界 bot 偵測測試、Cloudflare Turnstile 拿到 0.9 分。</p>
 <p>開場那個偽裝 <code>User-Agent</code> 字串的把戲，是這條路上最淺的一層；CloakBrowser 是目前最深的一層。它的請求會不會在 Radar 的統計裡被算成真人，我得老實說：沒有獨立資料能證實——能過 Turnstile 的 challenge，不等於 Cloudflare 用來分類 bot 的那套邏輯也會把它判成人類，這兩件事不見得是同一回事。但它指出的方向夠清楚：當源碼級偽裝做到偵測器分不出來，「bot 對 human」這個分類本身就會開始失真。</p>
 <p>所以那條 57.5% 的線，與其當成精確的天花板，不如記得它很可能偏低——你數得到的機器，是還沒認真隱身的那些；真正想藏的，打從設計上就奔著「讓你數不到」去。當然反方向也有雜訊，比如把謹慎的真人誤判成 bot，但比起刻意隱身的機器，那種誤差好處理得多。重點不是糾結 57.5 這個小數，是接受一件事：人機的界線，正在變得連量測工具都未必分得清。</p>
-<h2 id="流量這個詞，得重新定義了"><a href="#流量這個詞，得重新定義了" class="headerlink" title="流量這個詞，得重新定義了"></a>流量這個詞，得重新定義了</h2><p>做 web 的人聽到「流量」，膝反射想到的是潛在讀者、潛在客戶、廣告曝光、轉換漏斗最上面那一層。我們花十幾年優化的東西——首屏動畫、CTA 按鈕的顏色、社群分享的 Open Graph 卡片、精心設計的閱讀節奏——全部建立在一個假設上：螢幕另一端坐著一個人，有眼睛、有情緒、會被說服、會掏錢、會分享。</p>
+<h2 id="流量這個詞，得重新定義了">流量這個詞，得重新定義了</h2>
+<p>做 web 的人聽到「流量」，膝反射想到的是潛在讀者、潛在客戶、廣告曝光、轉換漏斗最上面那一層。我們花十幾年優化的東西——首屏動畫、CTA 按鈕的顏色、社群分享的 Open Graph 卡片、精心設計的閱讀節奏——全部建立在一個假設上：螢幕另一端坐著一個人，有眼睛、有情緒、會被說服、會掏錢、會分享。</p>
 <p>但現在過半的「流量」不會看你的廣告，不會被 CTA 打動，不會在心裡「哇」一聲然後轉發。它要的只是結構化的事實，越乾淨越好，最好直接吐 JSON 省得它解析你那層層巢狀的 <code>&lt;div&gt;</code>。</p>
 <p>所以「流量」這個詞其實已經裂成兩種東西，只是我們還用同一個字在指它們。一種是傳統意義的人類訪客；另一種是程式化的取用者——爬蟲、AI agent、各種自動化腳本。它們對「一個好網站」的定義剛好相反：人類要的是體驗，機器要的是結構。你沒辦法用同一份東西同時把兩者都伺候到最好。</p>
 <p>這已經不是要不要為機器設計的問題——它們本來就是多數了。剩下的問題只是：你要繼續裝作沒看見，還是承認有兩種讀者、分開處理。</p>
-<h2 id="我同時站在這條線的三邊"><a href="#我同時站在這條線的三邊" class="headerlink" title="我同時站在這條線的三邊"></a>我同時站在這條線的三邊</h2><p>我對這件事的感受很分裂，因為我同時是三種角色，而它們彼此在打架。</p>
+<h2 id="我同時站在這條線的三邊">我同時站在這條線的三邊</h2>
+<p>我對這件事的感受很分裂，因為我同時是三種角色，而它們彼此在打架。</p>
 <p><strong>我是寫網站的人。</strong> 我維護這個 Hexo 部落格，工作上也碰一堆網站系統。站在這邊，機器人是我要防的——它們吃頻寬、不看廣告，有時候還把我的內容整碗端走拿去訓練模型。</p>
 <p><strong>我是寫爬蟲的人。</strong> 我寫過抓股票報價的腳本、串過券商的行情 API、做過自動撈新聞的工作流。站在這邊，我就是別人要防的那個機器人。前面開場那個偽裝 UA 的把戲，正是我這邊的日常——對方用 nginx 擋程式化請求，我就把請求包裝成瀏覽器。這裡得先分清一條線：我繞的是公開匿名 API 的反爬蟲粗篩（那個服務的使用說明本來就教你帶瀏覽器 UA），不是去硬闖付費牆、或偷登入後才看得到的東西。繞過「擋機器」跟偷「不給看的內容」是兩回事，前者頂多算沒禮貌，後者才是真的越線。</p>
 <p><strong>我是用 AI agent 的人。</strong> 我每天讓 Claude Code 幫我查東西、讀文件、核實資料。站在這邊，我就是那個「把任務丟給 AI、讓它替我打數千個網站」的乘數源頭。</p>
 <p>這三個身份放在一個人身上，矛盾很赤裸：我一邊在自己的網站上想擋爬蟲，一邊寫爬蟲繞過別人的防線，一邊又驅動著一個 agent 製造大量機器流量。我猜大部分還在寫 code 的人，多少都站在不只一邊——這條線是我們一起推過去的，包括正在抱怨機器人太多的我自己。</p>
 <p><code>robots.txt</code> 在這個前線早就是一張紳士協定，而且越來越多人不當回事。守規矩的爬蟲會讀它，但你真正想擋的那些——尤其是 AI 訓練和檢索用的——很多根本當沒看到。我自己寫爬蟲時也遇過好幾次：對方 <code>robots.txt</code> 寫得清清楚楚 <code>Disallow</code>，但真正擋住我的從來不是那行字，是 UA 黑名單、是 Cloudflare 的 challenge 頁、是 rate limit。（順帶一提，我也試過幾次正面硬闖：直接被 403 的算客氣，有的給你一個假的 200 然後回一頁空殼 HTML，那種最浪費時間。）規則寫在 <code>robots.txt</code>，執法靠的是真刀真槍的技術手段——這就是現在的常態。</p>
-<h2 id="那條-HTML-限定，藏著下一個轉變"><a href="#那條-HTML-限定，藏著下一個轉變" class="headerlink" title="那條 HTML 限定，藏著下一個轉變"></a>那條 HTML 限定，藏著下一個轉變</h2><p>回到前面那個「只算 HTML 請求」的限定。為什麼要特別講？因為「誰在發請求」之外，還有另一個相關、但角度不同的問題：「請求換回去的是什麼」。Cloudflare 在 2026 年 5 月 20 號剛上線一組新的 Radar 圖表——內容類型分布（content type distribution）和 API 流量占比——把 HTTP 流量按回應的 MIME type 拆開看，這一拆就拆出更尖銳的東西。</p>
+<h2 id="那條-HTML-限定，藏著下一個轉變">那條 HTML 限定，藏著下一個轉變</h2>
+<p>回到前面那個「只算 HTML 請求」的限定。為什麼要特別講？因為「誰在發請求」之外，還有另一個相關、但角度不同的問題：「請求換回去的是什麼」。Cloudflare 在 2026 年 5 月 20 號剛上線一組新的 Radar 圖表——內容類型分布（content type distribution）和 API 流量占比——把 HTTP 流量按回應的 MIME type 拆開看，這一拆就拆出更尖銳的東西。</p>
 <p>官方對「API 流量」的定義很明確：回應內容類型是 JSON 或 XML（<code>application/json</code>、<code>application/xml</code>、<code>text/xml</code>）、而且 HTTP 狀態碼回 200 的那些動態請求。換句話說，這是在量「機器跟機器之間的對話」有多少。</p>
 <p>具體百分比 Cloudflare 的更新公告裡沒給，得自己去 Radar 的流量頁（<code>radar.cloudflare.com/traffic</code>）看即時數字。我看到社群裡有人讀了面板，貼出來的是 JSON 占 33.1%、HTML 只剩 12%——但這是某個時間點、某個人擷的一張快照，我沒辦法從官方統計交叉驗證，精確到小數點別太當真。當粗略量級看就好，而光是量級，方向就夠清楚：在流回去的內容裡，給機器吃的 JSON，已經是給人看的 HTML 的好幾倍。</p>
 <p>把這兩件事疊起來看就完整了：人類在「網頁」這個場域裡變成少數（57.5% 對 42.5%），而「網頁」本身在整個網路流量裡也在縮水——更大的一塊已經是 API 之間直接交換的結構化資料。網路正在從「一堆給人看的文件」變成「一堆給機器呼叫的端點」。HTML 沒有死，但它從主角退成了其中一種輸出格式。</p>
-<h2 id="那，前端開發者該重新想什麼"><a href="#那，前端開發者該重新想什麼" class="headerlink" title="那，前端開發者該重新想什麼"></a>那，前端開發者該重新想什麼</h2><p>講了半天趨勢，落到「明天上班能改什麼」才有意義。動手之前我會先做一件最無聊但最有用的事：撈自己網站的 access log，把 User-Agent 抽出來數，看現在到底誰在來、來抓什麼。</p>
+<h2 id="那，前端開發者該重新想什麼">那，前端開發者該重新想什麼</h2>
+<p>講了半天趨勢，落到「明天上班能改什麼」才有意義。動手之前我會先做一件最無聊但最有用的事：撈自己網站的 access log，把 User-Agent 抽出來數，看現在到底誰在來、來抓什麼。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># nginx 預設格式 UA 在第 6 個雙引號欄位，其他 log 格式自己調欄號</span></span><br><span class="line">awk -F<span class="string">&#x27;&quot;&#x27;</span> <span class="string">&#x27;&#123;print $6&#125;&#x27;</span> access.log | <span class="built_in">sort</span> | <span class="built_in">uniq</span> -c | <span class="built_in">sort</span> -rn | <span class="built_in">head</span> -20</span><br></pre></td></tr></table></figure>
-
 <p>數字常常比想像中歪——榜首往往是一票你根本沒在管的爬蟲，而不是你以為的那些瀏覽器。看清楚現況，下面幾件事才知道要不要做、做多少：</p>
 <p>第一，結構化資料的優先級要往上提。以前 JSON-LD、語意化標籤這些是 SEO 的加分項，做了更好、不做也活。現在它們是給機器讀者的主要介面。一個 AI agent 來解析你的頁面，你給它一段乾淨的結構化資料，跟讓它從一堆 <code>&lt;div class=&quot;card-wrapper-inner&quot;&gt;</code> 裡猜你想表達什麼，是天差地別的體驗。</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 與其讓 agent 從巢狀 div 裡猜你的文章資訊 --&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 不如直接給它一段結構化的事實 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;application/ld+json&quot;</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">&#123;</span></span><br><span class="line"><span class="language-javascript">  <span class="string">&quot;@context&quot;</span>: <span class="string">&quot;https://schema.org&quot;</span>,</span></span><br><span class="line"><span class="language-javascript">  <span class="string">&quot;@type&quot;</span>: <span class="string">&quot;TechArticle&quot;</span>,</span></span><br><span class="line"><span class="language-javascript">  <span class="string">&quot;headline&quot;</span>: <span class="string">&quot;57.5% 的網頁請求已經不是人類&quot;</span>,</span></span><br><span class="line"><span class="language-javascript">  <span class="string">&quot;datePublished&quot;</span>: <span class="string">&quot;2026-06-04&quot;</span>,</span></span><br><span class="line"><span class="language-javascript">  <span class="string">&quot;author&quot;</span>: &#123; <span class="string">&quot;@type&quot;</span>: <span class="string">&quot;Person&quot;</span>, <span class="string">&quot;name&quot;</span>: <span class="string">&quot;你的名字&quot;</span> &#125;,</span></span><br><span class="line"><span class="language-javascript">  <span class="string">&quot;about&quot;</span>: [<span class="string">&quot;Cloudflare&quot;</span>, <span class="string">&quot;Bot Traffic&quot;</span>, <span class="string">&quot;Web Architecture&quot;</span>]</span></span><br><span class="line"><span class="language-javascript">&#125;</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>第二，認真考慮給機器一個正式的入口，而不是讓它們硬解析。與其讓十個 agent 各自用不同方式刮你的 HTML、刮出十種不一致的結果，不如直接提供一個 API 或一份結構化的資料來源。<code>llms.txt</code> 這個約定就是為了這個需求——由 Jeremy Howard（Answer.AI）在 2024 年 9 月提出的非官方慣例，在站台根目錄放一份給大型語言模型看的索引，告訴它哪些內容重要、該怎麼讀。</p>
+<p>第二，認真考慮給機器一個正式的入口，而不是讓它們硬解析。與其讓十個 agent 各自用不同方式刮你的 HTML、刮出十種不一致的結果，不如直接提供一個 API 或一份結構化的資料來源。<code>llms.txt</code> 這個約定就是為了這個需求——由 Jeremy Howard（<a target="_blank" rel="noopener" href="http://Answer.AI">Answer.AI</a>）在 2024 年 9 月提出的非官方慣例，在站台根目錄放一份給大型語言模型看的索引，告訴它哪些內容重要、該怎麼讀。</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># llms.txt 放在站台根目錄，給 AI 讀者的導覽</span><br><span class="line"># 格式是給機器看的純文字，不是給人看的行銷頁</span><br><span class="line"></span><br><span class="line"># 我的技術部落格</span><br><span class="line"></span><br><span class="line">&gt; 一個寫 Web、AI 工具與系統踩坑的個人部落格</span><br><span class="line"></span><br><span class="line">## 核心內容</span><br><span class="line">- [關於](/about/): 作者背景與這個站在寫什麼</span><br><span class="line">- [文章索引](/archives/): 全部文章，含日期與分類</span><br><span class="line">- [RSS](/atom.xml): 結構化訂閱，新文章會即時更新</span><br></pre></td></tr></table></figure>
-
 <p>老實說，<code>llms.txt</code> 還在很早期，採用率參差不齊，不是放了就保證有 agent 來讀。但這個方向——「主動給機器一份乾淨的菜單，而不是讓它在你家翻箱倒櫃」——我認為是對的。</p>
 <p>第三，SEO 的重心正在從 Google 搬到 AI 搜尋。過去優化是為了在 Google 結果頁排前面；現在你還得想，當有人問 ChatGPT 或 Claude「推薦幾個寫 Web 的部落格」，你的內容會不會被它撈進去、引用出來。這件事連工具廠商都在動——就在我寫這篇的同一天，Replit 上線了一個 SEO Agent，它的賣點之一就是「讓你的應用在網頁搜尋和 AI 搜尋裡都被找到」。注意它把「AI 搜尋」跟傳統「網頁搜尋」並列了，這個措辭本身就說明了風向。</p>
 <p>第四，內容變現的邏輯可能要重寫。如果過半訪客是不看廣告的機器，靠曝光換廣告費的模式就有一塊地基在鬆動。Cloudflare 自己推了一個叫 pay-per-crawl 的東西（2025 年起私測），想法是讓網站對 AI 爬蟲的抓取收費——技術上它借用了那個躺了三十年幾乎沒人用的 HTTP 402 Payment Required 狀態碼：你要抓我的內容餵你的模型，可以，先付錢。這條路能不能走通還很難說，但它至少承認了一件事：當你的讀者從「會掏錢的人」變成「替別人省錢的機器」，舊的變現假設得重新算一遍。</p>
-<h2 id="我還沒想清楚的部分"><a href="#我還沒想清楚的部分" class="headerlink" title="我還沒想清楚的部分"></a>我還沒想清楚的部分</h2><p>寫到這裡我得誠實：我沒有一個漂亮的結論能收尾。</p>
+<h2 id="我還沒想清楚的部分">我還沒想清楚的部分</h2>
+<p>寫到這裡我得誠實：我沒有一個漂亮的結論能收尾。</p>
 <p>這篇文章本身就是個活生生的例子。我用一個 AI agent 撈選題、它偽裝成瀏覽器去敲一個擋爬蟲的 API、撈回來的新聞在講機器人正在淹沒網路——然後我把這篇講機器人的文章發到網路上，它幾乎肯定會被下一批爬蟲抓走、被餵進某個模型、變成未來某個 agent 回答問題時的養分。我既是這條線的推手，也是它的觀察者，還是它的內容供應者。</p>
 <p>我能確定的只有一件小事：下次再開新文章，我大概會多問自己一句——這篇，我到底是寫給人看的，還是寫給機器讀的？也許答案是兩者都要，只是得用兩種不同的方式各寫一份。</p>
 <p>至於那個偽裝成 Chrome 的 <code>curl</code>，明天它還是會繼續替我敲門。我擋不住這個趨勢，而且說真的，我自己也是它的一部分。</p>
@@ -259,15 +263,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -123,11 +123,12 @@
       <div class="prose" id="article">
         <p>把密碼、API 金鑰或一個幾百 MB 的檔案不小心 commit 進 Git、又推上遠端——這時候光 <code>git rm</code> 沒用，它還躺在歷史裡，任何人 clone 下來都翻得到。要真正清掉，得重寫 Git 歷史。</p>
 <p>Git 內建的 <code>filter-branch</code> 能做，但它慢、容易出錯，官方文件自己都標示不建議用了。目前官方文件普遍建議改用 <code>git-filter-repo</code>。</p>
-<h2 id="什麼是-git-filter-repo"><a href="#什麼是-git-filter-repo" class="headerlink" title="什麼是 git-filter-repo"></a>什麼是 git-filter-repo</h2><p>用 Python 寫的開源工具，專門重寫 Git 歷史，是 <code>filter-branch</code> 的官方推薦替代品。比起 filter-branch，它快上一個量級、命令更直覺，還會自動做安全檢查（例如要求你在乾淨的 clone 上操作）。</p>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pip install git-filter-repo</span><br><span class="line"><span class="comment"># 或 Ubuntu/Debian</span></span><br><span class="line"><span class="built_in">sudo</span> apt install git-filter-repo</span><br></pre></td></tr></table></figure>
-
-<h2 id="情境一：移除意外推送的敏感資料"><a href="#情境一：移除意外推送的敏感資料" class="headerlink" title="情境一：移除意外推送的敏感資料"></a>情境一：移除意外推送的敏感資料</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 移除符合 glob 的檔案</span></span><br><span class="line">git filter-repo --path-glob <span class="string">&#x27;*config.json&#x27;</span> --invert-paths</span><br><span class="line"><span class="comment"># 或移除特定一個檔案</span></span><br><span class="line">git filter-repo --path <span class="string">&#x27;src/config/secret.js&#x27;</span> --invert-paths</span><br></pre></td></tr></table></figure>
-
+<h2 id="什麼是-git-filter-repo">什麼是 git-filter-repo</h2>
+<p>用 Python 寫的開源工具，專門重寫 Git 歷史，是 <code>filter-branch</code> 的官方推薦替代品。比起 filter-branch，它快上一個量級、命令更直覺，還會自動做安全檢查（例如要求你在乾淨的 clone 上操作）。</p>
+<h2 id="安裝">安裝</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pip install git-filter-repo</span><br><span class="line"><span class="comment"># 或 Ubuntu/Debian</span></span><br><span class="line"><span class="built_in">sudo</span> apt install git-filter-repo</span><br></pre></td></tr></table></figure>
+<h2 id="情境一：移除意外推送的敏感資料">情境一：移除意外推送的敏感資料</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 移除符合 glob 的檔案</span></span><br><span class="line">git filter-repo --path-glob <span class="string">&#x27;*config.json&#x27;</span> --invert-paths</span><br><span class="line"><span class="comment"># 或移除特定一個檔案</span></span><br><span class="line">git filter-repo --path <span class="string">&#x27;src/config/secret.js&#x27;</span> --invert-paths</span><br></pre></td></tr></table></figure>
 <p><code>--invert-paths</code> 是「保留以外的全部」，配合 <code>--path</code> 就是把這些路徑從整個歷史刪掉。</p>
 <p>但有件事要先講清楚：<strong>把檔案從歷史移除，不等於敏感資料安全了。</strong> 只要它曾經推上遠端，就要當作已經外洩。先撤銷金鑰，再重寫歷史；順序反過來只是在延長可被使用的時間。</p>
 <ul>
@@ -138,33 +139,33 @@
 <p>清歷史是止血，換金鑰才是真正解決。</p>
 <p>如果安裝的是 git-filter-repo 2.47 以上，敏感資料清除建議加上專用旗標：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git filter-repo --sensitive-data-removal \</span><br><span class="line">  --path <span class="string">&#x27;src/config/secret.js&#x27;</span> \</span><br><span class="line">  --invert-paths</span><br></pre></td></tr></table></figure>
-
 <p>檔案曾改名或搬家時，每一個舊路徑都要列入；git-filter-repo 不會自動沿著 rename 追蹤。若只要移除檔案裡的密碼、其他內容要保留，改用 <code>--replace-text</code>，不要把整個檔案歷史刪掉。</p>
-<h2 id="情境二：移除大型檔案"><a href="#情境二：移除大型檔案" class="headerlink" title="情境二：移除大型檔案"></a>情境二：移除大型檔案</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git filter-repo --path-glob <span class="string">&#x27;*.zip&#x27;</span> --invert-paths</span><br></pre></td></tr></table></figure>
-
-<h2 id="情境三：修改作者-email"><a href="#情境三：修改作者-email" class="headerlink" title="情境三：修改作者 email"></a>情境三：修改作者 email</h2><p>這裡是最多人踩的坑。git-filter-repo 的 callback 拿到的 <code>email</code>、<code>name</code>、<code>message</code> 全都是 <strong>bytes</strong>，不是字串——因為 Git 的內容本質是位元組。所以字串字面量一定要加 <code>b</code> 前綴：</p>
+<h2 id="情境二：移除大型檔案">情境二：移除大型檔案</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git filter-repo --path-glob <span class="string">&#x27;*.zip&#x27;</span> --invert-paths</span><br></pre></td></tr></table></figure>
+<h2 id="情境三：修改作者-email">情境三：修改作者 email</h2>
+<p>這裡是最多人踩的坑。git-filter-repo 的 callback 拿到的 <code>email</code>、<code>name</code>、<code>message</code> 全都是 <strong>bytes</strong>，不是字串——因為 Git 的內容本質是位元組。所以字串字面量一定要加 <code>b</code> 前綴：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ✅ 正確：email 是 bytes，用 b&quot;...&quot;</span></span><br><span class="line">git filter-repo --email-callback <span class="string">&#x27;return email.replace(b&quot;old@email.com&quot;, b&quot;new@email.com&quot;)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ❌ 錯誤：用一般字串會 TypeError: a bytes-like object is required</span></span><br><span class="line">git filter-repo --email-callback <span class="string">&#x27;return email.replace(&quot;old@email.com&quot;, &quot;new@email.com&quot;)&#x27;</span></span><br></pre></td></tr></table></figure>
-
 <p>改提交訊息的 <code>--message-callback</code> 同樣是 bytes：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git filter-repo --message-callback <span class="string">&#x27;return message.replace(b&quot;[WIP]&quot;, b&quot;[DONE]&quot;)&#x27;</span></span><br></pre></td></tr></table></figure>
-
 <p>記住「全部加 <code>b</code>」就對了，這是 callback 最常見的報錯來源。</p>
-<h2 id="情境四：把子目錄變成根目錄"><a href="#情境四：把子目錄變成根目錄" class="headerlink" title="情境四：把子目錄變成根目錄"></a>情境四：把子目錄變成根目錄</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git filter-repo --subdirectory-filter folder_name</span><br></pre></td></tr></table></figure>
-
+<h2 id="情境四：把子目錄變成根目錄">情境四：把子目錄變成根目錄</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git filter-repo --subdirectory-filter folder_name</span><br></pre></td></tr></table></figure>
 <p>常用在從 monorepo 拆出一個獨立專案，連歷史一起搬走。</p>
-<h2 id="用之前要知道的幾件事"><a href="#用之前要知道的幾件事" class="headerlink" title="用之前要知道的幾件事"></a>用之前要知道的幾件事</h2><ol>
+<h2 id="用之前要知道的幾件事">用之前要知道的幾件事</h2>
+<ol>
 <li>在全新的 clone 操作，並讓所有協作者暫停 push。原始 clone 留著當離線備份，但不要再把舊歷史推回遠端。</li>
 <li>重寫後 commit ID、tag 簽章與 PR diff 都可能改變，先盤點 CI、部署與自動化是否依賴舊 SHA。</li>
-<li>先用 <code>git log --all -- 路徑</code> 或 <code>git log -S&#39;敏感字串&#39; --all -p</code> 驗證真的清乾淨。</li>
+<li>先用 <code>git log --all -- 路徑</code> 或 <code>git log -S'敏感字串' --all -p</code> 驗證真的清乾淨。</li>
 <li>更新遠端時要覆蓋所有可寫 refs，敏感資料清除通常使用 <code>git push --force --mirror origin</code>，不能只 force push 目前分支。</li>
 <li>不用手動下 <code>git gc</code>。git-filter-repo 跑完會 expire reflog、repack 本機物件；遠端主機、fork 與其他人的 clone 仍要另外處理。</li>
 </ol>
 <p>GitHub 的 <code>refs/pull/*</code> 是唯讀，force push 不會清掉 PR 參照與快取頁面。憑證已撤銷但內容仍屬敏感資料時，可依 <a target="_blank" rel="noopener" href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository">GitHub 官方清除流程</a> 聯絡 Support；現有 fork 與協作者 clone 也必須各自清理或重新 clone。</p>
-<h2 id="進階：用-callback-改檔案內容"><a href="#進階：用-callback-改檔案內容" class="headerlink" title="進階：用 callback 改檔案內容"></a>進階：用 callback 改檔案內容</h2><p>要動的不只是路徑、還包括檔案內容時，用 <code>--blob-callback</code>，body 直接操作 blob（一樣是 bytes，而且是 in-place 修改、不用 return）：</p>
+<h2 id="進階：用-callback-改檔案內容">進階：用 callback 改檔案內容</h2>
+<p>要動的不只是路徑、還包括檔案內容時，用 <code>--blob-callback</code>，body 直接操作 blob（一樣是 bytes，而且是 in-place 修改、不用 return）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git filter-repo --blob-callback <span class="string">&#x27;</span></span><br><span class="line"><span class="string">    if b&quot;old_text&quot; in blob.data:</span></span><br><span class="line"><span class="string">        blob.data = blob.data.replace(b&quot;old_text&quot;, b&quot;new_text&quot;)</span></span><br><span class="line"><span class="string">&#x27;</span></span><br></pre></td></tr></table></figure>
-
 <p>整個 git-filter-repo 的世界都是位元組——路徑、email、訊息、檔案內容全是 bytes，這點一致。</p>
-<h2 id="跟-filter-branch-比"><a href="#跟-filter-branch-比" class="headerlink" title="跟 filter-branch 比"></a>跟 filter-branch 比</h2><table>
+<h2 id="跟-filter-branch-比">跟 filter-branch 比</h2>
+<table>
 <thead>
 <tr>
 <th>特性</th>
@@ -172,7 +173,8 @@
 <th>git filter-branch</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>速度</td>
 <td>快</td>
 <td>慢</td>
@@ -192,9 +194,12 @@
 <td>推薦</td>
 <td>不建議使用</td>
 </tr>
-</tbody></table>
-<h2 id="收尾"><a href="#收尾" class="headerlink" title="收尾"></a>收尾</h2><p>git-filter-repo 解決的是「重寫 Git 物件」，不會替你撤銷憑證，也碰不到別人的 clone、fork 與平台快取。我會先換金鑰，再停掉團隊 push，最後才做全 refs 重寫。callback 的 bytes 是操作上的坑；把本機跑成功誤認成資料已從世界上消失，才是資安上的坑。</p>
-<h2 id="相關文章"><a href="#相關文章" class="headerlink" title="相關文章"></a>相關文章</h2><p>收尾說的「先換金鑰」，換哪幾把、換完怎麼確認舊的失效，另外寫在這篇：<a href="/posts/aee4a987/">Zeabur、Railway 環境變數外洩之後：先換哪把金鑰，換完怎麼確認舊的真的失效</a>。</p>
+</tbody>
+</table>
+<h2 id="收尾">收尾</h2>
+<p>git-filter-repo 解決的是「重寫 Git 物件」，不會替你撤銷憑證，也碰不到別人的 clone、fork 與平台快取。我會先換金鑰，再停掉團隊 push，最後才做全 refs 重寫。callback 的 bytes 是操作上的坑；把本機跑成功誤認成資料已從世界上消失，才是資安上的坑。</p>
+<h2 id="相關文章">相關文章</h2>
+<p>收尾說的「先換金鑰」，換哪幾把、換完怎麼確認舊的失效，另外寫在這篇：<a href="/posts/aee4a987/">Zeabur、Railway 環境變數外洩之後：先換哪把金鑰，換完怎麼確認舊的真的失效</a>。</p>
 
       </div>
       
@@ -285,15 +290,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

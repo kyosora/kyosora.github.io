@@ -125,31 +125,37 @@
         <p>幾個月前我停用了 claude-mem，理由很單純：MCP 每次互動都打一次 round-trip，對話被它拖到肉眼可見的慢。當時的決定純屬效能直覺，跟「記憶品質」沒關係——我預設「記得多總是好事」。</p>
 <p>上週 X 上開始刷一篇 UIUC 的 Dylan Zhang 等人的論文〈Useful Memories Become Faulty When Continuously Updated by LLMs〉（arXiv:2605.12978）。論文做了一個我看到結果愣了五秒的實驗：把 GPT-5.4 原本 100% 解得出來的 ARC-AGI 問題，丟進「持續記憶」的迴圈讓它一邊解一邊累積經驗——<strong>最後 54% 的題目反而解不出來了</strong>（注意：54% 是失敗率，不是剩餘準確率，原本 100% 變成只剩 46% 能解）。</p>
 <p>那一刻我反應過來，當初停用 claude-mem 那個直覺，可能比我想的還更對。</p>
-<h2 id="論文在做什麼"><a href="#論文在做什麼" class="headerlink" title="論文在做什麼"></a>論文在做什麼</h2><p>論文針對的是一個被很多主動寫入式記憶工具共用的設計誘惑——consolidation loop，三句話：</p>
+<h2 id="論文在做什麼">論文在做什麼</h2>
+<p>論文針對的是一個被很多主動寫入式記憶工具共用的設計誘惑——consolidation loop，三句話：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">distill experience    把這次互動的經歷蒸餾出一條教訓</span><br><span class="line">   ↓</span><br><span class="line">store as text         存成自然語言文字</span><br><span class="line">   ↓</span><br><span class="line">rewrite later         之後遇到新經歷再回頭重寫舊教訓</span><br></pre></td></tr></table></figure>
-
 <p>這也是 GBrain 那種「終身記憶」或 mem0 / LangMem / Letta 一串框架在賣的事情——只要它的整合流程會定期把舊記憶<strong>重寫</strong>成更抽象的版本，就落在論文警告的範圍裡。聽起來合理——畢竟人類的長期記憶也是這樣運作的。</p>
 <p>論文的實驗設計乾淨到讓我不太敢相信：挑出 GPT-5.4 在「無記憶」狀態下能 100% 解出的 ARC-AGI 問題，用串流方式餵給 agent，<strong>每題都附上標準答案</strong>（沒有任何資訊損失），中間 agent 持續更新自己的記憶。跑完後重測同一批題目，54% 變成解不出來。</p>
 <p>注意：<strong>這不是因為記憶裡塞了錯的答案</strong>。每一步都餵了正確答案。失敗發生在「重寫」這個動作本身。同樣的軌跡資料，用不同的整合排程，最後產出的記憶長得完全不一樣，agent 的表現也跟著翻車。</p>
 <p>WebShop、ALFWorld、ScienceWorld、AppWorld、Mind2Web 同一條曲線——記得越多錯越多。WebShop 從 8 個範例的 0.64 分，餵到 128 個範例後退化到 0.20。</p>
-<h2 id="三種記憶崩壞模式"><a href="#三種記憶崩壞模式" class="headerlink" title="三種記憶崩壞模式"></a>三種記憶崩壞模式</h2><p>論文歸納出三條失敗路徑：</p>
+<h2 id="三種記憶崩壞模式">三種記憶崩壞模式</h2>
+<p>論文歸納出三條失敗路徑：</p>
 <p><strong>Misgrouping（錯誤分組）。</strong> 當負責整合記憶的 LLM 被強迫頻繁抽象、卻沒拿到足夠相似的經歷時，它會把不同類的問題硬湊在一起，產出根本不會自然共現的「複合教訓」。舉個我能想像的例子：你前一天請 AI 幫你 debug Vue，後一天請它寫 SQL，記憶整合出來變成「在處理使用者介面狀態時優先考慮資料庫一致性」——聽起來很 AI 顧問口吻，實際毫無用處。</p>
 <p><strong>Interference（干擾）。</strong> 每一輪重寫都會剝離教訓的「適用條件」。一條原本附帶「在加熱情境下這樣做」的建議，重寫第三次後變成「總是這樣做」，被應用到冷卻場景就直接出包。論文有個更荒謬的例子：有條「desklamp protocol」的記憶條目最後影響了 17% 的評估，<strong>卻吃掉 55% 的 context slot（上下文額度）</strong>——一個被反覆強化的錯誤建議，把寶貴的上下文都佔光了。</p>
 <p><strong>Overfit（過擬合）。</strong> 不是記住太多，而是把抽象寫成了看過樣本的表面描述。同一族策略稍微變形，agent 就跨不過去。</p>
 <p>讓我最有感的是論文裡一個極端案例：<strong>有條記憶條目累積了 99 票（被 99 次評為「有用」），中間被改寫了三次，最終變成了一句邏輯上恆為真的廢話（tautology）</strong>。99 個被它影響的決策都認為它有用，但它什麼都沒說。</p>
-<h2 id="最後勝出的反而是-raw-episode"><a href="#最後勝出的反而是-raw-episode" class="headerlink" title="最後勝出的反而是 raw episode"></a>最後勝出的反而是 raw episode</h2><p><strong>Episodic-only agent</strong>——保留原始軌跡、選擇性保留或刪除，<strong>完全關掉抽象</strong>——在所有測試的 consolidator 裡，要嘛打平要嘛勝出。</p>
+<h2 id="最後勝出的反而是-raw-episode">最後勝出的反而是 raw episode</h2>
+<p><strong>Episodic-only agent</strong>——保留原始軌跡、選擇性保留或刪除，<strong>完全關掉抽象</strong>——在所有測試的 consolidator 裡，要嘛打平要嘛勝出。</p>
 <p>需要強調的是 episodic-only 不是「把聊天紀錄全塞回去」那種無腦 RAG。論文做的是 curated raw evidence：可審計、可刪除單筆、選擇性保留——靠 Retain / Delete 兩個明確動作管理 episode pool，而不是讓 LLM 在背景偷偷重寫。在它們的 ARC-AGI Stream 環境裡，預設保留 raw 的 agent 準確率比被強迫 consolidation 的版本高一倍。</p>
 <p>更殺的是論文裡 ablation 的結果——Auto 模式（agent 自己決定要不要 consolidate）的收益<strong>幾乎全部來自 episodic store</strong>，Abstract Only（只留抽象、丟原始紀錄）幾乎沒有貢獻。也就是說，那個你以為很值錢的「歸納成智慧」步驟，加進來反而拖累。</p>
 <p>「fresh consolidation」（每次都從頭整合）對比「cumulative consolidation」（累積重寫）的差距更誇張——fresh 比 cumulative 少了大約 5 倍的「過度泛化條目」、20 倍的「垃圾條目」。所有問題都集中在「持續重寫」這個動作上，<strong>不在原始資料</strong>。</p>
-<h2 id="對著我的工具選擇看一次"><a href="#對著我的工具選擇看一次" class="headerlink" title="對著我的工具選擇看一次"></a>對著我的工具選擇看一次</h2><p>讀完論文我打開了自己 55 天前的 memory 紀錄：</p>
+<h2 id="對著我的工具選擇看一次">對著我的工具選擇看一次</h2>
+<p>讀完論文我打開了自己 55 天前的 memory 紀錄：</p>
 <blockquote>
-<p>claude-mem 關閉後對話速度明顯提升。<br>Why: claude-mem 在每次互動時執行額外的 MCP 記憶體搜尋/寫入呼叫，累積的 round-trip 開銷拖慢回應速度。</p>
+<p>claude-mem 關閉後對話速度明顯提升。<br>
+Why: claude-mem 在每次互動時執行額外的 MCP 記憶體搜尋/寫入呼叫，累積的 round-trip 開銷拖慢回應速度。</p>
 </blockquote>
 <p>當時我盯的是延遲。沒去想記憶品質會不會自己腐爛。</p>
 <p>現在回頭看，這篇論文等於告訴我：<strong>就算 claude-mem 是免費的零延遲，也不該開</strong>——前提是它真的做了 consolidation。從它的 hook 結構和 observation 壓縮機制看起來像是會，但我沒去翻它整套流程的原始碼，這條保留判斷邊界。論文用實驗給了我比「太慢」更深一層的停用理由。</p>
 <p>至於 Claude Code 內建的 auto memory，至少從公開文件和我自己用了幾個月的觀察看，它偏向可編輯的 markdown memory：預設不寫，只在「使用者明確要我記」或「Claude 判斷未來會用到」時才寫，每筆都是事件式條目（「使用者在 X 場景偏好 Y」），可以單筆審閱與刪除。這更像 episodic-only，而不是論文打臉的那一派。是設計者想清楚過還是運氣好——說不準，但結果剛好對上。</p>
-<h2 id="那-GBrain-那種「終身記憶」呢"><a href="#那-GBrain-那種「終身記憶」呢" class="headerlink" title="那 GBrain 那種「終身記憶」呢"></a>那 GBrain 那種「終身記憶」呢</h2><p>aihot 上同一週另一條熱門條目是 Garry Tan 開源的 GBrain，宣稱「8 層結構解決 AI Agent 的記憶缺陷⋯⋯能持續追蹤使用者的人際關係、決策軌跡和認知演化」。我沒實測過 GBrain 也沒翻原始碼，沒法說它哪一層會壞。但論文的結論很硬：<strong>任何一個系統，只要包含「定期把舊記憶重寫成更抽象的版本」這個動作，就會遇到上面那三種崩壞模式之一</strong>。GBrain 文案裡的「終身記憶」「自我進化」描述像是 cumulative consolidation——如果是，論文翻車最慘的曲線剛好就是它。它前 4 層做的是檢索強化，那部分可能安全。但賣點不告訴你哪幾層是 episodic、哪幾層在做重寫，使用者很難判斷風險落在哪。</p>
-<h2 id="我從這篇論文帶走什麼"><a href="#我從這篇論文帶走什麼" class="headerlink" title="我從這篇論文帶走什麼"></a>我從這篇論文帶走什麼</h2><p>老實說，不多——但都是我會用的：</p>
+<h2 id="那-GBrain-那種「終身記憶」呢">那 GBrain 那種「終身記憶」呢</h2>
+<p>aihot 上同一週另一條熱門條目是 Garry Tan 開源的 GBrain，宣稱「8 層結構解決 AI Agent 的記憶缺陷⋯⋯能持續追蹤使用者的人際關係、決策軌跡和認知演化」。我沒實測過 GBrain 也沒翻原始碼，沒法說它哪一層會壞。但論文的結論很硬：<strong>任何一個系統，只要包含「定期把舊記憶重寫成更抽象的版本」這個動作，就會遇到上面那三種崩壞模式之一</strong>。GBrain 文案裡的「終身記憶」「自我進化」描述像是 cumulative consolidation——如果是，論文翻車最慘的曲線剛好就是它。它前 4 層做的是檢索強化，那部分可能安全。但賣點不告訴你哪幾層是 episodic、哪幾層在做重寫，使用者很難判斷風險落在哪。</p>
+<h2 id="我從這篇論文帶走什麼">我從這篇論文帶走什麼</h2>
+<p>老實說，不多——但都是我會用的：</p>
 <ol>
 <li>不要因為「我的 AI 更懂我」這種承諾去裝任何主動寫入式的記憶 MCP。多數會偷偷做 consolidation，你看不到它什麼時候開始說謊。</li>
 <li>如果一定要記憶層，找那種能「列出原始事件、可審計、可刪除單筆」的工具——也就是 episodic-only。</li>
@@ -230,15 +236,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

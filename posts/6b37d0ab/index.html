@@ -120,76 +120,80 @@
       <div class="prose" id="article">
         <p>專案用 <code>httpVueLoader</code> 在瀏覽器直接載入 <code>.vue</code> 檔，沒有 webpack、沒有建置步驟，改完存檔重新整理就看得到結果。方便是方便，但我很快撞到一個惱人的狀況：明明改了 <code>SurveyPit.vue</code>，按 F5 畫面還是舊的，連改了三次都一樣。</p>
 <p>第一個念頭是去包 <code>keep-alive</code>，結果越包越糟。後來才弄懂，「快取」這個詞在 Vue 裡指兩種完全不同的東西，方向搞錯就會像我那樣白忙。所以先把這兩件事拆開講。</p>
-<h2 id="兩種「快取」"><a href="#兩種「快取」" class="headerlink" title="兩種「快取」"></a>兩種「快取」</h2><ul>
+<h2 id="兩種「快取」">兩種「快取」</h2>
+<ul>
 <li><strong>瀏覽器檔案快取（這篇要解的）</strong>：瀏覽器為了省流量，會把抓過的 <code>.vue</code>、<code>.js</code> 暫存起來。你改了檔案、重新整理，瀏覽器拿出暫存的舊檔，於是看到舊內容。這是 HTTP 層的事。</li>
 <li><strong>元件實例快取</strong>：<code>keep-alive</code> 在做的事。它把元件實例留在記憶體裡，切走再切回來時不重建，保留表單輸入跟捲動位置。這是記憶體層的狀態保留，跟「檔案有沒有更新」沒關係。</li>
 </ul>
 <p>把這兩者搞混的代價很實際。我當初想解「改完 <code>.vue</code> 不更新」卻跑去包 <code>keep-alive</code>，不但沒效，反而把舊實例牢牢釘在記憶體裡，新內容更難冒出來。</p>
-<h2 id="問題情境"><a href="#問題情境" class="headerlink" title="問題情境"></a>問題情境</h2><p>當時專案有這幾個用 <code>httpVueLoader</code> 全域註冊的元件：</p>
+<h2 id="問題情境">問題情境</h2>
+<p>當時專案有這幾個用 <code>httpVueLoader</code> 全域註冊的元件：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;x-spit&#x27;</span>, <span class="title function_">httpVueLoader</span>(<span class="string">&#x27;DrainFacility/SurveyPit.vue&#x27;</span>)); <span class="comment">// 陰井</span></span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;x-shole&#x27;</span>, <span class="title function_">httpVueLoader</span>(<span class="string">&#x27;DrainFacility/SurveyHole.vue&#x27;</span>)); <span class="comment">// 人孔</span></span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;x-spiple&#x27;</span>, <span class="title function_">httpVueLoader</span>(<span class="string">&#x27;DrainFacility/SurveyPiple.vue&#x27;</span>)); <span class="comment">// 連接管</span></span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;x-spipeline&#x27;</span>, <span class="title function_">httpVueLoader</span>(<span class="string">&#x27;DrainFacility/SurveyPipeline.vue&#x27;</span>)); <span class="comment">// 管線</span></span><br></pre></td></tr></table></figure>
-
 <p>改完 <code>SurveyPit.vue</code> 重新整理，畫面沒變。原因在 <code>httpVueLoader</code> 是用 <code>XMLHttpRequest</code> 去抓 <code>.vue</code> 檔，再丟給 Vue 編譯器處理。這個請求跟載入圖片、CSS 一樣會吃瀏覽器快取，瀏覽器看到同一個 URL，就直接給你暫存的版本。</p>
-<h2 id="解決方案"><a href="#解決方案" class="headerlink" title="解決方案"></a>解決方案</h2><h3 id="1-加版本號或時間戳"><a href="#1-加版本號或時間戳" class="headerlink" title="1. 加版本號或時間戳"></a>1. 加版本號或時間戳</h3><p>最直接的辦法，是在檔案路徑後面接一個會變動的查詢參數。URL 一變，瀏覽器就當成新檔案重抓：</p>
+<h2 id="解決方案">解決方案</h2>
+<h3 id="1-加版本號或時間戳">1. 加版本號或時間戳</h3>
+<p>最直接的辦法，是在檔案路徑後面接一個會變動的查詢參數。URL 一變，瀏覽器就當成新檔案重抓：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 開發時用時間戳，每次載入都不同，等於完全不吃快取</span></span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;x-spit&#x27;</span>, <span class="title function_">httpVueLoader</span>(<span class="string">&#x27;DrainFacility/SurveyPit.vue?v=&#x27;</span> + <span class="title class_">Date</span>.<span class="title function_">now</span>()));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 上線時用版本號，發版才換值，平時仍能吃到快取</span></span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">VERSION</span> = <span class="string">&#x27;1.0.1&#x27;</span>;</span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;x-spit&#x27;</span>, <span class="title function_">httpVueLoader</span>(<span class="string">`DrainFacility/SurveyPit.vue?v=<span class="subst">$&#123;VERSION&#125;</span>`</span>));</span><br></pre></td></tr></table></figure>
-
-<p>注意 <code>VERSION</code> 要寫成字串 <code>&#39;1.0.1&#39;</code>。<code>1.0.1</code> 直接當數字寫會是語法錯誤，因為 JavaScript 數字只能有一個小數點。</p>
+<p>注意 <code>VERSION</code> 要寫成字串 <code>'1.0.1'</code>。<code>1.0.1</code> 直接當數字寫會是語法錯誤，因為 JavaScript 數字只能有一個小數點。</p>
 <p>兩種寫法差在換值的頻率。<code>Date.now()</code> 每次重新整理都不一樣，快取等於失效，適合開發階段；上線後別這樣用，否則每個訪客每次都重抓，CDN 也快取不了。</p>
 <p>如果生產環境要用手動維護的版本號，有幾個現實風險得先想清楚：多人協作容易忘記更版、版本號撞號、或是改了檔案但版本號沒跟著動。這做法是 <code>httpVueLoader</code> 沒有建置流程下的權宜之計，勉強能撐，但不該當成長期維護的標準。能引進建置工具的話（見方案 3），那才是穩的方向。</p>
-<h3 id="2-從伺服器端關掉快取"><a href="#2-從伺服器端關掉快取" class="headerlink" title="2. 從伺服器端關掉快取"></a>2. 從伺服器端關掉快取</h3><p>換個角度，從伺服器下手，用 HTTP 標頭叫瀏覽器別快取特定路徑：</p>
+<h3 id="2-從伺服器端關掉快取">2. 從伺服器端關掉快取</h3>
+<p>換個角度，從伺服器下手，用 HTTP 標頭叫瀏覽器別快取特定路徑：</p>
 <figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Nginx 設定範例</span></span><br><span class="line"><span class="section">location</span> /components/ &#123;</span><br><span class="line">    <span class="attribute">add_header</span> Cache-Control <span class="string">&quot;no-cache, no-store, must-revalidate&quot;</span>;</span><br><span class="line">    <span class="attribute">add_header</span> Pragma <span class="string">&quot;no-cache&quot;</span>;</span><br><span class="line">    <span class="attribute">add_header</span> Expires <span class="string">&quot;Thu, 01 Jan 1970 00:00:00 GMT&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>這裡的引號不能省。<code>add_header</code> 只吃單一 value 參數，<code>Cache-Control</code> 的值含逗號跟空白，沒包引號 <code>nginx -t</code> 過不了。</p>
 <p><code>Expires</code> 標頭的值得是 RFC 1123 格式的 HTTP 日期字串。有人會圖省事寫 <code>&quot;0&quot;</code>，但這不是合法日期格式。按 RFC 7234（以及取代它的 RFC 9111）的規定，快取收到非法格式的 <code>Expires</code> 日期，要把它當成「過去的時間」，也就是視為已過期，並不是忽略掉。所以與其賭各家瀏覽器怎麼解讀 <code>&quot;0&quot;</code>，不如直接寫一個明確的過去時間點（像上面的 Unix epoch）。</p>
 <p>還有一個容易踩的細節：同一個回應如果帶了 <code>Cache-Control: max-age</code>，瀏覽器會直接忽略 <code>Expires</code>，以 <code>max-age</code> 為準。上面範例用的是 <code>no-cache, no-store</code>；<code>no-store</code> 要求快取不得儲存回應，既然不儲存就不存在後續重用的新鮮度判斷，<code>Expires</code> 對此情境無實際作用。光靠 <code>Cache-Control: no-store</code> 就足夠禁止儲存，<code>Expires</code> 可省略。</p>
 <p>這招好在不必改任何前端程式碼，缺點是該路徑下的檔案完全不快取，每次都重抓。比較務實的折衷，是只對 <code>.vue</code> 開發檔下 <code>no-cache</code>，其餘靜態資源照常快取。</p>
-<h3 id="3-上線改走有建置步驟的流程"><a href="#3-上線改走有建置步驟的流程" class="headerlink" title="3. 上線改走有建置步驟的流程"></a>3. 上線改走有建置步驟的流程</h3><p>開發時用 <code>httpVueLoader</code> 沒問題，但要正式上線、想要穩定的快取破壞機制，比較好的方向是引進有建置步驟的打包工具，像 webpack 或 Vite。</p>
+<h3 id="3-上線改走有建置步驟的流程">3. 上線改走有建置步驟的流程</h3>
+<p>開發時用 <code>httpVueLoader</code> 沒問題，但要正式上線、想要穩定的快取破壞機制，比較好的方向是引進有建置步驟的打包工具，像 webpack 或 Vite。</p>
 <p>這裡得先講清楚一個我自己一開始也誤會的點。不是把這行：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;x-spit&#x27;</span>, <span class="title function_">httpVueLoader</span>(<span class="string">&#x27;DrainFacility/SurveyPit.vue&#x27;</span>));</span><br></pre></td></tr></table></figure>
-
 <p>直接換成這行就好：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 注意：這需要有建置流程才能跑，不是把字串換掉就行</span></span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;x-spit&#x27;</span>, <span class="function">() =&gt;</span> <span class="keyword">import</span>(<span class="string">&#x27;./DrainFacility/SurveyPit.vue&#x27;</span>));</span><br></pre></td></tr></table></figure>
-
-<p><code>httpVueLoader</code> 的存在意義，就是「沒有建置步驟、瀏覽器執行期直接抓 <code>.vue</code>」。<code>() =&gt; import(&#39;./...&#39;)</code> 是另一套世界，它要 webpack 或 Vite 在打包時用 <code>vue-loader</code> 把 <code>.vue</code> 編譯成普通 JS，瀏覽器本身不認識 <code>.vue</code>。沒有建置流程，直接寫 <code>import(&#39;./SurveyPit.vue&#39;)</code> 跑不起來。順帶一提，<code>import()</code> 的路徑也是字串，引號不能漏。</p>
+<p><code>httpVueLoader</code> 的存在意義，就是「沒有建置步驟、瀏覽器執行期直接抓 <code>.vue</code>」。<code>() =&gt; import('./...')</code> 是另一套世界，它要 webpack 或 Vite 在打包時用 <code>vue-loader</code> 把 <code>.vue</code> 編譯成普通 JS，瀏覽器本身不認識 <code>.vue</code>。沒有建置流程，直接寫 <code>import('./SurveyPit.vue')</code> 跑不起來。順帶一提，<code>import()</code> 的路徑也是字串，引號不能漏。</p>
 <p>而且 <code>import()</code> 這行語法本身不負責解快取。建置工具的快取破壞，是靠輸出檔名帶上內容雜湊：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// webpack.config.js</span></span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="attr">output</span>: &#123;</span><br><span class="line">    <span class="attr">filename</span>: <span class="string">&#x27;[name].[contenthash].js&#x27;</span>, <span class="comment">// 內容變，雜湊變，檔名就變</span></span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
 <p>檔名裡的 <code>[contenthash]</code> 會跟著檔案內容跑。內容一改，雜湊變了，檔名也變，瀏覽器看到新檔名自然重抓；內容沒改，檔名不變，就能放心長期快取。從 <code>httpVueLoader</code> 搬到建置流程，解快取的是 <code>[contenthash]</code> 這個機制，不是 <code>import()</code> 那行字。</p>
-<h3 id="4-keep-alive-解的是另一個問題"><a href="#4-keep-alive-解的是另一個問題" class="headerlink" title="4. keep-alive 解的是另一個問題"></a>4. keep-alive 解的是另一個問題</h3><p><code>keep-alive</code> 不是用來解「改完 <code>.vue</code> 不更新」的。它做的是切換元件時把實例留在記憶體裡，保留狀態。</p>
+<h3 id="4-keep-alive-解的是另一個問題">4. keep-alive 解的是另一個問題</h3>
+<p><code>keep-alive</code> 不是用來解「改完 <code>.vue</code> 不更新」的。它做的是切換元件時把實例留在記憶體裡，保留狀態。</p>
 <p>它真正派得上用場的場景是這樣：你有一個多分頁表單，或一個帶搜尋條件的列表，使用者切到別的分頁再切回來，希望剛填的內容、捲到的位置都還在：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">keep-alive</span> <span class="attr">:include</span>=<span class="string">&quot;[&#x27;SurveyPit&#x27;, &#x27;SurveyHole&#x27;]&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">component</span> <span class="attr">:is</span>=<span class="string">&quot;currentComponent&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">component</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">keep-alive</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p><code>include</code> 比對的是元件的 <code>name</code>。Vue 2 跟 Options API 在 <code>script</code> 裡宣告 <code>name: &#39;SurveyPit&#39;</code> 就行。Vue 3 加 <code>&lt;script setup&gt;</code> 的情況稍微繞一點：</p>
+<p><code>include</code> 比對的是元件的 <code>name</code>。Vue 2 跟 Options API 在 <code>script</code> 裡宣告 <code>name: 'SurveyPit'</code> 就行。Vue 3 加 <code>&lt;script setup&gt;</code> 的情況稍微繞一點：</p>
 <ul>
 <li>Vue 3.2.34 以上：SFC 會自動把檔名當作 <code>name</code>（<code>SurveyPit.vue</code> 對應的 name 就是 <code>SurveyPit</code>），多數情況不用額外宣告。</li>
 <li>要明確覆寫、或版本比較舊時：用 <code>defineOptions</code> 巨集（Vue 3.3 起正式支援）：</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;script setup&gt;</span><br><span class="line">defineOptions(&#123; name: &#x27;SurveyPit&#x27; &#125;)</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
 <p><code>name</code> 對不上，<code>include</code> 就比不到這個元件，快取當然也不會生效。</p>
 <p>要強調的還是那句：用了 <code>keep-alive</code>，元件實例被釘在記憶體裡，反而更不會去重抓更新後的 <code>.vue</code>。目標如果是「看到改過的內容」，這招方向相反，別用，我已經親自驗證過一次了。</p>
-<h3 id="5-開發時最省事的做法"><a href="#5-開發時最省事的做法" class="headerlink" title="5. 開發時最省事的做法"></a>5. 開發時最省事的做法</h3><p>邊改邊看，最快的方式是讓瀏覽器當下不快取，連設定都不用動：</p>
+<h3 id="5-開發時最省事的做法">5. 開發時最省事的做法</h3>
+<p>邊改邊看，最快的方式是讓瀏覽器當下不快取，連設定都不用動：</p>
 <ol>
-<li>開 Chrome 開發者工具：<ul>
+<li>開 Chrome 開發者工具：
+<ul>
 <li>在 Network 頁籤勾 Disable cache（只有開著 DevTools 才生效）</li>
 <li>或對重新整理按鈕按右鍵，選「清空快取並強制重新載入」</li>
 </ul>
 </li>
 </ol>
 <p>這是臨時用的招，不必改任何設定，也不必裝建置工具。如果專案已經有 Vue CLI（代表已經有建置流程了），<code>vue.config.js</code> 的 devServer 可以預設關掉開發伺服器的快取，但那是另一個情境，跟 <code>httpVueLoader</code> 無關。</p>
-<h2 id="怎麼挑"><a href="#怎麼挑" class="headerlink" title="怎麼挑"></a>怎麼挑</h2><ul>
+<h2 id="怎麼挑">怎麼挑</h2>
+<ul>
 <li>開發階段、沒有建置工具：勾 DevTools 的 Disable cache，或路徑接 <code>?v=Date.now()</code>，最省事。</li>
 <li>生產環境、還在用 httpVueLoader：手動維護版本號是權宜之計，能用但有維護風險；規模稍大就認真考慮搬到 webpack 或 Vite。</li>
 <li>已有建置流程：用 <code>[contenthash]</code> 自動破快取，最穩。</li>
 <li>想保留切換時的元件狀態（不是要更新檔案）：才考慮 <code>keep-alive</code>，Vue 3 加 <code>&lt;script setup&gt;</code> 記得確認 <code>name</code> 有對上。</li>
 </ul>
 <p>我繞的這趟彎路，說穿了就是把「檔案沒更新」當成「狀態沒保留」在解。快取存在是為了省流量、加快載入，目標從來不是把它整個關掉，而是在「改完看得到新內容」跟「平常載入夠快」之間抓平衡。後來專案上線版改走 Vite 的 <code>[contenthash]</code>，開發機則固定勾 Disable cache，這個惱人狀況就再沒出現過。</p>
-<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ul>
+<h2 id="參考資料">參考資料</h2>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://vuejs.org/guide/built-ins/keep-alive.html">Vue.js 官方文件 — KeepAlive</a></li>
 <li><a target="_blank" rel="noopener" href="https://github.com/FranckFreiburger/http-vue-loader">http-vue-loader（GitHub）</a></li>
 <li><a target="_blank" rel="noopener" href="https://webpack.js.org/guides/caching/">webpack 官方文件 — Caching</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc9111#section-5.3">RFC 9111 — HTTP Caching（§5.3 Expires）</a></li>
-<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-TW/docs/Web/HTTP/Caching">MDN — HTTP 快取</a><br>```</li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-TW/docs/Web/HTTP/Caching">MDN — HTTP 快取</a></li>
 </ul>
+<pre><code></code></pre>
 
       </div>
       
@@ -280,15 +284,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
     
       <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
     
     </ul>
   </section>

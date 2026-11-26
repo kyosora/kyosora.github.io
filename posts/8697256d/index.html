@@ -123,7 +123,8 @@
       <div class="prose" id="article">
         <p>用 <code>Win32_Product</code> 盤點 Windows 軟體有兩個問題：它只看 Windows Installer（MSI）產品，而且查詢時可能啟動每個 MSI 套件的一致性檢查。盤點工作不該順便觸發修復。</p>
 <p>比較實用的做法，是讀取「應用程式與功能」背後的 Uninstall 登錄檔。它涵蓋的軟體比 <code>Win32_Product</code> 多，也沒有 MSI 驗證的副作用。不過先把界線講清楚：Windows 沒有一個來源能列出電腦上的所有軟體，登錄檔清單也會漏掉可攜式程式、部分 Microsoft Store 套件與其他使用者範圍的安裝。</p>
-<h2 id="為什麼避開-Win32-Product？"><a href="#為什麼避開-Win32-Product？" class="headerlink" title="為什麼避開 Win32_Product？"></a>為什麼避開 Win32_Product？</h2><p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/powershell/scripting/samples/working-with-software-installations">Microsoft 的 PowerShell 文件</a>明確提醒，<code>Win32_Product</code> 查詢很慢，而且會驗證並嘗試修復已安裝的 MSI 套件。應用程式事件記錄裡可能因此出現一批 MsiInstaller 事件。</p>
+<h2 id="為什麼避開-Win32-Product？">為什麼避開 Win32_Product？</h2>
+<p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/powershell/scripting/samples/working-with-software-installations">Microsoft 的 PowerShell 文件</a>明確提醒，<code>Win32_Product</code> 查詢很慢，而且會驗證並嘗試修復已安裝的 MSI 套件。應用程式事件記錄裡可能因此出現一批 MsiInstaller 事件。</p>
 <p>登錄檔查詢只是讀取解除安裝資訊，風險低很多。這篇腳本掃三個位置：</p>
 <ul>
 <li><code>HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall</code>：64 位元、整台電腦範圍。</li>
@@ -131,17 +132,19 @@
 <li><code>HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall</code>：目前登入使用者的安裝。</li>
 </ul>
 <p>請用 64 位元 PowerShell 執行。32 位元 PowerShell 會被 WOW64 登錄檔重新導向，<code>HKLM:\SOFTWARE\Microsoft\...</code> 實際讀到的是 <code>WOW6432Node</code>，兩條 HKLM 路徑讀到同一份 32 位元清單，64 位元軟體整批消失，去重之後還看不出來。不確定自己開的是哪個版本，先跑 <code>[Environment]::Is64BitProcess</code>，要回 <code>True</code>。</p>
-<h2 id="可直接執行的腳本"><a href="#可直接執行的腳本" class="headerlink" title="可直接執行的腳本"></a>可直接執行的腳本</h2><p>下面是整理過、方便重複執行的版本。它只讀登錄檔，最後在桌面寫出 CSV，不需要管理員權限。</p>
+<h2 id="可直接執行的腳本">可直接執行的腳本</h2>
+<p>下面是整理過、方便重複執行的版本。它只讀登錄檔，最後在桌面寫出 CSV，不需要管理員權限。</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$registryPaths</span> = <span class="selector-tag">@</span>(</span><br><span class="line">    <span class="string">&#x27;HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*&#x27;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="variable">$installedSoftware</span> = <span class="keyword">foreach</span> (<span class="variable">$registryPath</span> <span class="keyword">in</span> <span class="variable">$registryPaths</span>) &#123;</span><br><span class="line">    <span class="built_in">Get-ItemProperty</span> <span class="literal">-Path</span> <span class="variable">$registryPath</span> <span class="literal">-ErrorAction</span> SilentlyContinue |</span><br><span class="line">        <span class="built_in">Where-Object</span> &#123;</span><br><span class="line">            <span class="variable">$_</span>.DisplayName <span class="operator">-and</span> <span class="variable">$_</span>.SystemComponent <span class="operator">-ne</span> <span class="number">1</span></span><br><span class="line">        &#125; |</span><br><span class="line">        <span class="built_in">Select-Object</span> DisplayName,</span><br><span class="line">                      DisplayVersion,</span><br><span class="line">                      Publisher,</span><br><span class="line">                      InstallDate,</span><br><span class="line">                      InstallLocation,</span><br><span class="line">                      UninstallString</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 只移除名稱、版本與發布者都相同的重複紀錄。</span></span><br><span class="line"><span class="comment"># 不能只用 DisplayName，否則 side-by-side 版本會被吃掉。</span></span><br><span class="line"><span class="variable">$installedSoftware</span> = <span class="variable">$installedSoftware</span> |</span><br><span class="line">    <span class="built_in">Sort-Object</span> DisplayName, DisplayVersion, Publisher <span class="literal">-Unique</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$desktopPath</span> = [<span class="type">Environment</span>]::GetFolderPath(<span class="string">&#x27;Desktop&#x27;</span>)</span><br><span class="line"><span class="variable">$outputFile</span> = <span class="built_in">Join-Path</span> <span class="variable">$desktopPath</span> <span class="string">&#x27;installed-software.csv&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$exportParams</span> = <span class="selector-tag">@</span>&#123;</span><br><span class="line">    Path              = <span class="variable">$outputFile</span></span><br><span class="line">    NoTypeInformation = <span class="variable">$true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># Windows PowerShell 5.1 的 UTF8 本身帶 BOM；</span></span><br><span class="line"><span class="comment"># PowerShell 7 改用 utf8BOM，讓 Excel 雙擊開啟時較不會出現中文亂碼。</span></span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$PSVersionTable</span>.PSVersion.Major <span class="operator">-ge</span> <span class="number">7</span>) &#123;</span><br><span class="line">    <span class="variable">$exportParams</span>.Encoding = <span class="string">&#x27;utf8BOM&#x27;</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="variable">$exportParams</span>.Encoding = <span class="string">&#x27;UTF8&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$installedSoftware</span> |</span><br><span class="line">    <span class="built_in">Select-Object</span> <span class="selector-tag">@</span>&#123;Name=<span class="string">&#x27;名稱&#x27;</span>; Expression=&#123;<span class="variable">$_</span>.DisplayName&#125;&#125;,</span><br><span class="line">                  <span class="selector-tag">@</span>&#123;Name=<span class="string">&#x27;版本&#x27;</span>; Expression=&#123;<span class="variable">$_</span>.DisplayVersion&#125;&#125;,</span><br><span class="line">                  <span class="selector-tag">@</span>&#123;Name=<span class="string">&#x27;發布者&#x27;</span>; Expression=&#123;<span class="variable">$_</span>.Publisher&#125;&#125;,</span><br><span class="line">                  <span class="selector-tag">@</span>&#123;Name=<span class="string">&#x27;安裝日期&#x27;</span>; Expression=&#123;<span class="variable">$_</span>.InstallDate&#125;&#125;,</span><br><span class="line">                  <span class="selector-tag">@</span>&#123;Name=<span class="string">&#x27;安裝路徑&#x27;</span>; Expression=&#123;<span class="variable">$_</span>.InstallLocation&#125;&#125;,</span><br><span class="line">                  <span class="selector-tag">@</span>&#123;Name=<span class="string">&#x27;解除安裝指令&#x27;</span>; Expression=&#123;<span class="variable">$_</span>.UninstallString&#125;&#125; |</span><br><span class="line">    <span class="built_in">Export-Csv</span> @exportParams</span><br><span class="line"></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;軟體清單已匯出：<span class="variable">$outputFile</span>&quot;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="去重不能只看軟體名稱"><a href="#去重不能只看軟體名稱" class="headerlink" title="去重不能只看軟體名稱"></a>去重不能只看軟體名稱</h2><p>舊版腳本用了 <code>Sort-Object DisplayName -Unique</code>。這會把同名的不同版本合併，例如機器同時保留兩個 SQL Server 元件或不同架構的 runtime，最後只剩一筆。</p>
+<h2 id="去重不能只看軟體名稱">去重不能只看軟體名稱</h2>
+<p>舊版腳本用了 <code>Sort-Object DisplayName -Unique</code>。這會把同名的不同版本合併，例如機器同時保留兩個 SQL Server 元件或不同架構的 runtime，最後只剩一筆。</p>
 <p>新版用名稱、版本與發布者三個欄位一起判斷。它仍不是完美主鍵，因為登錄資訊由安裝程式自行填寫；但比只看名稱安全，也保留 side-by-side 安裝。</p>
 <p><code>InstallDate</code> 也不要直接當成可靠日期。常見格式是 <code>yyyyMMdd</code>，有些安裝程式不寫，有些更新後會改值。這個欄位適合協助排序，不適合單獨當成軟體首次安裝的稽核證據。</p>
-<h2 id="執行原則不用整台機器一起改"><a href="#執行原則不用整台機器一起改" class="headerlink" title="執行原則不用整台機器一起改"></a>執行原則不用整台機器一起改</h2><p>如果把程式存成 <code>.ps1</code> 後被 Execution Policy 擋住，先確認檔案來源可信。只想在目前 PowerShell 視窗執行，可以設定程序範圍：</p>
+<h2 id="執行原則不用整台機器一起改">執行原則不用整台機器一起改</h2>
+<p>如果把程式存成 <code>.ps1</code> 後被 Execution Policy 擋住，先確認檔案來源可信。只想在目前 PowerShell 視窗執行，可以設定程序範圍：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Set-ExecutionPolicy</span> <span class="literal">-Scope</span> <span class="keyword">Process</span> <span class="literal">-ExecutionPolicy</span> RemoteSigned</span><br></pre></td></tr></table></figure>
-
 <p>視窗關閉後設定就消失。沒必要用管理員身份執行沒有 <code>-Scope</code> 的 <code>Set-ExecutionPolicy RemoteSigned</code>，那會改到更大的範圍，也不是這支唯讀腳本本身需要的權限。</p>
-<h2 id="哪些軟體仍然不在清單裡？"><a href="#哪些軟體仍然不在清單裡？" class="headerlink" title="哪些軟體仍然不在清單裡？"></a>哪些軟體仍然不在清單裡？</h2><p>Microsoft 文件也說，沒有保證能找出系統內每一個應用程式。這支腳本主要對應傳統 Win32 程式：</p>
+<h2 id="哪些軟體仍然不在清單裡？">哪些軟體仍然不在清單裡？</h2>
+<p>Microsoft 文件也說，沒有保證能找出系統內每一個應用程式。這支腳本主要對應傳統 Win32 程式：</p>
 <ul>
 <li>可攜式程式沒有安裝程序，通常不會寫 Uninstall key。</li>
 <li>只掃目前使用者的 HKCU，看不到其他使用者自己的安裝紀錄。</li>
@@ -150,9 +153,9 @@
 </ul>
 <p>若還要盤點目前使用者的 Store 套件，可以另外執行：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-AppxPackage</span> |</span><br><span class="line">    <span class="built_in">Select-Object</span> Name, Version, Publisher, InstallLocation |</span><br><span class="line">    <span class="built_in">Sort-Object</span> Name</span><br></pre></td></tr></table></figure>
-
 <p><code>Get-AppxPackage</code> 回傳的是套件，不等同「應用程式與功能」裡的一列，也不該直接和登錄檔資料硬去重。需要全機資產盤點時，還要定義使用者範圍、可攜式程式的判定方式，以及是否納入系統元件；先寫清楚盤點規格，比宣稱一支腳本能拿到「完整清單」實際得多。</p>
-<h2 id="我會怎麼用這份結果"><a href="#我會怎麼用這份結果" class="headerlink" title="我會怎麼用這份結果"></a>我會怎麼用這份結果</h2><p>單機交接、重灌前備份或客服排查，這份 CSV 已經很夠用。企業資產管理則只能把它當其中一個資料源，還要配合端點管理平台、套件管理器與使用者清單。</p>
+<h2 id="我會怎麼用這份結果">我會怎麼用這份結果</h2>
+<p>單機交接、重灌前備份或客服排查，這份 CSV 已經很夠用。企業資產管理則只能把它當其中一個資料源，還要配合端點管理平台、套件管理器與使用者清單。</p>
 <p>下次看到 <code>Win32_Product</code> 的盤點腳本，我會先換成登錄檔查詢，再確認需求到底是「目前使用者可解除安裝的程式」還是「整台電腦上所有可執行軟體」。這兩題的答案不同，腳本也不可能只差一個參數。</p>
 
       </div>
@@ -228,10 +231,10 @@
       </li>
     
       <li>
-        <a href="/posts/2a032167/">
-          <img src="/images/posts/legacy-2a032167-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
-          <span class="related-title">以為是 App Pool 的鍋，結果 IUSR 被 Windows 偷走了</span>
-          <span class="related-date">2026-04-23</span>
+        <a href="/posts/4f8c5648/">
+          <img src="/images/posts/bat-errorlevel-negative-exit-code-cover.webp" alt="" width="300" height="200" loading="lazy" decoding="async">
+          <span class="related-title">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</span>
+          <span class="related-date">2026-11-26</span>
         </a>
       </li>
     
@@ -244,6 +247,8 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
@@ -251,8 +256,6 @@
       <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
     
       <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
     
     </ul>
   </section>

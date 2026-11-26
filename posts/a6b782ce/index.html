@@ -121,10 +121,12 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="Claude桌面版的隱藏神器"><a href="#Claude桌面版的隱藏神器" class="headerlink" title="Claude桌面版的隱藏神器"></a>Claude桌面版的隱藏神器</h2><p>Anthropic 為 Claude 桌面版加了一項不太顯眼的功能——MCP（Model Context Protocol），讓 Claude 終於能夠讀寫、操作你電腦裡的檔案。</p>
+        <h2 id="Claude桌面版的隱藏神器">Claude桌面版的隱藏神器</h2>
+<p>Anthropic 為 Claude 桌面版加了一項不太顯眼的功能——MCP（Model Context Protocol），讓 Claude 終於能夠讀寫、操作你電腦裡的檔案。</p>
 <p>我第一次發現這功能時愣了一下：「等等，Claude 現在可以幫我整理桌面上的亂七八糟？」是的，而且還能做更多。</p>
 <p>這篇文章帶你一步步設定這個功能。</p>
-<h2 id="MCP是什麼？為何你應該立刻開啟它"><a href="#MCP是什麼？為何你應該立刻開啟它" class="headerlink" title="MCP是什麼？為何你應該立刻開啟它"></a>MCP是什麼？為何你應該立刻開啟它</h2><p>MCP（Model Context Protocol）簡單來說，就是一種讓 Claude 能夠與你電腦系統互動的協議。它建立了一座安全橋樑，讓 Claude 能取得你授權的資料、執行你批准的操作。</p>
+<h2 id="MCP是什麼？為何你應該立刻開啟它">MCP是什麼？為何你應該立刻開啟它</h2>
+<p>MCP（Model Context Protocol）簡單來說，就是一種讓 Claude 能夠與你電腦系統互動的協議。它建立了一座安全橋樑，讓 Claude 能取得你授權的資料、執行你批准的操作。</p>
 <p>最棒的是什麼？Claude絕不會偷偷行動。每次操作前，它都會徵求你的同意，讓你保持完全的控制權。</p>
 <p>透過啟用MCP，你的Claude桌面版將能夠：</p>
 <ul>
@@ -134,12 +136,15 @@
 <li>搜尋符合特定條件的檔案</li>
 </ul>
 <p>這樣一來，當你要求 Claude「幫我整理桌面上的所有 PDF 檔案」或「在下載資料夾找出所有與專案相關的文件」時，它真的能做到。</p>
-<h2 id="開啟超能力：設定步驟全攻略"><a href="#開啟超能力：設定步驟全攻略" class="headerlink" title="開啟超能力：設定步驟全攻略"></a>開啟超能力：設定步驟全攻略</h2><h3 id="步驟1：確認你有最新版的Claude桌面應用"><a href="#步驟1：確認你有最新版的Claude桌面應用" class="headerlink" title="步驟1：確認你有最新版的Claude桌面應用"></a>步驟1：確認你有最新版的Claude桌面應用</h3><p>首先，前往<a target="_blank" rel="noopener" href="https://claude.ai/download">Claude官方網站</a>下載桌面版。如果已經安裝，請點擊電腦上的Claude選單，選擇「Check for Updates...」確保使用最新版本。</p>
+<h2 id="開啟超能力：設定步驟全攻略">開啟超能力：設定步驟全攻略</h2>
+<h3 id="步驟1：確認你有最新版的Claude桌面應用">步驟1：確認你有最新版的Claude桌面應用</h3>
+<p>首先，前往<a target="_blank" rel="noopener" href="https://claude.ai/download">Claude官方網站</a>下載桌面版。如果已經安裝，請點擊電腦上的Claude選單，選擇「Check for Updates…」確保使用最新版本。</p>
 <p>目前MCP功能僅支援Windows和macOS，Linux使用者可能需要再等等（抱歉了，企鵝黨）。</p>
-<h3 id="步驟2：設定MCP伺服器"><a href="#步驟2：設定MCP伺服器" class="headerlink" title="步驟2：設定MCP伺服器"></a>步驟2：設定MCP伺服器</h3><p>這是關鍵一步，也是最容易出錯的地方。別擔心，我們一起來：</p>
+<h3 id="步驟2：設定MCP伺服器">步驟2：設定MCP伺服器</h3>
+<p>這是關鍵一步，也是最容易出錯的地方。別擔心，我們一起來：</p>
 <ol>
 <li>點擊電腦上的Claude選單（注意：不是應用程式視窗內的選單）</li>
-<li>選擇「Settings...」</li>
+<li>選擇「Settings…」</li>
 <li>在左側欄位中點擊「Developer」</li>
 <li>點擊「Edit Config」按鈕</li>
 </ol>
@@ -151,20 +156,23 @@
 </ul>
 <p>現在，將檔案內容替換為以下設定（記得修改路徑）：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;mcpServers&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;filesystem&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;npx&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;args&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="string">&quot;-y&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;@modelcontextprotocol/server-filesystem&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;/Users/你的使用者名稱/Desktop&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;/Users/你的使用者名稱/Downloads&quot;</span></span><br><span class="line">      <span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p>將上面的 <code>你的使用者名稱</code> 替換為你電腦的實際帳號名稱。這些路徑指定了你希望 Claude 能夠存取的資料夾。你可以根據需求新增更多路徑，但建議先從桌面和下載資料夾開始。</p>
-<h3 id="步驟3：安裝必要的依賴-Node-js"><a href="#步驟3：安裝必要的依賴-Node-js" class="headerlink" title="步驟3：安裝必要的依賴 - Node.js"></a>步驟3：安裝必要的依賴 - Node.js</h3><p>Claude的MCP功能依賴於Node.js。檢查你是否已安裝Node.js：</p>
+<h3 id="步驟3：安裝必要的依賴-Node-js">步驟3：安裝必要的依賴 - Node.js</h3>
+<p>Claude的MCP功能依賴於Node.js。檢查你是否已安裝Node.js：</p>
 <ol>
 <li>打開終端機（macOS）或命令提示字元（Windows）</li>
-<li>輸入以下命令：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node --version</span><br></pre></td></tr></table></figure></li>
+<li>輸入以下命令：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node --version</span><br></pre></td></tr></table></figure>
+</li>
 </ol>
 <p>如果回傳類似 <code>v16.14.2</code> 的版本號就代表已安裝。如果出現「命令未找到」的錯誤，請前往 <a target="_blank" rel="noopener" href="https://nodejs.org/">Node.js 官網</a> 下載並安裝。</p>
-<h3 id="步驟4：重啟Claude"><a href="#步驟4：重啟Claude" class="headerlink" title="步驟4：重啟Claude"></a>步驟4：重啟Claude</h3><p>完成以上設定後，重新啟動 Claude 桌面版。如果一切順利，你會在輸入框右下角看到一個小錘子圖示：</p>
+<h3 id="步驟4：重啟Claude">步驟4：重啟Claude</h3>
+<p>完成以上設定後，重新啟動 Claude 桌面版。如果一切順利，你會在輸入框右下角看到一個小錘子圖示：</p>
 <p><img loading="lazy" decoding="async" src="https://mintlify.s3.us-west-1.amazonaws.com/mcp/images/quickstart-hammer.png" alt="Claude的錘子圖標"></p>
 <p>點擊這個圖示，你會看到檔案系統 MCP 伺服器提供的各種工具選項：</p>
 <p><img loading="lazy" decoding="async" src="https://mintlify.s3.us-west-1.amazonaws.com/mcp/images/quickstart-tools.png" alt="MCP工具選項"></p>
 <p>Claude 的檔案操作功能已經就緒了。</p>
-<h2 id="實際體驗：讓Claude展示它的新能力"><a href="#實際體驗：讓Claude展示它的新能力" class="headerlink" title="實際體驗：讓Claude展示它的新能力"></a>實際體驗：讓Claude展示它的新能力</h2><p>現在你可以向Claude提出各種與檔案系統相關的請求，例如：</p>
+<h2 id="實際體驗：讓Claude展示它的新能力">實際體驗：讓Claude展示它的新能力</h2>
+<p>現在你可以向Claude提出各種與檔案系統相關的請求，例如：</p>
 <ul>
 <li>「能幫我寫一首詩並儲存到桌面嗎？」</li>
 <li>「請幫我檢查下載資料夾中的Excel檔案，並分析其中的資料」</li>
@@ -173,38 +181,43 @@
 <p>當Claude需要執行檔案操作時，它會先徵求你的許可：</p>
 <p><img loading="lazy" decoding="async" src="https://mintlify.s3.us-west-1.amazonaws.com/mcp/images/quickstart-approve.png" alt="Claude徵求操作許可"></p>
 <p>所有操作都在你的確認之下進行。</p>
-<h2 id="故障排除：常見問題與解決方案"><a href="#故障排除：常見問題與解決方案" class="headerlink" title="故障排除：常見問題與解決方案"></a>故障排除：常見問題與解決方案</h2><h3 id="問題1：設定後看不到錘子圖標"><a href="#問題1：設定後看不到錘子圖標" class="headerlink" title="問題1：設定後看不到錘子圖標"></a>問題1：設定後看不到錘子圖標</h3><p>可能的原因和解決方法：</p>
+<h2 id="故障排除：常見問題與解決方案">故障排除：常見問題與解決方案</h2>
+<h3 id="問題1：設定後看不到錘子圖標">問題1：設定後看不到錘子圖標</h3>
+<p>可能的原因和解決方法：</p>
 <ul>
 <li><strong>Claude未完全重啟</strong>：完全關閉Claude應用後再重新開啟</li>
 <li><strong>配置檔案語法錯誤</strong>：檢查JSON格式是否正確</li>
 <li><strong>路徑問題</strong>：確保使用絕對路徑而非相對路徑，且路徑存在</li>
 <li><strong>Node.js未安裝</strong>：確認Node.js已正確安裝</li>
 </ul>
-<h3 id="問題2：Windows使用者出現ENOENT錯誤"><a href="#問題2：Windows使用者出現ENOENT錯誤" class="headerlink" title="問題2：Windows使用者出現ENOENT錯誤"></a>問題2：Windows使用者出現ENOENT錯誤</h3><p>這通常與環境變數有關。在配置檔案中添加環境變數設定：</p>
+<h3 id="問題2：Windows使用者出現ENOENT錯誤">問題2：Windows使用者出現ENOENT錯誤</h3>
+<p>這通常與環境變數有關。在配置檔案中添加環境變數設定：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;mcpServers&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;filesystem&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;npx&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;args&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="string">&quot;-y&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;@modelcontextprotocol/server-filesystem&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;C:\\Users\\你的使用者名稱\\Desktop&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;C:\\Users\\你的使用者名稱\\Downloads&quot;</span></span><br><span class="line">      <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;env&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;APPDATA&quot;</span><span class="punctuation">:</span> <span class="string">&quot;C:\\Users\\你的使用者名稱\\AppData\\Roaming\\&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="問題3：如何查看錯誤日誌"><a href="#問題3：如何查看錯誤日誌" class="headerlink" title="問題3：如何查看錯誤日誌"></a>問題3：如何查看錯誤日誌</h3><p>日誌檔案位於：</p>
+<h3 id="問題3：如何查看錯誤日誌">問題3：如何查看錯誤日誌</h3>
+<p>日誌檔案位於：</p>
 <ul>
 <li>macOS: <code>~/Library/Logs/Claude</code></li>
 <li>Windows: <code>%APPDATA%\Claude\logs</code></li>
 </ul>
 <p>查看最近的日誌（macOS）：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail -n 20 -f ~/Library/Logs/Claude/mcp*.log</span><br></pre></td></tr></table></figure>
-
-<h2 id="安全考量：值得注意的事項"><a href="#安全考量：值得注意的事項" class="headerlink" title="安全考量：值得注意的事項"></a>安全考量：值得注意的事項</h2><p>開啟MCP功能實際上是讓Claude獲得了有限的檔案系統存取權限。雖然每次操作前Claude都會徵求你的許可，但仍有一些安全注意事項：</p>
+<h2 id="安全考量：值得注意的事項">安全考量：值得注意的事項</h2>
+<p>開啟MCP功能實際上是讓Claude獲得了有限的檔案系統存取權限。雖然每次操作前Claude都會徵求你的許可，但仍有一些安全注意事項：</p>
 <ol>
 <li>只加入你願意讓 Claude 存取的資料夾路徑</li>
 <li>定期檢查你的設定檔，確保未被意外修改</li>
 <li>不要讓 Claude 存取包含敏感資訊的資料夾</li>
 </ol>
-<h2 id="MCP能做的遠不止這些"><a href="#MCP能做的遠不止這些" class="headerlink" title="MCP能做的遠不止這些"></a>MCP能做的遠不止這些</h2><p>檔案系統只是其中一種 MCP 伺服器。根據 Anthropic 的發展路線，未來會有更多類型，讓 Claude 能夠：</p>
+<h2 id="MCP能做的遠不止這些">MCP能做的遠不止這些</h2>
+<p>檔案系統只是其中一種 MCP 伺服器。根據 Anthropic 的發展路線，未來會有更多類型，讓 Claude 能夠：</p>
 <ul>
 <li>與其他應用程式整合</li>
 <li>幫你自動化工作流程</li>
 <li>處理和分析更複雜的本機資料</li>
 <li>成為你電腦上的智慧代理</li>
 </ul>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>我已經在用 Claude 整理雜亂的桌面、分析資料文件，也會讓它幫我草擬並直接儲存文章草稿。每天下班前請 Claude 整理當天的工作文件，省掉不少手動歸檔的時間。</p>
+<h2 id="結語">結語</h2>
+<p>我已經在用 Claude 整理雜亂的桌面、分析資料文件，也會讓它幫我草擬並直接儲存文章草稿。每天下班前請 Claude 整理當天的工作文件，省掉不少手動歸檔的時間。</p>
 <p>如果你有 Claude 桌面版，花幾分鐘設定一下是值得的。</p>
 
       </div>
@@ -296,15 +309,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

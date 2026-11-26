@@ -25,8 +25,8 @@
 <meta property="article:modified_time" content="2026-07-31T08:29:33.000Z">
 <meta property="article:author" content="kyosora">
 <meta property="article:section" content="前後端開發">
-<meta property="article:tag" content="Net">
 <meta property="article:tag" content="C#">
+<meta property="article:tag" content="Net">
 <meta property="article:tag" content="Quartz.NET">
 <meta property="article:tag" content="排程系統">
 <meta name="google-site-verification" content="NdIUXAOVyGnnBhcrip0ksCawbdAzT0hlBZDE9u4jx6k">
@@ -42,7 +42,7 @@
 <script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Quartz.NET 入門指南 - 打造可靠的.NET排程系統","description":"資料備份、報表產生、定時寄信這些排程任務，該怎麼在 .NET 裡做得可靠？以 Quartz.NET 開源框架為主軸，從 Scheduler、Job、Trigger 基本概念到 Cron 表達式、錯誤處理與最佳實踐，附實作範例，帶後端開發者打造穩定的排程系統。","url":"https://kyosora.github.io/posts/84e70c1e/","mainEntityOfPage":"https://kyosora.github.io/posts/84e70c1e/","image":"https://kyosora.github.io/images/posts/legacy-84e70c1e-cover.webp","datePublished":"2025-01-16T10:06:09.000Z","dateModified":"2026-07-31T08:29:33.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"前後端開發","keywords":"Net, C#, Quartz.NET, 排程系統"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"前後端開發","item":"https://kyosora.github.io/categories/%E5%89%8D%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/"},{"@type":"ListItem","position":3,"name":"Quartz.NET 入門指南 - 打造可靠的.NET排程系統","item":"https://kyosora.github.io/posts/84e70c1e/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Quartz.NET 入門指南 - 打造可靠的.NET排程系統","description":"資料備份、報表產生、定時寄信這些排程任務，該怎麼在 .NET 裡做得可靠？以 Quartz.NET 開源框架為主軸，從 Scheduler、Job、Trigger 基本概念到 Cron 表達式、錯誤處理與最佳實踐，附實作範例，帶後端開發者打造穩定的排程系統。","url":"https://kyosora.github.io/posts/84e70c1e/","mainEntityOfPage":"https://kyosora.github.io/posts/84e70c1e/","image":"https://kyosora.github.io/images/posts/legacy-84e70c1e-cover.webp","datePublished":"2025-01-16T10:06:09.000Z","dateModified":"2026-07-31T08:29:33.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"前後端開發","keywords":"C#, Net, Quartz.NET, 排程系統"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"前後端開發","item":"https://kyosora.github.io/categories/%E5%89%8D%E5%BE%8C%E7%AB%AF%E9%96%8B%E7%99%BC/"},{"@type":"ListItem","position":3,"name":"Quartz.NET 入門指南 - 打造可靠的.NET排程系統","item":"https://kyosora.github.io/posts/84e70c1e/"}]}]}</script>
 
 </head>
 <body class="kind-post">
@@ -121,7 +121,8 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>排程任務在後端開發裡幾乎無所不在：定期備份資料、產生報表、發送郵件、執行系統維護。Quartz.NET 是 .NET 生態裡最成熟的開源排程框架，提供豐富的功能，也有足夠的彈性應對各種場景。</p>
+        <h2 id="前言">前言</h2>
+<p>排程任務在後端開發裡幾乎無所不在：定期備份資料、產生報表、發送郵件、執行系統維護。<a target="_blank" rel="noopener" href="http://Quartz.NET">Quartz.NET</a> 是 .NET 生態裡最成熟的開源排程框架，提供豐富的功能，也有足夠的彈性應對各種場景。</p>
 <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
     <!-- 背景 -->
     <rect width="800" height="600" fill="#ffffff"/>
@@ -160,8 +161,8 @@
     <!-- Scheduler to Plugins -->
     <path d="M 400 130 L 560 400" stroke="#666" stroke-width="2" fill="none"/>
 </svg>
-
-<h2 id="Quartz-NET-是什麼"><a href="#Quartz-NET-是什麼" class="headerlink" title="Quartz.NET 是什麼?"></a>Quartz.NET 是什麼?</h2><p>Quartz.NET 是 Java Quartz 排程框架的 .NET 移植版，提供企業級的排程功能：</p>
+<h2 id="Quartz-NET-是什麼"><a target="_blank" rel="noopener" href="http://Quartz.NET">Quartz.NET</a> 是什麼?</h2>
+<p><a target="_blank" rel="noopener" href="http://Quartz.NET">Quartz.NET</a> 是 Java Quartz 排程框架的 .NET 移植版，提供企業級的排程功能：</p>
 <ul>
 <li>支援複雜的排程模式（Cron 表達式）</li>
 <li>具備叢集功能，可確保高可用性</li>
@@ -169,22 +170,24 @@
 <li>彈性的錯誤處理機制</li>
 <li>豐富的監控與管理功能</li>
 </ul>
-<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>Quartz.NET 有三個核心元件：</p>
+<h2 id="基本概念">基本概念</h2>
+<p><a target="_blank" rel="noopener" href="http://Quartz.NET">Quartz.NET</a> 有三個核心元件：</p>
 <ol>
 <li><strong>Job（工作）</strong>：定義要執行的具體任務</li>
 <li><strong>Trigger（觸發器）</strong>：決定任務何時執行</li>
 <li><strong>Scheduler（排程器）</strong>：負責協調 Job 和 Trigger</li>
 </ol>
-<h2 id="實作範例"><a href="#實作範例" class="headerlink" title="實作範例"></a>實作範例</h2><h3 id="1-安裝套件"><a href="#1-安裝套件" class="headerlink" title="1. 安裝套件"></a>1. 安裝套件</h3><p>使用 NuGet 安裝 Quartz：</p>
+<h2 id="實作範例">實作範例</h2>
+<h3 id="1-安裝套件">1. 安裝套件</h3>
+<p>使用 NuGet 安裝 Quartz：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Install-Package Quartz</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-建立-Job"><a href="#2-建立-Job" class="headerlink" title="2. 建立 Job"></a>2. 建立 Job</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定義一個簡單的工作</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HelloJob</span> : <span class="title">IJob</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task <span class="title">Execute</span>(<span class="params">IJobExecutionContext context</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 記錄工作執行時間</span></span><br><span class="line">        <span class="built_in">string</span> executeTime = DateTime.Now.ToString(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 執行工作邏輯</span></span><br><span class="line">        <span class="keyword">await</span> Console.Out.WriteLineAsync(<span class="string">$&quot;Hello! 執行時間: <span class="subst">&#123;executeTime&#125;</span>&quot;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 可以從 context 取得傳入的參數</span></span><br><span class="line">        <span class="keyword">var</span> dataMap = context.JobDetail.JobDataMap;</span><br><span class="line">        <span class="built_in">string</span> jobSays = dataMap.GetString(<span class="string">&quot;jobSays&quot;</span>);</span><br><span class="line">        <span class="keyword">await</span> Console.Out.WriteLineAsync(<span class="string">$&quot;參數值: <span class="subst">&#123;jobSays&#125;</span>&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-設定觸發器並啟動"><a href="#3-設定觸發器並啟動" class="headerlink" title="3. 設定觸發器並啟動"></a>3. 設定觸發器並啟動</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 建立排程器</span></span><br><span class="line">IScheduler scheduler = <span class="keyword">await</span> StdSchedulerFactory.GetDefaultScheduler();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定義工作</span></span><br><span class="line">IJobDetail job = JobBuilder.Create&lt;HelloJob&gt;()</span><br><span class="line">    .WithIdentity(<span class="string">&quot;helloJob&quot;</span>, <span class="string">&quot;group1&quot;</span>)       <span class="comment">// 設定工作名稱和群組</span></span><br><span class="line">    .UsingJobData(<span class="string">&quot;jobSays&quot;</span>, <span class="string">&quot;Hello World!&quot;</span>)   <span class="comment">// 傳入參數</span></span><br><span class="line">    .Build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 建立觸發器 - 每 5 秒執行一次</span></span><br><span class="line">ITrigger trigger = TriggerBuilder.Create()</span><br><span class="line">    .WithIdentity(<span class="string">&quot;trigger1&quot;</span>, <span class="string">&quot;group1&quot;</span>)        <span class="comment">// 設定觸發器名稱和群組</span></span><br><span class="line">    .StartNow()                                <span class="comment">// 立即開始</span></span><br><span class="line">    .WithSimpleSchedule(x =&gt; x</span><br><span class="line">        .WithIntervalInSeconds(<span class="number">5</span>)              <span class="comment">// 間隔 5 秒</span></span><br><span class="line">        .RepeatForever())                      <span class="comment">// 永遠重複</span></span><br><span class="line">    .Build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 註冊工作和觸發器</span></span><br><span class="line"><span class="keyword">await</span> scheduler.ScheduleJob(job, trigger);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 啟動排程器</span></span><br><span class="line"><span class="keyword">await</span> scheduler.Start();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等待（Console 程式需要防止主執行緒提早結束）</span></span><br><span class="line"><span class="keyword">await</span> Task.Delay(TimeSpan.FromSeconds(<span class="number">60</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 關閉排程器</span></span><br><span class="line"><span class="keyword">await</span> scheduler.Shutdown();</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-使用-Cron-表達式"><a href="#4-使用-Cron-表達式" class="headerlink" title="4. 使用 Cron 表達式"></a>4. 使用 Cron 表達式</h3><p>Cron 表達式適合需要精細排程的場景：</p>
+<h3 id="2-建立-Job">2. 建立 Job</h3>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定義一個簡單的工作</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HelloJob</span> : <span class="title">IJob</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task <span class="title">Execute</span>(<span class="params">IJobExecutionContext context</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 記錄工作執行時間</span></span><br><span class="line">        <span class="built_in">string</span> executeTime = DateTime.Now.ToString(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 執行工作邏輯</span></span><br><span class="line">        <span class="keyword">await</span> Console.Out.WriteLineAsync(<span class="string">$&quot;Hello! 執行時間: <span class="subst">&#123;executeTime&#125;</span>&quot;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 可以從 context 取得傳入的參數</span></span><br><span class="line">        <span class="keyword">var</span> dataMap = context.JobDetail.JobDataMap;</span><br><span class="line">        <span class="built_in">string</span> jobSays = dataMap.GetString(<span class="string">&quot;jobSays&quot;</span>);</span><br><span class="line">        <span class="keyword">await</span> Console.Out.WriteLineAsync(<span class="string">$&quot;參數值: <span class="subst">&#123;jobSays&#125;</span>&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-設定觸發器並啟動">3. 設定觸發器並啟動</h3>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 建立排程器</span></span><br><span class="line">IScheduler scheduler = <span class="keyword">await</span> StdSchedulerFactory.GetDefaultScheduler();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定義工作</span></span><br><span class="line">IJobDetail job = JobBuilder.Create&lt;HelloJob&gt;()</span><br><span class="line">    .WithIdentity(<span class="string">&quot;helloJob&quot;</span>, <span class="string">&quot;group1&quot;</span>)       <span class="comment">// 設定工作名稱和群組</span></span><br><span class="line">    .UsingJobData(<span class="string">&quot;jobSays&quot;</span>, <span class="string">&quot;Hello World!&quot;</span>)   <span class="comment">// 傳入參數</span></span><br><span class="line">    .Build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 建立觸發器 - 每 5 秒執行一次</span></span><br><span class="line">ITrigger trigger = TriggerBuilder.Create()</span><br><span class="line">    .WithIdentity(<span class="string">&quot;trigger1&quot;</span>, <span class="string">&quot;group1&quot;</span>)        <span class="comment">// 設定觸發器名稱和群組</span></span><br><span class="line">    .StartNow()                                <span class="comment">// 立即開始</span></span><br><span class="line">    .WithSimpleSchedule(x =&gt; x</span><br><span class="line">        .WithIntervalInSeconds(<span class="number">5</span>)              <span class="comment">// 間隔 5 秒</span></span><br><span class="line">        .RepeatForever())                      <span class="comment">// 永遠重複</span></span><br><span class="line">    .Build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 註冊工作和觸發器</span></span><br><span class="line"><span class="keyword">await</span> scheduler.ScheduleJob(job, trigger);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 啟動排程器</span></span><br><span class="line"><span class="keyword">await</span> scheduler.Start();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等待（Console 程式需要防止主執行緒提早結束）</span></span><br><span class="line"><span class="keyword">await</span> Task.Delay(TimeSpan.FromSeconds(<span class="number">60</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 關閉排程器</span></span><br><span class="line"><span class="keyword">await</span> scheduler.Shutdown();</span><br></pre></td></tr></table></figure>
+<h3 id="4-使用-Cron-表達式">4. 使用 Cron 表達式</h3>
+<p>Cron 表達式適合需要精細排程的場景：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 建立每天早上 9:00 執行的觸發器</span></span><br><span class="line">ITrigger cronTrigger = TriggerBuilder.Create()</span><br><span class="line">    .WithIdentity(<span class="string">&quot;trigger2&quot;</span>, <span class="string">&quot;group1&quot;</span>)</span><br><span class="line">    .WithCronSchedule(<span class="string">&quot;0 0 9 * * ?&quot;</span>)  <span class="comment">// 每天早上 9:00</span></span><br><span class="line">    .Build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 替換掉原本的觸發器，重新排程</span></span><br><span class="line"><span class="keyword">await</span> scheduler.ScheduleJob(job, cronTrigger);</span><br></pre></td></tr></table></figure>
-
 <p>Cron 表達式格式（共 7 欄，年可省略）：</p>
 <table>
 <thead>
@@ -194,7 +197,8 @@
 <th>範例</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>秒</td>
 <td>0–59</td>
 <td><code>0</code></td>
@@ -229,17 +233,19 @@
 <td>1970–2099</td>
 <td>—</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>常用範例：</p>
 <ul>
 <li><code>0 0 9 * * ?</code> — 每天早上 9:00 執行</li>
 <li><code>0 0/30 * * * ?</code> — 每 30 分鐘執行一次</li>
 <li><code>0 0 9-17 * * ?</code> — 每天 09:00–17:00，整點各執行一次</li>
 </ul>
-<h3 id="5-錯誤處理"><a href="#5-錯誤處理" class="headerlink" title="5. 錯誤處理"></a>5. 錯誤處理</h3><p>Quartz.NET 本身不會自動重試失敗的 Job，需要在 <code>Execute</code> 內自行處理。最常見的做法是捕捉例外、記錄日誌後，透過 <code>JobExecutionException</code> 告知排程器是否要立即重新執行：</p>
+<h3 id="5-錯誤處理">5. 錯誤處理</h3>
+<p><a target="_blank" rel="noopener" href="http://Quartz.NET">Quartz.NET</a> 本身不會自動重試失敗的 Job，需要在 <code>Execute</code> 內自行處理。最常見的做法是捕捉例外、記錄日誌後，透過 <code>JobExecutionException</code> 告知排程器是否要立即重新執行：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ErrorHandlingJob</span> : <span class="title">IJob</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> ILogger&lt;ErrorHandlingJob&gt; _logger;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ErrorHandlingJob</span>(<span class="params">ILogger&lt;ErrorHandlingJob&gt; logger</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _logger = logger;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task <span class="title">Execute</span>(<span class="params">IJobExecutionContext context</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 實際工作邏輯放這裡</span></span><br><span class="line">            <span class="keyword">await</span> DoWorkAsync();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Exception ex)</span><br><span class="line">        &#123;</span><br><span class="line">            _logger.LogError(ex, <span class="string">&quot;Job &#123;JobKey&#125; 執行失敗&quot;</span>, context.JobDetail.Key);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// refireImmediately = true 會讓 Quartz 立即重新排入佇列執行一次</span></span><br><span class="line">            <span class="keyword">var</span> jobEx = <span class="keyword">new</span> JobExecutionException(ex, refireImmediately: <span class="literal">false</span>);</span><br><span class="line">            <span class="keyword">throw</span> jobEx;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">async</span> Task <span class="title">DoWorkAsync</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 實際業務邏輯</span></span><br><span class="line">        <span class="keyword">await</span> Task.CompletedTask;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="實務注意事項"><a href="#實務注意事項" class="headerlink" title="實務注意事項"></a>實務注意事項</h2><p><strong>Job 設計</strong></p>
+<h2 id="實務注意事項">實務注意事項</h2>
+<p><strong>Job 設計</strong></p>
 <ul>
 <li>盡量讓每個 Job 只做一件事，避免在單次執行中混入太多業務邏輯</li>
 <li>長時間運行的 Job 記得處理 <code>CancellationToken</code>（透過 <code>context.CancellationToken</code>），讓排程器能安全中斷</li>
@@ -255,8 +261,10 @@
 <li>Job 內建議注入 <code>ILogger</code>，用結構化日誌記錄執行時間與關鍵參數，方便事後追查</li>
 <li>生產環境可搭配 <code>IJobListener</code> 集中監聽所有 Job 的執行結果，不用每個 Job 各自重複寫</li>
 </ul>
-<h2 id="小結"><a href="#小結" class="headerlink" title="小結"></a>小結</h2><p>這篇涵蓋了 Quartz.NET 最核心的用法：建 Job、設 Trigger、用 Cron 表達式，以及正確丟出 <code>JobExecutionException</code>。入門夠用了。進階方向包括持久化 Job Store（搭配資料庫）、叢集模式、以及 <code>IJobListener</code>／<code>ITriggerListener</code> 做監控，官方文件有完整範例。</p>
-<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
+<h2 id="小結">小結</h2>
+<p>這篇涵蓋了 <a target="_blank" rel="noopener" href="http://Quartz.NET">Quartz.NET</a> 最核心的用法：建 Job、設 Trigger、用 Cron 表達式，以及正確丟出 <code>JobExecutionException</code>。入門夠用了。進階方向包括持久化 Job Store（搭配資料庫）、叢集模式、以及 <code>IJobListener</code>／<code>ITriggerListener</code> 做監控，官方文件有完整範例。</p>
+<h2 id="參考資源">參考資源</h2>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://www.quartz-scheduler.net/documentation/">Quartz.NET 官方文件</a></li>
 <li><a target="_blank" rel="noopener" href="https://github.com/quartznet/quartznet">Quartz.NET GitHub</a></li>
 </ul>
@@ -266,7 +274,7 @@
 <footer class="post-end">
   
   <ul class="post-tags" aria-label="標籤">
-    <li><a href="/tags/Net/">Net</a></li><li><a href="/tags/C/">C#</a></li><li><a href="/tags/Quartz-NET/">Quartz.NET</a></li><li><a href="/tags/%E6%8E%92%E7%A8%8B%E7%B3%BB%E7%B5%B1/">排程系統</a></li>
+    <li><a href="/tags/C/">C#</a></li><li><a href="/tags/Net/">Net</a></li><li><a href="/tags/Quartz-NET/">Quartz.NET</a></li><li><a href="/tags/%E6%8E%92%E7%A8%8B%E7%B3%BB%E7%B5%B1/">排程系統</a></li>
   </ul>
   
 
@@ -350,15 +358,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -126,8 +126,8 @@
 <p>vLLM 在 <a target="_blank" rel="noopener" href="https://vllm.ai/blog/2026-09-24-watermarking-in-vllm">9 月 24 日的技術文章</a>說明了這種做法。我認為最有意思的地方，是文字可以看起來完全正常，卻與某組金鑰產生可測量的關聯。不過，「有關聯」離「證明是誰寫的」還很遠。</p>
 <p>這篇拆解原理，附一個 Python 小實驗。它只模擬抽樣，沒有載入語言模型，也不代表實測過 vLLM 的偵測率。</p>
 <span id="more"></span>
-
-<h2 id="水印可以從下一個字開始"><a href="#水印可以從下一個字開始" class="headerlink" title="水印可以從下一個字開始"></a>水印可以從下一個字開始</h2><p>模型每次產生 token，都有一批候選與對應機率。token 可能是一個字、字的一部分，或標點；下文用「選字」方便理解。</p>
+<h2 id="水印可以從下一個字開始">水印可以從下一個字開始</h2>
+<p>模型每次產生 token，都有一批候選與對應機率。token 可能是一個字、字的一部分，或標點；下文用「選字」方便理解。</p>
 <p>早期的 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2301.10226">A Watermark for Large Language Models</a> 把候選分成兩組，抽樣時稍微偏好其中的「綠色」組。單看一句不容易察覺，累積一段之後，綠色 token 出現得異常多，就能做統計檢定。每一步的分組會隨上下文變化，並非整份字典永久分成好字與壞字。</p>
 <p>這也解釋了為什麼水印可以隨文字搬家：貼到另一個編輯器，選過的字還在。它不依賴 Word 文件屬性或網頁標籤。</p>
 <pre><code class="highlight mermaid">flowchart LR
@@ -137,28 +137,28 @@
     D --&gt; E[複製到其他地方]
     E --&gt; F[重建規則並統計訊號]
     B --&gt; F</code></pre>
-
 <p>但這條路有代價。偏好某一組字，可能改變原本的輸出分布。vLLM 這次介紹的 Gumbel-max 做法，從抽樣所用的亂數下手。</p>
-<h2 id="讓抽樣結果帶著一條可回查的線索"><a href="#讓抽樣結果帶著一條可回查的線索" class="headerlink" title="讓抽樣結果帶著一條可回查的線索"></a>讓抽樣結果帶著一條可回查的線索</h2><p>Gumbel-max 的計算很短：對每個候選取 <code>log(機率)</code>，加上 Gumbel 噪音，再選分數最大的候選。使用獨立、適當分布的亂數時，結果與按照原機率抽樣等價。</p>
+<h2 id="讓抽樣結果帶著一條可回查的線索">讓抽樣結果帶著一條可回查的線索</h2>
+<p>Gumbel-max 的計算很短：對每個候選取 <code>log(機率)</code>，加上 Gumbel 噪音，再選分數最大的候選。使用獨立、適當分布的亂數時，結果與按照原機率抽樣等價。</p>
 <p>水印把亂數改成可重建的數值：由金鑰、近期上下文與候選 token 一起決定。偵測端拿到文字和相符設定，就能重算這些數值，檢查實際選字是否持續偏向該規則給的高分候選。<a target="_blank" rel="noopener" href="https://vllm.ai/blog/2026-09-24-watermarking-in-vllm">vLLM 原理說明</a></p>
 <p>「無失真」有數學條件，不能讀成每一篇輸出都完全不受影響。尤其相同上下文會產生相同亂數，連續生成時可能反覆走回同一條路。vLLM 的<a target="_blank" rel="noopener" href="https://github.com/vllm-project/vllm/pull/56233">上下文去重改動</a>會在命中重複上下文時跳過水印抽樣；去重的範圍與歷史窗口也會影響保證能涵蓋多遠。</p>
-<h2 id="用三個候選做個小實驗"><a href="#用三個候選做個小實驗" class="headerlink" title="用三個候選做個小實驗"></a>用三個候選做個小實驗</h2><p>下面是為解釋原理撰寫的教學程式，Python 標準函式庫就能跑。三個候選機率各占三分之一；每輪使用不同的人工上下文編號，刻意排除重複上下文問題。</p>
+<h2 id="用三個候選做個小實驗">用三個候選做個小實驗</h2>
+<p>下面是為解釋原理撰寫的教學程式，Python 標準函式庫就能跑。三個候選機率各占三分之一；每輪使用不同的人工上下文編號，刻意排除重複上下文問題。</p>
 <p>程式使用 HMAC 產生可重建數值，與 vLLM 的 Philox 實作不同。它沒有 tokenizer、完整序列生成或正式偵測器，不能拿去判定文章來源。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> hashlib</span><br><span class="line"><span class="keyword">import</span> hmac</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> Counter</span><br><span class="line"></span><br><span class="line">KEY = <span class="string">b&quot;classroom-example-only&quot;</span></span><br><span class="line">N = <span class="number">10000</span></span><br><span class="line">rng = random.Random(<span class="number">42</span>)</span><br><span class="line">counts = Counter()</span><br><span class="line">marked_score = plain_score = <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">keyed_uniform</span>(<span class="params">context, token</span>):</span><br><span class="line">    message = <span class="string">f&quot;<span class="subst">&#123;context&#125;</span>:<span class="subst">&#123;token&#125;</span>&quot;</span>.encode()</span><br><span class="line">    digest = hmac.new(KEY, message, hashlib.sha256).digest()</span><br><span class="line">    <span class="comment"># 取 52 bits，避免轉成 float 後碰到 0 或 1。</span></span><br><span class="line">    value = <span class="built_in">int</span>.from_bytes(digest[:<span class="number">8</span>], <span class="string">&quot;big&quot;</span>) &gt;&gt; <span class="number">12</span></span><br><span class="line">    <span class="keyword">return</span> (value + <span class="number">0.5</span>) / (<span class="number">1</span> &lt;&lt; <span class="number">52</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> context <span class="keyword">in</span> <span class="built_in">range</span>(N):</span><br><span class="line">    u = [keyed_uniform(context, token) <span class="keyword">for</span> token <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>)]</span><br><span class="line">    scores = [math.log(<span class="number">1</span> / <span class="number">3</span>) - math.log(-math.log(x)) <span class="keyword">for</span> x <span class="keyword">in</span> u]</span><br><span class="line">    chosen = <span class="built_in">max</span>(<span class="built_in">range</span>(<span class="number">3</span>), key=scores.__getitem__)</span><br><span class="line">    counts[chosen] += <span class="number">1</span></span><br><span class="line">    marked_score += u[chosen]</span><br><span class="line">    plain_score += u[rng.randrange(<span class="number">3</span>)]</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;候選比例：&quot;</span>, [<span class="built_in">round</span>(counts[i] / N, <span class="number">3</span>) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>)])</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;帶水印的平均 u：&quot;</span>, <span class="built_in">round</span>(marked_score / N, <span class="number">3</span>))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;一般抽樣的平均 u：&quot;</span>, <span class="built_in">round</span>(plain_score / N, <span class="number">3</span>))</span><br></pre></td></tr></table></figure>
-
 <p>這份程式的執行結果是：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">候選比例： [0.339, 0.336, 0.325]</span><br><span class="line">帶水印的平均 u： 0.749</span><br><span class="line">一般抽樣的平均 u： 0.5</span><br></pre></td></tr></table></figure>
-
 <p>三個候選出現比例接近相等，但帶水印的平均 <code>u</code> 明顯偏高。因為這個例子機率相同，Gumbel-max 就是在三個 <code>u</code> 裡挑最大值；三個獨立均勻亂數的最大值，期望值是 0.75。一般抽樣不看這組數值，平均則接近 0.5。</p>
 <p>候選比例沒明顯偏向誰，與金鑰的關聯卻留下了。正式偵測還需要處理分數分布、重複證據與錯誤率，不能直接拿 0.75 當門檻。</p>
-<h2 id="複製、改寫和短答案是不同問題"><a href="#複製、改寫和短答案是不同問題" class="headerlink" title="複製、改寫和短答案是不同問題"></a>複製、改寫和短答案是不同問題</h2><p>完整搬走文字，通常也搬走原本的選字序列。截取一小段，剩下的證據可能不夠；大幅改寫或翻譯，又會換掉許多 token，不能假定原訊號完整保留。</p>
+<h2 id="複製、改寫和短答案是不同問題">複製、改寫和短答案是不同問題</h2>
+<p>完整搬走文字，通常也搬走原本的選字序列。截取一小段，剩下的證據可能不夠；大幅改寫或翻譯，又會換掉許多 token，不能假定原訊號完整保留。</p>
 <p>早期水印論文就指出低熵文字的困難：接下來幾乎只有一種合理寫法時，可調整的空間很少。像固定答案、慣用語與部分程式碼，硬換字可能直接破壞內容。<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2301.10226">論文對低熵序列的討論</a></p>
 <p>因此，不能把長篇自由寫作的結果套到一句回答，也不能看到「未檢出」就認定是人寫的。原本沒開水印的模型，本來就不會留下這組訊號。</p>
 <p>一般 AI 文字分類器會從文風或其他統計特徵推測來源；這裡的水印偵測器，檢查的是生成時刻意埋入的訊號。兩者都會誤判，但判斷依據不同。</p>
 <p>這類技術也有更早的部署研究。<a target="_blank" rel="noopener" href="https://www.nature.com/articles/s41586-024-08025-4">2024 年 Nature 的 SynthID-Text 論文</a>已研究可大規模使用的文字水印，並比較上述路線。不同方法的品質與偵測表現需要分開看，不能把某篇論文的數字當成所有水印的共同能力。</p>
-<h2 id="真正接進服務，還有幾個條件"><a href="#真正接進服務，還有幾個條件" class="headerlink" title="真正接進服務，還有幾個條件"></a>真正接進服務，還有幾個條件</h2><p>支援此功能的 vLLM 環境可在啟動時指定設定。以下沿用<a target="_blank" rel="noopener" href="https://vllm.ai/blog/2026-09-24-watermarking-in-vllm">官方部落格</a>的示範模型與金鑰值，供對照用；本文沒有執行 GPU 部署。</p>
+<h2 id="真正接進服務，還有幾個條件">真正接進服務，還有幾個條件</h2>
+<p>支援此功能的 vLLM 環境可在啟動時指定設定。以下沿用<a target="_blank" rel="noopener" href="https://vllm.ai/blog/2026-09-24-watermarking-in-vllm">官方部落格</a>的示範模型與金鑰值，供對照用；本文沒有執行 GPU 部署。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vllm serve mistralai/Mistral-7B-Instruct-v0.3 \</span><br><span class="line">  --watermark-config <span class="string">&#x27;&#123;&quot;algorithm&quot;:&quot;gumbel&quot;,&quot;key&quot;:42&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
-
 <p>金鑰 <code>42</code> 是公開範例，正式環境應另行管理。查核日為 2026 年 9 月 29 日；<a target="_blank" rel="noopener" href="https://docs.vllm.ai/en/latest/features/watermarking/">文件</a>列出 Model Runner V2 限制，舊安裝不能直接假定支援這個參數。<code>temperature=0</code> 的貪婪解碼也會跳過 Gumbel-max 水印，啟動設定不保證每個請求都帶有訊號。</p>
 <p>偵測端得保留相符的 tokenizer、演算法、金鑰與相關設定。多試幾組設定會增加偶然命中的機會，需要多重檢定校正。固定金鑰也可能影響實際誤報率，應以服務本身的未加水印文字校準。</p>
 <p>更要緊的是，目前文件明說 Philox 不提供金鑰復原或偽造抵抗保證。水印結果不具備數位簽章那種身分驗證能力。<a target="_blank" rel="noopener" href="https://docs.vllm.ai/en/latest/features/watermarking/">vLLM 偵測與 PRF 限制</a></p>
@@ -254,15 +254,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

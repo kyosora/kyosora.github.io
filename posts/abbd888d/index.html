@@ -125,24 +125,29 @@
         <p>5 月 21 日，OpenAI 宣布它的內部推理模型構造出一個反例，推翻了 Erdős 在 1946 年提出的單位距離猜想——伴隨 <a target="_blank" rel="noopener" href="https://the-decoder.com/openai-shifts-the-boundary-of-automated-reasoning-with-a-milestone-in-ai-mathematics-that-experts-are-now-unpacking/">九位外部數學家的驗證論文</a>。5 月 25 日，Google DeepMind 發表 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2605.22763v1">AlphaProof Nexus 論文</a>，用 Lean 形式驗證解了九道 Erdős 開放問題。5 月 26 日，Anthropic 工程師 Sholto Douglas <a target="_blank" rel="noopener" href="https://x.com/_sholtodouglas/status/2059303540150137244">在 X 上寫</a>：Claude Mythos 也解了同一道猜想，用的是一個「cute, simple proof」。</p>
 <p>五天之內，三家公司、三種方法、同一類問題。</p>
 <p>我不是數學家，以下不是數學論文導讀。我想搞清楚的是：這件事對用 AI 寫程式的人來說，到底暗示了什麼。</p>
-<h2 id="先搞懂這個問題到底在問什麼"><a href="#先搞懂這個問題到底在問什麼" class="headerlink" title="先搞懂這個問題到底在問什麼"></a>先搞懂這個問題到底在問什麼</h2><p>Erdős 單位距離猜想說起來很直覺：在一張紙上放 n 個點，最多能有多少對點之間的距離剛好是 1？</p>
+<h2 id="先搞懂這個問題到底在問什麼">先搞懂這個問題到底在問什麼</h2>
+<p>Erdős 單位距離猜想說起來很直覺：在一張紙上放 n 個點，最多能有多少對點之間的距離剛好是 1？</p>
 <p>1946 年 Erdős 猜測，一種稍微歪斜的正方形網格排列已經接近最優解——也就是說，配對數的成長速度只比點的數量稍微快一點。</p>
 <p>這個問題 80 年來沒人動搖過。1984 年 Spencer、Szemerédi 和 Trotter 建立的上界，40 年來也沒被改進。數學家 Thomas Bloom 在 2026 年 4 月的 <a target="_blank" rel="noopener" href="https://www.erdosproblems.com/forum/thread/blog:5">erdosproblems.com 部落格</a> 把它列入「Erdős 十大最難問題」，理由是：它「已經抵抗了數十年的嘗試」。</p>
 <p>一個月後 OpenAI 的模型就構造出了反例。Bloom 後來寫道：「我沒有預期這會在僅僅一個月後發生。」</p>
 <p>要說清楚的是：這不是「完全解決」這個問題。OpenAI 找到了一個比經典排列更好的構造，推翻了猜想本身，但 1984 年建立的理論上界依然存在。也就是說，最優排列的真正上限還沒被碰到。</p>
-<h2 id="OpenAI-怎麼解的：用了數學家不會去碰的工具"><a href="#OpenAI-怎麼解的：用了數學家不會去碰的工具" class="headerlink" title="OpenAI 怎麼解的：用了數學家不會去碰的工具"></a>OpenAI 怎麼解的：用了數學家不會去碰的工具</h2><p>OpenAI 的模型找到一種新的點排列方式，能產生比經典正方形網格更多的單位距離配對。普林斯頓數學家 Will Sawin 估計增益大約是每翻倍一次點數，多出 1% 的配對。</p>
+<h2 id="OpenAI-怎麼解的：用了數學家不會去碰的工具">OpenAI 怎麼解的：用了數學家不會去碰的工具</h2>
+<p>OpenAI 的模型找到一種新的點排列方式，能產生比經典正方形網格更多的單位距離配對。普林斯頓數學家 Will Sawin 估計增益大約是每翻倍一次點數，多出 1% 的配對。</p>
 <p>1% 聽起來微不足道。但 Erdős 的猜想說的是<strong>根本不可能有任何增益</strong>。所以即使只多 1%，猜想就倒了。</p>
 <p>更有意思的是解法用的工具。不是幾何——是代數數論。模型用了複數系統的內部對稱性來構造特別密集的點分佈。這些工具在數論裡是標準的，但把它們搬去解平面幾何問題，在場的數學家都覺得匪夷所思。</p>
 <p>Thomas Bloom 分析了為什麼人類漏掉了這個方向：你得花大量時間在這個問題上、得願意賭 Erdős 的猜想是錯的、得想到把原始構造翻譯到數域的世界、還得夠熟悉相當專門的類域論。四個條件同時滿足的人類數學家，幾乎不存在。</p>
 <p>Fields 獎得主 Tim Gowers 說，如果一個人類把這篇論文投到《Annals of Mathematics》，他「會毫不猶豫地推薦接受」。沒有任何先前的 AI 證明接近過這個水準。</p>
-<h2 id="Claude-Mythos-的不同路線"><a href="#Claude-Mythos-的不同路線" class="headerlink" title="Claude Mythos 的不同路線"></a>Claude Mythos 的不同路線</h2><p>Anthropic 的做法是用一組隔離的 Claude Code 實例，每個都有 Mythos 模型的存取權限。它們各自獨立嘗試解題，然後一個實例匯整所有方案並分發給其他實例繼續推進。</p>
+<h2 id="Claude-Mythos-的不同路線">Claude Mythos 的不同路線</h2>
+<p>Anthropic 的做法是用一組隔離的 Claude Code 實例，每個都有 Mythos 模型的存取權限。它們各自獨立嘗試解題，然後一個實例匯整所有方案並分發給其他實例繼續推進。</p>
 <p>數學家 <a target="_blank" rel="noopener" href="https://x.com/littmath/status/2059309078812180877">Daniel Litt 評價</a> Mythos 的結果「比 OpenAI 的稍弱」——但 Mythos 也獨立找到了跟 OpenAI 相同的構造方法。Anthropic 發佈了一份由 Opus 4.7 整理的<a target="_blank" rel="noopener" href="https://www-cdn.anthropic.com/files/4zrzovbb/website/ca35f196125c899a5ad11f011080202a652aef02.pdf">正式證明版本 PDF</a>。</p>
 <p>要注意的是：這裡的「也解了」跟 OpenAI 的「首次發現」性質不同。OpenAI 是先行者，Mythos 是在已知方向上驗證並找到替代路徑。Douglas 用「serious overhang」來形容這件事——他的重點不在誰先做到，而在「一家做到了，其他家立刻也做到」本身就說明這個能力不是偶發的。</p>
-<h2 id="DeepMind-用另一套方法也做到了"><a href="#DeepMind-用另一套方法也做到了" class="headerlink" title="DeepMind 用另一套方法也做到了"></a>DeepMind 用另一套方法也做到了</h2><p>Google DeepMind 的 AlphaProof Nexus 在同一週解了九道 Erdős 問題，其中兩道已經懸了 56 年。整個推理成本只有幾百美元。</p>
+<h2 id="DeepMind-用另一套方法也做到了">DeepMind 用另一套方法也做到了</h2>
+<p>Google DeepMind 的 AlphaProof Nexus 在同一週解了九道 Erdős 問題，其中兩道已經懸了 56 年。整個推理成本只有幾百美元。</p>
 <p>它的方法跟 OpenAI 和 Anthropic 不一樣。Nexus 用的是 Lean 形式語言——模型產生證明步驟，Lean 編譯器逐步檢查，錯誤訊息回饋到下一次嘗試。這是一個有符號驗證安全網的系統，不需要 LLM 自己扛整條邏輯鏈。</p>
 <p>有意思的是：研究團隊事後分析發現，最簡單的 Agent（只有 LLM + 編譯器回饋）也能解完全部九道題，只是最難的那幾道花費更高。他們把這歸因於「底層語言模型的快速進步」和「編譯器回饋在接地 LLM 推理上的效果」。</p>
 <p>研究者的結論：這反映了一個更大的趨勢——<strong>從專門訓練的系統轉向簡單的 agentic loop，隨著 LLM 變得更強大</strong>。</p>
-<h2 id="三種方法的比較"><a href="#三種方法的比較" class="headerlink" title="三種方法的比較"></a>三種方法的比較</h2><table>
+<h2 id="三種方法的比較">三種方法的比較</h2>
+<table>
 <thead>
 <tr>
 <th></th>
@@ -151,7 +156,8 @@
 <th>DeepMind (Nexus)</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>方法</td>
 <td>內部推理模型，自然語言</td>
 <td>Claude Code 多實例協作</td>
@@ -181,9 +187,11 @@
 <td>Litt: 「比 OpenAI 的稍弱」</td>
 <td>從 LLM 純粹性角度看較不驚艷</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>三家用了不同策略，解的題目也不完全相同（OpenAI 和 Mythos 解的是單位距離猜想，Nexus 解的是另外九道問題）。但重疊的部分——同一道猜想被 OpenAI 和 Mythos 分別用不同路徑解開——確實說明這不是某個特定系統的偶然成功。</p>
-<h2 id="先釐清各家結果的可信度"><a href="#先釐清各家結果的可信度" class="headerlink" title="先釐清各家結果的可信度"></a>先釐清各家結果的可信度</h2><p>這些結果目前的公開程度和驗證狀態差異很大，不能混在一起當「AI 已經解了」：</p>
+<h2 id="先釐清各家結果的可信度">先釐清各家結果的可信度</h2>
+<p>這些結果目前的公開程度和驗證狀態差異很大，不能混在一起當「AI 已經解了」：</p>
 <table>
 <thead>
 <tr>
@@ -193,7 +201,8 @@
 <th>可信度</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>OpenAI</td>
 <td>伴隨論文 + 9 位外部數學家驗證</td>
 <td>Fields 獎得主背書</td>
@@ -211,9 +220,11 @@
 <td>Daniel Litt 評價但無完整外部審查</td>
 <td>中</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>OpenAI 的結果有最完整的學術驗證。DeepMind 的優勢是形式驗證——Lean 編譯器通過就是通過，不需要相信人類的判斷。Anthropic 的公開證據目前最薄——主要是員工的 X 發文和一份 AI 整理的 PDF，還沒有經過同等級的外部審查。</p>
-<h2 id="這對寫程式的人意味著什麼"><a href="#這對寫程式的人意味著什麼" class="headerlink" title="這對寫程式的人意味著什麼"></a>這對寫程式的人意味著什麼</h2><p>數學證明和寫程式碼顯然是不同的事。但這一週的事件裡有幾個模式，如果你每天在用 AI Agent 工具，會覺得很眼熟。</p>
+<h2 id="這對寫程式的人意味著什麼">這對寫程式的人意味著什麼</h2>
+<p>數學證明和寫程式碼顯然是不同的事。但這一週的事件裡有幾個模式，如果你每天在用 AI Agent 工具，會覺得很眼熟。</p>
 <p><strong>LLM + 驗證器回饋循環已經是通用解題架構了。</strong> DeepMind 發現最簡單的 Agent（LLM 生成 + Lean 編譯器檢查 + 錯誤回饋）就能解九道問題。Anthropic 用多個 Claude Code 實例獨立探索再匯總。如果你有用 CI/CD 裡的 type checker 或 test runner 來回饋 Agent 的修正迴圈——你已經在用同一個架構了。</p>
 <p><strong>跨領域搬運是 AI 目前最被低估的能力。</strong> OpenAI 的模型把代數數論的工具搬去解平面幾何，人類數學家不會嘗試這個方向（你得同時精通兩個領域）。在軟體工程裡，「把 A 領域的已知解法搬到 B 領域」也是最容易被忽略的創新路徑。</p>
 <p><strong>不能過度推論的地方。</strong> 數學反例構造、形式化證明、漏洞掃描、日常軟體開發——這些不是同一種能力。Erdős 問題有非常明確的正確/錯誤判定標準（你的構造要嘛比原來的好，要嘛不是），這讓 AI 的嘗試-驗證-修正循環特別有效。多數軟體工程問題沒有這麼乾淨的判定標準。</p>
@@ -317,15 +328,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -123,19 +123,19 @@
       <div class="prose" id="article">
         <p>昨天我又被這個問題坑了一次。筆電關蓋放進背包，騎車到咖啡廳，打開包準備開工——機器燙手、電量歸零、已經自動關機。整個下午的計畫泡湯。</p>
 <p>這不是第一次。我的 Steam Deck 也中過同樣的招：放包裡沒事，拿出來卻發燙、掉電掉得莫名其妙。元凶我早就懷疑過，這次決定把它揪出來釘死：<strong>藍牙滑鼠在背包裡被擠壓、滾動，被系統當成「使用者想喚醒電腦」的訊號，於是它就在密閉的包包裡偷偷醒過來，自己跑了一整個下午。</strong></p>
-<h2 id="罪魁禍首：藍牙裝置的喚醒權限"><a href="#罪魁禍首：藍牙裝置的喚醒權限" class="headerlink" title="罪魁禍首：藍牙裝置的喚醒權限"></a>罪魁禍首：藍牙裝置的喚醒權限</h2><p>Windows 預設讓不少連接的裝置具有「喚醒電腦」的權限，滑鼠和鍵盤尤其常見。這在桌機上有用——按一下滑鼠就把睡眠的機器叫起來。但對天天把筆電丟進背包移動的人來說，它是個災難。</p>
+<h2 id="罪魁禍首：藍牙裝置的喚醒權限">罪魁禍首：藍牙裝置的喚醒權限</h2>
+<p>Windows 預設讓不少連接的裝置具有「喚醒電腦」的權限，滑鼠和鍵盤尤其常見。這在桌機上有用——按一下滑鼠就把睡眠的機器叫起來。但對天天把筆電丟進背包移動的人來說，它是個災難。</p>
 <p>藍牙滑鼠在包裡稍微移動或被按到，系統就判定該醒了。結果電腦在沒有散熱空間的背包裡開機運轉，電力白白燒掉，長時間悶著還可能因為過熱傷到硬體。</p>
 <p>要解決它，得先搞清楚一件事：到底哪些裝置現在「有權限」叫醒你的電腦。</p>
-<h2 id="第一步：先看清楚誰能喚醒電腦"><a href="#第一步：先看清楚誰能喚醒電腦" class="headerlink" title="第一步：先看清楚誰能喚醒電腦"></a>第一步：先看清楚誰能喚醒電腦</h2><p>別急著寫一大段腳本掃全部裝置。Windows 內建的 <code>powercfg</code> 有一個指令，直接列出當下被授權喚醒系統的裝置清單，而且這份清單通常很短：</p>
+<h2 id="第一步：先看清楚誰能喚醒電腦">第一步：先看清楚誰能喚醒電腦</h2>
+<p>別急著寫一大段腳本掃全部裝置。Windows 內建的 <code>powercfg</code> 有一個指令，直接列出當下被授權喚醒系統的裝置清單，而且這份清單通常很短：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">powercfg /devicequery wake_armed</span><br></pre></td></tr></table></figure>
-
 <p>跑完你會看到類似這樣的輸出（裝置名稱依你的硬體而定）：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">HID-compliant mouse (002)</span><br><span class="line">Logitech MX Master 3</span><br><span class="line">Intel(R) Wireless Bluetooth(R)</span><br></pre></td></tr></table></figure>
-
 <p>這份清單就是真正的問題來源。不在清單上的裝置根本沒有喚醒權限，不用碰。我第一次跑的時候才發現，能叫醒我筆電的其實只有兩個——藍牙滑鼠和藍牙介面卡，根本不需要動到其他幾十個裝置。</p>
-<h2 id="第二步：用-powercfg-精準關掉它"><a href="#第二步：用-powercfg-精準關掉它" class="headerlink" title="第二步：用 powercfg 精準關掉它"></a>第二步：用 powercfg 精準關掉它</h2><p>知道名字之後，停用就是一行：</p>
+<h2 id="第二步：用-powercfg-精準關掉它">第二步：用 powercfg 精準關掉它</h2>
+<p>知道名字之後，停用就是一行：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 名稱要跟 wake_armed 列出來的「完全一致」，含括號編號，用引號包起來</span></span><br><span class="line">powercfg /devicedisablewake <span class="string">&quot;Logitech MX Master 3&quot;</span></span><br></pre></td></tr></table></figure>
-
 <p>要注意兩件事，這是我踩過的坑：</p>
 <ul>
 <li><strong>必須用系統管理員身分執行 PowerShell。</strong> 一般權限跑會直接吐 <code>You do not have the permission to enable or disable device wake</code>。</li>
@@ -143,22 +143,22 @@
 </ul>
 <p>如果哪天想反悔、把喚醒權限加回來，對應指令是 <code>powercfg /deviceenablewake &quot;&lt;裝置名稱&gt;&quot;</code>。</p>
 <p>對大多數人來說，<code>powercfg</code> 這條路就夠了：列出來、挑出藍牙那幾個、一個個 disable。它是官方工具、最可靠，也不會誤傷其他裝置。</p>
-<h2 id="進階：用-WMI-批次處理藍牙裝置"><a href="#進階：用-WMI-批次處理藍牙裝置" class="headerlink" title="進階：用 WMI 批次處理藍牙裝置"></a>進階：用 WMI 批次處理藍牙裝置</h2><p>如果你像我一樣常常換不同的藍牙滑鼠、鍵盤，每次重新配對後又得重跑一遍 <code>powercfg</code>，那可以走 WMI 這條路，直接針對「所有藍牙裝置」批次關閉喚醒。</p>
+<h2 id="進階：用-WMI-批次處理藍牙裝置">進階：用 WMI 批次處理藍牙裝置</h2>
+<p>如果你像我一樣常常換不同的藍牙滑鼠、鍵盤，每次重新配對後又得重跑一遍 <code>powercfg</code>，那可以走 WMI 這條路，直接針對「所有藍牙裝置」批次關閉喚醒。</p>
 <p>喚醒權限在驅動層對應的是 <code>root\wmi</code> 命名空間下的 <code>MSPower_DeviceWakeEnable</code> 類別，它有一個 <code>Enable</code> 屬性——<code>$true</code> 是允許喚醒，<code>$false</code> 是停用。做法是先用 <code>Get-PnpDevice</code> 抓出所有藍牙裝置的 PnP ID，再去 WMI 裡比對對應的實例：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 需以系統管理員身分執行</span></span><br><span class="line"><span class="comment"># 取得所有目前在線的藍牙裝置</span></span><br><span class="line"><span class="variable">$bluetoothDevices</span> = <span class="built_in">Get-PnpDevice</span> <span class="literal">-Class</span> Bluetooth <span class="literal">-PresentOnly</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 一次抓出所有可設定喚醒的 WMI 實例</span></span><br><span class="line"><span class="variable">$wakeInstances</span> = <span class="built_in">Get-CimInstance</span> <span class="literal">-Namespace</span> root/wmi <span class="literal">-ClassName</span> MSPower_DeviceWakeEnable</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$device</span> <span class="keyword">in</span> <span class="variable">$bluetoothDevices</span>) &#123;</span><br><span class="line">    <span class="variable">$pnpId</span> = <span class="variable">$device</span>.InstanceId</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 關鍵：InstanceName 的大小寫與反斜線格式和 PnP ID 不一定一致，</span></span><br><span class="line">    <span class="comment"># 用 [regex]::escape 比對才不會因為 \ 被當成特殊字元而漏掉。</span></span><br><span class="line">    <span class="variable">$match</span> = <span class="variable">$wakeInstances</span> | <span class="built_in">Where-Object</span> &#123;</span><br><span class="line">        <span class="variable">$_</span>.InstanceName <span class="operator">-match</span> [<span class="type">regex</span>]::escape(<span class="variable">$pnpId</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$match</span>) &#123;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="variable">$inst</span> <span class="keyword">in</span> <span class="variable">$match</span>) &#123;</span><br><span class="line">            <span class="variable">$inst</span>.Enable = <span class="variable">$false</span></span><br><span class="line">            <span class="built_in">Set-CimInstance</span> <span class="literal">-InputObject</span> <span class="variable">$inst</span></span><br><span class="line">            <span class="built_in">Write-Host</span> <span class="string">&quot;已關閉喚醒：<span class="variable">$</span>(<span class="variable">$device</span>.FriendlyName)&quot;</span> <span class="literal">-ForegroundColor</span> Yellow</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">Write-Host</span> <span class="string">&quot;藍牙裝置喚醒權限處理完成&quot;</span> <span class="literal">-ForegroundColor</span> Green</span><br></pre></td></tr></table></figure>
-
-<p>這裡有個我繞了一段路才搞懂的細節：<code>MSPower_DeviceWakeEnable</code> 的 <code>InstanceName</code> 通常是大寫、結尾還會多帶一個 <code>_0</code>，而 <code>Get-PnpDevice</code> 給的 <code>InstanceId</code> 是含反斜線的原始格式，兩者直接用 <code>LIKE &#39;%...%&#39;</code> 比常常對不上。<code>[regex]::escape($pnpId)</code> 把反斜線等特殊字元跳脫掉，搭配 <code>-match</code> 才穩。如果你看到腳本跑完卻一個裝置都沒命中，十之八九就是卡在這。</p>
+<p>這裡有個我繞了一段路才搞懂的細節：<code>MSPower_DeviceWakeEnable</code> 的 <code>InstanceName</code> 通常是大寫、結尾還會多帶一個 <code>_0</code>，而 <code>Get-PnpDevice</code> 給的 <code>InstanceId</code> 是含反斜線的原始格式，兩者直接用 <code>LIKE '%...%'</code> 比常常對不上。<code>[regex]::escape($pnpId)</code> 把反斜線等特殊字元跳脫掉，搭配 <code>-match</code> 才穩。如果你看到腳本跑完卻一個裝置都沒命中，十之八九就是卡在這。</p>
 <blockquote>
 <p>這個腳本有兩個會漏抓的情況，務必知道。第一，<code>Get-PnpDevice -Class Bluetooth</code> 抓的是「藍牙」類別的節點，但有些藍牙滑鼠／鍵盤的喚醒能力其實掛在它的 HID 層子節點上（InstanceId 是 <code>HID\...</code> 開頭、跟藍牙節點的 <code>BTHENUM\...</code> 對不起來），這種就比對不到、會被跳過。第二，<code>MSPower_DeviceWakeEnable</code> 只涵蓋驅動有暴露這個 WMI 介面的裝置，少數裝置根本查不到實例。所以<strong>跑完一定要用下一步的 <code>wake_armed</code> 再確認一次</strong>，還留在清單上的，就回頭用 <code>powercfg /devicedisablewake</code> 一個個補。WMI 這條是「能批次處理掉大部分」，不是「保證全部」。</p>
 </blockquote>
 <p>如果你偏好舊式的 <code>Get-WmiObject</code>，邏輯一樣，只是提交改動用的是 <code>psbase.Put()</code>：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$inst</span> = <span class="built_in">Get-WmiObject</span> <span class="literal">-Namespace</span> root\wmi <span class="literal">-Class</span> MSPower_DeviceWakeEnable |</span><br><span class="line">    <span class="built_in">Where-Object</span> &#123; <span class="variable">$_</span>.InstanceName <span class="operator">-match</span> [<span class="type">regex</span>]::escape(<span class="variable">$pnpId</span>) &#125;</span><br><span class="line"><span class="variable">$inst</span>.Enable = <span class="variable">$false</span></span><br><span class="line"><span class="variable">$inst</span>.psbase.Put()</span><br></pre></td></tr></table></figure>
-
-<h2 id="確認設定真的生效"><a href="#確認設定真的生效" class="headerlink" title="確認設定真的生效"></a>確認設定真的生效</h2><p>改完別憑感覺，回頭再跑一次第一步那條指令：</p>
+<h2 id="確認設定真的生效">確認設定真的生效</h2>
+<p>改完別憑感覺，回頭再跑一次第一步那條指令：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">powercfg /devicequery wake_armed</span><br></pre></td></tr></table></figure>
-
 <p>如果處理成功，剛剛關掉的藍牙裝置就不會再出現在這份清單裡。清單變短，甚至空了，就代表沒有任何裝置能在背包裡偷偷叫醒你的電腦了。這是最直接的驗證——比去查每個裝置的 <code>Enable</code> 屬性快得多。</p>
-<h2 id="不想碰命令列？裝置管理員一樣能設"><a href="#不想碰命令列？裝置管理員一樣能設" class="headerlink" title="不想碰命令列？裝置管理員一樣能設"></a>不想碰命令列？裝置管理員一樣能設</h2><p>如果你不熟命令列，圖形介面也做得到，只是要一個一個點：</p>
+<h2 id="不想碰命令列？裝置管理員一樣能設">不想碰命令列？裝置管理員一樣能設</h2>
+<p>如果你不熟命令列，圖形介面也做得到，只是要一個一個點：</p>
 <ol>
 <li>按 <code>Win + X</code>，選「裝置管理員」</li>
 <li>展開「藍牙」分類</li>
@@ -170,7 +170,8 @@
 </ol>
 <p>如果某個裝置的內容裡<strong>找不到「電源管理」分頁</strong>，代表它的驅動根本沒有暴露喚醒設定——這種裝置本來就不會出現在 <code>wake_armed</code> 清單裡，不用理它。</p>
 <p>裝置不多的話，這方法其實夠快，也最不容易出錯。要批次或常常重設才值得寫腳本。</p>
-<h2 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h2><p>設定完到現在，筆電再也沒在背包裡自己開過機。滑鼠在包裡怎麼滾、按鍵怎麼被壓，機器都安安靜靜睡著。我也順手把 Steam Deck 的同類設定處理掉，兩台帶出門的裝置都不再背著我偷偷耗電。</p>
+<h2 id="成果">成果</h2>
+<p>設定完到現在，筆電再也沒在背包裡自己開過機。滑鼠在包裡怎麼滾、按鍵怎麼被壓，機器都安安靜靜睡著。我也順手把 Steam Deck 的同類設定處理掉，兩台帶出門的裝置都不再背著我偷偷耗電。</p>
 <p>說真的，這問題小到很容易被當成「電池本來就不耐」而忽略，但對天天背筆電移動的人，差別是「到了地方能直接開工」還是「先找插座續命半小時」。<code>powercfg /devicequery wake_armed</code> 這一條指令，是我覺得最該先記下來的——先看清楚誰有權限，剩下的都好辦。</p>
 
       </div>
@@ -262,15 +263,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
     
       <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/7cf056d5/">NIKKE 啟動器被下毒後，我回頭查部落格：13 個 CDN 資源，0 個有 SRI</a><time datetime="2026-11-05T05:00:00.000Z">2026-11-05</time></li>
-    
-      <li><a href="/posts/34c467cd/">TWCA 憑證換完 iPhone 跳不信任？IIS 少送一張憑證的修法</a><time datetime="2026-11-02T06:45:00.000Z">2026-11-02</time></li>
     
     </ul>
   </section>

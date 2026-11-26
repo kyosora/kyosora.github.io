@@ -125,8 +125,8 @@
 <p>起點是 Vercel Marketplace 的解除安裝請求。它觸發實體刪除，沿著數十張資料表的外鍵做級聯刪除；後續同帳號的重試又卡在既有交易的鎖後面。PgBouncer 客戶端連線數升到平常約 14 倍，共享連線池耗盡。<a target="_blank" rel="noopener" href="https://www.inngest.com/blog/2026-09-18-incident-report-for-september-18-2026">Inngest 事故報告</a></p>
 <p>我認為這份報告值得讀，是因為每一個零件都很熟：外鍵、交易、重試、連線池。它們放在一起，卻讓一項低頻管理操作擴散成平台事故。</p>
 <span id="more"></span>
-
-<h2 id="同一個刪除，做第二次並不免費"><a href="#同一個刪除，做第二次並不免費" class="headerlink" title="同一個刪除，做第二次並不免費"></a>同一個刪除，做第二次並不免費</h2><p>對「刪除帳號」來說，重複執行後的最終狀態可以相同：帳號不存在。這不代表第一次尚未完成時，第二次呼叫就不會增加負擔。</p>
+<h2 id="同一個刪除，做第二次並不免費">同一個刪除，做第二次並不免費</h2>
+<p>對「刪除帳號」來說，重複執行後的最終狀態可以相同：帳號不存在。這不代表第一次尚未完成時，第二次呼叫就不會增加負擔。</p>
 <p>如果兩個請求都進入資料庫，第二個可能已經拿到連線，只是在等第一個釋放鎖。更多重試進來，等待者仍各自占用連線與排隊資源，即使它們都在追求同一個刪除結果。</p>
 <pre><code class="highlight mermaid">flowchart LR
     A[第一筆刪除交易] --&gt; B[級聯刪除並持鎖]
@@ -135,10 +135,10 @@
     D --&gt; E[占住連線]
     E --&gt; F[後續客戶端排隊]
     F --&gt; G[共享容量耗盡]</code></pre>
-
 <p>這張圖是依事故機制整理的因果示意，省略了各服務自己的連線池。它也不代表一筆 <code>DELETE</code> 必然鎖住整個資料庫。真正把影響擴大的，是互相等待的工作占住共享容量，讓其他工作連入場的機會都沒有。</p>
 <p>所以我檢查刪除 API 時，會把兩個問題分開：重複請求的結果是否一致，以及重複請求能否在昂貴工作開始前被合併。第一個通過，第二個仍可能失敗。</p>
-<h2 id="重啟之後，又被同一批工作塞回去"><a href="#重啟之後，又被同一批工作塞回去" class="headerlink" title="重啟之後，又被同一批工作塞回去"></a>重啟之後，又被同一批工作塞回去</h2><p>事故中，16:26 UTC 重啟 PgBouncer 沒能解除阻塞；16:39 取消原始刪除與排隊中的刪除後，才逐步恢復。第二波影響裡，Postgres 的鎖已於 18:00 回到基線，連線池卻還多卡了約十分鐘。報告對第二波的具體觸發原因仍保留調查狀態。<a target="_blank" rel="noopener" href="https://www.inngest.com/blog/2026-09-18-incident-report-for-september-18-2026">事故時間線</a></p>
+<h2 id="重啟之後，又被同一批工作塞回去">重啟之後，又被同一批工作塞回去</h2>
+<p>事故中，16:26 UTC 重啟 PgBouncer 沒能解除阻塞；16:39 取消原始刪除與排隊中的刪除後，才逐步恢復。第二波影響裡，Postgres 的鎖已於 18:00 回到基線，連線池卻還多卡了約十分鐘。報告對第二波的具體觸發原因仍保留調查狀態。<a target="_blank" rel="noopener" href="https://www.inngest.com/blog/2026-09-18-incident-report-for-september-18-2026">事故時間線</a></p>
 <p>這裡有兩種不同的等待：</p>
 <table>
 <thead>
@@ -148,7 +148,8 @@
 <th>要看哪裡</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>PostgreSQL 內</td>
 <td>查詢已進入後端，正在等鎖</td>
 <td><code>pg_stat_activity</code>、阻塞者 PID</td>
@@ -158,32 +159,34 @@
 <td>客戶端尚未分配到後端連線</td>
 <td><code>SHOW POOLS</code> 的 <code>cl_waiting</code>、<code>maxwait</code></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>PgBouncer 的 transaction pooling 在交易結束後才歸還後端連線。查詢等待鎖時，交易還沒結束；尚未取得後端的客戶端，則在池內排隊。不能把所有等待者都算成 PostgreSQL 後端，也不能把 <code>cl_active</code> 全解讀成正在使用 CPU。<a target="_blank" rel="noopener" href="https://www.pgbouncer.org/usage.html">PgBouncer 官方文件</a></p>
 <p>重啟可以清掉某些連線狀態，卻沒有自動改變「誰還在持鎖」與「誰還在送工作」。如果入口繼續灌入請求，清空的容量很快又會被吃掉。</p>
 <p>我會把「入口已停止增加同類工作」列為處置時要確認的事，再追阻塞交易與排隊者。資料庫圖表恢復正常之後，還得看應用程式是否重新拿得到連線、佇列是否真的在消退。</p>
-<h2 id="查鎖與查連線池，要分兩個入口"><a href="#查鎖與查連線池，要分兩個入口" class="headerlink" title="查鎖與查連線池，要分兩個入口"></a>查鎖與查連線池，要分兩個入口</h2><p>下面是我依 PostgreSQL 17 文件整理的唯讀診斷 SQL，並非 Inngest 現場使用的查詢，也未連線重現這次事故。執行時需有足夠的統計檢視權限；一般帳號可能看不到其他工作階段的完整資訊。<a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/17/monitoring-stats.html">統計檢視文件</a></p>
+<h2 id="查鎖與查連線池，要分兩個入口">查鎖與查連線池，要分兩個入口</h2>
+<p>下面是我依 PostgreSQL 17 文件整理的唯讀診斷 SQL，並非 Inngest 現場使用的查詢，也未連線重現這次事故。執行時需有足夠的統計檢視權限；一般帳號可能看不到其他工作階段的完整資訊。<a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/17/monitoring-stats.html">統計檢視文件</a></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    pid,</span><br><span class="line">    application_name,</span><br><span class="line">    state,</span><br><span class="line">    now() <span class="operator">-</span> xact_start <span class="keyword">AS</span> transaction_age,</span><br><span class="line">    wait_event_type,</span><br><span class="line">    wait_event,</span><br><span class="line">    pg_blocking_pids(pid) <span class="keyword">AS</span> blocking_pids,</span><br><span class="line">    <span class="keyword">left</span>(query, <span class="number">200</span>) <span class="keyword">AS</span> query_excerpt</span><br><span class="line"><span class="keyword">FROM</span> pg_stat_activity</span><br><span class="line"><span class="keyword">WHERE</span> datname <span class="operator">=</span> current_database()</span><br><span class="line">  <span class="keyword">AND</span> wait_event_type <span class="operator">=</span> <span class="string">&#x27;Lock&#x27;</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> xact_start <span class="keyword">NULLS LAST</span>;</span><br></pre></td></tr></table></figure>
-
 <p>這份結果列的是等待者，<code>blocking_pids</code> 才是要繼續追的對象；陣列裡可能也包含排在前面的等待者，未必一步就找到最初的持鎖者。<code>transaction_age</code> 是交易年齡，不能當成精確的鎖等待時間。<code>pg_blocking_pids()</code> 高頻呼叫會增加負擔，適合有節制地取樣。<a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/17/functions-info.html">函式文件</a></p>
 <p>接著換到 PgBouncer 的管理資料庫，執行：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> POOLS;</span><br><span class="line"><span class="keyword">SHOW</span> STATS;</span><br></pre></td></tr></table></figure>
-
 <p>這兩條需送到 PgBouncer 的虛擬資料庫 <code>pgbouncer</code>，帳號也要有管理或統計存取資格。不要直接丟進一般 PostgreSQL 業務資料庫。<code>SHOW POOLS</code> 可觀察等待人數與最久等待時間，<code>SHOW STATS</code> 補充吞吐和等待統計；後者的平均等待值不能取代目前的排隊狀態。<a target="_blank" rel="noopener" href="https://www.pgbouncer.org/usage.html">管理介面文件</a></p>
 <p>假如鎖等待已經下降，<code>cl_waiting</code> 卻沒有跟著降，我會繼續找重連、重試與新流量，而不會立刻宣布恢復。取樣時也避免把所有查詢包在一個長交易裡，讓觀察一直停在同一份統計快照。</p>
-<h2 id="先限制同時進場的工作，再談重試速度"><a href="#先限制同時進場的工作，再談重試速度" class="headerlink" title="先限制同時進場的工作，再談重試速度"></a>先限制同時進場的工作，再談重試速度</h2><p>Inngest 報告列出的已上線措施之一是刪除流程的緊急開關，請求仍以固定事件 ID 留存；軟刪除、剩餘實體刪除的分批執行與同帳號去重，則列為後續調整方向。不能把改善清單都當成已經完成。<a target="_blank" rel="noopener" href="https://www.inngest.com/blog/2026-09-18-incident-report-for-september-18-2026">官方處置說明</a></p>
+<h2 id="先限制同時進場的工作，再談重試速度">先限制同時進場的工作，再談重試速度</h2>
+<p>Inngest 報告列出的已上線措施之一是刪除流程的緊急開關，請求仍以固定事件 ID 留存；軟刪除、剩餘實體刪除的分批執行與同帳號去重，則列為後續調整方向。不能把改善清單都當成已經完成。<a target="_blank" rel="noopener" href="https://www.inngest.com/blog/2026-09-18-incident-report-for-september-18-2026">官方處置說明</a></p>
 <p>如果由我設計這條路徑，會先把「接受刪除請求」和「完成資料清除」拆開。前者持久記錄工作狀態，後者由有並行上限的 worker 處理。同一帳號正在刪除時，重送請求應取得既有工作的狀態，不再建立另一筆昂貴刪除。</p>
 <p>固定事件 ID 是其中一個工具，但它得搭配原子去重與可恢復的工作狀態。只在記憶體裡放一個 <code>processing = true</code>，跨程序或重啟之後仍可能重複執行。若採租約，也得處理租約過期後舊 worker 尚未停下的情況。</p>
 <p>分批同樣不能只看 SQL 裡有沒有 <code>LIMIT</code>。單批刪掉一個父項目，若仍級聯到大量子資料，工作量依然可能失控。我會沿著外鍵關係檢查每批實際影響的資料量、交易時間與鎖等待，再決定批次大小。</p>
 <p>重試的退避與隨機延遲可以降低同時湧入的機率，但無法保證同一帳號只執行一次。若原始交易還活著，慢一點送入的重試仍可能排在它後面。並行上限、同帳號序列化與去重，處理的才是這個重疊問題。</p>
-<h2 id="Timeout-能縮短等待，不能替工作去重"><a href="#Timeout-能縮短等待，不能替工作去重" class="headerlink" title="Timeout 能縮短等待，不能替工作去重"></a>Timeout 能縮短等待，不能替工作去重</h2><p>PostgreSQL 的 <code>lock_timeout</code> 限制每次取得鎖的等待時間；<code>statement_timeout</code> 限制整個陳述式的執行時間。前者不管拿到鎖後還要跑多久，後者也不是多個陳述式合計的交易期限。<a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/17/runtime-config-client.html">PostgreSQL 逾時設定</a></p>
+<h2 id="Timeout-能縮短等待，不能替工作去重">Timeout 能縮短等待，不能替工作去重</h2>
+<p>PostgreSQL 的 <code>lock_timeout</code> 限制每次取得鎖的等待時間；<code>statement_timeout</code> 限制整個陳述式的執行時間。前者不管拿到鎖後還要跑多久，後者也不是多個陳述式合計的交易期限。<a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/17/runtime-config-client.html">PostgreSQL 逾時設定</a></p>
 <p>這兩個 PostgreSQL 設定都不涵蓋尚未取得後端連線、仍在 PgBouncer 排隊的時間。應用程式等待取得連線的期限，也要另外處理。</p>
 <p>下面只示範把設定限制在當前交易。秒數是教學用值，不能直接視為正式環境建議：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">LOCAL</span> lock_timeout <span class="operator">=</span> <span class="string">&#x27;2s&#x27;</span>;</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">LOCAL</span> statement_timeout <span class="operator">=</span> <span class="string">&#x27;10s&#x27;</span>;</span><br><span class="line"><span class="keyword">SELECT</span> current_setting(<span class="string">&#x27;lock_timeout&#x27;</span>),</span><br><span class="line">       current_setting(<span class="string">&#x27;statement_timeout&#x27;</span>);</span><br><span class="line"><span class="keyword">ROLLBACK</span>;</span><br></pre></td></tr></table></figure>
-
 <p>這段不會刪資料，也沒有重現鎖競爭。實際工作若因逾時而失敗，呼叫端還要正確結束失敗交易、釋放連線，並決定何時重排。無條件立即重試，可能只是讓系統更快地反覆撞上同一個阻塞。</p>
 <p>我也不會單憑 <code>max_client_conn</code> 報錯就把容量一路調大。更多名額可能只讓更多工作排進來；需要先確認資料庫還有處理餘裕，以及不同工作負載是否有各自的上限。即使分了使用者或邏輯池，也要檢查它們是否仍受同一個全域連線額度限制。</p>
-<h2 id="下次我會先查那個很少人用的管理功能"><a href="#下次我會先查那個很少人用的管理功能" class="headerlink" title="下次我會先查那個很少人用的管理功能"></a>下次我會先查那個很少人用的管理功能</h2><p>這起事故讓我想到的是刪帳號、整批匯入、歷史資料清除這類功能。它們平常請求少，測試時也很容易只放幾筆資料，於是成功案例看起來都很快。</p>
+<h2 id="下次我會先查那個很少人用的管理功能">下次我會先查那個很少人用的管理功能</h2>
+<p>這起事故讓我想到的是刪帳號、整批匯入、歷史資料清除這類功能。它們平常請求少，測試時也很容易只放幾筆資料，於是成功案例看起來都很快。</p>
 <p>我會補的驗收情境很具體：準備一個資料量大的帳號，刻意讓第一筆工作變慢，再連續送入相同請求。同時觀察無關 API 能否正常取得連線，以及停止新請求後，需要多久才排空。</p>
 <p>這能檢查的，是慢操作會不會拖走別人的容量，以及解開阻塞之後，系統是否真的有能力消化積壓。</p>
 <p>讀完這份報告，我最想回頭看的，是那些平常被認為「偶爾才跑一次」的功能。低頻只代表它不常開始，沒有告訴我它一旦卡住，會占著多少資源不放。</p>
@@ -253,15 +256,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

@@ -126,7 +126,8 @@
 <p>看到標題先別急著把向量資料庫砍掉。</p>
 <p>這篇論文測的是一套虛構企業語料，reader 固定，干擾文件又有大量「主題很像、事實卻錯」的內容。BM25 約在 1,000 萬 corpus tokens 附近反超檔案搜尋 Agent，到了 6.01 億 tokens 仍保持領先。這個位置是相鄰量測層之間的概略標記，沒有精確到能當部署門檻。</p>
 <p>我帶回實務的結論是：<strong>先排好全域候選，再讓 Agent 推理。</strong></p>
-<h2 id="這次至少把比較條件鎖住了"><a href="#這次至少把比較條件鎖住了" class="headerlink" title="這次至少把比較條件鎖住了"></a>這次至少把比較條件鎖住了</h2><p>多數 RAG 比較很難讀。BM25 用一套資料，GraphRAG 用另一套；reader、chunk size 和問題也不同，最後把分數排成一張表，卻說不清差距到底從哪裡來。</p>
+<h2 id="這次至少把比較條件鎖住了">這次至少把比較條件鎖住了</h2>
+<p>多數 RAG 比較很難讀。BM25 用一套資料，GraphRAG 用另一套；reader、chunk size 和問題也不同，最後把分數排成一張表，卻說不清差距到底從哪裡來。</p>
 <p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2607.26497">《BM25 Wins at Scale》</a>做法比較乾淨。研究團隊用同一套虛構企業語料，建出 28 層互相包含的 corpus：</p>
 <ul>
 <li>1,144 到 511,959 份文件</li>
@@ -146,7 +147,8 @@
 <th>方法</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>關鍵字檢索</td>
 <td>BM25</td>
 </tr>
@@ -162,84 +164,90 @@
 <td>Agent 搜尋</td>
 <td>File-System Agent</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>這裡的 File-System Agent 很像 coding agent 查 codebase：它能列目錄、搜尋文字、讀檔，再根據前一次結果決定下一步。每題最多 80 次 LLM 呼叫。</p>
 <p>「很像」不等於一般 coding agent。它的 <code>list_dir</code> 最多回 200 個名稱，<code>grep</code> 只能做 fixed-string search 且最多回 30 條路徑，<code>read_doc</code> 只讀前 8,000 字元。它沒有 regex、glob、語言索引或任意 shell。後面的結果只能外推到這種受限工具組。</p>
-<h2 id="小資料時-Agent-領先，資料一大就反過來"><a href="#小資料時-Agent-領先，資料一大就反過來" class="headerlink" title="小資料時 Agent 領先，資料一大就反過來"></a>小資料時 Agent 領先，資料一大就反過來</h2><p>最小的 1,144 份文件裡，File-System Agent 拿到 77.4 分，BM25 是 74.7。兩者 95% 信賴區間重疊，還不能說 Agent 穩定勝出，但點估計確實較高。</p>
+<h2 id="小資料時-Agent-領先，資料一大就反過來">小資料時 Agent 領先，資料一大就反過來</h2>
+<p>最小的 1,144 份文件裡，File-System Agent 拿到 77.4 分，BM25 是 74.7。兩者 95% 信賴區間重疊，還不能說 Agent 穩定勝出，但點估計確實較高。</p>
 <p>每個 method／question／tier 只執行一次。95% 信賴區間來自對題目做 10,000 次 bootstrap，量的是問題樣本變動，沒有包含 Agent 多跑幾次的執行變異。</p>
 <p>語料增加到約 1,000 萬 tokens 後，兩條曲線交叉。完整 511,959 份文件的分數變成：</p>
 <table>
 <thead>
 <tr>
 <th>方法</th>
-<th align="right">Combined score</th>
+<th style="text-align:right">Combined score</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>BM25</td>
-<td align="right">50.5</td>
+<td style="text-align:right">50.5</td>
 </tr>
 <tr>
 <td>File-System Agent</td>
-<td align="right">30.7</td>
+<td style="text-align:right">30.7</td>
 </tr>
 <tr>
 <td>DenseRAG</td>
-<td align="right">29.9</td>
+<td style="text-align:right">29.9</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>BM25 的 50.5 看起來也不高。這不是一套「誰都做得很好，BM25 稍微贏」的 benchmark；資料規模放大後，三種方法都掉分，只是 Agent 和 DenseRAG 掉得更快。</p>
 <p>這張主實驗表涵蓋全部 500 題。論文 Table 1 同列的 5.8K、226K 與 4.9K query tokens 是最小 1,144 份文件時的描述值，不能拿來當完整語料成本。完整語料的 token 數出現在另一組 150 題 control，兩組分數也不能直接相減。</p>
 <p>GraphRAG 的問題更早發生在建索引。HippoRAG 2 與 LinearRAG 做到 131,876 份文件就停了，MS-GraphRAG 停在 8,750，LightRAG 只完成 2,254。論文依實測速度外推，LightRAG 跑完整語料可能需要 102B generative tokens 與約四個單機年。</p>
 <p>這些是外推值，不是實際等了四年。平行化也能縮短日曆時間。但它把常被藏起來的成本攤開了：有些 GraphRAG 在 demo corpus 很漂亮，搬到十萬份文件時，問題可能不是答得準不準，而是索引根本蓋不完。</p>
-<h2 id="BM25-贏在先看到全域，不只贏在關鍵字"><a href="#BM25-贏在先看到全域，不只贏在關鍵字" class="headerlink" title="BM25 贏在先看到全域，不只贏在關鍵字"></a>BM25 贏在先看到全域，不只贏在關鍵字</h2><p>File-System Agent 每次只能從局部線索往外走。文件少時，它可以讀幾份、換個關鍵字再查，靠推理修正方向。文件到了 51 萬份，目錄分支和近似結果一起增加，逐步探索越來越難碰到正確候選。</p>
+<h2 id="BM25-贏在先看到全域，不只贏在關鍵字">BM25 贏在先看到全域，不只贏在關鍵字</h2>
+<p>File-System Agent 每次只能從局部線索往外走。文件少時，它可以讀幾份、換個關鍵字再查，靠推理修正方向。文件到了 51 萬份，目錄分支和近似結果一起增加，逐步探索越來越難碰到正確候選。</p>
 <p>論文裡最關鍵的 control 是 Agent+BM25。</p>
 <p>研究團隊另取固定 150 題，在獨立 scoring session 裡保留 Agent model、harness、80-call budget 與 judge，把 raw tree tools 和對應操作指令換成 BM25 search tool，再讓 Agent 讀候選 chunk。這組數字不能和前面的 500 題主實驗直接比較：</p>
 <table>
 <thead>
 <tr>
 <th>方法</th>
-<th align="right">Combined score</th>
-<th align="right">文件召回率</th>
-<th align="right">每題 LLM calls</th>
-<th align="right">每題 tokens</th>
+<th style="text-align:right">Combined score</th>
+<th style="text-align:right">文件召回率</th>
+<th style="text-align:right">每題 LLM calls</th>
+<th style="text-align:right">每題 tokens</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>原始檔案 Agent</td>
-<td align="right">36.9</td>
-<td align="right">36.8</td>
-<td align="right">36.12</td>
-<td align="right">895K</td>
+<td style="text-align:right">36.9</td>
+<td style="text-align:right">36.8</td>
+<td style="text-align:right">36.12</td>
+<td style="text-align:right">895K</td>
 </tr>
 <tr>
 <td>原生 BM25</td>
-<td align="right">54.8</td>
-<td align="right">65.6</td>
-<td align="right">1.00</td>
-<td align="right">—</td>
+<td style="text-align:right">54.8</td>
+<td style="text-align:right">65.6</td>
+<td style="text-align:right">1.00</td>
+<td style="text-align:right">—</td>
 </tr>
 <tr>
 <td>Agent+BM25</td>
-<td align="right">69.4</td>
-<td align="right">72.4</td>
-<td align="right">5.79</td>
-<td align="right">101K</td>
+<td style="text-align:right">69.4</td>
+<td style="text-align:right">72.4</td>
+<td style="text-align:right">5.79</td>
+<td style="text-align:right">101K</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>原生 BM25 的 score 與 recall 是這 150 題共同 rejudge 的結果；論文只提供 5.8K 的完整 500 題描述性 token 平均，我沒有硬塞進表內。兩個 Agent 變體則來自同一組 control：換掉候選發現方式後，分數多了 32.5，token 剩約九分之一。模型與 budget 沒變，差距主要來自搜尋介面。</p>
 <p>這也解釋 DenseRAG 為什麼沒有自然勝出。企業問題常含專案代號、人名、日期、錯誤碼與產品名稱；干擾文件又刻意做到「語意相近、版本錯誤」。向量很容易把同主題的舊決策排進來，BM25 對精確詞彙反而有優勢。</p>
 <p>但別把這段讀成「向量搜尋沒用」。論文只用 Qwen3-Embedding-0.6B 代表 dense retrieval，固定 top-5，也沒測 BM25 加向量的 hybrid。換更強 embedding、reranker、query expansion 或不同 chunk strategy，排序可能改變。</p>
-<h2 id="先跑一個-BM25-baseline"><a href="#先跑一個-BM25-baseline" class="headerlink" title="先跑一個 BM25 baseline"></a>先跑一個 BM25 baseline</h2><p>如果你還沒建立檢索基準，先做一個便宜版本。下面是整理過、方便重現的最小範例，中文斷詞用 <code>jieba</code>，排序用 <a target="_blank" rel="noopener" href="https://github.com/dorianbrown/rank_bm25"><code>rank-bm25</code></a>：</p>
+<h2 id="先跑一個-BM25-baseline">先跑一個 BM25 baseline</h2>
+<p>如果你還沒建立檢索基準，先做一個便宜版本。下面是整理過、方便重現的最小範例，中文斷詞用 <code>jieba</code>，排序用 <a target="_blank" rel="noopener" href="https://github.com/dorianbrown/rank_bm25"><code>rank-bm25</code></a>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m pip install jieba rank-bm25</span><br></pre></td></tr></table></figure>
-
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> jieba</span><br><span class="line"><span class="keyword">from</span> rank_bm25 <span class="keyword">import</span> BM25Okapi</span><br><span class="line"></span><br><span class="line">documents = [</span><br><span class="line">    &#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;ADR-017&quot;</span>, <span class="string">&quot;text&quot;</span>: <span class="string">&quot;支付服務在 2026 年 5 月改用 Redis 分散式鎖&quot;</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;ADR-008&quot;</span>, <span class="string">&quot;text&quot;</span>: <span class="string">&quot;支付服務曾評估 SQL Server application lock&quot;</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;INC-204&quot;</span>, <span class="string">&quot;text&quot;</span>: <span class="string">&quot;Redis 鎖逾時造成重複扣款的事故紀錄&quot;</span>&#125;,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">tokens</span>(<span class="params">text: <span class="built_in">str</span></span>) -&gt; <span class="built_in">list</span>[<span class="built_in">str</span>]:</span><br><span class="line">    <span class="keyword">return</span> [word.strip() <span class="keyword">for</span> word <span class="keyword">in</span> jieba.cut(text) <span class="keyword">if</span> word.strip()]</span><br><span class="line"></span><br><span class="line">index = BM25Okapi([tokens(doc[<span class="string">&quot;text&quot;</span>]) <span class="keyword">for</span> doc <span class="keyword">in</span> documents])</span><br><span class="line">query = tokens(<span class="string">&quot;支付服務 2026 年 5 月改用哪一種分散式鎖&quot;</span>)</span><br><span class="line">scores = index.get_scores(query)</span><br><span class="line"></span><br><span class="line">ranked = <span class="built_in">sorted</span>(</span><br><span class="line">    <span class="built_in">zip</span>(documents, scores),</span><br><span class="line">    key=<span class="keyword">lambda</span> item: item[<span class="number">1</span>],</span><br><span class="line">    reverse=<span class="literal">True</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> doc, score <span class="keyword">in</span> ranked[:<span class="number">2</span>]:</span><br><span class="line">    <span class="built_in">print</span>(doc[<span class="string">&quot;id&quot;</span>], <span class="built_in">round</span>(<span class="built_in">float</span>(score), <span class="number">3</span>), doc[<span class="string">&quot;text&quot;</span>])</span><br></pre></td></tr></table></figure>
-
 <p>這段適合驗證流程，不適合直接扛 51 萬份文件。<code>rank-bm25</code> 專案自己也建議，大規模 production 換成更高效能的檢索套件；實際系統也可以直接用搜尋引擎。Elasticsearch 的文字欄位預設就是 <a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/similarity.html">BM25 similarity</a>，不必先調 <code>k1</code>、<code>b</code> 才能開始。</p>
 <p>論文說 BM25 build cost 是零，指的是零 model tokens。CPU、儲存空間、斷詞與倒排索引建置一樣要付，別把 token accounting 讀成零成本。</p>
-<h2 id="評估時別只看平均分"><a href="#評估時別只看平均分" class="headerlink" title="評估時別只看平均分"></a>評估時別只看平均分</h2><p>你至少要準備一小組人工標記的 query 與相關文件。下面這個標準函式不依賴任何套件，可以先算每題的 Recall@5：</p>
+<h2 id="評估時別只看平均分">評估時別只看平均分</h2>
+<p>你至少要準備一小組人工標記的 query 與相關文件。下面這個標準函式不依賴任何套件，可以先算每題的 Recall@5：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">recall_at_k</span>(<span class="params"></span></span><br><span class="line"><span class="params">    ranked_ids: <span class="built_in">list</span>[<span class="built_in">str</span>],</span></span><br><span class="line"><span class="params">    relevant_ids: <span class="built_in">set</span>[<span class="built_in">str</span>],</span></span><br><span class="line"><span class="params">    k: <span class="built_in">int</span> = <span class="number">5</span>,</span></span><br><span class="line"><span class="params"></span>) -&gt; <span class="built_in">float</span>:</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> relevant_ids:</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">&quot;relevant_ids 不可為空&quot;</span>)</span><br><span class="line"></span><br><span class="line">    hits = <span class="built_in">set</span>(ranked_ids[:k]) &amp; relevant_ids</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">len</span>(hits) / <span class="built_in">len</span>(relevant_ids)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">cases = [</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;kind&quot;</span>: <span class="string">&quot;identifier&quot;</span>,</span><br><span class="line">        <span class="string">&quot;ranked&quot;</span>: [<span class="string">&quot;ADR-017&quot;</span>, <span class="string">&quot;INC-204&quot;</span>, <span class="string">&quot;ADR-008&quot;</span>],</span><br><span class="line">        <span class="string">&quot;relevant&quot;</span>: &#123;<span class="string">&quot;ADR-017&quot;</span>&#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;kind&quot;</span>: <span class="string">&quot;conflict&quot;</span>,</span><br><span class="line">        <span class="string">&quot;ranked&quot;</span>: [<span class="string">&quot;ADR-008&quot;</span>, <span class="string">&quot;ADR-017&quot;</span>, <span class="string">&quot;INC-204&quot;</span>],</span><br><span class="line">        <span class="string">&quot;relevant&quot;</span>: &#123;<span class="string">&quot;ADR-017&quot;</span>, <span class="string">&quot;INC-204&quot;</span>&#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> <span class="keyword">case</span> <span class="keyword">in</span> cases:</span><br><span class="line">    score = recall_at_k(<span class="keyword">case</span>[<span class="string">&quot;ranked&quot;</span>], <span class="keyword">case</span>[<span class="string">&quot;relevant&quot;</span>], k=<span class="number">2</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="keyword">case</span>[<span class="string">&quot;kind&quot;</span>], score)</span><br></pre></td></tr></table></figure>
-
 <p><code>relevant_ids</code> 為空時，Recall@K 沒有定義，所以範例直接報錯。對「資料不存在」的問題要另算拒答率、false-positive rate 或 answerability accuracy，不要塞一份假的 relevant document 讓公式能跑。</p>
 <p>不要把所有 query 混成一個漂亮平均值。至少分開看：</p>
 <ul>
@@ -250,13 +258,14 @@
 <li>資料不存在，系統應該拒答</li>
 </ul>
 <p>這篇論文也出現同樣分化。在 42,587 份文件時，File-System Agent 在 intra-document、project-related、completeness 與 conflicting-information 四類領先；BM25 在另外五類最佳或打平，miscellaneous 則由 graph system 領先。你需要的是自己流量的分布，不是抄論文的總分。</p>
-<h2 id="向量搜尋該放在哪裡"><a href="#向量搜尋該放在哪裡" class="headerlink" title="向量搜尋該放在哪裡"></a>向量搜尋該放在哪裡</h2><p>BM25 抓精確字詞，向量搜尋補語意改寫。兩邊各取一份 ranking，再用 Reciprocal Rank Fusion（RRF）合併，是比直接砍掉其中一邊更務實的做法。</p>
+<h2 id="向量搜尋該放在哪裡">向量搜尋該放在哪裡</h2>
+<p>BM25 抓精確字詞，向量搜尋補語意改寫。兩邊各取一份 ranking，再用 Reciprocal Rank Fusion（RRF）合併，是比直接砍掉其中一邊更務實的做法。</p>
 <p>RRF 不直接混兩套尺度不同的分數，只看名次。下面的版本可以直接執行：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> collections.abc <span class="keyword">import</span> <span class="type">Sequence</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">rrf</span>(<span class="params"></span></span><br><span class="line"><span class="params">    rankings: <span class="type">Sequence</span>[<span class="type">Sequence</span>[<span class="built_in">str</span>]],</span></span><br><span class="line"><span class="params">    rank_constant: <span class="built_in">int</span> = <span class="number">60</span>,</span></span><br><span class="line"><span class="params"></span>) -&gt; <span class="built_in">list</span>[<span class="built_in">tuple</span>[<span class="built_in">str</span>, <span class="built_in">float</span>]]:</span><br><span class="line">    scores: <span class="built_in">dict</span>[<span class="built_in">str</span>, <span class="built_in">float</span>] = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> ranking <span class="keyword">in</span> rankings:</span><br><span class="line">        <span class="keyword">for</span> rank, doc_id <span class="keyword">in</span> <span class="built_in">enumerate</span>(ranking, start=<span class="number">1</span>):</span><br><span class="line">            scores[doc_id] = scores.get(doc_id, <span class="number">0.0</span>) + (</span><br><span class="line">                <span class="number">1.0</span> / (rank_constant + rank)</span><br><span class="line">            )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">sorted</span>(scores.items(), key=<span class="keyword">lambda</span> item: item[<span class="number">1</span>], reverse=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">bm25_hits = [<span class="string">&quot;ADR-017&quot;</span>, <span class="string">&quot;INC-204&quot;</span>, <span class="string">&quot;ADR-008&quot;</span>]</span><br><span class="line">vector_hits = [<span class="string">&quot;INC-204&quot;</span>, <span class="string">&quot;DOC-991&quot;</span>, <span class="string">&quot;ADR-017&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> doc_id, score <span class="keyword">in</span> rrf([bm25_hits, vector_hits]):</span><br><span class="line">    <span class="built_in">print</span>(doc_id, <span class="built_in">round</span>(score, <span class="number">6</span>))</span><br></pre></td></tr></table></figure>
-
 <p><a target="_blank" rel="noopener" href="https://www.elastic.co/docs/solutions/search/hybrid-search">Elasticsearch 官方也建議用 RRF 做 hybrid search</a>。它能把標準文字檢索與 kNN retriever 放在同一個請求裡。不過 hybrid 不保證必勝；RRF 的 <code>rank_window_size</code>、兩邊取多少候選、chunk 粒度都要用同一組標記資料重跑。</p>
 <p>範例假設同一份 ranking 內沒有重複 ID。正式接資料時先去重，避免單一 retriever 替同一份文件重複加分。</p>
-<h2 id="Agent-放最後一段，工作反而更像-Agent"><a href="#Agent-放最後一段，工作反而更像-Agent" class="headerlink" title="Agent 放最後一段，工作反而更像 Agent"></a>Agent 放最後一段，工作反而更像 Agent</h2><p>我會把 production RAG 切成三層：</p>
+<h2 id="Agent-放最後一段，工作反而更像-Agent">Agent 放最後一段，工作反而更像 Agent</h2>
+<p>我會把 production RAG 切成三層：</p>
 <ol>
 <li>BM25 做全域候選發現，先保住識別碼、日期與專有名詞。</li>
 <li>向量搜尋補改寫與概念相近的 query，必要時用 RRF 合併。</li>
@@ -357,15 +366,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

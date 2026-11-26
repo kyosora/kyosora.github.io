@@ -25,8 +25,8 @@
 <meta property="article:modified_time" content="2026-06-22T02:12:29.000Z">
 <meta property="article:author" content="kyosora">
 <meta property="article:section" content="AI工具實戰">
-<meta property="article:tag" content="AI Agent">
 <meta property="article:tag" content="Cursor">
+<meta property="article:tag" content="AI Agent">
 <meta property="article:tag" content="Temporal">
 <meta property="article:tag" content="系統可靠性">
 <meta property="article:tag" content="工程實踐">
@@ -43,7 +43,7 @@
 <script>(function(){var t,o;try{t=localStorage.getItem('ky-theme');if(t!=='light'&&t!=='dark'){o=JSON.parse(localStorage.getItem('theme')||'null');t=o&&(o.value==='light'||o.value==='dark')&&(!o.expiry||o.expiry>Date.now())?o.value:null}}catch(e){t=null}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})()</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F9P7RWQQJE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-F9P7RWQQJE')</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解","description":"Cursor 雲端 Agent 怎麼把可靠性從 90% 推到 99%？拆解他們放棄自研架構改用 Temporal、把 agent／機器／對話拆成三層、放鬆 harness 的五個工程坑，給要讓 AI Agent 動到 PR 流程的台灣中階工程師看。","url":"https://kyosora.github.io/posts/dee349ad/","mainEntityOfPage":"https://kyosora.github.io/posts/dee349ad/","image":"https://kyosora.github.io/images/posts/90-to-99-cursor-cloud-agent-lessons-cover.webp","datePublished":"2026-05-22T07:00:00.000Z","dateModified":"2026-06-22T02:12:29.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI工具實戰","keywords":"AI Agent, Cursor, Temporal, 系統可靠性, 工程實踐"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI工具實戰","item":"https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"},{"@type":"ListItem","position":3,"name":"90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解","item":"https://kyosora.github.io/posts/dee349ad/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解","description":"Cursor 雲端 Agent 怎麼把可靠性從 90% 推到 99%？拆解他們放棄自研架構改用 Temporal、把 agent／機器／對話拆成三層、放鬆 harness 的五個工程坑，給要讓 AI Agent 動到 PR 流程的台灣中階工程師看。","url":"https://kyosora.github.io/posts/dee349ad/","mainEntityOfPage":"https://kyosora.github.io/posts/dee349ad/","image":"https://kyosora.github.io/images/posts/90-to-99-cursor-cloud-agent-lessons-cover.webp","datePublished":"2026-05-22T07:00:00.000Z","dateModified":"2026-06-22T02:12:29.000Z","author":{"@id":"https://kyosora.github.io/#author"},"inLanguage":"zh-TW","articleSection":"AI工具實戰","keywords":"Cursor, AI Agent, Temporal, 系統可靠性, 工程實踐"},{"@type":"Person","@id":"https://kyosora.github.io/#author","name":"kyosora","url":"https://kyosora.github.io/about/","image":"https://kyosora.github.io/images/avatar.png","sameAs":["https://github.com/kyosora"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://kyosora.github.io/"},{"@type":"ListItem","position":2,"name":"AI工具實戰","item":"https://kyosora.github.io/categories/AI%E5%B7%A5%E5%85%B7%E5%AF%A6%E6%88%B0/"},{"@type":"ListItem","position":3,"name":"90% 到 99% 之間的工程戰爭：Cursor 雲端 Agent 一年實戰拆解","item":"https://kyosora.github.io/posts/dee349ad/"}]}]}</script>
 
 </head>
 <body class="kind-post">
@@ -122,10 +122,11 @@
 
     <div class="post-main">
       <div class="prose" id="article">
-        <p>Cursor 在 5/21 釋出一篇「What we&#39;ve learned building cloud agents」，作者是 Josh Ma。看起來像普通的工程經驗總結，但藏了一個讓我看完盯著螢幕想很久的數字：他們把 Cursor 內部 monorepo 的 40% PR 交給雲端 Agent 寫，而且這個比例還在漲。</p>
+        <p>Cursor 在 5/21 釋出一篇「What we’ve learned building cloud agents」，作者是 Josh Ma。看起來像普通的工程經驗總結，但藏了一個讓我看完盯著螢幕想很久的數字：他們把 Cursor 內部 monorepo 的 40% PR 交給雲端 Agent 寫，而且這個比例還在漲。</p>
 <p>這套系統最後支撐到 40% 之前，他們花了一年——不是「把本地 Agent 搬到伺服器」那種一年，而是把可靠性從 90%（一個九）拉到 99%（兩個九），中間放棄了自研架構、改用 Temporal、重新拆解了 agent、機器、對話三個狀態。</p>
-<p>我自己沒做過 cloud agent 產品，但這篇花了一個下午消化，因為文章拆出來的五個學習，每一個都是「想做 AI Agent SaaS 的人遲早會撞上的牆」。寫一篇給台灣中階開發者看的拆解版。（附帶一個小插曲：中文 AI 資訊聚合站把原文的 &quot;two nines&quot; 翻成「99.9%」，實際是 99%。讀任何技術摘要，最後一步都要回原文校對。）</p>
-<h2 id="第一個坑：以為雲端-Agent-就是把本地-Agent-搬到-server"><a href="#第一個坑：以為雲端-Agent-就是把本地-Agent-搬到-server" class="headerlink" title="第一個坑：以為雲端 Agent 就是把本地 Agent 搬到 server"></a>第一個坑：以為雲端 Agent 就是把本地 Agent 搬到 server</h2><p>Cursor 自己承認，一年前推出 cloud agents 時，內部把它當成「本地 Agent 的延伸」。後來才發現這個定位完全錯了。</p>
+<p>我自己沒做過 cloud agent 產品，但這篇花了一個下午消化，因為文章拆出來的五個學習，每一個都是「想做 AI Agent SaaS 的人遲早會撞上的牆」。寫一篇給台灣中階開發者看的拆解版。（附帶一個小插曲：中文 AI 資訊聚合站把原文的 “two nines” 翻成「99.9%」，實際是 99%。讀任何技術摘要，最後一步都要回原文校對。）</p>
+<h2 id="第一個坑：以為雲端-Agent-就是把本地-Agent-搬到-server">第一個坑：以為雲端 Agent 就是把本地 Agent 搬到 server</h2>
+<p>Cursor 自己承認，一年前推出 cloud agents 時，內部把它當成「本地 Agent 的延伸」。後來才發現這個定位完全錯了。</p>
 <p>本地 Agent 跑在你筆電上，繼承你的工作環境——你裝好的 SDK、登入過的 GitHub、設定好的 .env、跑過的 dev server。你寫程式時這些東西「就在那裡」。Agent 也用得到。</p>
 <p>搬到雲端，這套不見了。你得從零重建。</p>
 <p>而最狡猾的問題是：環境不完整不會崩潰。Agent 還是會跑完任務、還是會生出一個 PR、還是會自信地回覆「已經改好」。但輸出品質會悄悄下降——少了某個 lib、少了某個權限、少了某個內部 API token，結果就是 Agent 開始繞路、用 workaround、寫出能跑但完全沒抓到重點的程式碼。</p>
@@ -137,7 +138,8 @@
 <li>密鑰編輯、網路政策、認證管理</li>
 </ul>
 <p>看到這串清單我笑了。這些不是「AI 功能」——這是 IT 部門做的事。要做雲端 Agent 產品，你會先變成你自己團隊的 IT。</p>
-<h2 id="第二個坑：自研架構撐不到「兩個九」"><a href="#第二個坑：自研架構撐不到「兩個九」" class="headerlink" title="第二個坑：自研架構撐不到「兩個九」"></a>第二個坑：自研架構撐不到「兩個九」</h2><p>Cursor 最初的雲端 Agent 架構叫「工作竊取」（work-stealing）——一堆 worker node 從佇列裡撈 Agent 任務、跑到完成。聽起來合理：你有一堆 VM、一堆 task，誰閒就誰拿。</p>
+<h2 id="第二個坑：自研架構撐不到「兩個九」">第二個坑：自研架構撐不到「兩個九」</h2>
+<p>Cursor 最初的雲端 Agent 架構叫「工作竊取」（work-stealing）——一堆 worker node 從佇列裡撈 Agent 任務、跑到完成。聽起來合理：你有一堆 VM、一堆 task，誰閒就誰拿。</p>
 <p>結果早期測試版的可靠性只有「一個九」（90%）。</p>
 <p>這個數字看起來不差。一百個任務跑完九十個。但你想想，如果你的 cloud agent 任務平均跑 30 分鐘，使用者一天用十次，那一週後他會碰到 7 次失敗——而且不是「跑到一半提示要重試」的乾淨失敗，是「跑了 25 分鐘然後 worker pod 被 K8s 替換掉、任務蒸發」的那種失敗。</p>
 <p>三個風險來源直接打在工作竊取架構的最弱點：</p>
@@ -156,7 +158,8 @@
 </ul>
 <p>另一個值得單獨提的細節，Cursor 還重寫了 Temporal workflow 的設計——從「永恆」（eternal）workflow 改成「完成一個任務就退出」的短 workflow。原因不是可靠性，是版本升級——eternal workflow 跑半年的話，你想改一行 logic 都得處理「進行中的 workflow 用舊版、新進來的用新版」的相容性。短 workflow 就沒這問題。</p>
 <p>說白了，他們交出去的不是效能，是控制權。自研架構完全掌握，但 race condition、跨機器排程、節點故障下的耐久執行——這些工程時間 Temporal 全部還給你。代價是你不能再從根上動它。</p>
-<h2 id="第三個坑：Agent、機器、對話狀態本來是同一個東西"><a href="#第三個坑：Agent、機器、對話狀態本來是同一個東西" class="headerlink" title="第三個坑：Agent、機器、對話狀態本來是同一個東西"></a>第三個坑：Agent、機器、對話狀態本來是同一個東西</h2><p>本地 Agent 你不會分這三層。你的 IDE 開著、Agent 在那個 process 裡跑、對話歷史寫在 IDE 的 SQLite。三層合一。</p>
+<h2 id="第三個坑：Agent、機器、對話狀態本來是同一個東西">第三個坑：Agent、機器、對話狀態本來是同一個東西</h2>
+<p>本地 Agent 你不會分這三層。你的 IDE 開著、Agent 在那個 process 裡跑、對話歷史寫在 IDE 的 SQLite。三層合一。</p>
 <p>雲端不能這樣。</p>
 <p>Cursor 拆成三層：</p>
 <ol>
@@ -170,7 +173,8 @@
 </blockquote>
 <p>翻譯成人話：Agent 跑到一半失敗、Temporal 重試、第二次跑出來的結果可能跟第一次「已經串流給使用者看的部分」不一樣。Cursor 的 client 會自動把先前看到的部分「捲回去」、用新的取代。</p>
 <p>一般 web app 你失敗就重新整理。但 AI Agent 的 token 是邊算邊吐的——失敗發生在第 3000 個 token 的時候，前 2999 個你已經給使用者看了。這是 streaming 時代才有的 UX bug，而且解法不在前端、不在後端，是要在「對話協議」這一層處理。</p>
-<h2 id="第四個坑：Harness-一開始抓得太緊"><a href="#第四個坑：Harness-一開始抓得太緊" class="headerlink" title="第四個坑：Harness 一開始抓得太緊"></a>第四個坑：Harness 一開始抓得太緊</h2><p>Harness 是 Agent 跑在裡面的「外殼」——決定哪些工具給 Agent 用、什麼時候強制中斷、出錯時怎麼 fallback。</p>
+<h2 id="第四個坑：Harness-一開始抓得太緊">第四個坑：Harness 一開始抓得太緊</h2>
+<p>Harness 是 Agent 跑在裡面的「外殼」——決定哪些工具給 Agent 用、什麼時候強制中斷、出錯時怎麼 fallback。</p>
 <p>Cursor 早期的 harness 很「保姆型」：</p>
 <ul>
 <li>每個 task 跑完後雙重檢查</li>
@@ -189,10 +193,12 @@
 </blockquote>
 <p>這直接打到我在 Claude Code 裡的體感。本地你可以一直 Ctrl+C 重來，停五分鐘等你回來。雲端不行——你 5 點下班開始跑、半夜 12 點看，發現它 5:03 就卡在等你回答「要不要建分支」的對話框。整個晚上白等。</p>
 <p>所以雲端 harness 的 prompt 要更狠：「自己決定、不要等、出錯就 retry、最壞情況留 log 給人類事後看。」</p>
-<h2 id="第五個坑（沒講透但很重要）：自癒環境"><a href="#第五個坑（沒講透但很重要）：自癒環境" class="headerlink" title="第五個坑（沒講透但很重要）：自癒環境"></a>第五個坑（沒講透但很重要）：自癒環境</h2><p>文章最後一段提到他們未來方向是給 Agent「理解周圍系統」的工具，讓它能自己回報「缺少某個 API key」「網路被擋」這類阻礙，再自己修。Cursor 把這方向叫 autoinstall。</p>
+<h2 id="第五個坑（沒講透但很重要）：自癒環境">第五個坑（沒講透但很重要）：自癒環境</h2>
+<p>文章最後一段提到他們未來方向是給 Agent「理解周圍系統」的工具，讓它能自己回報「缺少某個 API key」「網路被擋」這類阻礙，再自己修。Cursor 把這方向叫 autoinstall。</p>
 <p>這段原文寫得很短，但落地代表著 Agent 從「會用工具」走向「會診斷自己的環境」。目前的 Agent 碰到環境問題會「猜」——猜你用 npm、猜你的 PATH、猜你的 GitHub token 在哪。猜對就跑、猜錯就用 workaround 繞過。</p>
 <p>要做到「Agent 知道自己不知道什麼」很難，這不是寫個 introspect 工具就能解的——你得設計 prompt、訓練模型在不確定時主動報告而不是硬猜、再設計回報後的人類介入流程。Cursor 寫得輕描淡寫，但這是整篇文章我覺得最遠的目標。</p>
-<h2 id="對台灣中階工程師意味著什麼"><a href="#對台灣中階工程師意味著什麼" class="headerlink" title="對台灣中階工程師意味著什麼"></a>對台灣中階工程師意味著什麼</h2><p>你大概不會明天就開始做雲端 Agent SaaS。但如果你的團隊接下來會讓 Agent 動到 PR 流程（不論用的是 Cursor、Claude Code、Codex、還是別的），Cursor 這篇文章揭示了一個現實：你能讓 Agent 跑多遠，取決於你的開發環境長得多漂亮。</p>
+<h2 id="對台灣中階工程師意味著什麼">對台灣中階工程師意味著什麼</h2>
+<p>你大概不會明天就開始做雲端 Agent SaaS。但如果你的團隊接下來會讓 Agent 動到 PR 流程（不論用的是 Cursor、Claude Code、Codex、還是別的），Cursor 這篇文章揭示了一個現實：你能讓 Agent 跑多遠，取決於你的開發環境長得多漂亮。</p>
 <p>具體該動的幾件事：</p>
 <ul>
 <li><strong>devcontainer 寫好寫滿</strong>：Agent 拿到的環境得跟工程師本地一致，缺一個 lib 就出現「能跑但繞路」的悄悄掉品質</li>
@@ -201,12 +207,16 @@
 <li><strong>Repo layout 寫成文件</strong>：多倉庫專案的關係、哪個 repo 跑哪個 service、哪個 PR 要連帶改哪些——這在 Cursor harness 改造後變成 Agent 自己要讀的「地圖」</li>
 </ul>
 <p>如果這幾項沒做，買再多 Cursor Pro / Claude Max 都救不回品質。</p>
-<h2 id="看完這篇的三個帶得走的判斷"><a href="#看完這篇的三個帶得走的判斷" class="headerlink" title="看完這篇的三個帶得走的判斷"></a>看完這篇的三個帶得走的判斷</h2><ol>
-<li><p><strong>「把 X 搬到雲端」永遠是錯的問題</strong>。真正的問題是「X 在雲端要附帶哪些原本免費繼承的東西」。本地免費的環境，到雲端都要付錢做基礎設施。</p>
+<h2 id="看完這篇的三個帶得走的判斷">看完這篇的三個帶得走的判斷</h2>
+<ol>
+<li>
+<p><strong>「把 X 搬到雲端」永遠是錯的問題</strong>。真正的問題是「X 在雲端要附帶哪些原本免費繼承的東西」。本地免費的環境，到雲端都要付錢做基礎設施。</p>
 </li>
-<li><p><strong>可靠性不是寫程式寫出來的，是選對抽象選出來的</strong>。Cursor 自研架構卡在 90%，不是因為他們工程師不夠強——是 work-stealing 模型本身對「跨機器耐久性」這件事不友善。換成 Temporal 不是「改架構」，是換問題的座標系。</p>
+<li>
+<p><strong>可靠性不是寫程式寫出來的，是選對抽象選出來的</strong>。Cursor 自研架構卡在 90%，不是因為他們工程師不夠強——是 work-stealing 模型本身對「跨機器耐久性」這件事不友善。換成 Temporal 不是「改架構」，是換問題的座標系。</p>
 </li>
-<li><p><strong>40% 的內部 PR 由 Agent 寫，這個數字會繼續漲</strong>。Cursor 不是普通公司——他們是天天跟 Agent 工作的人。如果這 40% 是真的且還在漲，那其他公司之後也會走到這數字。中階工程師最該擔心的不是「會不會被取代」，而是「我的 PR 流程裡有沒有對 Agent 友善的設計」。</p>
+<li>
+<p><strong>40% 的內部 PR 由 Agent 寫，這個數字會繼續漲</strong>。Cursor 不是普通公司——他們是天天跟 Agent 工作的人。如果這 40% 是真的且還在漲，那其他公司之後也會走到這數字。中階工程師最該擔心的不是「會不會被取代」，而是「我的 PR 流程裡有沒有對 Agent 友善的設計」。</p>
 </li>
 </ol>
 <p>一個值得回頭翻的細節：Temporal 把可靠性推上 99%，而 eternal workflow 改成 short workflow 是為了版本升級——兩個決定一個解可靠性、一個解可維護性。工程師讀技術文章常會把「換工具的決定」記得很牢，忘了真正讓系統長久工作的是後面那些沒人講的設計取捨。</p>
@@ -218,7 +228,7 @@
 <footer class="post-end">
   
   <ul class="post-tags" aria-label="標籤">
-    <li><a href="/tags/AI-Agent/">AI Agent</a></li><li><a href="/tags/Cursor/">Cursor</a></li><li><a href="/tags/Temporal/">Temporal</a></li><li><a href="/tags/%E7%B3%BB%E7%B5%B1%E5%8F%AF%E9%9D%A0%E6%80%A7/">系統可靠性</a></li><li><a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AF%A6%E8%B8%90/">工程實踐</a></li>
+    <li><a href="/tags/Cursor/">Cursor</a></li><li><a href="/tags/AI-Agent/">AI Agent</a></li><li><a href="/tags/Temporal/">Temporal</a></li><li><a href="/tags/%E7%B3%BB%E7%B5%B1%E5%8F%AF%E9%9D%A0%E6%80%A7/">系統可靠性</a></li><li><a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AF%A6%E8%B8%90/">工程實踐</a></li>
   </ul>
   
 
@@ -302,15 +312,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

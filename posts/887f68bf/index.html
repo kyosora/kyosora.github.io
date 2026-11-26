@@ -111,45 +111,46 @@
     <aside class="post-aside">
       <details class="toc-box" open>
         <summary>目錄</summary>
-        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B8%AC%E8%A9%A6%E9%A9%85%E5%8B%95%E9%96%8B%E7%99%BC%EF%BC%88TDD%EF%BC%89%E5%85%A5%E9%96%80%E8%88%87%E5%AF%A6%E4%BD%9C%E6%95%99%E5%AD%B8"><span class="toc-text">測試驅動開發（TDD）入門與實作教學</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TDD-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%AD%A5%E9%A9%9F"><span class="toc-text">TDD 的基本步驟</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-C-%E5%AF%A6%E4%BD%9C-TDD"><span class="toc-text">使用 C# 實作 TDD</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B5%90%E8%AA%9E"><span class="toc-text">結語</span></a></li></ol></nav>
+        <nav class="toc-nav" aria-label="文章目錄"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">測試驅動開發（TDD）入門與實作教學</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TDD-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%AD%A5%E9%A9%9F"><span class="toc-text">TDD 的基本步驟</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-C-%E5%AF%A6%E4%BD%9C-TDD"><span class="toc-text">使用 C# 實作 TDD</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">結語</span></a></li></ol></nav>
       </details>
     </aside>
     
 
     <div class="post-main">
       <div class="prose" id="article">
-        <h2 id="測試驅動開發（TDD）入門與實作教學"><a href="#測試驅動開發（TDD）入門與實作教學" class="headerlink" title="測試驅動開發（TDD）入門與實作教學"></a>測試驅動開發（TDD）入門與實作教學</h2><p>測試驅動開發（Test-Driven Development，簡稱 TDD）是一種軟體開發方法：先寫出會失敗的測試案例，再撰寫讓測試通過的程式碼，最後重構。目標是快速反饋、提升程式碼品質、推動簡單設計。</p>
-<h3 id="TDD-的基本步驟"><a href="#TDD-的基本步驟" class="headerlink" title="TDD 的基本步驟"></a>TDD 的基本步驟</h3><p>TDD 的開發循環遵循「紅-綠-重構」模式：</p>
+        <h2>測試驅動開發（TDD）入門與實作教學</h2>
+<p>測試驅動開發（Test-Driven Development，簡稱 TDD）是一種軟體開發方法：先寫出會失敗的測試案例，再撰寫讓測試通過的程式碼，最後重構。目標是快速反饋、提升程式碼品質、推動簡單設計。</p>
+<h3 id="TDD-的基本步驟">TDD 的基本步驟</h3>
+<p>TDD 的開發循環遵循「紅-綠-重構」模式：</p>
 <ol>
 <li><strong>紅色階段（Red）</strong>：先寫一個會失敗的測試。這個測試對應你想實作的下一個功能。</li>
 <li><strong>綠色階段（Green）</strong>：寫足夠讓測試通過的程式碼。不追求完美，只要通過即可。</li>
 <li><strong>重構階段（Refactor）</strong>：整理程式碼，改善結構與設計，同時確認所有測試仍然通過。</li>
 </ol>
-<h3 id="使用-C-實作-TDD"><a href="#使用-C-實作-TDD" class="headerlink" title="使用 C# 實作 TDD"></a>使用 C# 實作 TDD</h3><p>以下用一個簡單的 C# 範例，走完 TDD 的完整流程。</p>
-<h4 id="前提條件"><a href="#前提條件" class="headerlink" title="前提條件"></a>前提條件</h4><p>確保開發環境已安裝 .NET Core SDK，並熟悉基本的 C# 與單元測試。</p>
-<h4 id="實作步驟"><a href="#實作步驟" class="headerlink" title="實作步驟"></a>實作步驟</h4><p>目標：開發一個類別庫，計算兩個整數的和。</p>
+<h3 id="使用-C-實作-TDD">使用 C# 實作 TDD</h3>
+<p>以下用一個簡單的 C# 範例，走完 TDD 的完整流程。</p>
+<h4 id="前提條件">前提條件</h4>
+<p>確保開發環境已安裝 .NET Core SDK，並熟悉基本的 C# 與單元測試。</p>
+<h4 id="實作步驟">實作步驟</h4>
+<p>目標：開發一個類別庫，計算兩個整數的和。</p>
 <p><strong>步驟 1：建立新的方案</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dotnet new sln -n TDDExample</span><br></pre></td></tr></table></figure>
-
 <p><strong>步驟 2：加入類別庫專案與測試專案</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dotnet new classlib -n CalculatorLibrary</span><br><span class="line">dotnet new xunit -n CalculatorLibrary.Tests</span><br><span class="line">dotnet sln add CalculatorLibrary</span><br><span class="line">dotnet sln add CalculatorLibrary.Tests</span><br><span class="line">dotnet add CalculatorLibrary.Tests reference CalculatorLibrary</span><br></pre></td></tr></table></figure>
-
 <p><strong>步驟 3：紅色階段</strong></p>
 <p>在 <code>CalculatorLibrary.Tests</code> 專案新增測試案例，測試加法函式。此時 <code>Calculator</code> 類別尚未存在，執行 <code>dotnet test</code> 會編譯失敗——這正是 TDD 要的起點。</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Xunit;</span><br><span class="line"><span class="keyword">using</span> CalculatorLibrary;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">CalculatorLibrary.Tests</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CalculatorTests</span> &#123;</span><br><span class="line">        [<span class="meta">Fact</span>]</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Add_ShouldCalculateCorrectSum</span>()</span> &#123;</span><br><span class="line">            <span class="comment">// Arrange</span></span><br><span class="line">            <span class="keyword">var</span> calculator = <span class="keyword">new</span> Calculator();</span><br><span class="line">            <span class="comment">// Act</span></span><br><span class="line">            <span class="keyword">var</span> result = calculator.Add(<span class="number">5</span>, <span class="number">5</span>);</span><br><span class="line">            <span class="comment">// Assert</span></span><br><span class="line">            Assert.Equal(<span class="number">10</span>, result);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p><strong>步驟 4：綠色階段</strong></p>
 <p>在 <code>CalculatorLibrary</code> 專案實作 <code>Calculator</code> 類別與 <code>Add</code> 方法，讓測試通過即可。</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">CalculatorLibrary</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Calculator</span> &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="built_in">int</span> <span class="title">Add</span>(<span class="params"><span class="built_in">int</span> a, <span class="built_in">int</span> b</span>)</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> a + b;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p><strong>步驟 5：執行測試</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dotnet <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
-
 <p>確認測試通過後再繼續。</p>
 <p><strong>步驟 6：重構階段</strong></p>
 <p>以這個例子而言，<code>Add</code> 本身已夠簡單，不需要特別整理。實務上重構的時機是：命名不清楚、邏輯重複、方法過長、類別職責混雜。例如若之後新增了 <code>Subtract</code>、<code>Multiply</code>，卻發現每個方法都重複做邊界檢查，這時就抽出一個私有方法統一處理——重構前跑測試，重構後再跑一次，確認沒有破壞現有行為。</p>
 <p>重構是持續的小整理，不是大改版。</p>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>TDD 的節奏一開始會顯得慢，原本先寫實作的習慣要調整。但強迫自己先想清楚「這段程式碼應該做到什麼」，往往能在動手前就發現設計問題，後期反而少改很多。</p>
+<h2>結語</h2>
+<p>TDD 的節奏一開始會顯得慢，原本先寫實作的習慣要調整。但強迫自己先想清楚「這段程式碼應該做到什麼」，往往能在動手前就發現設計問題，後期反而少改很多。</p>
 
       </div>
       
@@ -201,15 +202,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>

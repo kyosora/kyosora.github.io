@@ -124,7 +124,8 @@
       <div class="prose" id="article">
         <p>用 Claude Code 久了會發現一種奇怪的 bug：你明確說「先 grep 一下這個 symbol」，它「嗯」一聲，然後<strong>直接憑記憶生出一個答案</strong>，工具呢？沒叫。又有時候你叫它「直接回答就好不用查」，它反而非要 Bash 一下。</p>
 <p>我以前的解釋很俗——prompt 不夠用力、tool description 不夠精準、模型太懶。最近 Maryland 大學的論文〈Model-Adaptive Tool Necessity Reveals the Knowing-Doing Gap in LLM Tool Use〉（arXiv:2605.14038）讓我換了一個視角。<strong>模型不是不知道該叫工具——它知道，但在輸出層轉了 90 度。</strong></p>
-<h2 id="兩階段分解：認知-vs-執行"><a href="#兩階段分解：認知-vs-執行" class="headerlink" title="兩階段分解：認知 vs 執行"></a>兩階段分解：認知 vs 執行</h2><p>論文做了一件方法論層面很值得記住的事——把「LLM 使用工具」這個動作切成兩階段：</p>
+<h2 id="兩階段分解：認知-vs-執行">兩階段分解：認知 vs 執行</h2>
+<p>論文做了一件方法論層面很值得記住的事——把「LLM 使用工具」這個動作切成兩階段：</p>
 <ul>
 <li><strong>Cognition（認知）</strong>：模型內部是不是相信「這題需要工具」。透過線性 probe 探測 hidden state 的方向，可以直接讀出模型的內部判斷。</li>
 <li><strong>Execution（執行）</strong>：模型實際輸出的 token 是不是 trigger 了 tool call。</li>
@@ -133,7 +134,8 @@
 <p>但奇怪的事情就在這裡發生了：<strong>這兩個 probe 的方向，在最後一層的最後 token 位置（也就是真正控制下一個 token 生成的那個關鍵點），幾乎是互相垂直的</strong>。</p>
 <p>中文裡這句話很容易讓人滑過去，所以拆開講一下。「正交」「垂直」在線性代數的語意是：兩個向量沒有相關性，一個的訊號完全 project 不到另一個上。也就是說，模型在前面幾層算出來「我該叫工具」這個結論，到了輸出層被另一套幾何結構接手——這套結構決定要不要產出 tool call token——而這套結構<strong>幾乎不看前面那個結論</strong>。</p>
 <p>認知是一回事，動作是另一回事。中間轉了 90 度，訊號就漏光了。</p>
-<h2 id="26-5-54-的-mismatch-是怎麼算的"><a href="#26-5-54-的-mismatch-是怎麼算的" class="headerlink" title="26.5%-54% 的 mismatch 是怎麼算的"></a>26.5%-54% 的 mismatch 是怎麼算的</h2><p>這個數字得搭配論文裡另一個概念才看得懂——<strong>Model-Adaptive Tool Necessity</strong>。</p>
+<h2 id="26-5-54-的-mismatch-是怎麼算的">26.5%-54% 的 mismatch 是怎麼算的</h2>
+<p>這個數字得搭配論文裡另一個概念才看得懂——<strong>Model-Adaptive Tool Necessity</strong>。</p>
 <p>傳統評估會用標準答案來定義「該不該叫工具」：例如算術題就該用計算器，事實題就該查資料。論文覺得這太外加——對 GPT-5.4 來說是必要的工具，對 Qwen3-8B 可能根本不必要（或反過來）。</p>
 <p>所以他們改用模型自己的能力來定義：當一個模型「不用工具會答錯、用了工具會答對」時，這題對這個模型而言工具就是必要的。這個定義方式內生於模型能力，不會被測試者的偏見污染。</p>
 <p>定義好「真實必要」之後，再去比對模型實際的行為——結果就出來了：</p>
@@ -145,7 +147,8 @@
 <th>事實 QA mismatch</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>Qwen3-4B</td>
 <td>26.5%</td>
 <td>41.8%</td>
@@ -160,19 +163,23 @@
 <td>—</td>
 <td>30.8%（區間下限）</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>mismatch 的意思是：模型「該叫卻沒叫」或「不該叫卻叫了」的比例。論文的 Sankey 圖裡，<strong>主導的失誤流向是「認知正確，但行動偏離了認知」</strong>——模型確實知道該叫工具，但實際輸出時沒叫。前者反過來的情況（認知錯但行動對）很少。</p>
 <p>換成 prompt engineer 的語言：你寫了一個 system prompt 叫模型「需要查資料時用 search 工具」，模型內部讀了之後<strong>真的相信這題需要查資料</strong>——然後輸出層告訴你「不用了，我自己答」。你看到的失敗，不是它沒理解你，是它理解了但動作系統不買單。</p>
-<h2 id="對-Claude-Code-Codex-使用者意味什麼"><a href="#對-Claude-Code-Codex-使用者意味什麼" class="headerlink" title="對 Claude Code / Codex 使用者意味什麼"></a>對 Claude Code / Codex 使用者意味什麼</h2><p>論文沒有測 Claude 或 GPT，測的是 Qwen3 和 Llama-3 兩個系列。但這個機制屬於 transformer 後期層的幾何性質，不太可能只發生在開源模型上。我會這樣對應到日常經驗：</p>
+<h2 id="對-Claude-Code-Codex-使用者意味什麼">對 Claude Code / Codex 使用者意味什麼</h2>
+<p>論文沒有測 Claude 或 GPT，測的是 Qwen3 和 Llama-3 兩個系列。但這個機制屬於 transformer 後期層的幾何性質，不太可能只發生在開源模型上。我會這樣對應到日常經驗：</p>
 <p><strong>1. 不要先怪 prompt。</strong> 過去我看到 tool call 不一致的第一反應是改 prompt——加強指令、放 few-shot、調整 tool description。論文暗示這條路有上限：你能影響的多半是 cognition 階段，但 cognition 階段往往已經對了，問題在後面那個轉 90 度的執行階段。改 prompt 不太能改變後期層的幾何結構。</p>
 <p><strong>2. 把決策外移。</strong> Claude Code 有「auto-accept」「強制工具呼叫」「禁用 X 工具」這類配置，OpenAI 的 Codex 也有類似的 mode。論文等於給了這些設計一個科學理由——當模型內部的 cognition→action 轉換不可靠時，把這個決策搬出來、由 harness 強制執行，比指望模型「自己學會」更穩。Claude Code 在 systematic-debugging 這類 skill 裡會明確列出「必須用 X 工具」的硬規則，不是冗餘，是補了這個漏。</p>
 <p><strong>3. 換更大的模型不一定救得了你。</strong> 論文裡 Qwen3-8B 還是有 mismatch（30.8%+）。這個現象不會單純被「更多參數」沖掉，因為它是 transformer 表徵幾何學的結構問題。我不會說放大模型沒有幫助，但「規模化解決一切」這個直覺對 tool use 不適用。</p>
 <p><strong>4. A/B 測試 tool prompt 的時候，要留意效能上限。</strong> 論文最後留了一句很 prompt engineer 取向的話：常見的歸因（prompt 不夠好、訓練資料不夠）可能忽略後期層幾何結構——這也解釋了「為什麼你怎麼調 tool prompt，效能改善都會卡在某個天花板」。卡住的不是你的 prompt，是模型內部的訊號管線。</p>
-<h2 id="「Model-Adaptive」這個方法論本身值得記下"><a href="#「Model-Adaptive」這個方法論本身值得記下" class="headerlink" title="「Model-Adaptive」這個方法論本身值得記下"></a>「Model-Adaptive」這個方法論本身值得記下</h2><p>老實說，我覺得這篇論文最值錢的不是 mismatch 數字，是 model-adaptive 那個定義方式。</p>
+<h2 id="「Model-Adaptive」這個方法論本身值得記下">「Model-Adaptive」這個方法論本身值得記下</h2>
+<p>老實說，我覺得這篇論文最值錢的不是 mismatch 數字，是 model-adaptive 那個定義方式。</p>
 <p>我做過內部的 LLM eval，過去寫 benchmark 都是「給標準答案、給標準工具用法、看模型有沒有跟上」。讀完這篇論文我意識到這個框架本身有問題——它預設了一個「外部正確」的尺度，但每個模型的內部能力剛好不一樣。</p>
 <p>對自己模型而言不必要的工具，叫了反而是 over-tool（context 浪費、延遲增加、引入錯誤）；對自己模型而言必要的工具，沒叫就是 under-tool（直接答錯）。<strong>正確的評估，應該以每個模型自己的能力為錨點</strong>，這樣才能看清「該叫沒叫」和「不該叫卻叫」這兩條完全不同的失敗模式。</p>
 <p>之後我自己做 agent eval，會把這條方法論借過來——先測一輪「無工具基準」，再測一輪「強制工具」，差異那部分就是這個模型對這項工具的真實必要區間。</p>
-<h2 id="結尾這條我會帶走"><a href="#結尾這條我會帶走" class="headerlink" title="結尾這條我會帶走"></a>結尾這條我會帶走</h2><p>最近兩個禮拜我連續看到兩篇對「LLM Agent 設計直覺」打臉的論文：上一篇 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2605.12978">〈Useful Memories Become Faulty When Continuously Updated by LLMs〉</a>說「持續記憶讓 agent 越記越笨」，這篇說「模型知道該叫工具但動作系統不買單」。</p>
+<h2 id="結尾這條我會帶走">結尾這條我會帶走</h2>
+<p>最近兩個禮拜我連續看到兩篇對「LLM Agent 設計直覺」打臉的論文：上一篇 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2605.12978">〈Useful Memories Become Faulty When Continuously Updated by LLMs〉</a>說「持續記憶讓 agent 越記越笨」，這篇說「模型知道該叫工具但動作系統不買單」。</p>
 <p>共同的訊息是：<strong>LLM Agent 不該被當成一個「自我管理一切」的黑箱</strong>。記憶該外面管，tool use 該外面 gate，consolidation 該由 harness 觸發而不是模型偷偷自決。模型內部能力很強，但內部的訊號管線在很多地方會 silently 失敗——你看不到、prompt 也救不回來。</p>
 <p>工程上的解：把更多決策搬到 harness 層，模型只負責它擅長的部分——理解任務、生成內容、判斷品質。<strong>「知道」交給模型，「做」交給程式碼</strong>。這聽起來像退步，其實是把 agent 系統設計從「LLM 自己會」拉回「我們知道哪些動作 LLM 不能被信任獨立完成」。</p>
 <p>至少這禮拜開始，我自己寫 agent harness，會把「該不該叫這個 tool」做成 hard rule，不再交給模型「自己決定」。</p>
@@ -272,15 +279,15 @@
     <h2 id="recent-title">最近寫的</h2>
     <ul>
     
+      <li><a href="/posts/4f8c5648/">bat 用 if errorlevel 1 檢查失敗？結束代碼是負數就會漏接，照樣往下部署</a><time datetime="2026-11-26T08:20:00.000Z">2026-11-26</time></li>
+    
+      <li><a href="/posts/7175f458/">Win11 25H2 的 QTTabBar 分頁列救不回來，我改用 HoverPeek 做懸停預覽</a><time datetime="2026-11-26T08:15:00.000Z">2026-11-26</time></li>
+    
       <li><a href="/posts/7d2b90da/">遠端下一行 Remove-NetRoute，主機就斷線了：Windows 多網卡預設路由怎麼選</a><time datetime="2026-11-26T07:50:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/25a8b1c4/">修好上線了，使用者還在跑舊版？IIS 沒送 Cache-Control，瀏覽器自己決定快取多久</a><time datetime="2026-11-26T07:20:00.000Z">2026-11-26</time></li>
     
       <li><a href="/posts/4fb41c1c/">黎曼猜想是什麼？Claude 參與的證明通過 Lean 驗證，數學家還在理解它</a><time datetime="2026-11-25T02:40:00.000Z">2026-11-25</time></li>
-    
-      <li><a href="/posts/7463bf4c/">Windows Server 開 OpenSSH 只用金鑰登入：四台機器，四種卡法</a><time datetime="2026-11-12T03:30:00.000Z">2026-11-12</time></li>
-    
-      <li><a href="/posts/3c89a868/">API 單獨打 0.09 秒、從瀏覽器按要 20 秒：ASP.NET Session 鎖讓請求排隊</a><time datetime="2026-11-12T03:00:00.000Z">2026-11-12</time></li>
     
     </ul>
   </section>
